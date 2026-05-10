@@ -1,0 +1,23 @@
+# Secrets - NEVER commit these
+*.env
+.env.*
+secrets/
+*secret*
+*password*
+*token*
+kubeconfig
+*.key
+*.pem
+*.crt
+*credentials*
+
+# System
+.DS_Store
+*.log
+tmp/
+.cache/
+
+# Terraform
+*.tfstate
+*.tfstate.backup
+.terraform/
