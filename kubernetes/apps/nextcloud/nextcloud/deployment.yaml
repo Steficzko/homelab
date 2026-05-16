@@ -18,14 +18,12 @@ spec:
       initContainers:
         - name: fix-permissions
           image: busybox
-          command: ["sh", "-c", "chown -R 33:33 /data && mkdir -p /app/config && touch /app/config/config.php && chown 33:33 /app/config/config.php && chmod 660 /app/config/config.php"]
+          command: ["sh", "-c", "chown -R 33:33 /data"]
           securityContext:
             runAsUser: 0
           volumeMounts:
             - name: data
               mountPath: /data
-            - name: app
-              mountPath: /app
       containers:
         - name: nextcloud
           image: nextcloud:30-apache
