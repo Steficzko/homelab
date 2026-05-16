@@ -1,0 +1,12 @@
+# CORS is configured via the CouchDB API after first startup (see setup-notes.md).
+# CouchDB persists API config changes to local.ini in the data volume automatically.
+# Mounting a config file conflicts with CouchDB's entrypoint — do not use file mounts.
+#
+# To reconfigure CORS on a fresh instance:
+#   kubectl exec -n obsidian-livesync deployment/couchdb -- sh -c "
+#     curl -X PUT http://admin:PASSWORD@localhost:5984/_node/nonode@nohost/_config/httpd/enable_cors -d '\"true\"'
+#     curl -X PUT http://admin:PASSWORD@localhost:5984/_node/nonode@nohost/_config/cors/origins -d '\"app://obsidian.md,capacitor://localhost,http://localhost\"'
+#     curl -X PUT http://admin:PASSWORD@localhost:5984/_node/nonode@nohost/_config/cors/credentials -d '\"true\"'
+#     curl -X PUT http://admin:PASSWORD@localhost:5984/_node/nonode@nohost/_config/cors/methods -d '\"GET, PUT, POST, HEAD, DELETE\"'
+#     curl -X PUT http://admin:PASSWORD@localhost:5984/_node/nonode@nohost/_config/cors/headers -d '\"accept, authorization, content-type, origin, referer\"'
+#   "
