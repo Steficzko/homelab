@@ -25,3 +25,4 @@ tmp/
 *.tfstate
 *.tfstate.backup
 .terraform/
+homelab-clone
