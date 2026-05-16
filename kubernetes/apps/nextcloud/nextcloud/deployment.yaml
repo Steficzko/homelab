@@ -16,14 +16,16 @@ spec:
         app: nextcloud
     spec:
       initContainers:
-        - name: fix-nfs-permissions
+        - name: fix-permissions
           image: busybox
-          command: ["sh", "-c", "chown -R 33:33 /data"]
+          command: ["sh", "-c", "chown -R 33:33 /data && rm -f /app/config/config.php && chown -R 33:33 /app/config"]
           securityContext:
             runAsUser: 0
           volumeMounts:
             - name: data
               mountPath: /data
+            - name: app
+              mountPath: /app
       containers:
         - name: nextcloud
           image: nextcloud:30-apache
@@ -66,9 +68,6 @@ spec:
               mountPath: /var/www/html
             - name: data
               mountPath: /var/www/html/data
-            - name: config
-              mountPath: /var/www/html/config/proxy.config.php
-              subPath: proxy.config.php
       volumes:
         - name: app
           persistentVolumeClaim:
@@ -76,6 +75,3 @@ spec:
         - name: data
           persistentVolumeClaim:
             claimName: nextcloud-data-pvc
-        - name: config
-          configMap:
-            name: nextcloud-config
