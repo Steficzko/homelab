@@ -13,10 +13,10 @@ spec:
   ingressClassName: nginx
   tls:
     - hosts:
-        - sync.kostikidis.net
+        - obsidian.kostikidis.net
       secretName: couchdb-tls
   rules:
-    - host: sync.kostikidis.net
+    - host: obsidian.kostikidis.net
       http:
         paths:
           - path: /
