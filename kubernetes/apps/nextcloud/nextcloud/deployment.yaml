@@ -18,7 +18,7 @@ spec:
       initContainers:
         - name: fix-permissions
           image: busybox
-          command: ["sh", "-c", "chown -R 33:33 /data && rm -f /app/config/config.php && chown -R 33:33 /app/config"]
+          command: ["sh", "-c", "chown -R 33:33 /data && mkdir -p /app/config && touch /app/config/config.php && chown 33:33 /app/config/config.php && chmod 660 /app/config/config.php"]
           securityContext:
             runAsUser: 0
           volumeMounts:
