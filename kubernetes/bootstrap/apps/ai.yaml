@@ -9,6 +9,8 @@ spec:
     repoURL: https://github.com/Steficzko/homelab.git
     targetRevision: HEAD
     path: kubernetes/apps/ai
+    directory:
+      recurse: true
   destination:
     server: https://kubernetes.default.svc
     namespace: ai
