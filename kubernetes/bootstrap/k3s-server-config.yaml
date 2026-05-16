@@ -1,0 +1,8 @@
+# /etc/rancher/k3s/config.yaml
+# Deployed to all 3 control-plane nodes.
+# K3s merges this file with any flags in the systemd unit at startup.
+#
+# Reference: https://docs.k3s.io/installation/configuration#configuration-file
+
+disable:
+  - traefik        # We use ingress-nginx instead (see ADR-003)
