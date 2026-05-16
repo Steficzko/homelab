@@ -11,6 +11,10 @@ kubeconfig
 *.crt
 *credentials*
 
+# Allow example/template files that show secret structure (no real values)
+!*.example.yaml
+!*.example.env
+
 # System
 .DS_Store
 *.log

@@ -1,0 +1,24 @@
+# kube-prometheus-stack Helm values
+# Chart: prometheus-community/kube-prometheus-stack v85.0.3 (Prometheus Operator v0.90.1)
+# Installed: helm install kube-prometheus-stack prometheus-community/kube-prometheus-stack \
+#              -n monitoring --create-namespace -f values.yaml
+#
+# Includes: Prometheus, Grafana, Alertmanager, node-exporter, kube-state-metrics
+# Access: kubectl port-forward -n monitoring svc/kube-prometheus-stack-grafana 3000:80
+# Default Grafana credentials: admin / prom-operator (change after first login)
+
+grafana:
+  persistence:
+    enabled: true
+    storageClassName: longhorn
+    size: 5Gi
+
+prometheus:
+  prometheusSpec:
+    storageSpec:
+      volumeClaimTemplate:
+        spec:
+          storageClassName: longhorn
+          resources:
+            requests:
+              storage: 10Gi
