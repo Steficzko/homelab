@@ -21,7 +21,7 @@ spec:
           ports:
             - containerPort: 8080
           env:
-            # Try GPU machine first, fall back to CPU Ollama in cluster
+            # Try Streacom_ML GPU first, fall back to CPU Ollama in cluster
             - name: OLLAMA_BASE_URLS
               value: "http://ollama-gpu.ai.svc.cluster.local:11434;http://ollama.ai.svc.cluster.local:11434"
             - name: WEBUI_AUTH
