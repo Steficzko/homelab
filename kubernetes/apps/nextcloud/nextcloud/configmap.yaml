@@ -1,0 +1,16 @@
+# Extra Nextcloud config applied on top of the auto-generated config.php
+# Nextcloud loads all *.config.php files from the config/ directory
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nextcloud-config
+  namespace: nextcloud
+data:
+  proxy.config.php: |
+    <?php
+    $CONFIG = [
+      'trusted_proxies'   => ['10.0.0.0/8', '172.16.0.0/12', '192.168.0.0/16'],
+      'overwriteprotocol' => 'https',
+      'overwritecliurl'   => 'https://nextcloud.kostikidis.net',
+      'default_phone_region' => 'GR',
+    ];

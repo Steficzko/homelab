@@ -1,0 +1,14 @@
+# Longhorn PVC for Nextcloud app files and config
+# Kept separate from data so app survives Unraid reboots
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: nextcloud-app-pvc
+  namespace: nextcloud
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: longhorn
+  resources:
+    requests:
+      storage: 10Gi

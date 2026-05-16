@@ -1,0 +1,19 @@
+# NFS PersistentVolume pointing to Unraid share at 192.168.1.100
+# Storage value is not enforced for NFS — Nextcloud uses whatever space Unraid has
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: nextcloud-data-nfs
+spec:
+  capacity:
+    storage: 100Ti
+  accessModes:
+    - ReadWriteMany
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: ""
+  nfs:
+    server: 192.168.1.100
+    path: /mnt/user/NextCloud
+  mountOptions:
+    - hard
+    - nfsvers=4.1

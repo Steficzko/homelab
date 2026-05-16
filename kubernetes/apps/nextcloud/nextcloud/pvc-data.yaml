@@ -1,0 +1,14 @@
+# Binds to the NFS PersistentVolume above
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: nextcloud-data-pvc
+  namespace: nextcloud
+spec:
+  accessModes:
+    - ReadWriteMany
+  storageClassName: ""
+  volumeName: nextcloud-data-nfs
+  resources:
+    requests:
+      storage: 100Ti

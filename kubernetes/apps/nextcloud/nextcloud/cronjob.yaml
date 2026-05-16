@@ -1,0 +1,31 @@
+# Runs Nextcloud background tasks every 5 minutes
+# Required for notifications, file scanning, app updates
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: nextcloud-cron
+  namespace: nextcloud
+spec:
+  schedule: "*/5 * * * *"
+  concurrencyPolicy: Forbid
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: OnFailure
+          containers:
+            - name: cron
+              image: nextcloud:30-apache
+              command: ["php", "-f", "/var/www/html/cron.php"]
+              volumeMounts:
+                - name: app
+                  mountPath: /var/www/html
+                - name: data
+                  mountPath: /var/www/html/data
+          volumes:
+            - name: app
+              persistentVolumeClaim:
+                claimName: nextcloud-app-pvc
+            - name: data
+              persistentVolumeClaim:
+                claimName: nextcloud-data-pvc
