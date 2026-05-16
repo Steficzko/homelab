@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: ollama-pvc
+  namespace: ai
+spec:
+  storageClassName: longhorn
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 20Gi  # gemma2:9b is ~5.5Gi, room for more models later

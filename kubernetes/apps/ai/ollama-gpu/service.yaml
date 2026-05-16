@@ -1,0 +1,13 @@
+# ExternalName service pointing to the ML machine (topmountaintuf) via Tailscale
+# Update TAILSCALE_IP once the ML machine is set up with Ollama (ROCm/GPU)
+# Switch n8n to use http://ollama-gpu.ai.svc.cluster.local:11434 for GPU inference
+apiVersion: v1
+kind: Service
+metadata:
+  name: ollama-gpu
+  namespace: ai
+spec:
+  type: ExternalName
+  externalName: 100.92.235.111  # topmountaintuf Tailscale IP — update when ready
+  ports:
+    - port: 11434

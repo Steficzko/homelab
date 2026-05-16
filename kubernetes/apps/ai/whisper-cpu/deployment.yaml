@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: whisper
+  namespace: ai
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: whisper
+  template:
+    metadata:
+      labels:
+        app: whisper
+    spec:
+      containers:
+        - name: whisper
+          image: fedirz/faster-whisper-server:latest-cpu
+          ports:
+            - containerPort: 8000
+          env:
+            - name: WHISPER__MODEL
+              value: large-v3       # best multilingual — Greek, English, Czech
+            - name: WHISPER__DEVICE
+              value: cpu
+            - name: WHISPER__COMPUTE_TYPE
+              value: int8           # int8 quantization: 4x faster on CPU with minimal accuracy loss
+            - name: WHISPER__LANGUAGE
+              value: ""             # empty = auto-detect language per request
+          resources:
+            requests:
+              memory: 4Gi
+              cpu: "2"
+            limits:
+              memory: 6Gi
+          volumeMounts:
+            - name: cache
+              mountPath: /root/.cache/huggingface
+      volumes:
+        - name: cache
+          persistentVolumeClaim:
+            claimName: whisper-pvc
