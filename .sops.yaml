@@ -1,0 +1,4 @@
+creation_rules:
+  - path_regex: .*\.sops\.yaml$
+    age: age1v9pqv93dtdg7zuk2uc423rdtapu9p0fqucd2s9p6curt2c0y2vuq4yzw9n
+    encrypted_regex: ^(data|stringData)$

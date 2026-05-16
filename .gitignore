@@ -1,4 +1,4 @@
-# Secrets - NEVER commit these
+# Secrets - NEVER commit plaintext
 *.env
 .env.*
 secrets/
@@ -10,10 +10,12 @@ kubeconfig
 *.pem
 *.crt
 *credentials*
+age.key
 
-# Allow example/template files that show secret structure (no real values)
+# Allow example/template files and SOPS-encrypted files (safe to commit)
 !*.example.yaml
 !*.example.env
+!*.sops.yaml
 
 # System
 .DS_Store
