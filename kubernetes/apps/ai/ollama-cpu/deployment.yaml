@@ -20,9 +20,12 @@ spec:
           image: ollama/ollama:latest
           ports:
             - containerPort: 11434
+          env:
+            - name: OLLAMA_MAX_LOADED_MODELS
+              value: "1"
           resources:
             requests:
-              memory: 3Gi   # gemma3:4b needs ~2.5Gi + overhead
+              memory: 3Gi
               cpu: "2"
             limits:
               memory: 6Gi
