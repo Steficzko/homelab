@@ -68,8 +68,6 @@ spec:
                   key: POSTGRES_PASSWORD
           securityContext:
             allowPrivilegeEscalation: false
-            capabilities:
-              drop: ["ALL"]
           readinessProbe:
             httpGet:
               path: /status.php
