@@ -17,6 +17,8 @@ spec:
             - name: cron
               image: nextcloud:30-apache
               command: ["php", "-f", "/var/www/html/cron.php"]
+              securityContext:
+                runAsUser: 33
               volumeMounts:
                 - name: app
                   mountPath: /var/www/html
