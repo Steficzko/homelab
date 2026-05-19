@@ -18,7 +18,7 @@ spec:
           restartPolicy: OnFailure
           containers:
             - name: cron
-              image: nextcloud:30-apache
+              image: nextcloud:31-apache
               command: ["php", "-f", "/var/www/html/cron.php"]
               securityContext:
                 runAsUser: 33
