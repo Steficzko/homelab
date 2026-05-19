@@ -21,10 +21,6 @@ spec:
           envFrom:
             - secretRef:
                 name: postgres-secret
-          securityContext:
-            allowPrivilegeEscalation: false
-            capabilities:
-              drop: ["ALL"]
           resources:
             requests:
               memory: 256Mi
