@@ -71,7 +71,7 @@ spec:
               memory: 512Mi
               cpu: "250m"
             limits:
-              memory: 2Gi
+              memory: 4Gi
           volumeMounts:
             - name: app
               mountPath: /var/www/html
