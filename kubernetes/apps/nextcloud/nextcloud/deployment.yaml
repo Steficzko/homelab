@@ -66,8 +66,6 @@ spec:
                 secretKeyRef:
                   name: nextcloud-secret
                   key: POSTGRES_PASSWORD
-          securityContext:
-            allowPrivilegeEscalation: false
           readinessProbe:
             httpGet:
               path: /status.php
