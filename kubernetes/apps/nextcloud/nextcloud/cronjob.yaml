@@ -11,6 +11,9 @@ spec:
   jobTemplate:
     spec:
       template:
+        metadata:
+          labels:
+            app: nextcloud-cron
         spec:
           restartPolicy: OnFailure
           containers:

@@ -23,6 +23,10 @@ spec:
                 secretKeyRef:
                   name: nextcloud-secret
                   key: REDIS_PASSWORD
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: ["ALL"]
           resources:
             requests:
               memory: 128Mi
