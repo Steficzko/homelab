@@ -19,6 +19,16 @@ spec:
         runAsUser: 999
         runAsGroup: 999
         fsGroup: 999
+      initContainers:
+        - name: fix-permissions
+          image: busybox
+          command:
+            - sh
+            - -c
+            - mkdir -p /data/pgdata && chown -R 999:999 /data && chmod 700 /data/pgdata
+          volumeMounts:
+            - name: data
+              mountPath: /data
       containers:
         - name: postgres
           image: tensorchord/pgvecto-rs:pg16-v0.3.0
