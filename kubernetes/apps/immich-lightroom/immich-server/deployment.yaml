@@ -1,0 +1,66 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: immich-server
+  namespace: immich-lightroom
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: immich-server
+  template:
+    metadata:
+      labels:
+        app: immich-server
+    spec:
+      containers:
+        - name: immich-server
+          image: ghcr.io/immich-app/immich-server:release
+          env:
+            - name: TZ
+              value: Europe/Prague
+            - name: DB_HOSTNAME
+              value: postgres.immich-lightroom.svc.cluster.local
+            - name: DB_USERNAME
+              value: lightroom
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: immich-lightroom-secret
+                  key: POSTGRES_PASSWORD
+            - name: DB_DATABASE_NAME
+              value: immich
+            - name: DB_PORT
+              value: "5432"
+            - name: REDIS_HOSTNAME
+              value: redis.immich-lightroom.svc.cluster.local
+            - name: REDIS_PORT
+              value: "6379"
+            - name: REDIS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: immich-lightroom-secret
+                  key: REDIS_PASSWORD
+            - name: IMMICH_MACHINE_LEARNING_URL
+              value: http://immich-ml.immich-lightroom.svc.cluster.local:3003
+          resources:
+            requests:
+              memory: 512Mi
+              cpu: 250m
+            limits:
+              memory: 4Gi
+          volumeMounts:
+            - name: upload
+              mountPath: /usr/src/app/upload
+            - name: raw
+              mountPath: /IMPORT
+              readOnly: true
+      volumes:
+        - name: upload
+          persistentVolumeClaim:
+            claimName: immich-upload-pvc
+        - name: raw
+          persistentVolumeClaim:
+            claimName: immich-raw-pvc

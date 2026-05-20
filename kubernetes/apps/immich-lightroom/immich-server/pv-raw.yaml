@@ -1,0 +1,21 @@
+# NFS PersistentVolume for Lightroom RAW archive on Unraid
+# Read-only — originals are never modified by Immich
+# Files organized by year (2004, 2006, 2007, 2008, 2009, ...)
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: immich-lightroom-raw-pv
+spec:
+  capacity:
+    storage: 10Ti
+  accessModes:
+    - ReadOnlyMany
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: ""
+  nfs:
+    server: 192.168.1.100
+    path: /mnt/user/ArchiveDSLR_RAW
+  mountOptions:
+    - hard
+    - nfsvers=4.1
+    - ro

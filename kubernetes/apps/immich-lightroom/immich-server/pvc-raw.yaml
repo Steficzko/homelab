@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: immich-raw-pvc
+  namespace: immich-lightroom
+spec:
+  accessModes:
+    - ReadOnlyMany
+  storageClassName: ""
+  volumeName: immich-lightroom-raw-pv
+  resources:
+    requests:
+      storage: 10Ti

@@ -1,0 +1,19 @@
+# NFS PersistentVolume for Immich Lightroom upload dir (thumbs, encoded video, processed files)
+# Lives on Unraid SSD pool (K3sAppData share) for fast thumbnail serving
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: immich-lightroom-upload-pv
+spec:
+  capacity:
+    storage: 500Gi
+  accessModes:
+    - ReadWriteMany
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: ""
+  nfs:
+    server: 192.168.1.100
+    path: /mnt/user/K3sAppData/Immich/immich_lightroom
+  mountOptions:
+    - hard
+    - nfsvers=4.1
