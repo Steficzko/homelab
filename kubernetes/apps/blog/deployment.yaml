@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: blog
-          image: ghcr.io/steficzko/kostikidis-blog:latest
+          image: ghcr.io/steficzko/kostikidis-blog:5c1cf8672252a2c971be6d6e0fc421aa76ba35db
           ports:
             - containerPort: 80
           resources:
