@@ -17,3 +17,6 @@ spec:
         - podSelector:
             matchLabels:
               app: nextcloud
+        - podSelector:
+            matchLabels:
+              app: nextcloud-cron
