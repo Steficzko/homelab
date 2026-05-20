@@ -15,6 +15,10 @@ spec:
       labels:
         app: postgres
     spec:
+      securityContext:
+        runAsUser: 999
+        runAsGroup: 999
+        fsGroup: 999
       containers:
         - name: postgres
           image: tensorchord/pgvecto-rs:pg16-v0.3.0
