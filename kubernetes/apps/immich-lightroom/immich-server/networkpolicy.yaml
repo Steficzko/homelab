@@ -9,7 +9,6 @@ spec:
       app: immich-server
   policyTypes:
     - Ingress
-    - Egress
   ingress:
     - ports:
         - port: 2283
