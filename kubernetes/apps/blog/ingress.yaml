@@ -23,3 +23,30 @@ spec:
                 name: blog
                 port:
                   number: 80
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: blog-apex-redirect
+  namespace: blog
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    nginx.ingress.kubernetes.io/permanent-redirect: "https://www.kostikidis.net$request_uri"
+spec:
+  ingressClassName: nginx
+  tls:
+    - hosts:
+        - kostikidis.net
+      secretName: blog-apex-tls
+  rules:
+    - host: kostikidis.net
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: blog
+                port:
+                  number: 80
