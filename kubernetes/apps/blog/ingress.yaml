@@ -10,10 +10,10 @@ spec:
   ingressClassName: nginx
   tls:
     - hosts:
-        - kostikidis.net
+        - www.kostikidis.net
       secretName: blog-tls
   rules:
-    - host: kostikidis.net
+    - host: www.kostikidis.net
       http:
         paths:
           - path: /
