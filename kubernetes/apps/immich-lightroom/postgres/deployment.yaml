@@ -36,7 +36,7 @@ spec:
                   key: POSTGRES_PASSWORD
             - name: POSTGRES_INITDB_ARGS
               value: "--data-checksums"
-          command:
+          args:
             - postgres
             - -c
             - shared_preload_libraries=vectors.so
