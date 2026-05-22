@@ -28,3 +28,12 @@ tmp/
 *.tfstate.backup
 .terraform/
 homelab-clone
+
+# Claude — keep memory and local settings private, expose agents only
+.claude/*
+!.claude/agents/
+
+# SOPS age private key
+*.agekey
+.config/sops/age/keys.txt
+sops/age/keys.txt
