@@ -29,6 +29,8 @@ tmp/
 .terraform/
 homelab-clone
 
+todos.md
+
 # Claude — keep memory and local settings private, expose agents only
 .claude/*
 !.claude/agents/
