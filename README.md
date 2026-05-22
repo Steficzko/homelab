@@ -78,7 +78,7 @@ yet — still tuning them.
 
 ## Blog
 
-I write about what I build at [kostikidis.com](https://www.kostikidis.com).
+I write about what I build at [www.kostikidis.net](https://www.kostikidis.net).
 The first post about this cluster covers what happens when your AI assistant
 runs out of context and you lose two days to it.
 
