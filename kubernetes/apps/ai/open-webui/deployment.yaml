@@ -31,6 +31,10 @@ spec:
               value: "ollama"
             - name: RAG_OLLAMA_BASE_URL
               value: "http://ollama.ai.svc.cluster.local:11434"
+            - name: OPENAI_API_BASE_URL
+              value: "http://litellm.ai.svc.cluster.local:4000/v1"
+            - name: OPENAI_API_KEY
+              value: "dummy"
             - name: AUDIO_STT_ENGINE
               value: "openai"
             - name: AUDIO_STT_OPENAI_API_BASE_URL
