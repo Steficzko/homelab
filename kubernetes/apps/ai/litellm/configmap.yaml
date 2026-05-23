@@ -19,13 +19,13 @@ data:
 
       - model_name: whisper
         litellm_params:
-          model: openai/whisper-1
+          model: openai/Systran/faster-whisper-large-v3
           api_base: http://whisper-gpu.ai.svc.cluster.local:8000
           api_key: dummy
           timeout: 60
       - model_name: whisper-fallback
         litellm_params:
-          model: openai/whisper-1
+          model: openai/Systran/faster-whisper-large-v3
           api_base: http://whisper.ai.svc.cluster.local:8000
           api_key: dummy
           timeout: 120
