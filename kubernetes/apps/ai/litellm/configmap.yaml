@@ -17,7 +17,18 @@ data:
           api_base: http://ollama.ai.svc.cluster.local:11434
           timeout: 60
 
+      - model_name: whisper
+        litellm_params:
+          model: whisper/large-v3
+          api_base: http://whisper-gpu.ai.svc.cluster.local:8000
+          timeout: 60
+      - model_name: whisper-fallback
+        litellm_params:
+          model: whisper/whisper-1
+          api_base: http://whisper.ai.svc.cluster.local:8000
+          timeout: 120
+
     router_settings:
       num_retries: 1
       timeout: 90
-      fallbacks: [{"chat": ["chat-fallback"]}]
+      fallbacks: [{"chat": ["chat-fallback"]}, {"whisper": ["whisper-fallback"]}]
