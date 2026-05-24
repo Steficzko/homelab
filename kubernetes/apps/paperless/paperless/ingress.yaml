@@ -11,10 +11,10 @@ spec:
   ingressClassName: nginx
   tls:
     - hosts:
-        - xartura.kostikidis.com
-      secretName: xartura-tls
+        - xartura.kostikidis.net
+      secretName: xartura-kostikidis-net-tls
   rules:
-    - host: xartura.kostikidis.com
+    - host: xartura.kostikidis.net
       http:
         paths:
           - path: /
