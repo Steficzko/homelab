@@ -35,7 +35,7 @@ spec:
             - name: PAPERLESS_TIKA_GOTENBERG_ENDPOINT
               value: http://gotenberg:3000
             - name: PAPERLESS_URL
-              value: https://paperless.kostikidis.net
+              value: https://xartura.kostikidis.com
             - name: PAPERLESS_TIME_ZONE
               value: Europe/Athens
             - name: PAPERLESS_OCR_LANGUAGE

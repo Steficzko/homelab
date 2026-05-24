@@ -11,10 +11,10 @@ spec:
   ingressClassName: nginx
   tls:
     - hosts:
-        - paperless.kostikidis.net
-      secretName: paperless-tls
+        - xartura.kostikidis.com
+      secretName: xartura-tls
   rules:
-    - host: paperless.kostikidis.net
+    - host: xartura.kostikidis.com
       http:
         paths:
           - path: /
