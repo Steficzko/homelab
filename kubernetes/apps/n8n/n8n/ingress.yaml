@@ -13,10 +13,10 @@ spec:
   ingressClassName: nginx
   tls:
     - hosts:
-        - n8n.kostikidis.net
-      secretName: n8n-kostikidis-net-tls
+        - auto.kostikidis.net
+      secretName: auto-kostikidis-net-tls
   rules:
-    - host: n8n.kostikidis.net
+    - host: auto.kostikidis.net
       http:
         paths:
           - path: /

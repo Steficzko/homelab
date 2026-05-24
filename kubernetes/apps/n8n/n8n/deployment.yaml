@@ -27,13 +27,13 @@ spec:
                 name: n8n-secret
           env:
             - name: N8N_HOST
-              value: n8n.kostikidis.net
+              value: auto.kostikidis.net
             - name: N8N_PORT
               value: "5678"
             - name: N8N_PROTOCOL
               value: https
             - name: WEBHOOK_URL
-              value: https://n8n.kostikidis.net/
+              value: https://auto.kostikidis.net/
             - name: GENERIC_TIMEZONE
               value: Europe/Athens
           resources:
