@@ -6,11 +6,9 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://github.com/Steficzko/homelab
+    repoURL: https://github.com/Steficzko/homelab.git
     targetRevision: HEAD
     path: kubernetes/apps/blog
-    directory:
-      exclude: argocd-app.yaml
   destination:
     server: https://kubernetes.default.svc
     namespace: blog

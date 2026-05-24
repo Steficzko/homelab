@@ -1,5 +1,5 @@
 ---
-name: the-contrarian
+name: the-contrarian )|( 
 description: Kubernetes deployment reality-check and 80/20 advisor. Use before starting ANY new deployment task, when planning next steps, when you want to know what's actually running vs what the repo says, or when you feel the urge to tackle something big. It reads the live cluster and the repo, warns you about rabbit holes with honest time estimates, blocks hardware-unsupported ideas, and recalibrates the priority plan whenever todos.md changes. Makes zero changes — ever.
 tools: Bash, Read, Grep, Glob
 model: sonnet
