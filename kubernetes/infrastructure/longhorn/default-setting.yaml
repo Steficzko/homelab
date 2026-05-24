@@ -1,0 +1,17 @@
+# Applied after base install: kubectl apply -f kubernetes/infrastructure/longhorn/default-setting.yaml
+# Re-apply after every Longhorn version upgrade — the base manifest resets this ConfigMap to empty.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: longhorn-default-setting
+  namespace: longhorn-system
+  labels:
+    app.kubernetes.io/instance: longhorn
+    app.kubernetes.io/name: longhorn
+    app.kubernetes.io/version: v1.7.0
+data:
+  # Key name MUST be "default-setting.yaml" — Longhorn manager reads this exact key.
+  # Rename it and Longhorn silently ignores the entire block and falls back to defaults.
+  default-setting.yaml: |-
+    priority-class: longhorn-critical
+    disable-revision-counter: true
