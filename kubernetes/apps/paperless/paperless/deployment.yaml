@@ -15,6 +15,13 @@ spec:
       labels:
         app: paperless
     spec:
+      initContainers:
+        - name: fix-consume-perms
+          image: alpine:3
+          command: ["chmod", "-R", "a+r", "/consume"]
+          volumeMounts:
+            - name: consume
+              mountPath: /consume
       containers:
         - name: paperless
           image: ghcr.io/paperless-ngx/paperless-ngx:2.20.15
