@@ -1,0 +1,142 @@
+#!/usr/bin/env bash
+# Watches WATCH_DIR for audio files, transcribes via faster-whisper, writes filename.md.
+# Skips files that already have a matching .md. Runs startup scan on launch
+# so files dropped while the service was down are not missed.
+#
+# If LXC_ID and PVE_SSH are set, the LXC is started before the first job and
+# stopped after the queue drains — useful for a dedicated sleep-until-needed
+# GPU whisper container (LXC 112 on xt-ml).
+set -euo pipefail
+
+WATCH_DIR="${WATCH_DIR:-/mnt/dictaphones}"
+WHISPER_URL="${WHISPER_URL:-http://192.168.1.225:8000/v1/audio/transcriptions}"
+WHISPER_MODEL="${WHISPER_MODEL:-Systran/faster-whisper-large-v3}"
+WHISPER_TIMEOUT="${WHISPER_TIMEOUT:-7200}"   # 2h max; GPU processes ~10x realtime
+PARAGRAPH_GAP="${PARAGRAPH_GAP:-3}"         # seconds of silence → new paragraph
+
+# Optional: set both to manage LXC lifecycle from this script
+PVE_SSH="${PVE_SSH:-}"           # e.g. "root@192.168.1.122"
+LXC_ID="${LXC_ID:-}"             # e.g. "112"
+WHISPER_HEALTH_URL="${WHISPER_HEALTH_URL:-}"  # e.g. "http://192.168.1.112:8000/health"
+
+LOG_TAG="transcribe-watch"
+PENDING=0
+
+log() { logger -t "$LOG_TAG" -- "$*" 2>/dev/null || echo "$(date -Iseconds) $*" >&2; }
+
+is_audio() {
+    [[ "${1,,}" =~ \.(mp3|wav|m4a|ogg|flac|opus|webm|aac|wma|mp4)$ ]]
+}
+
+lxc_start() {
+    [[ -z "$PVE_SSH" || -z "$LXC_ID" ]] && return 0
+    log "starting LXC $LXC_ID on $PVE_SSH"
+    ssh -o StrictHostKeyChecking=no -o ConnectTimeout=10 "$PVE_SSH" "pct start $LXC_ID" 2>/dev/null || true
+    if [[ -n "$WHISPER_HEALTH_URL" ]]; then
+        log "waiting for whisper health at $WHISPER_HEALTH_URL"
+        local i=0
+        until curl -sf "$WHISPER_HEALTH_URL" >/dev/null 2>&1; do
+            (( i++ > 60 )) && { log "ERROR: whisper did not come up after 60s"; return 1; }
+            sleep 2
+        done
+        log "whisper ready"
+    fi
+}
+
+lxc_stop() {
+    [[ -z "$PVE_SSH" || -z "$LXC_ID" ]] && return 0
+    log "stopping LXC $LXC_ID (queue empty)"
+    ssh -o StrictHostKeyChecking=no -o ConnectTimeout=10 "$PVE_SSH" "pct stop $LXC_ID" 2>/dev/null || true
+}
+
+transcribe_file() {
+    local filepath="$1"
+    local dir base stem md_file tmp_file response
+
+    dir="$(dirname  "$filepath")"
+    base="$(basename "$filepath")"
+    stem="${base%.*}"
+    md_file="$dir/$stem.md"
+
+    [[ -f "$md_file" ]] && { log "skip: $base (transcript exists)"; return 0; }
+
+    if (( PENDING == 0 )); then
+        lxc_start
+    fi
+    (( PENDING++ )) || true
+
+    log "transcribing: $base"
+
+    tmp_file="$(mktemp "$dir/.${stem}.XXXXXX.md")"
+
+    local raw_response
+    raw_response=$(curl -sf -X POST "$WHISPER_URL" \
+        -H "Authorization: Bearer dummy" \
+        -F "file=@$filepath" \
+        -F "model=$WHISPER_MODEL" \
+        -F "response_format=verbose_json" \
+        --max-time "$WHISPER_TIMEOUT") || {
+        log "ERROR: curl failed (exit $?) for $base"
+        rm -f "$tmp_file"
+        (( PENDING-- )) || true
+        return 1
+    }
+
+    if [[ -z "$raw_response" ]]; then
+        log "ERROR: empty response for $base"
+        rm -f "$tmp_file"
+        (( PENDING-- )) || true
+        return 1
+    fi
+
+    # Insert paragraph breaks where silence gap between segments exceeds PARAGRAPH_GAP seconds.
+    # Handles long pauses (board writing, topic changes, breaks) without hallucinating filler.
+    local response
+    response=$(echo "$raw_response" | jq -r --argjson gap "$PARAGRAPH_GAP" '
+      .segments as $s |
+      reduce range($s | length) as $i ("";
+        if $i == 0 then . + ($s[$i].text | ltrimstr(" "))
+        elif ($s[$i].start - $s[$i-1].end) > $gap then
+          . + "\n\n" + ($s[$i].text | ltrimstr(" "))
+        else . + $s[$i].text
+        end
+      )
+    ')
+
+    if [[ -z "$response" ]]; then
+        log "ERROR: could not parse segments for $base"
+        rm -f "$tmp_file"
+        (( PENDING-- )) || true
+        return 1
+    fi
+
+    { echo "# $stem"; echo; echo "$response"; } > "$tmp_file"
+    mv "$tmp_file" "$md_file"
+    log "done: $stem.md"
+    (( PENDING-- )) || true
+}
+
+drain_and_sleep() {
+    # Called after inotify processes a batch with no more files queued
+    (( PENDING == 0 )) && lxc_stop
+}
+
+scan_existing() {
+    log "scanning $WATCH_DIR for unprocessed audio"
+    while IFS= read -r -d '' f; do
+        is_audio "$(basename "$f")" && transcribe_file "$f"
+    done < <(find "$WATCH_DIR" -type f -print0 | sort -z)
+    drain_and_sleep
+    log "startup scan complete"
+}
+
+log "starting — watching $WATCH_DIR"
+scan_existing
+
+inotifywait -m -r -e close_write -e moved_to --format '%w%f' "$WATCH_DIR" \
+    | while IFS= read -r filepath; do
+        if is_audio "$(basename "$filepath")"; then
+            transcribe_file "$filepath"
+            drain_and_sleep
+        fi
+      done

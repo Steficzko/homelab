@@ -1,0 +1,16 @@
+[Unit]
+Description=Dictaphone transcription watcher
+After=network-online.target mnt-dictaphones.mount
+Requires=mnt-dictaphones.mount
+
+[Service]
+Type=simple
+EnvironmentFile=-/etc/transcribe-watch.env
+ExecStart=/usr/local/bin/transcribe-watch.sh
+Restart=on-failure
+RestartSec=30
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target
