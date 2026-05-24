@@ -5,8 +5,9 @@ metadata:
   namespace: paperless
 spec:
   accessModes:
-    - ReadWriteOnce
-  storageClassName: longhorn
+    - ReadWriteMany
+  storageClassName: ""
+  volumeName: paperless-media-nfs
   resources:
     requests:
-      storage: 50Gi
+      storage: 100Ti

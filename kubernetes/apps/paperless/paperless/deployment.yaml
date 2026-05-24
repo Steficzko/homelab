@@ -40,6 +40,10 @@ spec:
               value: Europe/Athens
             - name: PAPERLESS_OCR_LANGUAGE
               value: eng
+            - name: PAPERLESS_CONSUMER_RECURSIVE
+              value: "true"
+            - name: PAPERLESS_CONSUMER_IGNORE_PATTERNS
+              value: '["[\\.].*",".*[\\.]gpg$","*.epub","*.mobi","*.azw","*.azw3","*.mp3","*.m4b","*.m4a","*.flac","*.ogg","*.aac","*.wav","*.mkv","*.mp4","*.avi"]'
           resources:
             requests:
               memory: 512Mi

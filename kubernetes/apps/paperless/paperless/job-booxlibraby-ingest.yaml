@@ -1,0 +1,48 @@
+# TEMPORARY — one-shot ingest from BooXLibraby NFS into paperless consume folder
+# Copies only supported document types; ignores ebooks and audio files
+# After job completes:
+#   1. Verify all docs are in paperless UI
+#   2. Delete this file + pv-booxlibraby.yaml + pvc-booxlibraby.yaml and commit
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: booxlibraby-ingest
+  namespace: paperless
+spec:
+  ttlSecondsAfterFinished: 600
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: copy
+          image: alpine:3
+          command:
+            - sh
+            - -c
+            - |
+              echo "Starting BooXLibraby ingest..."
+              COUNT=0
+              find /source -type f \( \
+                -iname "*.pdf" -o \
+                -iname "*.tiff" -o \
+                -iname "*.tif" -o \
+                -iname "*.png" -o \
+                -iname "*.jpg" -o \
+                -iname "*.jpeg" \
+              \) | while read f; do
+                cp "$f" /consume/ && COUNT=$((COUNT+1)) && echo "Copied: $f"
+              done
+              echo "Done. Check paperless UI — documents are being processed in the background."
+          volumeMounts:
+            - name: source
+              mountPath: /source
+              readOnly: true
+            - name: consume
+              mountPath: /consume
+      volumes:
+        - name: source
+          persistentVolumeClaim:
+            claimName: paperless-booxlibraby-pvc
+        - name: consume
+          persistentVolumeClaim:
+            claimName: paperless-consume-pvc

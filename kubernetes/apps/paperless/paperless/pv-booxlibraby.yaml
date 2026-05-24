@@ -1,0 +1,20 @@
+# TEMPORARY — used by job-booxlibraby-ingest.yaml only
+# Delete this file (and pvc-booxlibraby.yaml) after the ingest job completes
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: paperless-booxlibraby-nfs
+spec:
+  capacity:
+    storage: 100Ti
+  accessModes:
+    - ReadOnlyMany
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: ""
+  nfs:
+    server: 192.168.1.100
+    path: /mnt/user/BooXLibraby
+  mountOptions:
+    - hard
+    - nfsvers=4.1
+    - ro
