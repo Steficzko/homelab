@@ -1,0 +1,78 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: paperless
+  namespace: paperless
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: paperless
+  template:
+    metadata:
+      labels:
+        app: paperless
+    spec:
+      containers:
+        - name: paperless
+          image: ghcr.io/paperless-ngx/paperless-ngx:2
+          envFrom:
+            - secretRef:
+                name: paperless-secret
+          env:
+            - name: PAPERLESS_DBHOST
+              value: postgres
+            - name: PAPERLESS_DBNAME
+              value: paperless
+            - name: PAPERLESS_DBUSER
+              value: paperless
+            - name: PAPERLESS_TIKA_ENABLED
+              value: "1"
+            - name: PAPERLESS_TIKA_ENDPOINT
+              value: http://tika:9998
+            - name: PAPERLESS_TIKA_GOTENBERG_ENDPOINT
+              value: http://gotenberg:3000
+            - name: PAPERLESS_URL
+              value: https://paperless.kostikidis.net
+            - name: PAPERLESS_TIME_ZONE
+              value: Europe/Athens
+            - name: PAPERLESS_OCR_LANGUAGE
+              value: eng+ell
+          resources:
+            requests:
+              memory: 512Mi
+              cpu: "200m"
+            limits:
+              memory: 2Gi
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 8000
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 8000
+            initialDelaySeconds: 60
+            periodSeconds: 20
+            failureThreshold: 5
+          volumeMounts:
+            - name: data
+              mountPath: /usr/src/paperless/data
+            - name: media
+              mountPath: /usr/src/paperless/media
+            - name: consume
+              mountPath: /usr/src/paperless/consume
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: paperless-data-pvc
+        - name: media
+          persistentVolumeClaim:
+            claimName: paperless-media-pvc
+        - name: consume
+          persistentVolumeClaim:
+            claimName: paperless-consume-pvc
