@@ -36,6 +36,8 @@ spec:
               value: https://auto.kostikidis.net/
             - name: GENERIC_TIMEZONE
               value: Europe/Prague
+            - name: N8N_TRUST_PROXY
+              value: "true"
           resources:
             requests:
               memory: 256Mi
