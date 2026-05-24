@@ -39,7 +39,7 @@ spec:
             - name: PAPERLESS_TIME_ZONE
               value: Europe/Athens
             - name: PAPERLESS_OCR_LANGUAGE
-              value: eng+ell
+              value: eng
           resources:
             requests:
               memory: 512Mi
