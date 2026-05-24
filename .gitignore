@@ -12,10 +12,12 @@ kubeconfig
 *credentials*
 age.key
 
-# Allow example/template files and SOPS-encrypted files (safe to commit)
+# Allow example/template files, SOPS-encrypted files, and ArgoCD placeholders (safe to commit)
 !*.example.yaml
 !*.example.env
 !*.sops.yaml
+!*secret-placeholder*
+!*sops-prune*
 
 # System
 .DS_Store
