@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: tika
-          image: ghcr.io/paperless-ngx/tika:2.20.15
+          image: ghcr.io/paperless-ngx/tika:latest
           resources:
             requests:
               memory: 256Mi
