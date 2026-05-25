@@ -63,6 +63,8 @@ spec:
               value: Europe/Prague
             - name: PAPERLESS_OCR_LANGUAGE
               value: eng+swe
+            - name: PAPERLESS_OCR_OUTPUT_TYPE
+              value: pdf
             - name: PAPERLESS_CONSUMER_RECURSIVE
               value: "true"
             - name: PAPERLESS_CONSUMER_IGNORE_PATTERNS
