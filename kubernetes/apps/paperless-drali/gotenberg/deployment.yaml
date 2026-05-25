@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gotenberg
+  namespace: paperless-drali
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: gotenberg
+  template:
+    metadata:
+      labels:
+        app: gotenberg
+    spec:
+      containers:
+        - name: gotenberg
+          image: gotenberg/gotenberg:8
+          args:
+            - gotenberg
+            - --chromium-disable-javascript=true
+            - --chromium-allow-list=file:///tmp/.*
+          resources:
+            requests:
+              memory: 256Mi
+              cpu: "100m"
+            limits:
+              memory: 1Gi
