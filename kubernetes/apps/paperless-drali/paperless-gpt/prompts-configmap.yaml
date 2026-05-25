@@ -10,3 +10,17 @@ data:
     Respond with exactly one word: Unknown
   created_date_prompt.tmpl: |
     Return exactly this date and nothing else: 2026-01-01
+  tag_prompt.tmpl: |
+    You are tagging a Swedish dental study document for the KI Kunskapsprovet exam.
+
+    Read the document content below and return 3 to 6 specific clinical tags in Swedish.
+    Tags must be precise dental/medical terms — NOT broad categories.
+    Good examples: rotfyllning, parodontal kirurgi, antibiotikaprofylax, OSCE-station, bettskena, sedering, käkledssmärta
+    Bad examples: Tandvård, Odontologi, Medicin, Behandling
+
+    Return ONLY the tags, one per line, nothing else. No explanations. No numbering.
+
+    Document title: {{.Title}}
+
+    Document content:
+    {{.Content}}
