@@ -43,6 +43,13 @@ spec:
               value: paperless-gpt-auto
             - name: LLM_LANGUAGE
               value: English
+          volumeMounts:
+            - name: prompts
+              mountPath: /app/prompts/correspondent_prompt.tmpl
+              subPath: correspondent_prompt.tmpl
+            - name: prompts
+              mountPath: /app/prompts/created_date_prompt.tmpl
+              subPath: created_date_prompt.tmpl
           resources:
             requests:
               memory: 128Mi
@@ -51,3 +58,7 @@ spec:
               memory: 256Mi
           ports:
             - containerPort: 8080
+      volumes:
+        - name: prompts
+          configMap:
+            name: paperless-gpt-prompts
