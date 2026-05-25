@@ -18,7 +18,7 @@ spec:
           image: ghcr.io/icereed/paperless-gpt:latest
           env:
             - name: PAPERLESS_BASE_URL
-              value: http://paperless-web:8000
+              value: http://paperless-headless:8000
             - name: PAPERLESS_API_TOKEN
               valueFrom:
                 secretKeyRef:
