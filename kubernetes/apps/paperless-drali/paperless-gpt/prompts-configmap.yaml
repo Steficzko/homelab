@@ -4,6 +4,8 @@ metadata:
   name: paperless-gpt-prompts
   namespace: paperless-drali
 data:
+  title_prompt.tmpl: |
+    Return only the filename as the title. Do not summarize. Do not explain. Just return: {{.Title}}
   correspondent_prompt.tmpl: |
     Respond with exactly one word: Unknown
   created_date_prompt.tmpl: |
