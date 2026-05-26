@@ -45,6 +45,9 @@ spec:
               value: Swedish
           volumeMounts:
             - name: prompts
+              mountPath: /app/prompts/title_prompt.tmpl
+              subPath: title_prompt.tmpl
+            - name: prompts
               mountPath: /app/prompts/correspondent_prompt.tmpl
               subPath: correspondent_prompt.tmpl
             - name: prompts

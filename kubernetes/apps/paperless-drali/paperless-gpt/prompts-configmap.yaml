@@ -8,31 +8,31 @@ data:
     Return exactly this date and nothing else: 2026-01-01
 
   title_prompt.tmpl: |
-    Generate a short Swedish title for this dental study document.
-    Rules:
-    - Maximum 7 words
-    - Specific clinical topic — not a summary sentence
-    - Return ONLY the title, nothing else
-    - No punctuation at the end
-    - Do not start with Okay, Here, This, Document, Sure, Certainly or similar
-    - If it is an OSCE exam, include the session date if visible in the content
-
     <original_title>{{.Title}}</original_title>
     <content>
     {{.Content}}
     </content>
 
+    Write a short Swedish title for the dental document above.
+    Rules: maximum 7 words, specific clinical topic, no punctuation at end.
+    Do NOT write explanations, summaries, or bullet points.
+    If it is an OSCE exam include the session date if visible.
+
+    Title:
+
   correspondent_prompt.tmpl: |
-    Identify the source of this Swedish dental document.
-    Return ONLY one of these exact options — nothing else:
+    <document_title>{{.Title}}</document_title>
+    <document_content>{{.Content}}</document_content>
+
+    Based on the document above, identify the source institution.
+    Respond with EXACTLY ONE of these values and nothing else:
     KI
     Gothia
     KUT
     Malmö
     Unknown
 
-    <title>{{.Title}}</title>
-    <content>{{.Content}}</content>
+    Source:
 
   tag_prompt.tmpl: |
     You are tagging a Swedish dental study document for the KI Kunskapsprovet exam.
