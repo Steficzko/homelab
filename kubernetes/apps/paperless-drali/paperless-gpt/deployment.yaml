@@ -53,6 +53,9 @@ spec:
             - name: prompts
               mountPath: /app/prompts/tag_prompt.tmpl
               subPath: tag_prompt.tmpl
+            - name: prompts
+              mountPath: /app/prompts/custom_field_prompt.tmpl
+              subPath: custom_field_prompt.tmpl
           resources:
             requests:
               memory: 128Mi

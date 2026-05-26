@@ -4,12 +4,36 @@ metadata:
   name: paperless-gpt-prompts
   namespace: paperless-drali
 data:
-  title_prompt.tmpl: |
-    Return only the filename as the title. Do not summarize. Do not explain. Just return: {{.Title}}
-  correspondent_prompt.tmpl: |
-    Respond with exactly one word: Unknown
   created_date_prompt.tmpl: |
     Return exactly this date and nothing else: 2026-01-01
+
+  title_prompt.tmpl: |
+    Generate a short Swedish title for this dental study document.
+    Rules:
+    - Maximum 7 words
+    - Specific clinical topic — not a summary sentence
+    - Return ONLY the title, nothing else
+    - No punctuation at the end
+    - Do not start with Okay, Here, This, Document, Sure, Certainly or similar
+    - If it is an OSCE exam, include the session date if visible in the content
+
+    <original_title>{{.Title}}</original_title>
+    <content>
+    {{.Content}}
+    </content>
+
+  correspondent_prompt.tmpl: |
+    Identify the source of this Swedish dental document.
+    Return ONLY one of these exact options — nothing else:
+    KI
+    Gothia
+    KUT
+    Malmö
+    Unknown
+
+    <title>{{.Title}}</title>
+    <content>{{.Content}}</content>
+
   tag_prompt.tmpl: |
     You are tagging a Swedish dental study document for the KI Kunskapsprovet exam.
 
@@ -24,3 +48,16 @@ data:
 
     Document content:
     {{.Content}}
+
+  custom_field_prompt.tmpl: |
+    Write a 2-sentence Swedish clinical summary of this dental document.
+    Be factual and specific. Maximum 35 words total. No headers. No bullet points.
+    Return ONLY valid JSON — no markdown, no code blocks, no explanation.
+
+    {{.CustomFieldsXML}}
+
+    Document: {{.Title}}
+    Content: {{.Content}}
+
+    Return exactly this format:
+    [{"field": "Ämnessammanfattning", "value": "SUMMARY HERE"}]
