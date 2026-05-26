@@ -45,7 +45,7 @@ spec:
               memory: 500Mi
               cpu: "250m"
             limits:
-              memory: 1Gi
+              memory: 2Gi
           volumeMounts:
             - name: data
               mountPath: /app/backend/data
