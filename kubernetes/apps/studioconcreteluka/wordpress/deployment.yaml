@@ -30,6 +30,8 @@ spec:
                 secretKeyRef:
                   name: wordpress-secret
                   key: WORDPRESS_DB_PASSWORD
+            - name: WORDPRESS_TABLE_PREFIX
+              value: wp_86gues_
             - name: WORDPRESS_CONFIG_EXTRA
               value: |
                 if ( isset( $_SERVER['HTTP_X_FORWARDED_PROTO'] ) && 'https' === $_SERVER['HTTP_X_FORWARDED_PROTO'] ) {
