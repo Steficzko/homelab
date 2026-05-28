@@ -9,4 +9,4 @@ spec:
     - ReadWriteOnce
   resources:
     requests:
-      storage: 20Gi  # gemma2:9b is ~5.5Gi, room for more models later
+      storage: 12Gi  # gemma4:latest is 9.6Gi, 2Gi headroom
