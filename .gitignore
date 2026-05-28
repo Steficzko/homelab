@@ -33,6 +33,16 @@ homelab-clone
 
 todos.md
 
+# Personal notes, content factory, and one-off files — not ArgoCD
+drafts/
+seeds/
+CloudflareScreens/
+ali_dental.md
+STUDIOTODO.md
+Instructions_Transcribe.md
+*.tar.gz
+*.sql
+
 # Claude — keep memory and local settings private, expose agents only
 .claude/*
 !.claude/agents/
