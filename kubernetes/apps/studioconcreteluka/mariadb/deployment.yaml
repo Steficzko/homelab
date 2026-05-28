@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mariadb
+  namespace: studioconcreteluka
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: mariadb
+  template:
+    metadata:
+      labels:
+        app: mariadb
+    spec:
+      containers:
+        - name: mariadb
+          image: mariadb:10.11
+          envFrom:
+            - secretRef:
+                name: mariadb-secret
+          resources:
+            requests:
+              memory: 256Mi
+              cpu: "100m"
+            limits:
+              memory: 512Mi
+          volumeMounts:
+            - name: data
+              mountPath: /var/lib/mysql
+              subPath: mysql
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: mariadb-pvc

@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: wordpress
+  namespace: studioconcreteluka
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: wordpress
+  template:
+    metadata:
+      labels:
+        app: wordpress
+    spec:
+      containers:
+        - name: wordpress
+          image: wordpress:6.8-apache
+          env:
+            - name: WORDPRESS_DB_HOST
+              value: mariadb.studioconcreteluka.svc.cluster.local:3306
+            - name: WORDPRESS_DB_NAME
+              value: wordpress
+            - name: WORDPRESS_DB_USER
+              value: wordpress
+            - name: WORDPRESS_DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: wordpress-secret
+                  key: WORDPRESS_DB_PASSWORD
+            - name: WORDPRESS_CONFIG_EXTRA
+              value: |
+                if ( isset( $_SERVER['HTTP_X_FORWARDED_PROTO'] ) && 'https' === $_SERVER['HTTP_X_FORWARDED_PROTO'] ) {
+                    $_SERVER['HTTPS'] = 'on';
+                }
+                define( 'FORCE_SSL_ADMIN', true );
+          resources:
+            requests:
+              memory: 256Mi
+              cpu: "100m"
+            limits:
+              memory: 512Mi
+          volumeMounts:
+            - name: data
+              mountPath: /var/www/html/wp-content
+              subPath: wp-content
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: wordpress-pvc
