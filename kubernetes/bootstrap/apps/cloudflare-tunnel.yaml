@@ -11,7 +11,7 @@ spec:
     path: kubernetes/networking/cloudflared
     directory:
       recurse: true
-      exclude: '*.sops.yaml'
+      exclude: '{*.sops.yaml,*.example.yaml}'
   destination:
     server: https://kubernetes.default.svc
     namespace: cloudflare-tunnel
