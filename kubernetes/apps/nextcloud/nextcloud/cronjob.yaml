@@ -16,6 +16,13 @@ spec:
             app: nextcloud-cron
         spec:
           restartPolicy: OnFailure
+          affinity:
+            podAffinity:
+              requiredDuringSchedulingIgnoredDuringExecution:
+                - labelSelector:
+                    matchLabels:
+                      app: nextcloud
+                  topologyKey: kubernetes.io/hostname
           initContainers:
             - name: fix-permissions
               image: busybox
