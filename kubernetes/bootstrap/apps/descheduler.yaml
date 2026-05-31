@@ -23,7 +23,6 @@ spec:
                     evictLocalStoragePods: false
                     evictDaemonSetPods: false
                     nodeFit: true
-                    ignorePdbViolations: true
                 - name: LowNodeUtilization
                   args:
                     thresholds:
