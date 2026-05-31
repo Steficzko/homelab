@@ -4,7 +4,7 @@ metadata:
   name: nextcloud
   namespace: nextcloud
 spec:
-  replicas: 0
+  replicas: 1
   revisionHistoryLimit: 2
   strategy:
     type: Recreate

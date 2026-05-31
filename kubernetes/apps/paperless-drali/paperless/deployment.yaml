@@ -4,7 +4,7 @@ metadata:
   name: paperless
   namespace: paperless-drali
 spec:
-  replicas: 0
+  replicas: 1
   strategy:
     type: Recreate
   selector:
