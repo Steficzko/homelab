@@ -13,6 +13,13 @@ spec:
       labels:
         app: cloudflared-studioconcreteluka
     spec:
+      topologySpreadConstraints:
+        - maxSkew: 1
+          topologyKey: kubernetes.io/hostname
+          whenUnsatisfiable: DoNotSchedule
+          labelSelector:
+            matchLabels:
+              app: cloudflared-studioconcreteluka
       containers:
         - name: cloudflared
           image: cloudflare/cloudflared:latest
@@ -28,3 +35,10 @@ spec:
                 secretKeyRef:
                   name: cloudflare-tunnel-token
                   key: token
+          resources:
+            requests:
+              memory: 64Mi
+              cpu: 10m
+            limits:
+              memory: 128Mi
+              cpu: 100m
