@@ -30,7 +30,7 @@ prometheus:
           storageClassName: longhorn
           resources:
             requests:
-              storage: 10Gi
+              storage: 20Gi
     topologySpreadConstraints:
       - maxSkew: 1
         topologyKey: kubernetes.io/hostname
