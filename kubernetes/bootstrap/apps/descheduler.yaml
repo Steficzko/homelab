@@ -26,12 +26,12 @@ spec:
                 - name: LowNodeUtilization
                   args:
                     thresholds:
-                      cpu: 20
-                      memory: 35
+                      cpu: 60
+                      memory: 60
                       pods: 22
                     targetThresholds:
-                      cpu: 50
-                      memory: 50
+                      cpu: 85
+                      memory: 75
                       pods: 32
                 - name: RemoveDuplicates
                   args: {}
