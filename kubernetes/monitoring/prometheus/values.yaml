@@ -12,6 +12,13 @@ grafana:
     enabled: true
     storageClassName: longhorn
     size: 5Gi
+  topologySpreadConstraints:
+    - maxSkew: 1
+      topologyKey: kubernetes.io/hostname
+      whenUnsatisfiable: ScheduleAnyway
+      labelSelector:
+        matchLabels:
+          app.kubernetes.io/name: grafana
 
 prometheus:
   prometheusSpec:
@@ -24,3 +31,20 @@ prometheus:
           resources:
             requests:
               storage: 10Gi
+    topologySpreadConstraints:
+      - maxSkew: 1
+        topologyKey: kubernetes.io/hostname
+        whenUnsatisfiable: ScheduleAnyway
+        labelSelector:
+          matchLabels:
+            app.kubernetes.io/name: prometheus
+
+alertmanager:
+  alertmanagerSpec:
+    topologySpreadConstraints:
+      - maxSkew: 1
+        topologyKey: kubernetes.io/hostname
+        whenUnsatisfiable: ScheduleAnyway
+        labelSelector:
+          matchLabels:
+            app.kubernetes.io/name: alertmanager

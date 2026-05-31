@@ -27,10 +27,12 @@ spec:
                   args:
                     thresholds:
                       cpu: 20
-                      memory: 30
+                      memory: 35
+                      pods: 22
                     targetThresholds:
                       cpu: 50
                       memory: 50
+                      pods: 32
                 - name: RemoveDuplicates
                   args: {}
               plugins:
