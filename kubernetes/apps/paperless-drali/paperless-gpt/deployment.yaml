@@ -22,7 +22,7 @@ spec:
               topologyKey: kubernetes.io/hostname
       containers:
         - name: paperless-gpt
-          image: ghcr.io/icereed/paperless-gpt:latest
+          image: ghcr.io/icereed/paperless-gpt@sha256:c0ce6186028911101a2cfe68353f14a9dbb2653596f3f1cff94de4b6db3114ff
           env:
             - name: PAPERLESS_BASE_URL
               value: http://paperless-headless:8000

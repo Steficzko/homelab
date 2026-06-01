@@ -22,7 +22,7 @@ spec:
               app: cloudflared-studioconcreteluka
       containers:
         - name: cloudflared
-          image: cloudflare/cloudflared:latest
+          image: cloudflare/cloudflared:2026.5.2
           args:
             - tunnel
             - --no-autoupdate
