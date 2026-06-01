@@ -10,6 +10,7 @@
 grafana:
   deploymentStrategy:
     type: Recreate
+  adminPassword: 
   persistence:
     enabled: true
     storageClassName: longhorn
