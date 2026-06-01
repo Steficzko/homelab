@@ -1,0 +1,35 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: cloudflared
+  namespace: studioconcreteluka
+spec:
+  podSelector:
+    matchLabels:
+      app: cloudflared-studioconcreteluka
+  policyTypes:
+    - Ingress
+    - Egress
+  egress:
+    - ports:
+        - port: 80
+      to:
+        - podSelector:
+            matchLabels:
+              app: wordpress
+    - ports:
+        - port: 443
+        - port: 7844
+          protocol: UDP
+      to:
+        - ipBlock:
+            cidr: 0.0.0.0/0
+    - ports:
+        - port: 53
+          protocol: UDP
+        - port: 53
+          protocol: TCP
+      to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: kube-system
