@@ -8,7 +8,7 @@ configuration:
   backupStorageLocation:
     - name: default
       provider: aws
-      bucket: velero
+      bucket: velerok3s
       default: true
       config:
         region: minio
