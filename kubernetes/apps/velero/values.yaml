@@ -1,0 +1,38 @@
+credentials:
+  useSecret: true
+  existingSecret: velero-credentials
+
+configuration:
+  backupStorageLocation:
+    - name: default
+      provider: aws
+      bucket: velero
+      default: true
+      config:
+        region: minio
+        s3ForcePathStyle: "true"
+        s3Url: http://192.168.1.100:9100
+        publicUrl: http://192.168.1.100:9100
+
+  uploaderType: kopia
+  defaultVolumesToFsBackup: true
+
+initContainers:
+  - name: velero-plugin-for-aws
+    image: velero/velero-plugin-for-aws:v1.10.0
+    imagePullPolicy: IfNotPresent
+    volumeMounts:
+      - mountPath: /target
+        name: plugins
+
+schedules:
+  daily:
+    disabled: false
+    schedule: "0 2 * * *"
+    useOwnerReferencesInBackup: false
+    template:
+      ttl: 168h
+      storageLocation: default
+      includedNamespaces:
+        - "*"
+      defaultVolumesToFsBackup: true
