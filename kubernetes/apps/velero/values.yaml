@@ -1,3 +1,8 @@
+kubectl:
+  image:
+    repository: bitnami/kubectl
+    tag: "1.33"
+
 credentials:
   useSecret: true
   existingSecret: velero-credentials
