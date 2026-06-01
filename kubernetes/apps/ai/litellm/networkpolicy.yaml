@@ -1,0 +1,56 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: litellm
+  namespace: ai
+spec:
+  podSelector:
+    matchLabels:
+      app: litellm
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              app: open-webui
+      ports:
+        - port: 4000
+  egress:
+    - ports:
+        - port: 11434
+      to:
+        - podSelector:
+            matchLabels:
+              app: ollama
+    - ports:
+        - port: 8000
+      to:
+        - podSelector:
+            matchLabels:
+              app: whisper
+    # ML machine LXCs (GPU/CPU inference)
+    - ports:
+        - port: 11434
+        - port: 8000
+      to:
+        - ipBlock:
+            cidr: 192.168.1.224/32
+        - ipBlock:
+            cidr: 192.168.1.225/32
+    - ports:
+        - port: 443
+        - port: 80
+      to:
+        - ipBlock:
+            cidr: 0.0.0.0/0
+    - ports:
+        - port: 53
+          protocol: UDP
+        - port: 53
+          protocol: TCP
+      to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: kube-system

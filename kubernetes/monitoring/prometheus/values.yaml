@@ -10,7 +10,10 @@
 grafana:
   deploymentStrategy:
     type: Recreate
-  adminPassword: 
+  admin:
+    existingSecret: kube-prometheus-stack-grafana
+    userKey: admin-user
+    passwordKey: admin-password
   persistence:
     enabled: true
     storageClassName: longhorn
