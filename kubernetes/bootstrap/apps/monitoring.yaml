@@ -10,6 +10,7 @@ spec:
       chart: kube-prometheus-stack
       targetRevision: 85.0.3
       helm:
+        releaseName: kube-prometheus-stack
         valueFiles:
           - $values/kubernetes/monitoring/prometheus/values.yaml
     - repoURL: https://github.com/Steficzko/homelab.git
