@@ -1,7 +1,4 @@
-kubectl:
-  image:
-    repository: bitnami/kubectl
-    tag: "1.33"
+upgradeCRDs: false
 
 credentials:
   useSecret: true
