@@ -51,6 +51,10 @@ spec:
               value: "true"
             - name: PAPERLESS_CONSUMER_IGNORE_PATTERNS
               value: '["[\\.].*",".*[\\.]gpg$","*.epub","*.mobi","*.azw","*.azw3","*.mp3","*.m4b","*.m4a","*.flac","*.ogg","*.aac","*.wav","*.mkv","*.mp4","*.avi"]'
+            - name: PAPERLESS_TASK_WORKERS
+              value: "4"
+            - name: PAPERLESS_THREADS_PER_WORKER
+              value: "1"
           resources:
             requests:
               memory: 512Mi
