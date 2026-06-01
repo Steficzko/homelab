@@ -8,6 +8,8 @@
 # Default Grafana credentials: admin / prom-operator (change after first login)
 
 grafana:
+  deploymentStrategy:
+    type: Recreate
   persistence:
     enabled: true
     storageClassName: longhorn
