@@ -11,6 +11,7 @@ spec:
       targetRevision: 7.2.1
       helm:
         releaseName: velero
+        skipHooks: true
         valueFiles:
           - $values/kubernetes/apps/velero/values.yaml
     - repoURL: https://github.com/Steficzko/homelab.git
