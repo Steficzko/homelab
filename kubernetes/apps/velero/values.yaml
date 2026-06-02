@@ -1,4 +1,5 @@
 upgradeCRDs: false
+snapshotsEnabled: false
 
 credentials:
   useSecret: true
