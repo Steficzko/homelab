@@ -3,6 +3,8 @@ kind: PersistentVolumeClaim
 metadata:
   name: open-webui-pvc
   namespace: ai
+  labels:
+    recurring-job.longhorn.io/daily-backup: "enabled"
 spec:
   accessModes:
     - ReadWriteOnce

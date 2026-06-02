@@ -3,6 +3,8 @@ kind: PersistentVolumeClaim
 metadata:
   name: paperless-media-pvc
   namespace: paperless-drali
+  labels:
+    recurring-job.longhorn.io/daily-backup: "enabled"
 spec:
   accessModes:
     - ReadWriteOnce
