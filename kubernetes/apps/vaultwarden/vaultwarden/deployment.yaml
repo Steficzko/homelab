@@ -35,6 +35,18 @@ spec:
               value: "warn"
             - name: DATA_FOLDER
               value: /data
+            - name: SMTP_HOST
+              value: smtp.gmail.com
+            - name: SMTP_PORT
+              value: "587"
+            - name: SMTP_SECURITY
+              value: starttls
+            - name: SMTP_FROM
+              value: kostikidis@gmail.com
+            - name: SMTP_FROM_NAME
+              value: Vaultwarden
+            - name: SMTP_USERNAME
+              value: kostikidis@gmail.com
           envFrom:
             - secretRef:
                 name: vaultwarden-secret
