@@ -6,6 +6,7 @@ credentials:
   existingSecret: velero-credentials
 
 configuration:
+  volumeSnapshotLocation: []
   backupStorageLocation:
     - name: default
       provider: aws
