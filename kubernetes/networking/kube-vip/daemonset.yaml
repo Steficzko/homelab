@@ -6,11 +6,11 @@ metadata:
 spec:
   selector:
     matchLabels:
-      app.kubernetes.io/name: kube-vip-ds
+      name: kube-vip-ds
   template:
     metadata:
       labels:
-        app.kubernetes.io/name: kube-vip-ds
+        name: kube-vip-ds
     spec:
       hostNetwork: true   # must use host network to send ARP on the LAN
       serviceAccountName: kube-vip
