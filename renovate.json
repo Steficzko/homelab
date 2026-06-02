@@ -1,0 +1,31 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:recommended",
+    ":dependencyDashboard",
+    ":semanticCommits"
+  ],
+  "timezone": "Europe/Prague",
+  "schedule": ["every weekend"],
+  "labels": ["renovate"],
+  "argocd": {
+    "fileMatch": ["kubernetes/bootstrap/apps/.+\\.yaml$"]
+  },
+  "helm-values": {
+    "fileMatch": ["kubernetes/.+/values\\.yaml$", "kubernetes/bootstrap/apps/.+\\.yaml$"]
+  },
+  "kubernetes": {
+    "fileMatch": ["kubernetes/.+\\.yaml$"]
+  },
+  "packageRules": [
+    {
+      "matchManagers": ["kubernetes", "helm-values"],
+      "matchUpdateTypes": ["major"],
+      "enabled": false
+    },
+    {
+      "matchPackageNames": ["cloudflare/cloudflared"],
+      "automerge": false
+    }
+  ]
+}
