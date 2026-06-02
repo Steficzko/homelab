@@ -35,3 +35,10 @@ spec:
                 secretKeyRef:
                   name: cloudflare-tunnel-token   # See secret.example.yaml
                   key: token
+          resources:
+            requests:
+              memory: 64Mi
+              cpu: 10m
+            limits:
+              memory: 128Mi
+              cpu: 200m
