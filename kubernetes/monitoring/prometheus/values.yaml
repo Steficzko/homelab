@@ -10,6 +10,12 @@
 grafana:
   deploymentStrategy:
     type: Recreate
+  additionalDataSources:
+    - name: Loki
+      type: loki
+      url: http://loki.monitoring.svc.cluster.local:3100
+      access: proxy
+      isDefault: false
   admin:
     existingSecret: kube-prometheus-stack-grafana
     userKey: admin-user
