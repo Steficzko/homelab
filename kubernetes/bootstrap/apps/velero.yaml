@@ -20,6 +20,13 @@ spec:
   destination:
     server: https://kubernetes.default.svc
     namespace: velero
+  ignoreDifferences:
+    - group: velero.io
+      kind: VolumeSnapshotLocation
+      name: default
+      namespace: velero
+      jsonPointers:
+        - /spec
   syncPolicy:
     automated:
       prune: true
