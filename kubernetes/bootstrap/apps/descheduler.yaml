@@ -11,7 +11,7 @@ spec:
     targetRevision: 0.32.0
     helm:
       values: |
-        schedule: "*/10 * * * *"
+        schedule: "0 */6 * * *"
         deschedulerPolicy:
           profiles:
             - name: default
