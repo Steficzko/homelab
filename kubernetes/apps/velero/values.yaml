@@ -6,7 +6,11 @@ credentials:
   existingSecret: velero-credentials
 
 configuration:
-  volumeSnapshotLocation: []
+  volumeSnapshotLocation:
+    - name: default
+      provider: aws
+      config:
+        region: minio
   backupStorageLocation:
     - name: default
       provider: aws
