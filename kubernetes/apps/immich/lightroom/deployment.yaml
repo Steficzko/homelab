@@ -51,6 +51,13 @@ spec:
               cpu: 250m
             limits:
               memory: 4Gi
+          startupProbe:
+            httpGet:
+              path: /api/server/ping
+              port: 2283
+            initialDelaySeconds: 30
+            periodSeconds: 30
+            failureThreshold: 60
           readinessProbe:
             httpGet:
               path: /api/server/ping
