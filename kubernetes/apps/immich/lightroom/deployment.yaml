@@ -4,7 +4,7 @@ metadata:
   name: immich-lightroom
   namespace: immich
 spec:
-  replicas: 0
+  replicas: 1
   strategy:
     type: Recreate
   selector:
