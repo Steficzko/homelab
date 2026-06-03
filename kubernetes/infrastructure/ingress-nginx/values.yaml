@@ -1,2 +1,9 @@
-# No custom values — chart defaults are sufficient
-{}
+controller:
+  service:
+    # Restrict NodePorts to Tailscale and cluster-internal traffic only.
+    # Blocks arbitrary LAN devices from bypassing the Cloudflare tunnel.
+    # Cloudflare tunnel connects via ClusterIP internally — unaffected.
+    loadBalancerSourceRanges:
+      - 100.64.0.0/10   # Tailscale
+      - 10.42.0.0/16    # cluster pod CIDR
+      - 10.43.0.0/16    # cluster service CIDR
