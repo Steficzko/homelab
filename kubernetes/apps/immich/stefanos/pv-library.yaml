@@ -6,7 +6,7 @@ spec:
   capacity:
     storage: 500Gi
   accessModes:
-    - ReadOnlyMany
+    - ReadWriteMany
   persistentVolumeReclaimPolicy: Retain
   storageClassName: ""
   nfs:

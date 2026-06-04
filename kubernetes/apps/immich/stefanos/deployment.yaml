@@ -77,7 +77,6 @@ spec:
               mountPath: /usr/src/app/upload
             - name: library
               mountPath: /usr/src/app/upload/library
-              readOnly: true
       volumes:
         - name: media
           persistentVolumeClaim:
