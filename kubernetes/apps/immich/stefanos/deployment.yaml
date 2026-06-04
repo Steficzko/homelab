@@ -75,7 +75,13 @@ spec:
           volumeMounts:
             - name: media
               mountPath: /usr/src/app/upload
+            - name: library
+              mountPath: /usr/src/app/upload/library
+              readOnly: true
       volumes:
         - name: media
           persistentVolumeClaim:
             claimName: stefanos-media-pvc
+        - name: library
+          persistentVolumeClaim:
+            claimName: stefanos-library-pvc
