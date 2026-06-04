@@ -59,3 +59,10 @@ bloomCompactor:
   replicas: 0
 bloomGateway:
   replicas: 0
+
+# Caches are only useful in distributed/microservices mode — disable in SingleBinary
+chunksCache:
+  enabled: false
+
+resultsCache:
+  enabled: false
