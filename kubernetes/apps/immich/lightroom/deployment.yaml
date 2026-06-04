@@ -50,7 +50,7 @@ spec:
               memory: 512Mi
               cpu: 250m
             limits:
-              memory: 8Gi
+              memory: 12Gi
           startupProbe:
             httpGet:
               path: /api/server/ping
