@@ -13,10 +13,10 @@ spec:
   ingressClassName: nginx
   tls:
     - hosts:
-        - photos.kostikidis.net
+        - stefanosmobiles.kostikidis.net
       secretName: immich-stefanos-tls
   rules:
-    - host: photos.kostikidis.net
+    - host: stefanosmobiles.kostikidis.net
       http:
         paths:
           - path: /

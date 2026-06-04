@@ -13,10 +13,10 @@ spec:
   ingressClassName: nginx
   tls:
     - hosts:
-        - marianna.kostikidis.net
+        - mariannamobiles.kostikidis.net
       secretName: immich-marianna-tls
   rules:
-    - host: marianna.kostikidis.net
+    - host: mariannamobiles.kostikidis.net
       http:
         paths:
           - path: /

@@ -13,10 +13,10 @@ spec:
   ingressClassName: nginx
   tls:
     - hosts:
-        - elwany.kostikidis.net
+        - teamelwany.kostikidis.net
       secretName: immich-elwany-tls
   rules:
-    - host: elwany.kostikidis.net
+    - host: teamelwany.kostikidis.net
       http:
         paths:
           - path: /
