@@ -11,7 +11,7 @@ spec:
   storageClassName: ""
   nfs:
     server: 192.168.1.100
-    path: /mnt/user/k3s-services/immich_database/elwany
+    path: /mnt/user/Team_Elwany
   mountOptions:
     - hard
     - nfsvers=4.1

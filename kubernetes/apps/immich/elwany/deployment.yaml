@@ -68,12 +68,7 @@ spec:
           volumeMounts:
             - name: media
               mountPath: /usr/src/app/upload
-            - name: library
-              mountPath: /IMPORT
       volumes:
         - name: media
           persistentVolumeClaim:
             claimName: elwany-media-pvc
-        - name: library
-          persistentVolumeClaim:
-            claimName: elwany-library-pvc
