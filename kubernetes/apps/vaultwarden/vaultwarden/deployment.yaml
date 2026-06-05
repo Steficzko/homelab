@@ -52,6 +52,11 @@ spec:
                 name: vaultwarden-secret
           ports:
             - containerPort: 80
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
           resources:
             requests:
               memory: 64Mi
