@@ -8,10 +8,15 @@ data:
     model_list:
       - model_name: chat
         litellm_params:
-          model: ollama/gemma4:latest
+          model: ollama/gemma4:12b
           api_base: http://ollama-gpu.ai.svc.cluster.local:11434
           timeout: 180
       - model_name: gemma4
+        litellm_params:
+          model: ollama/gemma4:12b
+          api_base: http://ollama-gpu.ai.svc.cluster.local:11434
+          timeout: 180
+      - model_name: gemma4-26b
         litellm_params:
           model: ollama/gemma4:latest
           api_base: http://ollama-gpu.ai.svc.cluster.local:11434
