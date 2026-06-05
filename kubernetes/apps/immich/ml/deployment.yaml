@@ -5,8 +5,6 @@ metadata:
   namespace: immich
 spec:
   replicas: 1
-  strategy:
-    type: Recreate
   selector:
     matchLabels:
       app: immich-ml
@@ -15,42 +13,23 @@ spec:
       labels:
         app: immich-ml
     spec:
-      nodeSelector:
-        kubernetes.io/hostname: k3s-prg-r1
       containers:
-        - name: immich-ml
-          image: ghcr.io/immich-app/immich-machine-learning:release
-          env:
-            - name: MACHINE_LEARNING_WORKERS
-              value: "1"
-            - name: MACHINE_LEARNING_WORKER_TIMEOUT
-              value: "120"
-            - name: MACHINE_LEARNING_CACHE_FOLDER
-              value: /cache
+        - name: nginx
+          image: nginx:1.27-alpine
+          ports:
+            - containerPort: 3003
+          volumeMounts:
+            - name: config
+              mountPath: /etc/nginx/nginx.conf
+              subPath: nginx.conf
           resources:
             requests:
-              memory: 512Mi
-              cpu: 250m
+              memory: 32Mi
+              cpu: 10m
             limits:
-              memory: 6Gi
-          readinessProbe:
-            httpGet:
-              path: /ping
-              port: 3003
-            initialDelaySeconds: 60
-            periodSeconds: 15
-            failureThreshold: 5
-          livenessProbe:
-            httpGet:
-              path: /ping
-              port: 3003
-            initialDelaySeconds: 120
-            periodSeconds: 30
-            failureThreshold: 5
-          volumeMounts:
-            - name: cache
-              mountPath: /cache
+              memory: 64Mi
+              cpu: 100m
       volumes:
-        - name: cache
-          persistentVolumeClaim:
-            claimName: immich-ml-pvc
+        - name: config
+          configMap:
+            name: immich-ml-proxy-config
