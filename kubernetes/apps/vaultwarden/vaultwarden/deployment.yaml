@@ -84,7 +84,11 @@ spec:
             - name: data
               mountPath: /data
               subPath: data
+            - name: tmp
+              mountPath: /tmp
       volumes:
         - name: data
           persistentVolumeClaim:
             claimName: vaultwarden-data-pvc
+        - name: tmp
+          emptyDir: {}
