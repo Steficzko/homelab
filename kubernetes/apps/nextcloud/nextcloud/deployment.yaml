@@ -27,7 +27,7 @@ spec:
               mountPath: /data
       containers:
         - name: nextcloud
-          image: nextcloud:33.0.4-apache
+          image: nextcloud:33.0.5-apache
           ports:
             - containerPort: 80
           env:
