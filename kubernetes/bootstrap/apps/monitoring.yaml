@@ -16,6 +16,9 @@ spec:
     - repoURL: https://github.com/Steficzko/homelab.git
       targetRevision: HEAD
       ref: values
+    - repoURL: https://github.com/Steficzko/homelab.git
+      targetRevision: HEAD
+      path: kubernetes/monitoring/extras
   destination:
     server: https://kubernetes.default.svc
     namespace: monitoring

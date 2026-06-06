@@ -29,6 +29,7 @@ spec:
               cpu: "2"
             limits:
               memory: 12Gi
+              cpu: "4"
           volumeMounts:
             - name: data
               mountPath: /root/.ollama
