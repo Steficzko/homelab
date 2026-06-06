@@ -38,6 +38,18 @@ spec:
                     $_SERVER['HTTPS'] = 'on';
                 }
                 define( 'FORCE_SSL_ADMIN', true );
+                if ( isset( $_SERVER['SCRIPT_NAME'] ) && false !== strpos( $_SERVER['SCRIPT_NAME'], 'xmlrpc.php' ) ) {
+                    http_response_code( 403 );
+                    die( 'Forbidden' );
+                }
+                header_remove( 'X-Powered-By' );
+          lifecycle:
+            postStart:
+              exec:
+                command:
+                  - /bin/sh
+                  - -c
+                  - rm -f /var/www/html/readme.html /var/www/html/license.txt /var/www/html/wp-trackback.php
           resources:
             requests:
               memory: 256Mi

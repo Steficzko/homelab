@@ -1,4 +1,9 @@
 controller:
+  config:
+    hsts: "true"
+    hsts-max-age: "31536000"
+    hsts-include-subdomains: "true"
+    hsts-preload: "true"
   service:
     # Restrict NodePorts to Tailscale and cluster-internal traffic only.
     # Blocks arbitrary LAN devices from bypassing the Cloudflare tunnel.
