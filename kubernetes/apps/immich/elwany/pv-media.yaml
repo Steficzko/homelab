@@ -11,7 +11,7 @@ spec:
   storageClassName: ""
   nfs:
     server: 192.168.1.100
-    path: /mnt/user/Team_Elwany
+    path: /mnt/user/Team_Elwany/gallery
   mountOptions:
     - hard
     - nfsvers=4.1
