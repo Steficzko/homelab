@@ -42,11 +42,11 @@ spec:
             - name: SMTP_SECURITY
               value: starttls
             - name: SMTP_FROM
-              value: kostikidis@gmail.com
+              value: kostikidis.network@gmail.com
             - name: SMTP_FROM_NAME
               value: Vaultwarden
             - name: SMTP_USERNAME
-              value: kostikidis@gmail.com
+              value: kostikidis.network@gmail.com
           envFrom:
             - secretRef:
                 name: vaultwarden-secret
