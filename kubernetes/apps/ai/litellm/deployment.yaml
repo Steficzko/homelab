@@ -34,6 +34,13 @@ spec:
             initialDelaySeconds: 30
             periodSeconds: 10
             failureThreshold: 5
+          livenessProbe:
+            httpGet:
+              path: /health/readiness
+              port: 4000
+            initialDelaySeconds: 60
+            periodSeconds: 30
+            failureThreshold: 5
           resources:
             requests:
               memory: 512Mi

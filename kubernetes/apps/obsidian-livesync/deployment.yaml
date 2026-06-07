@@ -38,6 +38,20 @@ spec:
                 secretKeyRef:
                   name: couchdb-secret
                   key: cookieAuthSecret
+          readinessProbe:
+            httpGet:
+              path: /_up
+              port: 5984
+            initialDelaySeconds: 20
+            periodSeconds: 10
+            failureThreshold: 5
+          livenessProbe:
+            httpGet:
+              path: /_up
+              port: 5984
+            initialDelaySeconds: 40
+            periodSeconds: 30
+            failureThreshold: 5
           resources:
             requests:
               memory: 256Mi

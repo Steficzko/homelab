@@ -22,6 +22,17 @@ spec:
             - name: config
               mountPath: /etc/nginx/nginx.conf
               subPath: nginx.conf
+          readinessProbe:
+            tcpSocket:
+              port: 3003
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          livenessProbe:
+            tcpSocket:
+              port: 3003
+            initialDelaySeconds: 20
+            periodSeconds: 30
+            failureThreshold: 5
           resources:
             requests:
               memory: 32Mi

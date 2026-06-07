@@ -59,6 +59,18 @@ spec:
             - name: prompts
               mountPath: /app/prompts/custom_field_prompt.tmpl
               subPath: custom_field_prompt.tmpl
+          readinessProbe:
+            tcpSocket:
+              port: 8080
+            initialDelaySeconds: 20
+            periodSeconds: 10
+            failureThreshold: 5
+          livenessProbe:
+            tcpSocket:
+              port: 8080
+            initialDelaySeconds: 40
+            periodSeconds: 30
+            failureThreshold: 5
           resources:
             requests:
               memory: 128Mi

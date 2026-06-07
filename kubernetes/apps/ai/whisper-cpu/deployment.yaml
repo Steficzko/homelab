@@ -29,6 +29,20 @@ spec:
               value: int8           # int8 quantization: 4x faster on CPU with minimal accuracy loss
             - name: WHISPER__LANGUAGE
               value: ""             # empty = auto-detect language per request
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 120
+            periodSeconds: 15
+            failureThreshold: 10
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 180
+            periodSeconds: 30
+            failureThreshold: 5
           resources:
             requests:
               memory: 4Gi
