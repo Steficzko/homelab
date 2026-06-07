@@ -36,7 +36,7 @@ data:
 
   widgets.yaml: |
     - glances:
-        url: http://192.168.1.100:61208
+        url: http://100.82.66.30:61208
         version: 4
         cpu: true
         mem: true
@@ -56,7 +56,7 @@ data:
     - Cluster:
       - k3s-prg-b3:
           icon: sh-kubernetes
-          description: 192.168.1.203 — control plane
+          description: 100.119.146.29 — control plane
           widget:
             type: customapi
             url: "http://kube-prometheus-stack-prometheus.monitoring.svc.cluster.local:9090/api/v1/query?query=round%28100-avg%28rate%28node_cpu_seconds_total%7Bmode%3D%22idle%22%2Cinstance%3D%22192.168.1.203%3A9100%22%7D%5B5m%5D%29%29%2A100%2C1%29%20or%20round%28%281-node_memory_MemAvailable_bytes%7Binstance%3D%22192.168.1.203%3A9100%22%7D/node_memory_MemTotal_bytes%7Binstance%3D%22192.168.1.203%3A9100%22%7D%29%2A100%2C1%29"
@@ -71,7 +71,7 @@ data:
                 suffix: "%"
       - k3s-prg-g2:
           icon: sh-kubernetes
-          description: 192.168.1.202 — control plane
+          description: 100.99.236.88 — control plane
           widget:
             type: customapi
             url: "http://kube-prometheus-stack-prometheus.monitoring.svc.cluster.local:9090/api/v1/query?query=round%28100-avg%28rate%28node_cpu_seconds_total%7Bmode%3D%22idle%22%2Cinstance%3D%22192.168.1.202%3A9100%22%7D%5B5m%5D%29%29%2A100%2C1%29%20or%20round%28%281-node_memory_MemAvailable_bytes%7Binstance%3D%22192.168.1.202%3A9100%22%7D/node_memory_MemTotal_bytes%7Binstance%3D%22192.168.1.202%3A9100%22%7D%29%2A100%2C1%29"
@@ -86,7 +86,7 @@ data:
                 suffix: "%"
       - k3s-prg-r1:
           icon: sh-kubernetes
-          description: 192.168.1.201 — control plane
+          description: 100.120.7.31 — control plane
           widget:
             type: customapi
             url: "http://kube-prometheus-stack-prometheus.monitoring.svc.cluster.local:9090/api/v1/query?query=round%28100-avg%28rate%28node_cpu_seconds_total%7Bmode%3D%22idle%22%2Cinstance%3D%22192.168.1.201%3A9100%22%7D%5B5m%5D%29%29%2A100%2C1%29%20or%20round%28%281-node_memory_MemAvailable_bytes%7Binstance%3D%22192.168.1.201%3A9100%22%7D/node_memory_MemTotal_bytes%7Binstance%3D%22192.168.1.201%3A9100%22%7D%29%2A100%2C1%29"
@@ -111,7 +111,7 @@ data:
           description: Metrics & alerts
       - Proxmox:
           icon: sh-proxmox
-          href: https://192.168.1.122:8006
+          href: https://100.70.109.10:8006
           description: Hypervisor · LXC + VM
       - Longhorn:
           icon: sh-longhorn
@@ -179,11 +179,11 @@ data:
           description: LLM interface
       - Uptime Kuma:
           icon: sh-uptime-kuma
-          href: http://192.168.1.100:3001
+          href: http://100.82.66.30:3001
           description: Service monitoring
       - Portainer:
           icon: sh-portainer
-          href: http://192.168.1.100:9000
+          href: http://100.82.66.30:9000
           description: Container management
 
     - External:
