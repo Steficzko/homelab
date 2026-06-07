@@ -25,6 +25,12 @@ spec:
         - ipBlock:
             cidr: 0.0.0.0/0
     - ports:
+        - port: 4000
+      to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: ai
+    - ports:
         - port: 53
           protocol: UDP
         - port: 53

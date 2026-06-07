@@ -57,3 +57,6 @@ data:
       timeout: 90
       cooldown_time: 60
       fallbacks: [{"chat": ["chat-fallback"]}, {"whisper": ["whisper-fallback"]}]
+
+    general_settings:
+      master_key: sk-homelab-f68f71cacc472b5c4678da8a07c4829d
