@@ -37,17 +37,15 @@ spec:
               memory: 256Mi
               cpu: 200m
           readinessProbe:
-            httpGet:
-              path: /
+            tcpSocket:
               port: 80
             initialDelaySeconds: 30
             periodSeconds: 10
           livenessProbe:
-            httpGet:
-              path: /
+            tcpSocket:
               port: 80
-            initialDelaySeconds: 60
-            periodSeconds: 20
+            initialDelaySeconds: 90
+            periodSeconds: 30
             failureThreshold: 5
           volumeMounts:
             - name: data
