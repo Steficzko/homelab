@@ -31,6 +31,12 @@ spec:
             matchLabels:
               kubernetes.io/metadata.name: ai
     - ports:
+        - port: 80
+      to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: grocy
+    - ports:
         - port: 53
           protocol: UDP
         - port: 53
