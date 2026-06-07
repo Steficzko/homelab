@@ -26,7 +26,7 @@ data:
         columns: 4
       More Apps:
         style: row
-        columns: 4
+        columns: 3
       AI & Monitoring:
         style: row
         columns: 3
@@ -104,7 +104,7 @@ data:
       - ArgoCD:
           icon: sh-argocd
           href: https://argocd.kostikidis.net
-          description: GitOps · 19 apps
+          description: GitOps · 25 apps
       - Grafana:
           icon: sh-grafana
           href: https://grafana.kostikidis.net
@@ -171,6 +171,14 @@ data:
           icon: sh-paperless-ngx
           href: https://dralibjj.kostikidis.net
           description: Document archive
+      - Linkding:
+          icon: sh-linkding
+          href: https://links.kostikidis.net
+          description: Bookmark manager
+      - Wallabag:
+          icon: sh-wallabag
+          href: https://read.kostikidis.net
+          description: Read-later
 
     - AI & Monitoring:
       - Open WebUI:
