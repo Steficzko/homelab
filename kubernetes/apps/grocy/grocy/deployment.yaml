@@ -29,6 +29,8 @@ spec:
               value: IQD
             - name: GROCY_CULTURE
               value: en
+            - name: GROCY_BASE_URL
+              value: https://grocy.kostikidis.net
           resources:
             requests:
               memory: 128Mi
