@@ -68,17 +68,15 @@ spec:
                   name: nextcloud-secret
                   key: POSTGRES_PASSWORD
           readinessProbe:
-            httpGet:
-              path: /status.php
+            tcpSocket:
               port: 80
-            initialDelaySeconds: 60
-            periodSeconds: 15
+            initialDelaySeconds: 30
+            periodSeconds: 10
             failureThreshold: 10
           livenessProbe:
-            httpGet:
-              path: /status.php
+            tcpSocket:
               port: 80
-            initialDelaySeconds: 120
+            initialDelaySeconds: 60
             periodSeconds: 30
             failureThreshold: 5
           resources:
