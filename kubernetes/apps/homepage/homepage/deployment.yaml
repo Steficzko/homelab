@@ -31,14 +31,12 @@ spec:
               memory: 512Mi
               cpu: 500m
           readinessProbe:
-            httpGet:
-              path: /api/healthcheck
+            tcpSocket:
               port: 3000
             initialDelaySeconds: 20
             periodSeconds: 10
           livenessProbe:
-            httpGet:
-              path: /api/healthcheck
+            tcpSocket:
               port: 3000
             initialDelaySeconds: 40
             periodSeconds: 20
