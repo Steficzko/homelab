@@ -58,26 +58,47 @@ data:
           icon: sh-kubernetes
           description: 192.168.1.203 — control plane
           widget:
-            type: glances
-            url: http://192.168.1.203:61208
-            version: 4
-            metric: cpu
+            type: customapi
+            url: "http://kube-prometheus-stack-prometheus.monitoring.svc.cluster.local:9090/api/v1/query?query=round%28100-avg%28rate%28node_cpu_seconds_total%7Bmode%3D%22idle%22%2Cinstance%3D%22192.168.1.203%3A9100%22%7D%5B5m%5D%29%29%2A100%2C1%29%20or%20round%28%281-node_memory_MemAvailable_bytes%7Binstance%3D%22192.168.1.203%3A9100%22%7D/node_memory_MemTotal_bytes%7Binstance%3D%22192.168.1.203%3A9100%22%7D%29%2A100%2C1%29"
+            mappings:
+              - field: data.result.0.value.1
+                label: CPU
+                format: text
+                suffix: "%"
+              - field: data.result.1.value.1
+                label: RAM
+                format: text
+                suffix: "%"
       - k3s-prg-g2:
           icon: sh-kubernetes
           description: 192.168.1.202 — control plane
           widget:
-            type: glances
-            url: http://192.168.1.202:61208
-            version: 4
-            metric: cpu
+            type: customapi
+            url: "http://kube-prometheus-stack-prometheus.monitoring.svc.cluster.local:9090/api/v1/query?query=round%28100-avg%28rate%28node_cpu_seconds_total%7Bmode%3D%22idle%22%2Cinstance%3D%22192.168.1.202%3A9100%22%7D%5B5m%5D%29%29%2A100%2C1%29%20or%20round%28%281-node_memory_MemAvailable_bytes%7Binstance%3D%22192.168.1.202%3A9100%22%7D/node_memory_MemTotal_bytes%7Binstance%3D%22192.168.1.202%3A9100%22%7D%29%2A100%2C1%29"
+            mappings:
+              - field: data.result.0.value.1
+                label: CPU
+                format: text
+                suffix: "%"
+              - field: data.result.1.value.1
+                label: RAM
+                format: text
+                suffix: "%"
       - k3s-prg-r1:
           icon: sh-kubernetes
           description: 192.168.1.201 — control plane
           widget:
-            type: glances
-            url: http://192.168.1.201:61208
-            version: 4
-            metric: cpu
+            type: customapi
+            url: "http://kube-prometheus-stack-prometheus.monitoring.svc.cluster.local:9090/api/v1/query?query=round%28100-avg%28rate%28node_cpu_seconds_total%7Bmode%3D%22idle%22%2Cinstance%3D%22192.168.1.201%3A9100%22%7D%5B5m%5D%29%29%2A100%2C1%29%20or%20round%28%281-node_memory_MemAvailable_bytes%7Binstance%3D%22192.168.1.201%3A9100%22%7D/node_memory_MemTotal_bytes%7Binstance%3D%22192.168.1.201%3A9100%22%7D%29%2A100%2C1%29"
+            mappings:
+              - field: data.result.0.value.1
+                label: CPU
+                format: text
+                suffix: "%"
+              - field: data.result.1.value.1
+                label: RAM
+                format: text
+                suffix: "%"
 
     - Infrastructure:
       - ArgoCD:
