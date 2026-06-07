@@ -1,0 +1,185 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: homepage-config
+  namespace: homepage
+data:
+  settings.yaml: |
+    title: Kostikidis
+    theme: dark
+    color: stone
+    headerStyle: boxed
+    cardBlur: md
+    statusStyle: dot
+    layout:
+      Cluster:
+        style: row
+        columns: 3
+      Infrastructure:
+        style: row
+        columns: 4
+      Family Photos:
+        style: row
+        columns: 4
+      Apps:
+        style: row
+        columns: 4
+      More Apps:
+        style: row
+        columns: 4
+      AI & Monitoring:
+        style: row
+        columns: 3
+      External:
+        style: row
+        columns: 2
+
+  widgets.yaml: |
+    - glances:
+        url: http://192.168.1.100:61208
+        version: 4
+        cpu: true
+        mem: true
+        uptime: true
+        disk: /
+        label: Unraid
+    - datetime:
+        text_size: xl
+        format:
+          timeStyle: short
+          dateStyle: short
+    - search:
+        provider: google
+        target: _blank
+
+  services.yaml: |
+    - Cluster:
+      - k3s-prg-b3:
+          icon: sh-kubernetes
+          description: 192.168.1.203 — control plane
+          widget:
+            type: glances
+            url: http://192.168.1.203:61208
+            version: 4
+            metric: cpu
+      - k3s-prg-g2:
+          icon: sh-kubernetes
+          description: 192.168.1.202 — control plane
+          widget:
+            type: glances
+            url: http://192.168.1.202:61208
+            version: 4
+            metric: cpu
+      - k3s-prg-r1:
+          icon: sh-kubernetes
+          description: 192.168.1.201 — control plane
+          widget:
+            type: glances
+            url: http://192.168.1.201:61208
+            version: 4
+            metric: cpu
+
+    - Infrastructure:
+      - ArgoCD:
+          icon: sh-argocd
+          href: https://argocd.kostikidis.net
+          description: GitOps · 19 apps
+      - Grafana:
+          icon: sh-grafana
+          href: https://grafana.kostikidis.net
+          description: Metrics & alerts
+      - Proxmox:
+          icon: sh-proxmox
+          href: https://192.168.1.122:8006
+          description: Hypervisor · LXC + VM
+      - Longhorn:
+          icon: sh-longhorn
+          href: https://grafana.kostikidis.net
+          description: Distributed block storage
+
+    - Family Photos:
+      - Immich Stefanos:
+          icon: sh-immich
+          href: https://stefanosmobiles.kostikidis.net
+          description: Stefanos
+      - Immich Marianna:
+          icon: sh-immich
+          href: https://mariannamobiles.kostikidis.net
+          description: Marianna
+      - Immich Lightroom:
+          icon: sh-immich
+          href: https://lightroom.kostikidis.net
+          description: Lightroom catalog
+      - Immich Elwany:
+          icon: sh-immich
+          href: https://gallery.teamelwany.com
+          description: Team Elwany
+
+    - Apps:
+      - Nextcloud:
+          icon: sh-nextcloud
+          href: https://nextcloud.kostikidis.net
+          description: File sync & share
+      - Vaultwarden:
+          icon: sh-vaultwarden
+          href: https://vault.kostikidis.net
+          description: Password manager
+      - n8n:
+          icon: sh-n8n
+          href: https://auto.kostikidis.net
+          description: Automation workflows
+      - Grocy:
+          icon: sh-grocy
+          href: https://grocy.kostikidis.net
+          description: Household management
+
+    - More Apps:
+      - Mealie:
+          icon: sh-mealie
+          href: https://mealie.kostikidis.net
+          description: Recipes & meal planning
+      - FreshRSS:
+          icon: sh-freshrss
+          href: https://rss.kostikidis.net
+          description: RSS reader
+      - Obsidian LiveSync:
+          icon: sh-obsidian
+          href: https://obsidian.kostikidis.net
+          description: Note sync
+      - Paperless Dr. Ali:
+          icon: sh-paperless-ngx
+          href: https://dralibjj.kostikidis.net
+          description: Document archive
+
+    - AI & Monitoring:
+      - Open WebUI:
+          icon: sh-open-webui
+          href: https://chat.kostikidis.net
+          description: LLM interface
+      - Uptime Kuma:
+          icon: sh-uptime-kuma
+          href: http://192.168.1.100:3001
+          description: Service monitoring
+      - Portainer:
+          icon: sh-portainer
+          href: http://192.168.1.100:9000
+          description: Container management
+
+    - External:
+      - Blog:
+          icon: sh-hugo
+          href: https://kostikidis.net
+          description: Personal blog
+      - Studio Concrete Luka:
+          icon: si-wordpress
+          href: https://studioconcreteluka.com
+          description: Photography studio
+
+  bookmarks.yaml: |
+    []
+
+  docker.yaml: |
+    {}
+
+  kubernetes.yaml: |
+    {}

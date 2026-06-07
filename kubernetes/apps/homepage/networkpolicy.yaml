@@ -1,0 +1,52 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: homepage
+  namespace: homepage
+spec:
+  podSelector:
+    matchLabels:
+      app: homepage
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: ingress-nginx
+      ports:
+        - port: 3000
+  egress:
+    # DNS
+    - ports:
+        - port: 53
+          protocol: UDP
+        - port: 53
+          protocol: TCP
+      to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: kube-system
+    # Internet (external service health checks)
+    - ports:
+        - port: 80
+        - port: 443
+      to:
+        - ipBlock:
+            cidr: 0.0.0.0/0
+            except:
+              - 10.0.0.0/8
+              - 172.16.0.0/12
+    # Internal cluster services (Prometheus, Longhorn, etc.)
+    - to:
+        - ipBlock:
+            cidr: 192.168.1.0/24
+    # Prometheus, Longhorn, Grafana via cluster DNS
+    - to:
+        - namespaceSelector: {}
+      ports:
+        - port: 9090
+        - port: 9500
+        - port: 80
+        - port: 3000
