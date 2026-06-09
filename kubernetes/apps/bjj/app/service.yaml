@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: bjj-app
+  namespace: bjj
+spec:
+  selector:
+    app: bjj-app
+  ports:
+    - port: 80
+      targetPort: 80

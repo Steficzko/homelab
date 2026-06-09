@@ -1,12 +1,12 @@
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
-  name: n8n
-  namespace: n8n
+  name: bjj-app
+  namespace: bjj
 spec:
   podSelector:
     matchLabels:
-      app: n8n
+      app: bjj-app
   policyTypes:
     - Ingress
     - Egress
@@ -16,26 +16,14 @@ spec:
             matchLabels:
               kubernetes.io/metadata.name: ingress-nginx
       ports:
-        - port: 5678
+        - port: 80
   egress:
     - ports:
-        - port: 443
-        - port: 80
-      to:
-        - ipBlock:
-            cidr: 0.0.0.0/0
-    - ports:
-        - port: 4000
+        - port: 5678
       to:
         - namespaceSelector:
             matchLabels:
-              kubernetes.io/metadata.name: ai
-    - ports:
-        - port: 5432
-      to:
-        - namespaceSelector:
-            matchLabels:
-              kubernetes.io/metadata.name: bjj
+              kubernetes.io/metadata.name: n8n
     - ports:
         - port: 53
           protocol: UDP
