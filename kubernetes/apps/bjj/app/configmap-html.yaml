@@ -1,18 +1,285 @@
 apiVersion: v1
+data:
+  index.html: "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n  <meta charset=\"UTF-8\">\n
+    \ <meta name=\"viewport\" content=\"width=device-width, initial-scale=1, maximum-scale=1\">\n
+    \ <title>Elwany Staff</title>\n  <meta name=\"mobile-web-app-capable\" content=\"yes\">\n
+    \ <meta name=\"apple-mobile-web-app-capable\" content=\"yes\">\n  <meta name=\"apple-mobile-web-app-status-bar-style\"
+    content=\"black-translucent\">\n  <style>\n    *{box-sizing:border-box;margin:0;padding:0}\n
+    \   :root{\n      --bg:#0d0d0d;--card:#1a1a1a;--border:#2a2a2a;\n      --gold:#C9A84C;--text:#e8e8e8;--muted:#777;\n
+    \     --green:#4caf50;--red:#e53935;\n    }\n    body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe
+    UI',sans-serif;min-height:100vh;max-width:480px;margin:0 auto}\n\n    /* ── LOGIN
+    ── */\n    #login{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:40px
+    28px;gap:36px}\n    .logo h1{color:var(--gold);font-size:1.7rem;font-weight:800;letter-spacing:.06em;text-align:center}\n
+    \   .logo p{color:var(--muted);font-size:.85rem;text-align:center;margin-top:6px}\n
+    \   .login-box{width:100%;display:flex;flex-direction:column;gap:14px}\n    input[type=password]{width:100%;padding:18px
+    16px;background:var(--card);border:1px solid var(--border);border-radius:12px;color:var(--text);font-size:1.1rem;outline:none;text-align:center;letter-spacing:.2em;transition:border-color
+    .2s}\n    input[type=password]:focus{border-color:var(--gold)}\n    input[type=text],input[type=number],input[type=date]{width:100%;padding:14px
+    16px;background:var(--card);border:1px solid var(--border);border-radius:10px;color:var(--text);font-size:1rem;outline:none;transition:border-color
+    .2s}\n    input[type=text]:focus,input[type=number]:focus,input[type=date]:focus{border-color:var(--gold)}\n
+    \   input[type=date]{color-scheme:dark}\n    .err{color:var(--red);font-size:.85rem;text-align:center;min-height:20px}\n\n
+    \   /* ── BUTTONS ── */\n    .btn{padding:16px;border:none;border-radius:12px;font-size:1rem;font-weight:700;cursor:pointer;transition:opacity
+    .15s,transform .1s;width:100%}\n    .btn:active{transform:scale(.97)}\n    .btn:disabled{opacity:.4;cursor:not-allowed}\n
+    \   .btn-gold{background:var(--gold);color:#0d0d0d}\n    .btn-outline{background:transparent;border:1px
+    solid var(--border);color:var(--text)}\n    .btn-ghost{background:transparent;color:var(--muted);padding:8px
+    12px;font-size:.8rem;font-weight:600;width:auto}\n    .btn-danger{background:var(--red);color:#fff}\n\n
+    \   /* ── APP SHELL ── */\n    #app{display:none;flex-direction:column;min-height:100vh}\n
+    \   header{padding:14px 20px;border-bottom:1px solid var(--border);background:var(--card);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10}\n
+    \   header .hname{color:var(--gold);font-size:1.1rem;font-weight:700}\n    header
+    .hrole{color:var(--muted);font-size:.75rem;margin-top:2px}\n\n    /* ── MAIN NAV
+    ── */\n    .main-nav{display:flex;border-bottom:1px solid var(--border);background:var(--card)}\n
+    \   .main-tab{flex:1;padding:13px;text-align:center;font-size:.88rem;font-weight:700;color:var(--muted);cursor:pointer;border-bottom:3px
+    solid transparent;transition:all .15s}\n    .main-tab.on{color:var(--gold);border-bottom-color:var(--gold)}\n\n
+    \   /* ── COACH VIEW ── */\n    #coach-view{padding:20px 16px;display:flex;flex-direction:column;gap:20px}\n
+    \   .card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px}\n
+    \   .label{font-size:.7rem;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:12px}\n\n
+    \   /* type buttons */\n    .type-grid{display:grid;grid-template-columns:1fr
+    1fr;gap:10px;margin-bottom:16px}\n    .type-btn{padding:14px 10px;border-radius:10px;border:2px
+    solid var(--border);background:transparent;color:var(--text);font-size:.85rem;font-weight:700;cursor:pointer;text-align:center;transition:all
+    .15s;display:flex;flex-direction:column;align-items:center;gap:4px}\n    .type-btn
+    .icon{font-size:1.4rem}\n    .type-btn.wide{grid-column:1/-1;flex-direction:row;justify-content:center;gap:10px;padding:18px
+    10px;font-size:1rem}\n    .type-btn.selected{border-color:var(--gold);background:rgba(201,168,76,.12);color:var(--gold)}\n\n
+    \   /* entry inputs */\n    .input-row{display:flex;gap:10px;margin-bottom:12px}\n
+    \   .input-row input:first-child{flex:1}\n    .input-row .amt{flex:0 0 100px}\n\n
+    \   /* entries */\n    .entries-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}\n
+    \   .badge{background:rgba(201,168,76,.15);color:var(--gold);padding:4px 12px;border-radius:20px;font-size:.82rem;font-weight:700}\n
+    \   .entry{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:12px
+    14px;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between}\n
+    \   .etype{font-size:.7rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}\n
+    \   .ename{font-size:.95rem;font-weight:600;margin-top:2px}\n    .edate{font-size:.75rem;color:var(--muted);margin-top:2px}\n
+    \   .eamt{font-size:1.1rem;font-weight:800;color:var(--green)}\n    .empty{text-align:center;color:var(--muted);font-size:.9rem;padding:36px
+    0}\n\n    /* view tabs */\n    .vtabs{display:flex;border-bottom:1px solid var(--border);margin-bottom:16px}\n
+    \   .vtab{flex:1;padding:12px;text-align:center;font-size:.85rem;font-weight:700;color:var(--muted);cursor:pointer;border-bottom:2px
+    solid transparent;transition:all .15s}\n    .vtab.on{color:var(--gold);border-bottom-color:var(--gold)}\n\n
+    \   /* flush batch */\n    .batch{background:var(--card);border:1px solid var(--border);border-radius:10px;margin-bottom:10px;overflow:hidden}\n
+    \   .batch-hd{padding:12px 14px;display:flex;justify-content:space-between;align-items:center;cursor:pointer}\n
+    \   .batch-hd:hover{background:rgba(255,255,255,.03)}\n    .batch-body{display:none;padding:4px
+    0}\n    .batch-body.open{display:block}\n\n    /* ── BIGDADDY VIEW ── */\n    #bd-view{display:flex;flex-direction:column}\n
+    \   .ctabs{display:flex;overflow-x:auto;border-bottom:1px solid var(--border);background:var(--card);scrollbar-width:none}\n
+    \   .ctabs::-webkit-scrollbar{display:none}\n    .ctab{padding:14px 20px;font-size:.85rem;font-weight:700;color:var(--muted);cursor:pointer;white-space:nowrap;border-bottom:2px
+    solid transparent;transition:all .15s}\n    .ctab.on{color:var(--gold);border-bottom-color:var(--gold)}\n
+    \   .cpanel{padding:20px 16px}\n    .csummary{background:var(--card);border:1px
+    solid var(--border);border-radius:14px;padding:18px;margin-bottom:20px;display:flex;justify-content:space-between;align-items:center}\n
+    \   .ctotal{font-size:1.5rem;font-weight:800;color:var(--gold)}\n    .ccount{font-size:.78rem;color:var(--muted);margin-top:3px}\n\n
+    \   /* ── ATTENDANCE ── */\n    #att-section{display:none;flex-direction:column;flex:1}\n
+    \   .att-header{padding:16px;background:var(--card);border-bottom:1px solid var(--border)}\n
+    \   .att-date-row{display:flex;align-items:center;gap:10px;margin-bottom:10px}\n
+    \   .att-date-row label{font-size:.75rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);white-space:nowrap}\n
+    \   .att-date-row input{flex:1;padding:10px 14px;font-size:.9rem}\n    #att-stats{font-size:.8rem;color:var(--muted);margin-bottom:10px}\n
+    \   #att-search{margin-bottom:0;padding:12px 16px;font-size:.95rem}\n    .att-list{overflow-y:auto}\n
+    \   .att-row{display:flex;align-items:center;justify-content:space-between;padding:14px
+    16px;border-bottom:1px solid var(--border);cursor:pointer;transition:background
+    .12s;-webkit-tap-highlight-color:transparent;user-select:none}\n    .att-row:active{background:rgba(255,255,255,.04)}\n
+    \   .att-row.checked{background:rgba(76,175,80,.07)}\n    .att-name{font-size:.95rem;font-weight:600;margin-bottom:3px}\n
+    \   .att-badge{font-size:.68rem;font-weight:700;padding:2px 8px;border-radius:8px;display:inline-block}\n
+    \   .att-badge.active{background:rgba(76,175,80,.18);color:var(--green)}\n    .att-badge.expired{background:rgba(229,57,53,.18);color:var(--red)}\n
+    \   .att-check{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1rem;font-weight:800;border:2px
+    solid var(--border);color:var(--muted);transition:all .15s;flex-shrink:0}\n    .att-row.checked
+    .att-check{background:var(--green);border-color:var(--green);color:#fff;font-size:1.1rem}\n\n
+    \   /* ── MODAL ── */\n    .overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:100;align-items:center;justify-content:center;padding:24px}\n
+    \   .overlay.open{display:flex}\n    .modal{background:var(--card);border:1px
+    solid var(--border);border-radius:16px;padding:24px;width:100%;max-width:360px}\n
+    \   .modal h3{color:var(--gold);margin-bottom:10px}\n    .modal p{color:var(--muted);font-size:.9rem;margin-bottom:20px;line-height:1.5}\n
+    \   .mbtns{display:flex;gap:10px}\n\n    .spin{display:inline-block;width:16px;height:16px;border:2px
+    solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin
+    .6s linear infinite;vertical-align:middle;margin-right:6px}\n    @keyframes spin{to{transform:rotate(360deg)}}\n
+    \ </style>\n</head>\n<body>\n\n<!-- ── LOGIN ── -->\n<div id=\"login\">\n  <div
+    class=\"logo\">\n    <h1>TEAM ELWANY</h1>\n    <p>Staff Portal</p>\n  </div>\n
+    \ <div class=\"login-box\">\n    <input type=\"password\" id=\"pass\" placeholder=\"••••••••\"
+    autocomplete=\"current-password\">\n    <div class=\"err\" id=\"lerr\"></div>\n
+    \   <button class=\"btn btn-gold\" id=\"lbtn\" onclick=\"doLogin()\">Sign In</button>\n
+    \ </div>\n</div>\n\n<!-- ── APP ── -->\n<div id=\"app\">\n  <header>\n    <div>\n
+    \     <div class=\"hrole\">TEAM ELWANY STAFF</div>\n      <div class=\"hname\"
+    id=\"hname\"></div>\n    </div>\n    <button class=\"btn btn-ghost\" onclick=\"doLogout()\">Logout</button>\n
+    \ </header>\n\n  <!-- Main navigation -->\n  <div class=\"main-nav\">\n    <div
+    class=\"main-tab on\" id=\"tab-ledger\" onclick=\"switchMain('ledger',this)\">Ledger</div>\n
+    \   <div class=\"main-tab\" id=\"tab-attendance\" onclick=\"switchMain('attendance',this)\">Attendance</div>\n
+    \ </div>\n\n  <!-- Ledger Section -->\n  <div id=\"ledger-section\">\n    <!--
+    Coach View -->\n    <div id=\"coach-view\" style=\"display:none\">\n      <div
+    class=\"card\">\n        <div class=\"label\">New Entry</div>\n        <div class=\"type-grid\">\n
+    \         <button class=\"type-btn wide\" data-type=\"gi_rental\" onclick=\"pick(this)\">\n
+    \           <span class=\"icon\">\U0001F94B</span> Gi Rental\n          </button>\n
+    \         <button class=\"type-btn\" data-type=\"subscription\" onclick=\"pick(this)\">\n
+    \           <span class=\"icon\">\U0001F4C5</span><span>Sub</span>\n          </button>\n
+    \         <button class=\"type-btn\" data-type=\"rashguard\" onclick=\"pick(this)\">\n
+    \           <span class=\"icon\">\U0001F455</span><span>Rashguard</span>\n          </button>\n
+    \         <button class=\"type-btn\" data-type=\"kimono\" onclick=\"pick(this)\">\n
+    \           <span class=\"icon\">\U0001F93C</span><span>Kimono</span>\n          </button>\n
+    \         <button class=\"type-btn wide\" data-type=\"other\" onclick=\"pick(this)\">\n
+    \           <span class=\"icon\">\U0001F4B0</span> Other\n          </button>\n
+    \       </div>\n        <div class=\"input-row\">\n          <input type=\"text\"
+    id=\"sname\" placeholder=\"Student name\">\n          <input type=\"number\" id=\"amt\"
+    placeholder=\"Amount\" class=\"amt\" min=\"0\" step=\"0.01\">\n        </div>\n
+    \       <input type=\"text\" id=\"notes\" placeholder=\"Notes (optional)\" style=\"margin-bottom:12px\">\n
+    \       <button class=\"btn btn-gold\" id=\"sbtn\" onclick=\"addEntry()\">Add
+    Entry</button>\n      </div>\n\n      <div>\n        <div class=\"vtabs\">\n          <div
+    class=\"vtab on\" onclick=\"showTab('active',this)\">Active</div>\n          <div
+    class=\"vtab\" onclick=\"showTab('history',this)\">History</div>\n        </div>\n
+    \       <div id=\"active-list\"></div>\n        <div id=\"history-list\" style=\"display:none\"></div>\n
+    \     </div>\n    </div>\n\n    <!-- BigDaddy View -->\n    <div id=\"bd-view\"
+    style=\"display:none\">\n      <div class=\"ctabs\" id=\"ctabs\"></div>\n      <div
+    class=\"cpanel\" id=\"cpanel\"></div>\n    </div>\n  </div>\n\n  <!-- Attendance
+    Section -->\n  <div id=\"att-section\">\n    <div class=\"att-header\">\n      <div
+    class=\"att-date-row\">\n        <label>Date</label>\n        <input type=\"date\"
+    id=\"att-date\" onchange=\"loadAttCheckins()\">\n      </div>\n      <div id=\"att-stats\"></div>\n
+    \     <input type=\"text\" id=\"att-search\" placeholder=\"Search student…\" oninput=\"renderRoster()\">\n
+    \   </div>\n    <div class=\"att-list\" id=\"att-list\"></div>\n  </div>\n</div>\n\n<!--
+    Flush Modal -->\n<div class=\"overlay\" id=\"fmodal\">\n  <div class=\"modal\">\n
+    \   <h3>Confirm Flush</h3>\n    <p id=\"fmsg\"></p>\n    <div class=\"mbtns\">\n
+    \     <button class=\"btn btn-outline\" onclick=\"closeModal()\" style=\"flex:1\">Cancel</button>\n
+    \     <button class=\"btn btn-gold\" id=\"fbtn\" onclick=\"doFlush()\" style=\"flex:1\">Flush</button>\n
+    \   </div>\n  </div>\n</div>\n\n<script>\nconst API  = '/api';\nconst CUR  = '$';\n\nlet
+    S = null;\nlet selType = null;\nlet flushCoachId = null;\nlet coaches = [];\n\n//
+    attendance state\nlet roster = [];\nlet attCheckins = new Set();\nlet attDate
+    = today();\nlet rosterLoaded = false;\n\n// ── BOOT ──────────────────────────────────────────────────────────────────\nwindow.onload
+    = () => {\n  const s = sessionStorage.getItem('elwany_s');\n  if (s) { S = JSON.parse(s);
+    go(); }\n  document.getElementById('pass').onkeydown = e => { if (e.key === 'Enter')
+    doLogin(); };\n};\n\n// ── AUTH ──────────────────────────────────────────────────────────────────\nasync
+    function doLogin() {\n  const pass = document.getElementById('pass').value.trim();\n
+    \ if (!pass) return;\n  const btn = document.getElementById('lbtn');\n  btn.disabled
+    = true;\n  btn.innerHTML = '<span class=\"spin\"></span>Signing in…';\n  document.getElementById('lerr').textContent
+    = '';\n  try {\n    const r = await call('POST', '/ledger-login', { password:
+    pass });\n    if (r.success) {\n      S = r.user;\n      sessionStorage.setItem('elwany_s',
+    JSON.stringify(S));\n      go();\n    } else {\n      document.getElementById('lerr').textContent
+    = 'Wrong password.';\n    }\n  } catch { document.getElementById('lerr').textContent
+    = 'Connection error. Try again.'; }\n  btn.disabled = false;\n  btn.textContent
+    = 'Sign In';\n}\n\nfunction doLogout() {\n  S = null; selType = null; roster =
+    []; rosterLoaded = false; attCheckins = new Set();\n  sessionStorage.removeItem('elwany_s');\n
+    \ document.getElementById('app').style.display = 'none';\n  document.getElementById('login').style.display
+    = 'flex';\n  document.getElementById('pass').value = '';\n  document.getElementById('bd-view').style.display
+    = 'none';\n  document.getElementById('coach-view').style.display = 'none';\n  //
+    reset nav to ledger\n  document.getElementById('tab-ledger').classList.add('on');\n
+    \ document.getElementById('tab-attendance').classList.remove('on');\n  document.getElementById('ledger-section').style.display
+    = 'block';\n  document.getElementById('att-section').style.display = 'none';\n}\n\nfunction
+    go() {\n  document.getElementById('login').style.display = 'none';\n  document.getElementById('app').style.display
+    = 'flex';\n  document.getElementById('hname').textContent = S.name;\n  document.getElementById('att-date').value
+    = today();\n  if (S.role === 'bigdaddy') {\n    document.getElementById('bd-view').style.display
+    = 'flex';\n    loadBD();\n  } else {\n    document.getElementById('coach-view').style.display
+    = 'flex';\n    loadCoach();\n  }\n}\n\n// ── MAIN NAV ──────────────────────────────────────────────────────────────\nfunction
+    switchMain(section, el) {\n  document.querySelectorAll('.main-tab').forEach(t
+    => t.classList.remove('on'));\n  el.classList.add('on');\n  document.getElementById('ledger-section').style.display
+    = section === 'ledger' ? 'block' : 'none';\n  document.getElementById('att-section').style.display
+    \  = section === 'attendance' ? 'flex' : 'none';\n  if (section === 'attendance')
+    loadAttendance();\n}\n\n// ── COACH ─────────────────────────────────────────────────────────────────\nfunction
+    pick(btn) {\n  selType = btn.dataset.type;\n  document.querySelectorAll('.type-btn').forEach(b
+    => b.classList.remove('selected'));\n  btn.classList.add('selected');\n}\n\nasync
+    function addEntry() {\n  if (!selType) { alert('Select a type.'); return; }\n
+    \ const name = document.getElementById('sname').value.trim();\n  const amt  =
+    parseFloat(document.getElementById('amt').value);\n  const note = document.getElementById('notes').value.trim();\n
+    \ if (!name) { alert('Enter student name.'); return; }\n  if (!amt || amt <= 0)
+    { alert('Enter a valid amount.'); return; }\n  const btn = document.getElementById('sbtn');\n
+    \ btn.disabled = true;\n  btn.innerHTML = '<span class=\"spin\"></span>Saving…';\n
+    \ try {\n    const r = await call('POST', '/ledger-entry', {\n      user_id: S.user_id,
+    type: selType,\n      student_name: name, amount: amt, notes: note,\n      entry_date:
+    today()\n    });\n    if (r.success) {\n      document.getElementById('sname').value
+    = '';\n      document.getElementById('amt').value = '';\n      document.getElementById('notes').value
+    = '';\n      selType = null;\n      document.querySelectorAll('.type-btn').forEach(b
+    => b.classList.remove('selected'));\n      loadCoach();\n    }\n  } catch { alert('Failed
+    to save.'); }\n  btn.disabled = false;\n  btn.textContent = 'Add Entry';\n}\n\nasync
+    function loadCoach() {\n  document.getElementById('active-list').innerHTML = '<div
+    class=\"empty\">Loading…</div>';\n  try {\n    const r = await call('GET', `/ledger-entries?user_id=${S.user_id}`);\n
+    \   renderActive(r.active || []);\n    renderHistory(r.history || [], document.getElementById('history-list'));\n
+    \ } catch { document.getElementById('active-list').innerHTML = '<div class=\"empty\">Failed
+    to load.</div>'; }\n}\n\nfunction renderActive(entries) {\n  const el = document.getElementById('active-list');\n
+    \ if (!entries.length) { el.innerHTML = '<div class=\"empty\">No active entries
+    yet.</div>'; return; }\n  const total = entries.reduce((s,e) => s + +e.amount,
+    0);\n  el.innerHTML = `\n    <div class=\"entries-header\">\n      <div class=\"label\"
+    style=\"margin:0\">Active (${entries.length})</div>\n      <div class=\"badge\">${CUR}${total.toFixed(2)}</div>\n
+    \   </div>\n    ${entries.map(entryHTML).join('')}`;\n}\n\nfunction renderHistory(batches,
+    el) {\n  if (!batches.length) { el.innerHTML = '<div class=\"empty\">No history
+    yet.</div>'; return; }\n  el.innerHTML = batches.map(b => `\n    <div class=\"batch\">\n
+    \     <div class=\"batch-hd\" onclick=\"toggleBatch(this)\">\n        <div>\n
+    \         <div style=\"font-weight:700;font-size:.9rem\">${fmtDate(b.flushed_at)}</div>\n
+    \         <div style=\"font-size:.75rem;color:var(--muted)\">${b.entry_count}
+    entries</div>\n        </div>\n        <div style=\"font-weight:800;color:var(--green)\">${CUR}${(+b.total_amount).toFixed(2)}</div>\n
+    \     </div>\n      <div class=\"batch-body\">${(b.entries||[]).map(entryHTML).join('')}</div>\n
+    \   </div>`).join('');\n}\n\nfunction showTab(tab, el) {\n  document.querySelectorAll('.vtab').forEach(t
+    => t.classList.remove('on'));\n  el.classList.add('on');\n  document.getElementById('active-list').style.display
+    \ = tab==='active'  ? 'block' : 'none';\n  document.getElementById('history-list').style.display
+    = tab==='history' ? 'block' : 'none';\n}\n\n// ── BIGDADDY ──────────────────────────────────────────────────────────────\nasync
+    function loadBD() {\n  document.getElementById('cpanel').innerHTML = '<div class=\"empty\">Loading…</div>';\n
+    \ try {\n    const r = await call('GET', `/ledger-all?user_id=${S.user_id}`);\n
+    \   coaches = r.coaches || [];\n    if (!coaches.length) { document.getElementById('cpanel').innerHTML
+    = '<div class=\"empty\">No coaches.</div>'; return; }\n    document.getElementById('ctabs').innerHTML
+    = coaches.map((c,i) =>\n      `<div class=\"ctab ${i===0?'on':''}\" onclick=\"pickCoach(${c.id},this)\">${c.name}</div>`\n
+    \   ).join('');\n    renderCoach(coaches[0]);\n  } catch { document.getElementById('cpanel').innerHTML
+    = '<div class=\"empty\">Failed to load.</div>'; }\n}\n\nfunction pickCoach(id,
+    el) {\n  document.querySelectorAll('.ctab').forEach(t => t.classList.remove('on'));\n
+    \ el.classList.add('on');\n  const c = coaches.find(x => x.id === id);\n  if (c)
+    renderCoach(c);\n}\n\nfunction renderCoach(c) {\n  const active = c.active_entries
+    || [];\n  const hist   = c.history || [];\n  const total  = active.reduce((s,e)
+    => s + +e.amount, 0);\n  const canFlush = active.length > 0;\n  document.getElementById('cpanel').innerHTML
+    = `\n    <div class=\"csummary\">\n      <div>\n        <div class=\"ctotal\">${CUR}${total.toFixed(2)}</div>\n
+    \       <div class=\"ccount\">${active.length} active entr${active.length===1?'y':'ies'}</div>\n
+    \     </div>\n      <button class=\"btn btn-gold\" style=\"width:auto;padding:12px
+    20px;${!canFlush?'opacity:.4;pointer-events:none':''}\"\n        onclick=\"openFlush(${c.id},'${c.name}')\">Flush
+    ${c.name}</button>\n    </div>\n    ${active.length\n      ? `<div class=\"entries-header\"><div
+    class=\"label\" style=\"margin:0\">Active</div></div>${active.map(entryHTML).join('')}`\n
+    \     : '<div class=\"empty\">No active entries.</div>'}\n    ${hist.length ?
+    `\n      <div style=\"margin-top:24px\">\n        <div class=\"label\" style=\"margin-bottom:12px\">History</div>\n
+    \       ${hist.map(b=>`\n          <div class=\"batch\">\n            <div class=\"batch-hd\"
+    onclick=\"toggleBatch(this)\">\n              <div>\n                <div style=\"font-weight:700;font-size:.9rem\">${fmtDate(b.flushed_at)}</div>\n
+    \               <div style=\"font-size:.75rem;color:var(--muted)\">${b.entry_count}
+    entries</div>\n              </div>\n              <div style=\"font-weight:800;color:var(--green)\">${CUR}${(+b.total_amount).toFixed(2)}</div>\n
+    \           </div>\n            <div class=\"batch-body\">${(b.entries||[]).map(entryHTML).join('')}</div>\n
+    \         </div>`).join('')}\n      </div>` : ''}`;\n}\n\n// ── FLUSH ─────────────────────────────────────────────────────────────────\nfunction
+    openFlush(coachId, coachName) {\n  flushCoachId = coachId;\n  document.getElementById('fmsg').textContent
+    =\n    `Move all active entries for ${coachName} to history? Both you and ${coachName}
+    will still see them.`;\n  document.getElementById('fmodal').classList.add('open');\n}\n\nfunction
+    closeModal() {\n  flushCoachId = null;\n  document.getElementById('fmodal').classList.remove('open');\n}\n\nasync
+    function doFlush() {\n  const btn = document.getElementById('fbtn');\n  btn.disabled
+    = true;\n  btn.innerHTML = '<span class=\"spin\"></span>Flushing…';\n  try {\n
+    \   const r = await call('POST', '/ledger-flush', { user_id: S.user_id, coach_id:
+    flushCoachId });\n    if (r.success) { closeModal(); loadBD(); }\n    else { alert('Flush
+    failed.'); }\n  } catch { alert('Connection error.'); }\n  btn.disabled = false;\n
+    \ btn.textContent = 'Flush';\n}\n\n// ── ATTENDANCE ────────────────────────────────────────────────────────────\nasync
+    function loadAttendance() {\n  attDate = document.getElementById('att-date').value
+    || today();\n  if (!rosterLoaded) {\n    document.getElementById('att-list').innerHTML
+    = '<div class=\"empty\">Loading roster…</div>';\n    try {\n      const r = await
+    call('GET', '/attendance-roster');\n      roster = r.students || [];\n      rosterLoaded
+    = true;\n    } catch {\n      document.getElementById('att-list').innerHTML =
+    '<div class=\"empty\">Failed to load roster.</div>';\n      return;\n    }\n  }\n
+    \ await loadAttCheckins();\n}\n\nasync function loadAttCheckins() {\n  attDate
+    = document.getElementById('att-date').value || today();\n  try {\n    const r
+    = await call('GET', `/attendance-today?class_date=${attDate}`);\n    const ids
+    = r.student_ids || [];\n    attCheckins = new Set(Array.isArray(ids) ? ids : []);\n
+    \   renderRoster();\n  } catch {\n    document.getElementById('att-list').innerHTML
+    = '<div class=\"empty\">Failed to load check-ins.</div>';\n  }\n}\n\nfunction
+    renderRoster() {\n  const q = document.getElementById('att-search').value.trim().toLowerCase();\n
+    \ const filtered = q ? roster.filter(s => s.name.toLowerCase().includes(q)) :
+    roster;\n  const activeCount = roster.filter(s => s.active).length;\n  document.getElementById('att-stats').textContent
+    =\n    `${attCheckins.size} checked in · ${activeCount} / ${roster.length} members
+    active`;\n\n  if (!filtered.length) {\n    document.getElementById('att-list').innerHTML
+    = '<div class=\"empty\">No students found.</div>';\n    return;\n  }\n\n  const
+    sorted = [...filtered].sort((a, b) => {\n    const ac = attCheckins.has(a.id),
+    bc = attCheckins.has(b.id);\n    if (ac !== bc) return bc ? 1 : -1;\n    return
+    a.name.localeCompare(b.name);\n  });\n\n  document.getElementById('att-list').innerHTML
+    = sorted.map(s => {\n    const checked = attCheckins.has(s.id);\n    const expStr
+    = s.expiry_ms\n      ? new Date(s.expiry_ms).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'})\n
+    \     : 'No expiry';\n    const safeName = s.name.replace(/\\\\/g,'\\\\\\\\').replace(/'/g,\"\\\\'\");\n
+    \   return `<div class=\"att-row${checked?' checked':''}\" id=\"att-${s.id}\"
+    onclick=\"toggleAtt('${s.id}','${safeName}')\">\n      <div>\n        <div class=\"att-name\">${s.name}</div>\n
+    \       <span class=\"att-badge ${s.active?'active':'expired'}\">${s.active?'Active':'Expired'}
+    · ${expStr}</span>\n      </div>\n      <div class=\"att-check\">${checked?'✓':'+'}</div>\n
+    \   </div>`;\n  }).join('');\n}\n\nasync function toggleAtt(studentId, studentName)
+    {\n  const wasChecked = attCheckins.has(studentId);\n  // optimistic update\n
+    \ if (wasChecked) attCheckins.delete(studentId); else attCheckins.add(studentId);\n
+    \ renderRoster();\n  try {\n    const ep = wasChecked ? '/attendance-unmark' :
+    '/attendance-mark';\n    await call('POST', ep, {\n      user_id: S.user_id,\n
+    \     student_id: studentId,\n      student_name: studentName,\n      class_date:
+    attDate\n    });\n  } catch {\n    // revert\n    if (wasChecked) attCheckins.add(studentId);
+    else attCheckins.delete(studentId);\n    renderRoster();\n    alert('Failed to
+    save. Check connection.');\n  }\n}\n\n// ── HELPERS ───────────────────────────────────────────────────────────────\nfunction
+    entryHTML(e) {\n  const typeLabel = {gi_rental:'Gi Rental',subscription:'Subscription',rashguard:'Rashguard',kimono:'Kimono',other:'Other'};\n
+    \ return `<div class=\"entry\">\n    <div>\n      <div class=\"etype\">${typeLabel[e.type]||e.type}</div>\n
+    \     <div class=\"ename\">${e.student_name}</div>\n      <div class=\"edate\">${fmtDate(e.entry_date)}${e.notes?'
+    · '+e.notes:''}</div>\n    </div>\n    <div class=\"eamt\">${CUR}${(+e.amount).toFixed(2)}</div>\n
+    \ </div>`;\n}\n\nfunction toggleBatch(hd) { hd.nextElementSibling.classList.toggle('open');
+    }\n\nfunction today() { return new Date().toISOString().split('T')[0]; }\n\nfunction
+    fmtDate(d) {\n  if (!d) return '';\n  return new Date(d).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'});\n}\n\nasync
+    function call(method, path, body) {\n  const opts = { method, headers: {'Content-Type':'application/json'}
+    };\n  if (body) opts.body = JSON.stringify(body);\n  const r = await fetch(API
+    + path, opts);\n  if (!r.ok) throw new Error(r.status);\n  return r.json();\n}\n</script>\n</body>\n</html>\n"
 kind: ConfigMap
 metadata:
   name: html
   namespace: bjj
-data:
-  index.html: |
-    <!DOCTYPE html>
-    <html lang="en">
-    <head>
-      <meta charset="UTF-8">
-      <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <title>Team Elwany</title>
-    </head>
-    <body>
-      <p>placeholder</p>
-    </body>
-    </html>
