@@ -35,7 +35,7 @@ data:
 
       - model_name: chat-fallback
         litellm_params:
-          model: ollama/gemma4:latest
+          model: ollama/gemma3:4b
           api_base: http://ollama.ai.svc.cluster.local:11434
           timeout: 300
 
@@ -56,7 +56,7 @@ data:
       num_retries: 1
       timeout: 90
       cooldown_time: 60
-      fallbacks: [{"chat": ["chat-fallback"]}, {"whisper": ["whisper-fallback"]}]
+      fallbacks: [{"chat": ["chat-fallback"]}, {"gemma4": ["chat-fallback"]}, {"whisper": ["whisper-fallback"]}]
 
     general_settings:
       master_key: sk-homelab-f68f71cacc472b5c4678da8a07c4829d
