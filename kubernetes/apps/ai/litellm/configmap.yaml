@@ -41,9 +41,10 @@ data:
 
       - model_name: json-extract
         litellm_params:
-          model: ollama/qwen3:4b
+          model: ollama_chat/qwen3:4b   # ollama_chat (not ollama/) — /api/chat handles json_schema + think correctly
           api_base: http://ollama.ai.svc.cluster.local:11434
           timeout: 300
+          think: false                  # qwen3 thinking off — JSON pipeline needs answers, not pondering
 
       - model_name: whisper
         litellm_params:
