@@ -82,7 +82,17 @@ spec:
           volumeMounts:
             - name: media
               mountPath: /usr/src/app/upload
+            - name: thumbs-ssd
+              mountPath: /usr/src/app/upload/thumbs
+            - name: encoded-ssd
+              mountPath: /usr/src/app/upload/encoded-video
       volumes:
         - name: media
           persistentVolumeClaim:
             claimName: stefanos-media-pvc
+        - name: thumbs-ssd
+          persistentVolumeClaim:
+            claimName: stefanos-thumbs-ssd-pvc
+        - name: encoded-ssd
+          persistentVolumeClaim:
+            claimName: stefanos-encoded-ssd-pvc
