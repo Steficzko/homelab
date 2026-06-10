@@ -25,12 +25,12 @@ data:
       - model_name: DrGemmaQ4
         litellm_params:
           model: ollama/DrGemmaQ4:latest
-          api_base: http://192.168.1.227:11434
+          api_base: http://ollama-gpu.ai.svc.cluster.local:11434
           timeout: 180
       - model_name: DrGemmaQ8
         litellm_params:
           model: ollama/gemma4-q8:latest
-          api_base: http://192.168.1.227:11434
+          api_base: http://ollama-gpu.ai.svc.cluster.local:11434
           timeout: 180
 
       - model_name: chat-fallback
