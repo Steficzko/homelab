@@ -39,6 +39,13 @@ spec:
         - namespaceSelector:
             matchLabels:
               kubernetes.io/metadata.name: bjj
+    # waiver PDF rendering — n8n → gotenberg (same namespace)
+    - ports:
+        - port: 3000
+      to:
+        - podSelector:
+            matchLabels:
+              app: gotenberg
     - ports:
         - port: 53
           protocol: UDP

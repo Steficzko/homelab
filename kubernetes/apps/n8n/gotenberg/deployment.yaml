@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gotenberg
+  namespace: n8n
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: gotenberg
+  template:
+    metadata:
+      labels:
+        app: gotenberg
+    spec:
+      containers:
+        - name: gotenberg
+          image: gotenberg/gotenberg:8.21
+          args:
+            - gotenberg
+            - --api-timeout=30s
+            - --chromium-disable-javascript=false
+            - --libreoffice-disable-routes=true
+          ports:
+            - containerPort: 3000
+          resources:
+            requests:
+              memory: 256Mi
+              cpu: "50m"
+            limits:
+              memory: 768Mi
+              cpu: "500m"
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 3000
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 3000
+            initialDelaySeconds: 15
+            periodSeconds: 30
