@@ -29,7 +29,9 @@ spec:
           initContainers:
             - name: copy-mc
               image: minio/mc:latest          # TODO: pin to a digest
-              command: ["/bin/sh", "-c", "cp /usr/bin/mc /tools/mc && chmod +x /tools/mc"]
+              securityContext:
+                runAsUser: 0                  # mc is 0711 root-owned; need root to read+copy it
+              command: ["/bin/sh", "-c", "cp /usr/bin/mc /tools/mc && chmod 0755 /tools/mc"]
               volumeMounts:
                 - { name: tools, mountPath: /tools }
           containers:
