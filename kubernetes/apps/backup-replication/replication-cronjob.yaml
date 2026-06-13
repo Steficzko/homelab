@@ -1,0 +1,51 @@
+# Mirrors the Prague MinIO backup bucket -> Greece MinIO (unraid-ptolemaida) over
+# the Tailscale mesh, so the hourly pg_dump + n8n exports land off-site in Greece.
+#
+# hostNetwork: true makes the pod share the node's netns, so egress to the Greece
+# tailnet IP (100.85.129.88) exits as the node's own Tailscale address — the
+# reliable way for in-cluster traffic to traverse the tailnet.
+#
+# Source (Prague) keeps 7d; Greece keeps 30d (deeper DR history). Greece bucket
+# also has object versioning on, so overwrites/deletes are recoverable there too.
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: minio-replication
+  namespace: backup
+spec:
+  schedule: "45 * * * *"            # hourly at :45 — after postgres(:00) + n8n(:30)
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      backoffLimit: 2
+      activeDeadlineSeconds: 1800
+      template:
+        spec:
+          hostNetwork: true
+          dnsPolicy: ClusterFirstWithHostNet
+          restartPolicy: Never
+          containers:
+            - name: mirror
+              image: minio/mc:latest          # TODO: pin to a release tag
+              envFrom:
+                - secretRef: { name: minio-replication-secret }   # SRC_/DST_ ACCESS_KEY + SECRET_KEY
+              env:
+                - { name: SRC_ENDPOINT, value: "http://192.168.1.100:9100" }
+                - { name: DST_ENDPOINT, value: "http://100.85.129.88:9100" }
+                - { name: BUCKET,       value: "app-backups" }
+                - { name: RETENTION,    value: "30d" }
+                - { name: HOME,         value: "/tmp" }
+              command:
+                - /bin/sh
+                - -c
+                - |
+                  set -eu
+                  mc alias set src "$SRC_ENDPOINT" "$SRC_ACCESS_KEY" "$SRC_SECRET_KEY"
+                  mc alias set dst "$DST_ENDPOINT" "$DST_ACCESS_KEY" "$DST_SECRET_KEY"
+                  echo "==> Mirroring Prague -> Greece (${BUCKET}) ..."
+                  mc mirror --overwrite "src/${BUCKET}" "dst/${BUCKET}"
+                  echo "==> Capping Greece copy at ${RETENTION} ..."
+                  mc rm --recursive --force --older-than "$RETENTION" "dst/${BUCKET}" || true
+                  echo "==> Replication done."

@@ -16,3 +16,10 @@ spec:
               kubernetes.io/metadata.name: n8n
       ports:
         - port: 5432
+    # allow the in-namespace pg_dump backup CronJob
+    - from:
+        - podSelector:
+            matchLabels:
+              app: postgres-backup
+      ports:
+        - port: 5432
