@@ -32,11 +32,12 @@ spec:
               envFrom:
                 - secretRef: { name: minio-replication-secret }   # SRC_/DST_ ACCESS_KEY + SECRET_KEY
               env:
-                - { name: SRC_ENDPOINT, value: "http://192.168.1.100:9100" }
-                - { name: DST_ENDPOINT, value: "http://100.85.129.88:9100" }
-                - { name: BUCKET,       value: "app-backups" }
-                - { name: RETENTION,    value: "30d" }
-                - { name: HOME,         value: "/tmp" }
+                - { name: SRC_ENDPOINT,   value: "http://192.168.1.100:9100" }
+                - { name: DST_ENDPOINT,   value: "http://100.85.129.88:9100" }
+                - { name: BUCKET,         value: "app-backups" }   # our logical dumps: accumulate + cap
+                - { name: RETENTION,      value: "30d" }
+                - { name: EXTRA_BUCKETS,  value: "velerok3s" }     # faithful versioned mirror (add longhornk3s to include)
+                - { name: HOME,           value: "/tmp" }
               command:
                 - /bin/sh
                 - -c
@@ -44,8 +45,13 @@ spec:
                   set -eu
                   mc alias set src "$SRC_ENDPOINT" "$SRC_ACCESS_KEY" "$SRC_SECRET_KEY"
                   mc alias set dst "$DST_ENDPOINT" "$DST_ACCESS_KEY" "$DST_SECRET_KEY"
-                  echo "==> Mirroring Prague -> Greece (${BUCKET}) ..."
+                  echo "==> ${BUCKET}: mirror (accumulate, cap ${RETENTION}) ..."
                   mc mirror --overwrite "src/${BUCKET}" "dst/${BUCKET}"
-                  echo "==> Capping Greece copy at ${RETENTION} ..."
                   mc rm --recursive --force --older-than "$RETENTION" "dst/${BUCKET}" || true
+                  for b in $EXTRA_BUCKETS; do
+                    echo "==> ${b}: faithful versioned mirror Prague -> Greece ..."
+                    mc mb --ignore-existing "dst/${b}"
+                    mc version enable "dst/${b}" || true
+                    mc mirror --overwrite --remove "src/${b}" "dst/${b}"
+                  done
                   echo "==> Replication done."
