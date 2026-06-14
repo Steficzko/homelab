@@ -43,8 +43,13 @@ and splits your data. Failback is always deliberate.
    Portainer → `bjj-failover` → remove `COMPOSE_PROFILES=failover` env → redeploy
    (n8n + bjj-app stop). Greece is back to warm standby.
 
-5. **Cut traffic back to Prague** — point Cloudflare (the Greece tunnel hostnames) back
-   to Prague. Verify Prague serves correctly with the merged-forward data.
+5. **Cut traffic back to Prague** — run the DNS flip back:
+   ```bash
+   ./disaster-recovery/greece/failback.sh    # needs CF API token in ~/.cloudflare_token
+   ```
+   Reverts `app.teamelwany.com` to the Prague tunnel and deletes the `auto.kostikidis.net`
+   override (falls back to the `*.kostikidis.net` wildcard → Prague). Verify Prague serves
+   correctly with the merged-forward data.
 
 6. **Resume normal direction** — Prague→Greece replication + the 6h warm-restore continue
    as before. Confirm a fresh Prague backup lands and replicates.

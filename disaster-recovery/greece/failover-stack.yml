@@ -66,8 +66,20 @@ services:
       - /mnt/user/appdata/bjj-failover/nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
       - /mnt/user/appdata/bjj-failover/html:/usr/share/nginx/html:ro
     ports:
-      - "100.85.129.88:8088:80"     # tailnet-only; real ingress will go via cloudflared at failover
+      - "100.85.129.88:8088:80"     # tailnet-only; real ingress goes via cloudflared at failover
     depends_on: [n8n]
+
+  # Dedicated Cloudflare tunnel for the failover stack (tunnel "TeamElwany GR",
+  # id 0fb9fd16-...). In the failover profile so it only connects when failed over.
+  # Its ingress (configured in Cloudflare): auto.kostikidis.net->http://n8n:5678,
+  # app.teamelwany.com->http://bjj-app:80. DNS is flipped to it by failover.sh.
+  cloudflared:
+    image: cloudflare/cloudflared:2026.5.2
+    container_name: bjj-failover-cloudflared
+    restart: unless-stopped
+    profiles: ["failover"]
+    command: tunnel --no-autoupdate run --token ${CF_TUNNEL_TOKEN}
+    depends_on: [n8n, bjj-app]
 
 networks:
   default:

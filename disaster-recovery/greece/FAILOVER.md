@@ -40,8 +40,13 @@ cd /mnt/user/appdata/bjj-failover && ./restore-from-minio.sh        # both
    docker restart n8n
    ```
    (Or activate only the ones you need in the n8n UI.)
-4. **Send traffic to Greece** via Cloudflare — point `auto.kostikidis.net` (and the
-   bjj site host) at the Greece `cloudflared` tunnel / flip the Cloudflare LB origin.
+4. **Send traffic to Greece** — run the sticky DNS flip:
+   ```bash
+   ./disaster-recovery/greece/failover.sh    # needs CF API token in ~/.cloudflare_token
+   ```
+   Flips `app.teamelwany.com` + `auto.kostikidis.net` to the `TeamElwany GR` tunnel; it
+   REFUSES to flip if that tunnel isn't connected (i.e. you skipped step 2). Sticky: Prague
+   recovering does NOT reclaim traffic — failback is deliberate (`failback.sh`).
 
 ## FAIL BACK (Prague restored)
 1. Stop Greece app tier: remove `COMPOSE_PROFILES` env → update stack (n8n + bjj-app stop).
