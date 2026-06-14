@@ -21,3 +21,10 @@ spec:
       selfHeal: true
     syncOptions:
       - CreateNamespace=true
+      - RespectIgnoreDifferences=true
+  ignoreDifferences:
+    - group: ""
+      kind: Secret
+      name: minio-replication-secret
+      jsonPointers:
+        - /data                       # populated out-of-band; don't let Argo strip it
