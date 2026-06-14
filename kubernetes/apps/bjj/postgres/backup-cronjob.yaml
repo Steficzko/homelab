@@ -22,6 +22,13 @@ spec:
             app: postgres-backup
         spec:
           restartPolicy: Never
+          affinity:                       # co-locate with postgres (cross-node net is unreliable)
+            podAffinity:
+              requiredDuringSchedulingIgnoredDuringExecution:
+                - labelSelector:
+                    matchLabels:
+                      app: postgres
+                  topologyKey: kubernetes.io/hostname
           securityContext:
             runAsUser: 1000
             runAsGroup: 1000
