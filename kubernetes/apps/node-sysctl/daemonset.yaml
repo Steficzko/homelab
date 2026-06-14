@@ -1,0 +1,40 @@
+# Node sysctl tuning. Raises the inotify limits — the default
+# fs.inotify.max_user_instances=128 exhausts on a busy k8s node, producing
+# "Too many open files" that blocks systemctl and other watchers.
+# Privileged DaemonSet writes the host (non-namespaced) sysctls on every node and
+# re-applies on reboot (pod restart). fs.inotify.* is global, so a privileged
+# container setting /proc/sys affects the host.
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: node-sysctl
+  namespace: kube-system
+  labels:
+    app: node-sysctl
+spec:
+  selector:
+    matchLabels:
+      app: node-sysctl
+  template:
+    metadata:
+      labels:
+        app: node-sysctl
+    spec:
+      tolerations:
+        - operator: Exists            # every node incl. control-plane
+      containers:
+        - name: sysctl
+          image: busybox:1.37
+          securityContext:
+            privileged: true
+          command: ["/bin/sh", "-c"]
+          args:
+            - |
+              echo 8192    > /proc/sys/fs/inotify/max_user_instances
+              echo 1048576 > /proc/sys/fs/inotify/max_user_watches
+              echo "node $(hostname): inotify instances=$(cat /proc/sys/fs/inotify/max_user_instances) watches=$(cat /proc/sys/fs/inotify/max_user_watches)"
+              sleep infinity
+          resources:
+            requests: { cpu: 2m, memory: 8Mi }
+            limits: { memory: 16Mi }
+      terminationGracePeriodSeconds: 3
