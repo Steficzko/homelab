@@ -1,7 +1,12 @@
 # ADR-005 — Multi-Site DR Architecture: Active-Passive Cluster Replication
 
 ## Status
-Accepted — pending implementation (after all apps stable + Talos migration)
+Implemented 2026-06-14 — but in an **amended form**. The "identical passive k3s cluster"
+approach below was superseded because Greece is a single Unraid/Docker host, not k8s:
+see **ADR-012** (Greece warm standby as a Docker/Portainer stack, which amends this ADR)
+and **ADR-011** (application-level logical backups + off-site MinIO replication). The
+goal — active-passive Greece failover with Cloudflare cutover — is live; the mechanism
+differs from what's described here.
 
 ## Context
 
