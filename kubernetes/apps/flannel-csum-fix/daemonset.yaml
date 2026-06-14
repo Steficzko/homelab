@@ -1,0 +1,40 @@
+# Workaround for the flannel VXLAN TX-checksum-offload bug:
+# cross-node pod TCP/UDP is silently dropped because the NIC mis-computes the
+# inner checksum of VXLAN-encapsulated packets (ICMP works, same-node works).
+# This DaemonSet disables the offload on every node's flannel.1 and re-applies
+# it (flannel.1 is recreated on k3s/flannel restarts, which resets the flag).
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: flannel-tx-csum-off
+  namespace: kube-system
+  labels:
+    app: flannel-tx-csum-off
+spec:
+  selector:
+    matchLabels:
+      app: flannel-tx-csum-off
+  template:
+    metadata:
+      labels:
+        app: flannel-tx-csum-off
+    spec:
+      hostNetwork: true
+      tolerations:
+        - operator: Exists            # run on every node, incl. control-plane
+      containers:
+        - name: ethtool
+          image: nicolaka/netshoot:latest   # has ethtool; TODO pin to a digest
+          securityContext:
+            privileged: true
+          command: ["/bin/sh", "-c"]
+          args:
+            - |
+              while true; do
+                ethtool -K flannel.1 tx-checksum-ip-generic off 2>/dev/null || true
+                sleep 60
+              done
+          resources:
+            requests: { cpu: 5m, memory: 16Mi }
+            limits: { memory: 32Mi }
+      terminationGracePeriodSeconds: 5
