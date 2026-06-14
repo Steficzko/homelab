@@ -61,6 +61,13 @@ spec:
                   export PGPASSWORD="$POSTGRES_PASSWORD"
                   TS=$(date +%Y%m%d-%H%M%S)
                   FILE="${POSTGRES_DB}-${TS}.dump"
+                  echo "==> Waiting for ${PGHOST}:5432 (tolerates kube-router NetworkPolicy propagation delay) ..."
+                  ok=0
+                  for i in $(seq 1 30); do
+                    if pg_isready -h "$PGHOST" -U "$POSTGRES_USER" -d "$POSTGRES_DB" -t 3 >/dev/null 2>&1; then ok=1; echo "    reachable (try ${i})"; break; fi
+                    sleep 3
+                  done
+                  [ "$ok" = 1 ] || { echo "ERROR: postgres unreachable after retries"; exit 1; }
                   echo "==> Dumping ${POSTGRES_DB} from ${PGHOST} ..."
                   pg_dump -h "$PGHOST" -U "$POSTGRES_USER" -d "$POSTGRES_DB" -Fc -Z6 -f "/work/${FILE}"
                   echo "==> Uploading ${FILE} ..."
