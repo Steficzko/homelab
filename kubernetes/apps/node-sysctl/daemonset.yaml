@@ -24,7 +24,7 @@ spec:
         - operator: Exists            # every node incl. control-plane
       containers:
         - name: sysctl
-          image: busybox:1.37
+          image: busybox:1.38
           securityContext:
             privileged: true
           command: ["/bin/sh", "-c"]
