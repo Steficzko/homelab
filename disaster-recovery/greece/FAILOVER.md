@@ -10,8 +10,16 @@ Prague→Greece MinIO replication; this stack restores from it and can take over
 - Secrets live in `/mnt/user/appdata/bjj-failover/.env` (same DB creds +
   `N8N_ENCRYPTION_KEY` as Prague). Site HTML/nginx in `.../html` + `.../nginx`.
 
-## Keep it warm (optional, periodic)
-Re-seed from the latest replicated backups any time:
+## Keep it warm (SCHEDULED — every 6h)
+A cron on the Greece Unraid re-seeds the standby from the latest replicated backups
+every 6 hours, so it never drifts far:
+- cron source (persisted on flash): `/boot/config/plugins/dynamix/bjj-failover-restore.cron`
+  → loaded into `/etc/cron.d/root` by `update_cron`
+- log: `/mnt/user/appdata/bjj-failover/restore.log`
+- **safety guard:** the script aborts if the `n8n` container is running (i.e. we're
+  already failed over) so the periodic restore never clobbers live data.
+
+Run it manually any time (e.g. right before failover, for the freshest data):
 ```bash
 cd /mnt/user/appdata/bjj-failover && ./restore-from-minio.sh        # both
 ./restore-from-minio.sh postgres        # or just one

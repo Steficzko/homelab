@@ -8,6 +8,13 @@
 set -euo pipefail
 BASE=/mnt/user/appdata/bjj-failover
 . "$BASE/.env"
+
+# SAFETY: never overwrite a LIVE failover. If the n8n app container is running,
+# we're failed over and serving real traffic — refuse to restore over it.
+if docker ps --format '{{.Names}}' | grep -qx n8n; then
+  echo "$(date '+%F %T'): n8n is RUNNING (failover active) — skipping warm-restore to protect live data."
+  exit 0
+fi
 MINIO=http://100.85.129.88:9100
 MC="docker run --rm -e MC_HOST_dr=http://${MINIO_DR_USER}:${MINIO_DR_PASSWORD}@100.85.129.88:9100 minio/mc"
 what="${1:-all}"
