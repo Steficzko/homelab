@@ -91,7 +91,10 @@ for t in $KEY_TABLES; do
   [ "$g" = NA ] || [ -z "$g" ] && { note="greece NA"; addp "greece table $t unreadable"; }
   [ "$g" = 0 ] && { note="greece EMPTY"; addp "greece table $t empty"; }
   if [ "$PRAGUE_DIFF" = 1 ] && [ "$p" != NA ] && [ "$p" != skip ] && [ "$g" != NA ] && [ -n "$g" ]; then
-    if [ "$g" -gt "$p" ] 2>/dev/null; then note="GREECE AHEAD (drift)"; addp "greece $t ahead of prague ($g>$p)"
+    # count diffs are INFORMATIONAL, never a 'down': Greece is a backup-restore standby,
+    # so it can lag Prague (inserts) OR sit higher (Prague flush/delete) — both are lag,
+    # not corruption. Only empty/unreadable/stale (handled above) is a real problem.
+    if [ "$g" -gt "$p" ] 2>/dev/null; then note="greece +$((g-p)) ahead (lag across a prague flush — informational)"
     elif [ "$g" -lt "$p" ] 2>/dev/null; then note="lag ok (-$((p-g)))"; fi
   fi
   printf "%-18s %10s %10s   %s\n" "$t" "${g:-?}" "$p" "$note"

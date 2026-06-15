@@ -25,5 +25,5 @@ try:
 except Exception as e: print("   portainer off err:",e)
 PY
 # self-clean the one-time cron entries
-crontab -l 2>/dev/null | grep -v 'cutover-test.sh' | grep -v 'cutover-safety.sh' | grep -v 'downtime-probe.sh' | crontab - 2>/dev/null || true
+crontab -l 2>/dev/null | grep -v 'cutover-test.sh' | grep -v 'cutover-safety.sh' | grep -v 'downtime-probe.sh' | grep -v 'cutover-drill-extended.sh' | crontab - 2>/dev/null || true
 echo "===== cutover-safety done (Prague ensured, standby, cron cleaned) ====="
