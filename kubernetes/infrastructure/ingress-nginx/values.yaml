@@ -5,9 +5,15 @@ controller:
     hsts-include-subdomains: "true"
     hsts-preload: "true"
   service:
-    # Restrict NodePorts to Tailscale and cluster-internal traffic only.
-    # Blocks arbitrary LAN devices from bypassing the Cloudflare tunnel.
-    # Cloudflare tunnel connects via ClusterIP internally — unaffected.
+    # F-001 fix: do NOT allocate NodePorts.
+    # The LoadBalancer NodePort path (node-IP:3xxxx) listens on 0.0.0.0 on every
+    # node and is NOT covered by loadBalancerSourceRanges. It let any LAN/Tailscale
+    # client reach every app directly by IP+SNI, bypassing the Cloudflare Access
+    # gate (ArgoCD, Vaultwarden included). Disabling allocation removes that path.
+    # Unaffected: kube-vip (ARP) + kube-proxy still serve the LB-IP path below, and
+    # cloudflared reaches ingress via ClusterIP for the public Cloudflare-tunnel path.
+    allocateLoadBalancerNodePorts: false
+    # LB-IP path (192.168.1.201-203:80/443) — kube-proxy enforces these ranges here.
     loadBalancerSourceRanges:
       - 100.64.0.0/10   # Tailscale
       - 10.42.0.0/16    # cluster pod CIDR
