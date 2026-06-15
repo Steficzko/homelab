@@ -33,9 +33,19 @@ spec:
         - namespaceSelector:
             matchLabels:
               kubernetes.io/metadata.name: kube-system
+    # Egress on 80/443 to the PUBLIC internet only (#3). WordPress needs outbound
+    # HTTPS for core/plugin/theme updates and Site Kit -> Google; it does NOT need
+    # to reach the LAN or tailnet. Excluding private ranges stops a compromised pod
+    # from probing internal web UIs (e.g. Unraid GUI on :80). mariadb (3306) and
+    # DNS (53) keep their own rules above, so they are unaffected.
     - ports:
         - port: 443
         - port: 80
       to:
         - ipBlock:
             cidr: 0.0.0.0/0
+            except:
+              - 10.0.0.0/8        # cluster pod/service CIDRs + RFC1918
+              - 172.16.0.0/12     # RFC1918
+              - 192.168.0.0/16    # home LAN
+              - 100.64.0.0/10     # Tailscale CGNAT

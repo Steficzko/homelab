@@ -15,9 +15,29 @@ spec:
       labels:
         app: wordpress
     spec:
+      securityContext:
+        seccompProfile:
+          type: RuntimeDefault
       containers:
         - name: wordpress
           image: wordpress:7.0-apache
+          # Least-privilege (#2): drop ALL caps, re-add only what apache needs to
+          # bind :80 and drop its workers to www-data. Removes NET_RAW, SYS_*, etc.
+          # that aid container escape / lateral movement. Pod still starts as root
+          # (apache binds :80 then drops) — full non-root would require moving apache
+          # to :8080 + Service/NetworkPolicy port changes (deferred).
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+              add:
+                - CHOWN             # entrypoint chowns /var/www/html -> www-data
+                - DAC_OVERRIDE      # write to files it doesn't own during setup
+                - FOWNER            # adjust perms during setup
+                - SETGID            # apache drops worker gid -> www-data
+                - SETUID            # apache drops worker uid -> www-data
+                - NET_BIND_SERVICE  # bind privileged port 80
           env:
             - name: WORDPRESS_DB_HOST
               value: mariadb.studioconcreteluka.svc.cluster.local:3306
@@ -49,7 +69,20 @@ spec:
                 command:
                   - /bin/sh
                   - -c
-                  - rm -f /var/www/html/readme.html /var/www/html/license.txt /var/www/html/wp-trackback.php
+                  # The official entrypoint re-copies WP core into the ephemeral
+                  # rootfs on every start, so a plain rm races it (F-002: readme
+                  # came back as 200). Wait for the copy to finish, then remove.
+                  - |
+                    for i in $(seq 1 30); do
+                      if [ -f /var/www/html/wp-settings.php ]; then
+                        rm -f /var/www/html/readme.html \
+                              /var/www/html/license.txt \
+                              /var/www/html/wp-config-sample.php \
+                              /var/www/html/wp-trackback.php
+                        break
+                      fi
+                      sleep 1
+                    done
           resources:
             requests:
               memory: 256Mi
@@ -60,7 +93,18 @@ spec:
             - name: data
               mountPath: /var/www/html/wp-content
               subPath: wp-content
+            - name: hardening
+              mountPath: /var/www/html/wp-content/mu-plugins/00-scl-hardening.php
+              subPath: 00-scl-hardening.php
+              readOnly: true
+            - name: hardening
+              mountPath: /etc/apache2/conf-enabled/zz-scl-harden.conf
+              subPath: zz-scl-harden.conf
+              readOnly: true
       volumes:
         - name: data
           persistentVolumeClaim:
             claimName: wordpress-pvc
+        - name: hardening
+          configMap:
+            name: wordpress-hardening

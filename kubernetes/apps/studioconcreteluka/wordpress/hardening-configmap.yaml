@@ -1,0 +1,76 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: wordpress-hardening
+  namespace: studioconcreteluka
+data:
+  # Loaded as a must-use plugin (auto-active, cannot be deactivated from wp-admin).
+  # Suppresses version/fingerprint disclosure (F-002) without touching the theme or
+  # any installed plugin. Pure read-side filters — no DB writes, no admin surface.
+  00-scl-hardening.php: |
+    <?php
+    /**
+     * Plugin Name: SCL Hardening
+     * Description: Suppresses version/fingerprint disclosure and sets baseline
+     *              security headers. Managed via GitOps (ConfigMap) — do not edit
+     *              from wp-admin.
+     */
+
+    if ( ! defined( 'ABSPATH' ) ) {
+        exit;
+    }
+
+    // --- Remove the WordPress core <meta name="generator"> ------------------
+    remove_action( 'wp_head', 'wp_generator' );
+    add_filter( 'the_generator', '__return_empty_string' );
+
+    // --- Strip ?ver= cache-busting query args from enqueued assets ----------
+    // Removes the per-asset version fingerprint (jQuery, Elementor, plugins).
+    function scl_strip_asset_version( $src ) {
+        if ( $src && false !== strpos( $src, 'ver=' ) ) {
+            $src = remove_query_arg( 'ver', $src );
+        }
+        return $src;
+    }
+    add_filter( 'style_loader_src',  'scl_strip_asset_version', 9999 );
+    add_filter( 'script_loader_src', 'scl_strip_asset_version', 9999 );
+
+    // --- Nuke ALL generator meta tags, whatever emits them ------------------
+    // Elementor and Site Kit inject their own <meta name="generator"> outside
+    // wp_generator, so strip them from the rendered HTML directly.
+    add_action( 'template_redirect', function () {
+        if ( is_admin() ) {
+            return;
+        }
+        ob_start( function ( $html ) {
+            return preg_replace(
+                '#\s*<meta[^>]+name=["\']generator["\'][^>]*>#i',
+                '',
+                $html
+            );
+        } );
+    }, 0 );
+
+    // --- Baseline security headers (no strict CSP — would break Elementor) --
+    add_action( 'send_headers', function () {
+        if ( headers_sent() ) {
+            return;
+        }
+        header_remove( 'X-Powered-By' );
+        header( 'X-Frame-Options: SAMEORIGIN' );
+        header( 'X-Content-Type-Options: nosniff' );
+        header( 'Referrer-Policy: strict-origin-when-cross-origin' );
+    } );
+
+  # Apache: refuse to serve OR execute PHP from the writable uploads dir (PVC).
+  # The classic RCE->persistence path is a webshell dropped in wp-content/uploads,
+  # which survives GitOps redeploys because it lives on the PVC. This turns any
+  # such file into a 403 instead of silent execution. Uses only mod_authz_core
+  # (Require) — no module dependency, so a mistake here cannot break Apache startup.
+  # Scoped to uploads only: plugins/ and themes/ legitimately execute PHP.
+  zz-scl-harden.conf: |
+    <Directory /var/www/html/wp-content/uploads>
+        <FilesMatch "\.(?:php|phar|phtml|php[0-9]+)$">
+            Require all denied
+        </FilesMatch>
+    </Directory>
