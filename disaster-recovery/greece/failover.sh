@@ -33,7 +33,7 @@ api -X PUT "https://api.cloudflare.com/client/v4/zones/$ZT/dns_records/$APP_REC"
   | grep -o '"success":[a-z]*'
 
 echo "==> auto.kostikidis.net -> Greece (override the *.kostikidis.net wildcard)"
-RID=$(api "https://api.cloudflare.com/client/v4/zones/$ZK/dns_records?type=CNAME&name=auto.kostikidis.net" | grep -o '"id":"[^"]*"' | head -1 | cut -d'"' -f4)
+RID=$(api "https://api.cloudflare.com/client/v4/zones/$ZK/dns_records?type=CNAME&name=auto.kostikidis.net" | grep -o '"id":"[^"]*"' | head -1 | cut -d'"' -f4 || true)  # grep returns 1 when no explicit record (wildcard) — don't let pipefail/errexit kill us before the create-branch
 if [ -n "$RID" ]; then
   api -X PUT "https://api.cloudflare.com/client/v4/zones/$ZK/dns_records/$RID" \
     --data "{\"type\":\"CNAME\",\"name\":\"auto.kostikidis.net\",\"content\":\"$GR\",\"proxied\":true}" | grep -o '"success":[a-z]*'

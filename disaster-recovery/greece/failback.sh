@@ -18,7 +18,7 @@ api -X PUT "https://api.cloudflare.com/client/v4/zones/$ZT/dns_records/$APP_REC"
   | grep -o '"success":[a-z]*'
 
 echo "==> auto.kostikidis.net -> delete override (reverts to *.kostikidis.net wildcard -> Prague)"
-RID=$(api "https://api.cloudflare.com/client/v4/zones/$ZK/dns_records?type=CNAME&name=auto.kostikidis.net" | grep -o '"id":"[^"]*"' | head -1 | cut -d'"' -f4)
+RID=$(api "https://api.cloudflare.com/client/v4/zones/$ZK/dns_records?type=CNAME&name=auto.kostikidis.net" | grep -o '"id":"[^"]*"' | head -1 | cut -d'"' -f4 || true)  # grep returns 1 when no override present — don't let pipefail/errexit abort before the no-op branch
 if [ -n "$RID" ]; then
   api -X DELETE "https://api.cloudflare.com/client/v4/zones/$ZK/dns_records/$RID" | grep -o '"success":[a-z]*'
 else
