@@ -1,0 +1,25 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: shlink-web-client
+  namespace: shlink-elwany
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+spec:
+  ingressClassName: nginx
+  tls:
+    - hosts:
+        - link-admin.teamelwany.com
+      secretName: link-admin-teamelwany-com-tls
+  rules:
+    - host: link-admin.teamelwany.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: shlink-web-client
+                port:
+                  number: 8080

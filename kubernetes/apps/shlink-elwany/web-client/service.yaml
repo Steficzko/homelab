@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: shlink-web-client
+  namespace: shlink-elwany
+spec:
+  selector:
+    app: shlink-web-client
+  ports:
+    - port: 8080
+      targetPort: 8080

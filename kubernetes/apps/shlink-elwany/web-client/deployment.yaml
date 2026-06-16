@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: shlink-web-client
+  namespace: shlink-elwany
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: shlink-web-client
+  template:
+    metadata:
+      labels:
+        app: shlink-web-client
+    spec:
+      containers:
+        - name: web-client
+          image: shlinkio/shlink-web-client:4.7.1
+          # Static SPA (rootless nginx on :8080). It talks to the Shlink API from
+          # the BROWSER, so no in-cluster link to shlink-server is needed. On first
+          # login (behind Cloudflare Access) add the server manually:
+          #   URL = https://link.teamelwany.com  +  the generated API key.
+          ports:
+            - containerPort: 8080
+          resources:
+            requests:
+              memory: 32Mi
+              cpu: 10m
+            limits:
+              memory: 128Mi
+              cpu: 200m
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 8080
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 8080
+            initialDelaySeconds: 20
+            periodSeconds: 20
+            failureThreshold: 5

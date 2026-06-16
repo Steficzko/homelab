@@ -1,0 +1,63 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: shlink-server
+  namespace: shlink-elwany
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: shlink-server
+  template:
+    metadata:
+      labels:
+        app: shlink-server
+    spec:
+      containers:
+        - name: shlink
+          image: shlinkio/shlink:5.1.2
+          env:
+            - name: DEFAULT_DOMAIN
+              value: link.teamelwany.com
+            - name: IS_HTTPS_ENABLED
+              value: "true"
+            - name: TIMEZONE
+              value: Europe/Prague
+            # SQLite is the default driver when DB_DRIVER is unset; data lives in
+            # /etc/shlink/data (mounted on the Longhorn PVC below).
+            # No INITIAL_API_KEY: generate one post-deploy via
+            #   kubectl -n shlink exec deploy/shlink-server -- shlink api-key:generate
+            # then paste it into the gated web client. Keeps the key out of git.
+            # GEOLITE_LICENSE_KEY intentionally omitted -> IP geolocation stats
+            # disabled (needs a MaxMind license); everything else works.
+          ports:
+            - containerPort: 8080
+          resources:
+            requests:
+              memory: 128Mi
+              cpu: 100m
+            limits:
+              memory: 512Mi
+              cpu: 500m
+          readinessProbe:
+            httpGet:
+              path: /rest/health
+              port: 8080
+            initialDelaySeconds: 20
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /rest/health
+              port: 8080
+            initialDelaySeconds: 40
+            periodSeconds: 20
+            failureThreshold: 5
+          volumeMounts:
+            - name: data
+              mountPath: /etc/shlink/data
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: shlink-data-pvc
