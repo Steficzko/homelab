@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: litellm
-          image: ghcr.io/berriai/litellm@sha256:7c311546c25e7bb6e8cafede9fcd3d0d622ac636b5c9418befaa32e85dfb0186
+          image: ghcr.io/berriai/litellm@sha256:89ccaccfda9083f7693777597ca27f8ffca12045e4fa9277155fb7c5f06e68b2
           args:
             - --config
             - /app/config.yaml
