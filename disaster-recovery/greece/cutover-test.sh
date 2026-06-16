@@ -18,7 +18,7 @@ ACCT="90e7dc337477819281ed982a7f6afe32"
 TUN="0fb9fd16-cf43-4235-b9d5-9dca0166bc3f"; GRTGT="$TUN.cfargotunnel.com"
 GH="100.85.129.88"
 ZK="8dff731485cfed2d9dea64c335b91254"   # kostikidis.net
-ZT="bf7cb7f1d5d83b3416647fddee20b82c"   # teamelwany.com
+# app.teamelwany.com dropped from DR (2026-06-17): placeholder shell; real app on Dreamhost.
 CF="$(cat ~/.cloudflare_token)"
 KPUSH="$(cat ~/.kuma_cutover_push 2>/dev/null || true)"
 result="down"; detail="did not complete"
@@ -42,16 +42,15 @@ req=urllib.request.Request("http://100.85.129.88:9000/api/stacks/11?endpointId=3
 with urllib.request.urlopen(req,timeout=200) as r: print("   portainer",mode,"->",r.status)
 PY
 }
-verify(){  # 0 if BOTH CNAMEs now point at Greece AND the Greece origins are healthy.
-  # NB: public https URLs are behind Cloudflare Access (302 for unauthenticated curl),
-  # so we verify the Greece origins DIRECTLY over the tailnet, not via the public URL.
-  local i d1 d2 n8nok bjj
+verify(){  # 0 if auto.kostikidis.net now points at Greece AND the Greece n8n origin is healthy.
+  # NB: the public https URL is behind Cloudflare Access (302 for unauthenticated curl),
+  # so we verify the Greece n8n origin DIRECTLY over the tailnet, not via the public URL.
+  local i d1 n8nok
   for i in $(seq 1 12); do
-    d1=$(dns_target "$ZK" auto.kostikidis.net); d2=$(dns_target "$ZT" app.teamelwany.com)
+    d1=$(dns_target "$ZK" auto.kostikidis.net)
     n8nok=$(ssh -o BatchMode=yes root@$GH 'docker exec n8n wget -qO- http://localhost:5678/healthz 2>/dev/null' | grep -o ok)
-    bjj=$(http_code http://$GH:8088)   # Greece bjj-app (tailnet-exposed by the failover stack)
-    echo "   verify try $i: dns auto=${d1:-none} app=${d2:-none} | greece n8n=${n8nok:-no} bjj:8088=$bjj"
-    if [ "$d1" = "$GRTGT" ] && [ "$d2" = "$GRTGT" ] && [ "$n8nok" = "ok" ] && [ "$bjj" = "200" ]; then return 0; fi
+    echo "   verify try $i: dns auto=${d1:-none} | greece n8n=${n8nok:-no}"
+    if [ "$d1" = "$GRTGT" ] && [ "$n8nok" = "ok" ]; then return 0; fi
     sleep 5
   done
   return 1
@@ -61,8 +60,7 @@ verify(){  # 0 if BOTH CNAMEs now point at Greece AND the Greece origins are hea
 if [ "${MODE:-}" = "dryrun" ]; then
   echo "DRYRUN: DNS read + Kuma push plumbing only (no profile, no DNS flip):"
   echo "  auto.kostikidis.net cname=$(dns_target $ZK auto.kostikidis.net || echo '(wildcard / none on standby)')"
-  echo "  app.teamelwany.com  cname=$(dns_target $ZT app.teamelwany.com)"
-  echo "  (live verify uses Greece origins directly; public URLs are behind Cloudflare Access)"
+  echo "  (live verify uses the Greece n8n origin directly; public URL is behind Cloudflare Access)"
   push up "dryrun ok $(date '+%F %T')"
   echo "DRYRUN done. Kuma push sent (monitor 'DR Cutover Drill')."
   exit 0
@@ -72,10 +70,10 @@ fi
 cleanup(){
   echo ">>> cleanup: ALWAYS fail back to Prague + return to standby"
   bash "$DIR/failback.sh" || echo "   WARN failback.sh nonzero"
-  ssh -o BatchMode=yes root@$GH 'docker rm -f bjj-failover-cloudflared n8n bjj-app >/dev/null 2>&1 || true'
+  ssh -o BatchMode=yes root@$GH 'docker rm -f bjj-failover-cloudflared n8n >/dev/null 2>&1 || true'
   portainer_profile off || echo "   WARN portainer off nonzero"
-  local d1=$(dns_target $ZK auto.kostikidis.net) d2=$(dns_target $ZT app.teamelwany.com)
-  echo "   post-failback DNS: auto=${d1:-deleted/wildcard} app=$d2"
+  local d1=$(dns_target $ZK auto.kostikidis.net)
+  echo "   post-failback DNS: auto=${d1:-deleted/wildcard}"
   push "$result" "$detail"
   echo "===== end: $result | $detail ====="
 }
@@ -95,7 +93,7 @@ done
 
 echo "-> flip DNS to Greece (failover.sh)"; bash "$DIR/failover.sh" || { detail="failover.sh failed"; exit 1; }
 echo "-> verify Greece is serving both hosts"
-if verify; then result="up"; detail="cutover OK: auto+app 200 from Greece, DNS flipped, failing back"
+if verify; then result="up"; detail="cutover OK: auto.kostikidis.net served from Greece (n8n), DNS flipped, failing back"
 else result="down"; detail="verify FAILED (see log) — failing back"; fi
 echo "-> $result: $detail"
 exit 0   # trap cleanup runs: failback + standby + push

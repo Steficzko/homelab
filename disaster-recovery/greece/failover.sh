@@ -13,8 +13,7 @@ ACCT="90e7dc337477819281ed982a7f6afe32"
 TUN="0fb9fd16-cf43-4235-b9d5-9dca0166bc3f"          # TeamElwany GR (failover)
 GR="${TUN}.cfargotunnel.com"
 ZK="8dff731485cfed2d9dea64c335b91254"               # kostikidis.net
-ZT="bf7cb7f1d5d83b3416647fddee20b82c"               # teamelwany.com
-APP_REC="889b8c44206aa183b31cf2ac1592c5b5"          # app.teamelwany.com
+# app.teamelwany.com dropped from DR (2026-06-17): placeholder shell; real app is on Dreamhost.
 api(){ curl -s -H "Authorization: Bearer $TOKEN" -H "Content-Type: application/json" "$@"; }
 
 # --- pre-flight: refuse to flip DNS to a tunnel that has no live connections ---
@@ -26,11 +25,6 @@ if [ "$STATUS" != "healthy" ] && [ "$STATUS" != "degraded" ]; then
   echo "  (or: docker compose --profile failover up -d)"
   exit 1
 fi
-
-echo "==> app.teamelwany.com -> Greece"
-api -X PUT "https://api.cloudflare.com/client/v4/zones/$ZT/dns_records/$APP_REC" \
-  --data "{\"type\":\"CNAME\",\"name\":\"app.teamelwany.com\",\"content\":\"$GR\",\"proxied\":true}" \
-  | grep -o '"success":[a-z]*'
 
 echo "==> auto.kostikidis.net -> Greece (override the *.kostikidis.net wildcard)"
 RID=$(api "https://api.cloudflare.com/client/v4/zones/$ZK/dns_records?type=CNAME&name=auto.kostikidis.net" | grep -o '"id":"[^"]*"' | head -1 | cut -d'"' -f4 || true)  # grep returns 1 when no explicit record (wildcard) — don't let pipefail/errexit kill us before the create-branch
