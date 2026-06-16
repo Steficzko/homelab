@@ -15,6 +15,11 @@ spec:
       labels:
         app: shlink-server
     spec:
+      # Shlink runs non-root; the Longhorn PVC mounts root-owned. fsGroup makes
+      # /etc/shlink/data group-writable and adds the gid to the process, so it can
+      # create data/{cache,locks,log,...} on first boot.
+      securityContext:
+        fsGroup: 1000
       containers:
         - name: shlink
           image: shlinkio/shlink:5.1.2
