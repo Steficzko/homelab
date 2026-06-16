@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cloudflared-elwany
+  namespace: cloudflare-tunnel
+spec:
+  replicas: 2   # HA — both connect the team-elwany tunnel; Cloudflare load-balances
+  selector:
+    matchLabels:
+      app: cloudflared-elwany
+  template:
+    metadata:
+      labels:
+        app: cloudflared-elwany
+    spec:
+      topologySpreadConstraints:
+        - maxSkew: 1
+          topologyKey: kubernetes.io/hostname
+          whenUnsatisfiable: DoNotSchedule
+          labelSelector:
+            matchLabels:
+              app: cloudflared-elwany
+      containers:
+        - name: cloudflared
+          image: cloudflare/cloudflared:2026.5.2
+          args:
+            - tunnel
+            - --no-autoupdate
+            - run
+            - --token
+            - $(TUNNEL_TOKEN)
+          env:
+            - name: TUNNEL_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: cloudflare-tunnel-token-elwany   # team-elwany tunnel 9bb353e8; see secret-elwany.example.yaml
+                  key: token
+          resources:
+            requests:
+              memory: 64Mi
+              cpu: 10m
+            limits:
+              memory: 128Mi
+              cpu: 200m
