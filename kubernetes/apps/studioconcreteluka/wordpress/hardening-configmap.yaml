@@ -74,3 +74,11 @@ data:
             Require all denied
         </FilesMatch>
     </Directory>
+
+    # F-002: deny the WP-core disclosure files (version/info). The postStart rm
+    # proved unreliable (license.txt / wp-config-sample.php kept returning 200/500),
+    # so block them deterministically at the web-server layer instead. Core
+    # mod_authz_core only — cannot break Apache startup.
+    <FilesMatch "^(readme\.html|license\.txt|wp-config-sample\.php|wp-trackback\.php)$">
+        Require all denied
+    </FilesMatch>
