@@ -15,10 +15,6 @@ controller:
     allocateLoadBalancerNodePorts: false
     # LB-IP path (192.168.1.201-203:80/443) — kube-proxy enforces these ranges here.
     loadBalancerSourceRanges:
-      - 100.64.0.0/10    # Tailscale
-      - 10.42.0.0/16     # cluster pod CIDR
-      - 10.43.0.0/16     # cluster service CIDR
-      - 192.168.1.100/32 # Unraid — cloudflared-elwany tunnel origin -> ingress LB-IP
-                         # (replaces the NodePort path F-001 removed; single host,
-                         #  not the whole LAN. Cloudflare Access still enforced at
-                         #  the edge before the tunnel, so this is not a bypass.)
+      - 100.64.0.0/10   # Tailscale
+      - 10.42.0.0/16    # cluster pod CIDR
+      - 10.43.0.0/16    # cluster service CIDR
