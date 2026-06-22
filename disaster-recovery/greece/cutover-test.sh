@@ -29,7 +29,7 @@ http_code(){ curl -s -o /dev/null -w '%{http_code}' --max-time 8 "$1"; }
 portainer_profile(){ MODE2="$1" python3 - <<'PY'
 import os,json,urllib.request,urllib.error,pathlib,subprocess
 mode=os.environ["MODE2"]
-et=subprocess.run(["ssh","-o","BatchMode=yes","root@100.85.129.88","cat /mnt/user/appdata/bjj-failover/.env"],capture_output=True,text=True,timeout=40).stdout
+et=subprocess.run(["ssh","-i",os.path.expanduser("~/.ssh/id_ed25519"),"-o","IdentitiesOnly=yes","-o","BatchMode=yes","root@100.85.129.88","cat /mnt/user/appdata/bjj-failover/.env"],capture_output=True,text=True,timeout=40).stdout
 ei=dict(l.split("=",1) for l in et.splitlines() if "=" in l and not l.startswith("#"))
 ptok=pathlib.Path.home().joinpath(".portainer_token").read_text().strip()
 cftok=pathlib.Path.home().joinpath(".cf_failover_tunnel_token").read_text().strip()
@@ -48,7 +48,7 @@ verify(){  # 0 if auto.kostikidis.net now points at Greece AND the Greece n8n or
   local i d1 n8nok
   for i in $(seq 1 12); do
     d1=$(dns_target "$ZK" auto.kostikidis.net)
-    n8nok=$(ssh -o BatchMode=yes root@$GH 'docker exec n8n wget -qO- http://localhost:5678/healthz 2>/dev/null' | grep -o ok)
+    n8nok=$(ssh -i ~/.ssh/id_ed25519 -o IdentitiesOnly=yes -o BatchMode=yes root@$GH 'docker exec n8n wget -qO- http://localhost:5678/healthz 2>/dev/null' | grep -o ok)
     echo "   verify try $i: dns auto=${d1:-none} | greece n8n=${n8nok:-no}"
     if [ "$d1" = "$GRTGT" ] && [ "$n8nok" = "ok" ]; then return 0; fi
     sleep 5
@@ -70,7 +70,7 @@ fi
 cleanup(){
   echo ">>> cleanup: ALWAYS fail back to Prague + return to standby"
   bash "$DIR/failback.sh" || echo "   WARN failback.sh nonzero"
-  ssh -o BatchMode=yes root@$GH 'docker rm -f bjj-failover-cloudflared n8n >/dev/null 2>&1 || true'
+  ssh -i ~/.ssh/id_ed25519 -o IdentitiesOnly=yes -o BatchMode=yes root@$GH 'docker rm -f bjj-failover-cloudflared n8n >/dev/null 2>&1 || true'
   portainer_profile off || echo "   WARN portainer off nonzero"
   local d1=$(dns_target $ZK auto.kostikidis.net)
   echo "   post-failback DNS: auto=${d1:-deleted/wildcard}"
@@ -84,7 +84,7 @@ echo "-> wait for Greece tunnel healthy + n8n"
 ok=0
 for i in $(seq 1 18); do
   st=$(curl -s -H "Authorization: Bearer $CF" "https://api.cloudflare.com/client/v4/accounts/$ACCT/cfd_tunnel/$TUN" | grep -o '"status":"[^"]*"' | head -1 | cut -d'"' -f4)
-  hz=$(ssh -o BatchMode=yes root@$GH 'docker exec n8n wget -qO- http://localhost:5678/healthz 2>/dev/null' | grep -o 'ok')
+  hz=$(ssh -i ~/.ssh/id_ed25519 -o IdentitiesOnly=yes -o BatchMode=yes root@$GH 'docker exec n8n wget -qO- http://localhost:5678/healthz 2>/dev/null' | grep -o 'ok')
   echo "   try $i: tunnel=$st n8n=${hz:-...}"
   [ "$st" = "healthy" ] && [ -n "$hz" ] && { ok=1; break; }
   sleep 5

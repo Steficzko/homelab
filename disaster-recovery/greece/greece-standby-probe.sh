@@ -41,7 +41,7 @@ age_h(){ awk -v n="$(date -u +%s)" -v e="$1" 'BEGIN{printf "%.1f",(n-e)/3600}'; 
 echo "===== greece-standby-probe $(date '+%F %T %Z') ====="
 
 # ---------- Greece side: posture + RPO + data presence (one SSH round-trip) ----------
-GOUT="$(ssh -o BatchMode=yes -o ConnectTimeout=10 "root@$GH" 'bash -s' <<'REMOTE' 2>/dev/null
+GOUT="$(ssh -i ~/.ssh/id_ed25519 -o IdentitiesOnly=yes -o BatchMode=yes -o ConnectTimeout=10 "root@$GH" 'bash -s' <<'REMOTE' 2>/dev/null
 cd /mnt/user/appdata/bjj-failover 2>/dev/null && . ./.env 2>/dev/null
 docker ps --format '{{.Names}}' | grep -qx bjj-postgres && echo "PG_RUNNING=yes" || echo "PG_RUNNING=no"
 docker ps --format '{{.Names}}' | grep -qx n8n          && echo "N8N_RUNNING=yes" || echo "N8N_RUNNING=no"

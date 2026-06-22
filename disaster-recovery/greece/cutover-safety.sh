@@ -8,10 +8,10 @@ LOG="$HOME/cutover-test.log"
 [ -t 1 ] || exec >>"$LOG" 2>&1
 echo "===== cutover-safety $(date '+%F %T %Z') ====="
 bash "$DIR/failback.sh" || echo "   WARN failback.sh nonzero"
-ssh -o BatchMode=yes root@100.85.129.88 'docker rm -f bjj-failover-cloudflared n8n bjj-app >/dev/null 2>&1 || true'
+ssh -i ~/.ssh/id_ed25519 -o IdentitiesOnly=yes -o BatchMode=yes root@100.85.129.88 'docker rm -f bjj-failover-cloudflared n8n bjj-app >/dev/null 2>&1 || true'
 python3 - <<'PY'
 import os,json,urllib.request,urllib.error,pathlib,subprocess
-et=subprocess.run(["ssh","-o","BatchMode=yes","root@100.85.129.88","cat /mnt/user/appdata/bjj-failover/.env"],capture_output=True,text=True,timeout=40).stdout
+et=subprocess.run(["ssh","-i",os.path.expanduser("~/.ssh/id_ed25519"),"-o","IdentitiesOnly=yes","-o","BatchMode=yes","root@100.85.129.88","cat /mnt/user/appdata/bjj-failover/.env"],capture_output=True,text=True,timeout=40).stdout
 ei=dict(l.split("=",1) for l in et.splitlines() if "=" in l and not l.startswith("#"))
 ptok=pathlib.Path.home().joinpath(".portainer_token").read_text().strip()
 cftok=pathlib.Path.home().joinpath(".cf_failover_tunnel_token").read_text().strip()

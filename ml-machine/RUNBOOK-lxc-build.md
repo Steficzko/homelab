@@ -206,7 +206,7 @@ Record both Tailscale IPs.
 
 ```bash
 # kubernetes/apps/ai/ollama-gpu/service.yaml
-# kubernetes/apps/ai/whisper-gpu/service.yaml
+# kubernetes/apps/ai/whisper-ryzen/service.yaml
 # Replace STREACOM_ML_TAILSCALE_IP with real Tailscale IPs
 # Commit + push → ArgoCD syncs → ai app goes Synced/Healthy
 ```
