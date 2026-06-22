@@ -27,6 +27,23 @@ spec:
               cpu: "100m"
             limits:
               memory: 512Mi
+          startupProbe:
+            exec:
+              command: ["sh", "-c", "mariadb-admin ping"]
+            periodSeconds: 5
+            failureThreshold: 30
+          readinessProbe:
+            exec:
+              command: ["sh", "-c", "mariadb-admin ping"]
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          livenessProbe:
+            exec:
+              command: ["sh", "-c", "mariadb-admin ping"]
+            periodSeconds: 15
+            timeoutSeconds: 5
+            failureThreshold: 4
           volumeMounts:
             - name: data
               mountPath: /var/lib/mysql
