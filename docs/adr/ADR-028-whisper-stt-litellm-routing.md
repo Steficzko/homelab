@@ -46,7 +46,7 @@ Route Open WebUI STT through LiteLLM with the following configuration:
 
 **THIS ADR DESCRIBES AN UNSTABLE CONFIGURATION.**
 
-- `whisper-gpu` (primary) runs as an unmanaged Docker container inside LXC 111. There are no Kubernetes health checks, no resource limits enforced by k8s, and no automatic restart policy visible to the cluster. OOMKill risk exists.
+- `whisper-ryzen` (primary) runs as an unmanaged Docker container inside LXC 111 (ryzen-ml, CPU). There are no Kubernetes health checks, no resource limits enforced by k8s, and no automatic restart policy visible to the cluster. OOMKill risk exists.
 - LiteLLM has no way to detect that the LXC Docker container has died; it will route to a dead endpoint and surface a 5xx to the caller.
 - The fallback cluster pod is a partial mitigation but is not tested under production load.
 
@@ -73,7 +73,7 @@ These are documented here so the next person (or future me after a node rebuild)
 
 - **OWUI direct to faster-whisper-server** — skips LiteLLM, simpler path, but breaks the single-gateway model and requires OWUI reconfiguration on any backend change.
 - **OpenAI Whisper API** — no local inference, privacy tradeoff unacceptable for personal voice notes.
-- **In-cluster Whisper pod only** — removes the unmanaged Docker problem, but CPU-only cluster pod is slower; GPU path in LXC 111 is preferred when the node is awake.
+- **In-cluster Whisper pod only** — removes the unmanaged Docker problem, but shares k3s-node CPU; the dedicated ryzen-ml box (LXC 111) is preferred for transcription throughput. There is no GPU Whisper option — CTranslate2 (faster-whisper) has no ROCm backend, so both backends are CPU.
 
 ---
 

@@ -52,7 +52,7 @@ unaware of it.
 | Model alias | Primary endpoint | Fallback endpoint | Notes |
 |-------------|-----------------|-------------------|-------|
 | `chat`, `gemma4` | `ollama-gpu.ai.svc.cluster.local` → XT_ML (192.168.1.224) | `ollama.ai.svc.cluster.local` (in-cluster CPU pod) | GPU-first; falls to M910q CPU tier |
-| `whisper` | `whisper-gpu.ai.svc.cluster.local` → RYZEN_ML (192.168.1.225) | `whisper-cpu.ai.svc.cluster.local` (in-cluster) | large-v3-turbo GPU first; smaller CPU model as fallback |
+| `whisper` | `whisper-ryzen.ai.svc.cluster.local` → RYZEN_ML (192.168.1.225, CPU) | `whisper.ai.svc.cluster.local` (in-cluster CPU pod) | large-v3 on ryzen-ml CPU (primary); in-cluster CPU pod as fallback. No GPU Whisper — CTranslate2 has no ROCm backend |
 | `DrGemmaQ4`, `DrGemmaQ8` | 192.168.1.227 (isolated custom endpoint) | None | Experimental fine-tuned Gemma for Dr. Ali assistant; intentionally not in fallback chain |
 
 The ML node LXCs are registered in the cluster as Service+Endpoints manifests so they

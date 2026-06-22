@@ -49,7 +49,7 @@ data:
       - model_name: whisper
         litellm_params:
           model: openai/Systran/faster-whisper-large-v3
-          api_base: http://whisper-gpu.ai.svc.cluster.local:8000/v1
+          api_base: http://whisper-ryzen.ai.svc.cluster.local:8000/v1
           api_key: dummy
           timeout: 180
       - model_name: whisper-fallback
