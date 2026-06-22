@@ -89,6 +89,26 @@ spec:
               cpu: "100m"
             limits:
               memory: 512Mi
+          startupProbe:
+            httpGet:
+              path: /
+              port: 80
+            periodSeconds: 5
+            failureThreshold: 30
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 80
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 80
+            periodSeconds: 20
+            timeoutSeconds: 5
+            failureThreshold: 4
           volumeMounts:
             - name: data
               mountPath: /var/www/html/wp-content
