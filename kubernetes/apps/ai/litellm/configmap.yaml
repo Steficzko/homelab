@@ -66,4 +66,4 @@ data:
       fallbacks: [{"chat": ["chat-fallback"]}, {"gemma4": ["chat-fallback"]}, {"whisper": ["whisper-fallback"]}]
 
     general_settings:
-      master_key: sk-homelab-f68f71cacc472b5c4678da8a07c4829d
+      master_key: os.environ/LITELLM_MASTER_KEY

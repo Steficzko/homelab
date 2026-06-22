@@ -21,6 +21,12 @@ spec:
             - /app/config.yaml
             - --port
             - "4000"
+          env:
+            - name: LITELLM_MASTER_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: litellm-secret
+                  key: LITELLM_MASTER_KEY
           ports:
             - containerPort: 4000
           volumeMounts:
