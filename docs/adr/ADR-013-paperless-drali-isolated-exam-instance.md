@@ -1,8 +1,9 @@
 # ADR-013 — Isolated Paperless-ngx Instance for Dr. Ali Adnan's Exam Knowledge Base
 
-**Status:** Accepted  
+**Status:** Decommissioned (2026-06-24)  
 **Date:** 2026-05-25  
-**Deployed:** 2026-05-26
+**Deployed:** 2026-05-26  
+**Decommissioned:** 2026-06-24 — Dr. Ali completed his exam preparation. Instance, data, DNS, and Cloudflare Access policy removed. Retained as a record of the isolated-tenant pattern.
 
 ## Context
 

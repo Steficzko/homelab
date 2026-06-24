@@ -167,10 +167,6 @@ data:
           icon: sh-obsidian
           href: https://obsidian.kostikidis.net
           description: Note sync
-      - Paperless Dr. Ali:
-          icon: sh-paperless-ngx
-          href: https://dralibjj.kostikidis.net
-          description: Document archive
       - Linkding:
           icon: sh-linkding
           href: https://links.kostikidis.net
