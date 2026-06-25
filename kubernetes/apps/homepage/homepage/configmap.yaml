@@ -38,19 +38,19 @@ data:
         url: http://longhorn-backend.longhorn-system.svc.cluster.local:9500
 
   widgets.yaml: |
+    - longhorn:
+        expanded: true
+        total: true
+        labels: true
+        nodes: true
+        label: LONGHORN
     - glances:
         url: http://192.168.1.100:61208
         version: 4
         cpu: true
         mem: true
         uptime: true
-        disk: /
         label: Unraid
-    - longhorn:
-        expanded: true
-        total: true
-        labels: true
-        nodes: true
     - datetime:
         text_size: xl
         format:
