@@ -57,7 +57,8 @@ data:
           timeStyle: short
           dateStyle: short
     - search:
-        provider: google
+        provider: custom
+        url: https://search.kostikidis.net/search?q=
         target: _blank
 
   services.yaml: |

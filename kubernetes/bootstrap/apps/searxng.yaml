@@ -1,0 +1,29 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: searxng
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/Steficzko/homelab.git
+    targetRevision: HEAD
+    path: kubernetes/apps/searxng
+    directory:
+      recurse: true
+      exclude: '*.sops.yaml'
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: searxng
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+  ignoreDifferences:
+    - group: ""
+      kind: Secret
+      name: searxng-secret
+      jsonPointers:
+        - /data                       # populated out-of-band; don't let Argo strip it
