@@ -15,8 +15,6 @@ spec:
       labels:
         app: immich-lightroom
     spec:
-      nodeSelector:
-        kubernetes.io/hostname: k3s-prg-r1
       containers:
         - name: immich-server
           image: ghcr.io/immich-app/immich-server:release
