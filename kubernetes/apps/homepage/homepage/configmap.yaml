@@ -39,7 +39,7 @@ data:
 
   widgets.yaml: |
     - glances:
-        url: http://100.82.66.30:61208
+        url: http://192.168.1.100:61208
         version: 4
         cpu: true
         mem: true
