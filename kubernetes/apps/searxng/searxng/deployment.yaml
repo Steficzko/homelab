@@ -23,7 +23,13 @@ spec:
       initContainers:
         - name: seed-settings
           image: searxng/searxng:2026.6.24-e3126b89e@sha256:77b6ec55d5176fc47cfe91df5e182393133305358741d0c80ebbeec75ac39f99
-          command: ["sh", "-c", "cp /src/settings.yml /work/settings.yml"]
+          command: ["sh", "-c", "cp /src/settings.yml /work/settings.yml && sed -i \"s|ultrasecretkey|$SEARXNG_SECRET|\" /work/settings.yml"]
+          env:
+            - name: SEARXNG_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: searxng-secret
+                  key: SEARXNG_SECRET
           volumeMounts:
             - name: settings
               mountPath: /work
@@ -37,11 +43,6 @@ spec:
               value: Europe/Prague
             - name: SEARXNG_BASE_URL
               value: https://search.kostikidis.net/
-            - name: SEARXNG_SECRET
-              valueFrom:
-                secretKeyRef:
-                  name: searxng-secret
-                  key: SEARXNG_SECRET
           ports:
             - containerPort: 8080
           resources:
