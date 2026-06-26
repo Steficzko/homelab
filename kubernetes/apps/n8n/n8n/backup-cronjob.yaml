@@ -80,7 +80,7 @@ spec:
                 - { name: tools, mountPath: /tools }
           containers:
             - name: export
-              image: bitnamilegacy/kubectl:1.31
+              image: bitnamilegacy/kubectl:1.33
               envFrom:
                 - secretRef: { name: backup-s3-secret }   # AWS_ACCESS_KEY_ID / AWS_SECRET_ACCESS_KEY / AWS_ENDPOINTS
               env:
