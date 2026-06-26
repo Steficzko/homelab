@@ -7,7 +7,7 @@ data:
   settings.yml: |
     use_default_settings: true
     general:
-      instance_name: "Steficzko"
+      instance_name: "StefiCZko"
     server:
       secret_key: "ultrasecretkey"   # replaced at boot by $SEARXNG_SECRET
       limiter: false
