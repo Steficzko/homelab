@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: searxng-settings
+  namespace: searxng
+data:
+  settings.yml: |
+    use_default_settings: true
+    general:
+      instance_name: "Steficzko"
+    server:
+      secret_key: "ultrasecretkey"   # replaced at boot by $SEARXNG_SECRET
+      limiter: false
+    search:
+      formats:
+        - html
+    ui:
+      default_theme: simple
+      theme_args:
+        simple_style: dark
+      default_locale: en

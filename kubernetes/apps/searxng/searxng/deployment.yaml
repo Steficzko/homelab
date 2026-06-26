@@ -18,6 +18,17 @@ spec:
       # k8s injects SEARXNG_PORT=tcp://... from the Service name, which collides
       # with SearXNG's own SEARXNG_PORT (wants an int) -> disable service links
       enableServiceLinks: false
+      # SearXNG seds $SEARXNG_SECRET into settings.yml at boot -> needs a writable
+      # copy; seed the (read-only) ConfigMap into an emptyDir first.
+      initContainers:
+        - name: seed-settings
+          image: searxng/searxng:2026.6.24-e3126b89e@sha256:77b6ec55d5176fc47cfe91df5e182393133305358741d0c80ebbeec75ac39f99
+          command: ["sh", "-c", "cp /src/settings.yml /work/settings.yml"]
+          volumeMounts:
+            - name: settings
+              mountPath: /work
+            - name: settings-src
+              mountPath: /src
       containers:
         - name: searxng
           image: searxng/searxng:2026.6.24-e3126b89e@sha256:77b6ec55d5176fc47cfe91df5e182393133305358741d0c80ebbeec75ac39f99
@@ -53,3 +64,13 @@ spec:
             initialDelaySeconds: 30
             periodSeconds: 20
             failureThreshold: 5
+          volumeMounts:
+            - name: settings
+              mountPath: /etc/searxng/settings.yml
+              subPath: settings.yml
+      volumes:
+        - name: settings
+          emptyDir: {}
+        - name: settings-src
+          configMap:
+            name: searxng-settings
