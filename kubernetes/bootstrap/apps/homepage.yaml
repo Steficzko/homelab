@@ -21,9 +21,3 @@ spec:
       selfHeal: true
     syncOptions:
       - CreateNamespace=true
-  ignoreDifferences:
-    - group: ""
-      kind: Secret
-      name: homepage-secret
-      jsonPointers:
-        - /data                       # populated out-of-band; don't let Argo strip it

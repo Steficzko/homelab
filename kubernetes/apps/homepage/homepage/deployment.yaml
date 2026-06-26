@@ -23,15 +23,6 @@ spec:
           env:
             - name: HOMEPAGE_ALLOWED_HOSTS
               value: home.kostikidis.net
-            - name: HOMEPAGE_VAR_UNRAID_KEY
-              valueFrom:
-                secretKeyRef:
-                  name: homepage-secret
-                  key: HOMEPAGE_VAR_UNRAID_KEY
-            # ponytail: Unraid uses a self-signed cert; homepage's only https
-            # target is the trusted LAN NAS, so accept it. Remove if Unraid gets a real cert.
-            - name: NODE_TLS_REJECT_UNAUTHORIZED
-              value: "0"
           resources:
             requests:
               memory: 128Mi
