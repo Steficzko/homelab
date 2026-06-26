@@ -1,6 +1,6 @@
 # ADR-030 — Dedicated Worker Nodes: Topology Split Instead of Per-Node RAM Upgrade
 
-**Status:** Proposed
+**Status:** Accepted (enacted 2026-06-26/27 — see ADR-030-amendment-16gib-workers)
 **Date:** 2026-06-22
 
 ## Context
