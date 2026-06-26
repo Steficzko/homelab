@@ -40,10 +40,9 @@ data:
   widgets.yaml: |
     - longhorn:
         expanded: true
-        total: true
+        total: false
         labels: true
         nodes: true
-        label: LONGHORN
     - glances:
         url: http://192.168.1.100:61208
         version: 4
