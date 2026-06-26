@@ -44,13 +44,9 @@ data:
         labels: true
         nodes: true
         label: LONGHORN
-    - glances:
-        url: http://192.168.1.100:61208
-        version: 4
-        cpu: true
-        mem: true
-        uptime: true
-        label: Unraid
+    - unraid:
+        url: http://192.168.1.100
+        key: "{{HOMEPAGE_VAR_UNRAID_KEY}}"
     - datetime:
         text_size: xl
         format:

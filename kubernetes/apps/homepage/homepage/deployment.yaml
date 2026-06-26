@@ -23,6 +23,11 @@ spec:
           env:
             - name: HOMEPAGE_ALLOWED_HOSTS
               value: home.kostikidis.net
+            - name: HOMEPAGE_VAR_UNRAID_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: homepage-secret
+                  key: HOMEPAGE_VAR_UNRAID_KEY
           resources:
             requests:
               memory: 128Mi
