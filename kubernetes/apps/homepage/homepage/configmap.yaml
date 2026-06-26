@@ -45,7 +45,7 @@ data:
         nodes: true
         label: LONGHORN
     - unraid:
-        url: http://192.168.1.100
+        url: https://192.168.1.100
         key: "{{HOMEPAGE_VAR_UNRAID_KEY}}"
     - datetime:
         text_size: xl
