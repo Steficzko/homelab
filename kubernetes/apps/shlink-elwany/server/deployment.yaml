@@ -35,8 +35,11 @@ spec:
             # No INITIAL_API_KEY: generate one post-deploy via
             #   kubectl -n shlink exec deploy/shlink-server -- shlink api-key:generate
             # then paste it into the gated web client. Keeps the key out of git.
-            # GEOLITE_LICENSE_KEY intentionally omitted -> IP geolocation stats
-            # disabled (needs a MaxMind license); everything else works.
+            - name: GEOLITE_LICENSE_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: shlink-secret
+                  key: GEOLITE_LICENSE_KEY
           ports:
             - containerPort: 8080
           resources:

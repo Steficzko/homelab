@@ -11,6 +11,7 @@ spec:
     path: kubernetes/apps/shlink-elwany
     directory:
       recurse: true
+      exclude: '*.sops.yaml'
   destination:
     server: https://kubernetes.default.svc
     namespace: shlink-elwany
@@ -20,3 +21,9 @@ spec:
       selfHeal: true
     syncOptions:
       - CreateNamespace=true
+  ignoreDifferences:
+    - group: ""
+      kind: Secret
+      name: shlink-secret
+      jsonPointers:
+        - /data                       # populated out-of-band; don't let Argo strip it
