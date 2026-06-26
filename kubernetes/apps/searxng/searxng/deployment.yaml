@@ -15,6 +15,9 @@ spec:
       labels:
         app: searxng
     spec:
+      # k8s injects SEARXNG_PORT=tcp://... from the Service name, which collides
+      # with SearXNG's own SEARXNG_PORT (wants an int) -> disable service links
+      enableServiceLinks: false
       containers:
         - name: searxng
           # ponytail: :latest for now — pin to a dated tag once confirmed; Renovate will track it
