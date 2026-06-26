@@ -69,6 +69,14 @@ spec:
             - name: settings
               mountPath: /etc/searxng/settings.yml
               subPath: settings.yml
+            - name: settings-src
+              mountPath: /branding
+              readOnly: true
+          # swap the favicon + strip the pre-compressed variants that'd otherwise win
+          lifecycle:
+            postStart:
+              exec:
+                command: ["sh", "-c", "D=/usr/local/searxng/searx/static/themes/simple/img; cp /branding/favicon.svg \"$D/favicon.svg\" 2>/dev/null; rm -f \"$D/favicon.svg.gz\" \"$D/favicon.svg.br\"; true"]
       volumes:
         - name: settings
           emptyDir: {}

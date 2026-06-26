@@ -19,3 +19,10 @@ data:
       theme_args:
         simple_style: dark
       default_locale: en
+  favicon.svg: |
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+      <rect width="100" height="100" rx="22" fill="#3b8c84"/>
+      <text x="50" y="50" font-family="Arial,Helvetica,sans-serif" font-weight="700"
+            font-size="33" letter-spacing="-1" fill="#ffffff"
+            text-anchor="middle" dominant-baseline="central">SCZ</text>
+    </svg>
