@@ -13,6 +13,14 @@ spec:
       labels:
         app: litellm
     spec:
+      affinity:                              # ADR-030 tier-B: prefer workers (non-control-plane), soft fallback
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              preference:
+                matchExpressions:
+                  - key: node-role.kubernetes.io/control-plane
+                    operator: DoesNotExist
       containers:
         - name: litellm
           image: ghcr.io/berriai/litellm@sha256:8f3517476b8293ccc1c3b0da7940d8dabbfe64b013454113f5a3cb68265c439b

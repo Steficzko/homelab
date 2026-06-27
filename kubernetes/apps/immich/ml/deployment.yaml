@@ -13,6 +13,14 @@ spec:
       labels:
         app: immich-ml
     spec:
+      affinity:                              # ADR-030 tier-A: prefer workers (non-control-plane), soft fallback
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              preference:
+                matchExpressions:
+                  - key: node-role.kubernetes.io/control-plane
+                    operator: DoesNotExist
       containers:
         - name: nginx
           image: nginx:1.31-alpine

@@ -15,6 +15,14 @@ spec:
       labels:
         app: whisper
     spec:
+      affinity:                              # ADR-030 tier-A: prefer workers (non-control-plane), soft fallback
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              preference:
+                matchExpressions:
+                  - key: node-role.kubernetes.io/control-plane
+                    operator: DoesNotExist
       containers:
         - name: whisper
           image: fedirz/faster-whisper-server@sha256:760e5e43d427dc6cfbbc4731934b908b7de9c7e6d5309c6a1f0c8c923a5b6030
