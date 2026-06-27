@@ -64,6 +64,13 @@ the `Pending`-on-failure cliff. Restore required affinity only once **both** con
 With condition 1 met, restoring required affinity is now gated only on the requests-honesty
 validation. Until that is done, tier-A stays preferred, matching tier-B.
 
+> **Reality check (2026-06-27):** the `preferred` affinity described here is **not yet in the
+> manifests** — `immich-ml`, `whisper`, `litellm`, and `ollama` have empty
+> `affinity`/`nodeSelector`/`tolerations`, so placement is soft-taint-only and `immich-ml` is
+> currently on `b3` (an etcd node). This section describes the **intended** placement, not deployed
+> state. Open action: add the `preferred` worker affinity to those four deploys, or accept
+> soft-taint-only steering and drop the affinity language.
+
 ### 3. Longhorn rebalance — EXECUTED 2026-06-27 (planned mechanism was a no-op)
 
 ADR-030 §4 said add the worker NVMe and rebalance. Both worker disks onboarded (each a ~216 GiB

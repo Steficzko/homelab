@@ -65,7 +65,7 @@ torn down without disturbing the ML LXCs.
 | IP | 192.168.1.224 |
 | GPU access | RX 6700 XT passthrough via IOMMU group 26 |
 | Runtime | ROCm 7.2 + Ollama |
-| Model | Gemma 3 12B Q4 (~8 GB VRAM) primary — see note on Gemma 4 below |
+| Model | Gemma 4 12B (~8 GB VRAM) primary (live 2026-06, superseded Gemma 3 12B); `gemma3:4b` kept as the small/fast route |
 | k3s role | External endpoint for GPU tasks |
 
 The RX 6700 XT is in its own IOMMU group (group 26), making clean passthrough to a
@@ -73,9 +73,10 @@ single LXC possible without involving other devices. ROCm 7.2 is the runtime; Ol
 serves the model. The LXC has no network access to raw storage outside its mount
 points — the GPU boundary is also a data boundary.
 
-> **Model note:** Gemma 4 26B A4B (MoE, ~6–7 GB active VRAM) is the upgrade target
-> once Ollama confirms stable MoE selective-loading support. Until then, Gemma 3 12B
-> Q4 is the production model. Verify before switching.
+> **Model note (updated 2026-06-27):** Gemma 4 12B is now the live production chat model
+> (litellm `gemma4` → `ollama/gemma4:12b`), having superseded Gemma 3 12B Q4. The 26B MoE
+> variant is wired as the `gemma4-26b` route (`ollama/gemma4:latest`); `gemma3:4b` remains
+> the small/fast route.
 
 ### LXC 2: RYZEN_ML — CPU Transcription
 

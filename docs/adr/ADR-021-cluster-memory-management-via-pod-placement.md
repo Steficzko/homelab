@@ -1,6 +1,6 @@
 # ADR-021 — Cluster Memory Management via Pod Placement Instead of Hardware Upgrade
 
-**Status:** Accepted
+**Status:** Accepted — **pod-pins partially superseded by ADR-030 (verified 2026-06-27).** The specific pins below (`immich-lightroom`→`r1`, `immich-ml`→`r1`) are **no longer implemented**: live, `immich-lightroom` runs on `w1` and `immich-ml` on `b3`, both with **no `nodeSelector`** — placement is now steered by ADR-030's soft taint, not these pins. The memory-management *principle* stands; the `r1` pins do not.
 **Date:** 2026-06-04
 
 ## Context
