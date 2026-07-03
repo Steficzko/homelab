@@ -1,7 +1,6 @@
 # ADR-007 — Proxmox ML Node: GPU Inference Isolation, CPU Transcription Split, and WoL Power Strategy
 
-## Status
-Accepted
+**Status:** Accepted
 
 ## Context
 

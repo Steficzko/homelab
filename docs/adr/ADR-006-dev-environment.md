@@ -1,7 +1,6 @@
 # ADR-006 — Dev Environment: Debian VM on Unraid with Syncthing Replication
 
-## Status
-Accepted
+**Status:** Accepted
 
 ## Context
 

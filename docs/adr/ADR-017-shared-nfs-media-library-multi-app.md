@@ -1,7 +1,6 @@
 # ADR-017 — Shared NFS Media Library: Read-Only Mount with Per-App Type Filtering
 
-## Status
-Accepted
+**Status:** Accepted
 
 ## Context
 

@@ -1,7 +1,6 @@
 # ADR-019 — Storage Evolution: Longhorn Now, Ceph + TrueNAS Scale Long-Term, Unraid to Archival Role
 
-## Status
-Accepted — pending implementation (Phases 2 and 3)
+**Status:** Accepted — pending implementation (Phases 2 and 3)
 
 ## Context
 

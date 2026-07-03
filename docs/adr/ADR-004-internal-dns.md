@@ -1,7 +1,6 @@
 # ADR-004 — Internal DNS: AdGuard Home over Pi-hole
 
-## Status
-Accepted — pending deployment
+**Status:** Accepted — pending deployment
 
 ## Context
 

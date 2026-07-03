@@ -22,15 +22,20 @@ So I built a cluster.
 
 - **5-node HA K3s** — 3 control-plane/etcd nodes + 2 dedicated worker nodes. The
   split (and *why* it isn't just "add RAM") is [ADR-030](docs/adr/ADR-030-dedicated-worker-nodes-topology-split.md).
-- **GitOps end to end** — ArgoCD app-of-apps, 29 applications, every change a
-  reviewed git commit. Nothing is `kubectl apply`-ed by hand.
+- **GitOps for the application layer** — ArgoCD app-of-apps, 29 applications, every
+  change a reviewed git commit. Honest exceptions: SOPS secrets are applied out-of-band
+  by design, and Longhorn's install isn't in git yet (a known, tracked drift).
 - **3-2-1 backups, actually *drilled*** — Longhorn + Velero → on-site MinIO,
   replicated off-site to Greece. The cross-site DR cutover is a real script with
-  automatic failback, and I **measured ~0 s user-facing downtime** on the drill
-  ([ADR-011](docs/adr/ADR-011-application-logical-backups-and-offsite-replication.md),
+  automatic failback, and I **measured ~0 s cutover downtime** on the drill — with the
+  honest caveat: that's the *mechanism* with Prague still up; a real outage is RTO ≈ 1-2 min,
+  RPO ≈ 1 h, one service ([details](disaster-recovery/README.md),
+  [ADR-011](docs/adr/ADR-011-application-logical-backups-and-offsite-replication.md),
   [ADR-005](docs/adr/ADR-005-multi-site-dr-architecture.md)).
-- **Secrets done right** — SOPS + age. Every `*.sops.yaml` here is safe to commit;
-  no plaintext credential ever touches git.
+- **Secrets in SOPS + age** — encrypted before they reach git; every `*.sops.yaml` here
+  is safe to commit. Full disclosure: one plaintext key slipped into history early on
+  (`baed4916`) and was rotated + invalidated the *same day* it was caught (`a36664e`) —
+  which is why `gitleaks` runs pre-commit now.
 - **No inbound ports** — Cloudflare Tunnel + a Zero Trust wildcard deny-by-default
   ([ADR-010](docs/adr/ADR-010-cloudflare-zero-trust.md)).
 - **32 ADRs documenting the *why* — including the ones I got wrong.** The one I'm
@@ -53,8 +58,10 @@ Cloudflare Tunnel · ArgoCD · Prometheus + Grafana · Velero · SOPS + age
 
 **Public access:** Cloudflare Tunnel → Nginx Ingress → `*.kostikidis.net`
 
-**Secrets:** Encrypted with SOPS + age. All `*.sops.yaml` files in this repo are
-safe to commit. Plaintext secrets never touch git.
+**Secrets:** Encrypted with SOPS + age before they reach git — every `*.sops.yaml`
+file here is safe to commit. Full disclosure: one plaintext key leaked into history once
+(`baed4916`); it was rotated and invalidated the day it was found (`a36664e`), and
+`gitleaks` now runs pre-commit to keep it from recurring.
 
 ## Why this repo exists
 

@@ -1,7 +1,6 @@
 # ADR-016 — Immich Postgres Migration: Filtered pg_restore Over Fresh Deploy
 
-## Status
-Accepted — implementation deferred post-Prague (week of 2026-05-29)
+**Status:** Accepted — implementation deferred post-Prague (week of 2026-05-29)
 
 ## Context
 

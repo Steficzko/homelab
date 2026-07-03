@@ -1,7 +1,6 @@
 # ADR-009 — LiteLLM as Unified Inference Gateway with Tiered Fallback
 
-## Status
-Accepted
+**Status:** Accepted
 
 ## Context
 
