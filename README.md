@@ -1,6 +1,6 @@
 # homelab
 
-> From a failed Western Digital drive in 2009 to a 3-node Kubernetes HA cluster.
+> From a failed Western Digital drive in 2009 to a 5-node Kubernetes HA cluster.
 > This is the infrastructure that grew out of that loss.
 
 ## The short version
@@ -18,19 +18,43 @@ something that could run Docker containers without FreeBSD getting in the way.
 At some point I found Kubernetes. One thing led to another. I already knew Linux.
 So I built a cluster.
 
+## Highlights
+
+- **5-node HA K3s** — 3 control-plane/etcd nodes + 2 dedicated worker nodes. The
+  split (and *why* it isn't just "add RAM") is [ADR-030](docs/adr/ADR-030-dedicated-worker-nodes-topology-split.md).
+- **GitOps end to end** — ArgoCD app-of-apps, 29 applications, every change a
+  reviewed git commit. Nothing is `kubectl apply`-ed by hand.
+- **3-2-1 backups, actually *drilled*** — Longhorn + Velero → on-site MinIO,
+  replicated off-site to Greece. The cross-site DR cutover is a real script with
+  automatic failback, and I **measured ~0 s user-facing downtime** on the drill
+  ([ADR-011](docs/adr/ADR-011-application-logical-backups-and-offsite-replication.md),
+  [ADR-005](docs/adr/ADR-005-multi-site-dr-architecture.md)).
+- **Secrets done right** — SOPS + age. Every `*.sops.yaml` here is safe to commit;
+  no plaintext credential ever touches git.
+- **No inbound ports** — Cloudflare Tunnel + a Zero Trust wildcard deny-by-default
+  ([ADR-010](docs/adr/ADR-010-cloudflare-zero-trust.md)).
+- **32 ADRs documenting the *why* — including the ones I got wrong.** The one I'm
+  most proud of is the [ADR-030 amendment](docs/adr/ADR-030-amendment-16gib-workers.md):
+  I planned for 32 GB workers, the hardware turned out to be 16 GB, so I amended
+  my own decision and wrote down exactly what that invalidated.
+
+**New here? Start with [`docs/adr/`](docs/adr/) — that's where the reasoning lives.**
+
 ## The cluster
 
-3-node K3s HA cluster on Lenovo M910q mini PCs. Every node runs control-plane,
-etcd, and worker. The goal is a production-grade self-hosted stack — the kind
-you'd run at a small company, but at home, on hardware I can touch.
+5-node K3s HA cluster: **3 control-plane/etcd nodes** (Lenovo M910q) + **2 dedicated
+worker nodes** (Lenovo M920q). Control plane and workloads are split into tiers so
+application memory spikes can't threaten etcd — the goal is a production-grade
+self-hosted stack, the kind you'd run at a small company, but at home, on hardware
+I can touch.
 
 **Stack:** K3s · kube-vip · Longhorn · ingress-nginx · cert-manager ·
-Cloudflare Tunnel · ArgoCD · Prometheus + Grafana · SOPS + age
+Cloudflare Tunnel · ArgoCD · Prometheus + Grafana · Velero · SOPS + age
 
 **Public access:** Cloudflare Tunnel → Nginx Ingress → `*.kostikidis.net`
 
-**Secrets:** Encrypted with SOPS + age. All `*.sops.yaml` files in this repo
-are safe to commit. Plaintext secrets never touch git.
+**Secrets:** Encrypted with SOPS + age. All `*.sops.yaml` files in this repo are
+safe to commit. Plaintext secrets never touch git.
 
 ## Why this repo exists
 
@@ -42,39 +66,38 @@ certificate SANs, storage classes, ingress, network policies. The
 [`docs/adr/`](docs/adr/) folder documents the architecture decisions, including
 the ones I got wrong.
 
-**Second:** This is my portfolio. I manage infrastructure across Prague and
-Ptolemaida, work across Linux/Mac/Windows, and am targeting a DevOps/SRE role.
-This repo is the evidence.
+**Second:** This is my portfolio. I run infrastructure across Prague (the cluster)
+and Greece (off-site DR), operate from Erbil, work across Linux/Mac/Windows, and am
+targeting a DevOps/SRE role. This repo is the evidence — and it's not a demo: it
+runs real family services and a real client's app.
 
 ## Structure
 
 ```
 kubernetes/
-  apps/          — application manifests (ArgoCD-synced)
-  bootstrap/     — ArgoCD app-of-apps + root application
-  infrastructure/ — Longhorn, storage
-  networking/    — cert-manager, cloudflared, ingress-nginx, kube-vip
-  monitoring/    — Prometheus + Grafana
+  apps/           — application manifests (ArgoCD-synced)
+  bootstrap/      — ArgoCD app-of-apps + root application
+  infrastructure/ — Longhorn, descheduler, cert-manager, ingress
+  networking/     — cloudflared, ingress-nginx, kube-vip
+  monitoring/     — Prometheus + Grafana, Loki
 docs/
-  adr/           — Architecture Decision Records
-  wiki/          — runbooks and operational notes
-migration/       — runbooks for migrating from Unraid Docker stack
+  adr/            — Architecture Decision Records (start here)
+disaster-recovery/
+  greece/         — cross-site failover/failback + downtime-probe scripts
 ```
 
 ## How I work
 
-The dev environment runs as a Debian VM on my Unraid server, always on,
-accessed via VS Code Remote-SSH over Tailscale from any machine. Working files
-live on an NFS-mounted array share — if the VM's SSD dies, nothing of value was
-on it. See [ADR-006](docs/adr/ADR-006-dev-environment-continuity.md) for the
-full reasoning.
+The dev environment runs as a Debian VM on my Unraid server, always on, accessed
+via VS Code Remote-SSH over Tailscale from any machine. Working files live on an
+NFS-mounted array share — if the VM's SSD dies, nothing of value was on it. See
+[ADR-006](docs/adr/ADR-006-dev-environment.md) for the full reasoning.
 
-I use Claude Code with a set of custom subagents for continuity across sessions:
-an accountability ledger that survives context resets, a study-notes keeper that
-builds CKA flashcards as I work, a pre-commit manifest reviewer, and a
-"contrarian" that checks live cluster state and stops me from going down rabbit
-holes before I understand the real time cost. The agents are not in this repo
-yet — still tuning them.
+I drive a lot of this with Claude Code plus a set of custom subagents for
+continuity across sessions: an accountability ledger that survives context resets,
+a study-notes keeper that builds CKA flashcards as I work, a pre-commit manifest
+reviewer, and a "contrarian" that checks live cluster state and stops me going
+down rabbit holes before I understand the real time cost.
 
 ## Blog
 
@@ -82,9 +105,10 @@ I write about what I build at [www.kostikidis.net](https://www.kostikidis.net).
 
 ## Status
 
-Actively building. The cluster runs real workloads. The plan is to lock it down
-as my primary production server once the setup is complete and the CKA is done.
+Actively building. Five nodes, real workloads, backups and cross-site DR drilled.
+The plan is to lock it down as my primary production platform once the setup is
+complete and the CKA is done — and to scale it to the next client's app.
 
 ---
 
-*Prague · Ptolemaida · always on Tailscale*
+*Prague · Greece · Erbil · always on Tailscale*

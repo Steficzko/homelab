@@ -1,0 +1,10 @@
+# gitleaks config — extends the built-in default ruleset with homelab-specific keys.
+# Picked up automatically by the pre-commit hook (`gitleaks git --staged`).
+[extend]
+useDefault = true
+
+[[rules]]
+id = "litellm-homelab-master-key"
+description = "LiteLLM homelab master key (sk-homelab-<hex>) — must live in a SOPS secret, never plaintext"
+regex = '''sk-homelab-[a-f0-9]{16,}'''
+keywords = ["sk-homelab-"]

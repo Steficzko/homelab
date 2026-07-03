@@ -54,3 +54,5 @@ sops/age/keys.txt
 
 # FUSE temporary files (created when a file is open during deletion)
 .fuse_hidden*
+.claude/
+CLAUDE.md
