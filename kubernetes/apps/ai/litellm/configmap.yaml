@@ -46,6 +46,13 @@ data:
           timeout: 300
           think: false                  # qwen3 thinking off — JSON pipeline needs answers, not pondering
 
+      - model_name: chat-json
+        litellm_params:
+          model: ollama_chat/gemma4:12b   # ollama_chat route — respects response_format (constrained JSON decode) + think
+          api_base: http://ollama-gpu.ai.svc.cluster.local:11434
+          timeout: 180
+          think: false                    # gemma4 thinking eats the whole context on long transcripts → empty content
+
       - model_name: whisper
         litellm_params:
           model: openai/Systran/faster-whisper-large-v3
