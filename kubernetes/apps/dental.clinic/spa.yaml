@@ -18,7 +18,7 @@ spec:
       imagePullSecrets: [{name: ghcr-pull}]
       containers:
         - name: nginx
-          image: ghcr.io/steficzko/dental-spa:v0.5.0   # registry placeholder; semver, never :latest
+          image: ghcr.io/steficzko/dental-spa:v0.6.0   # registry placeholder; semver, never :latest
           ports: [{containerPort: 8080, name: http}]
           volumeMounts:
             - {name: nginx-conf, mountPath: /etc/nginx/conf.d}
