@@ -1,0 +1,148 @@
+# Deployed via ArgoCD (bootstrap: dental-clinic.yaml). Source of truth: saas.dental deploy/ Mirrors kubernetes/apps/bjj/postgres/.
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: clinic-postgres-data
+  namespace: dental-clinic
+  labels:
+    recurring-job.longhorn.io/daily-backup: "enabled"   # match cluster's existing Longhorn backup labels
+spec:
+  accessModes: [ReadWriteOnce]
+  storageClassName: longhorn
+  resources:
+    requests: {storage: 10Gi}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: clinic-postgres
+  namespace: dental-clinic
+  labels: {app: clinic-postgres}
+spec:
+  replicas: 1
+  strategy: {type: Recreate}   # RWO volume
+  selector:
+    matchLabels: {app: clinic-postgres}
+  template:
+    metadata:
+      labels: {app: clinic-postgres}
+    spec:
+      containers:
+        - name: postgres
+          image: postgres:16-alpine
+          ports: [{containerPort: 5432}]
+          env:
+            - {name: POSTGRES_DB, value: clinic}
+            - name: POSTGRES_USER
+              valueFrom: {secretKeyRef: {name: clinic-postgres-secret, key: POSTGRES_USER}}
+            - name: POSTGRES_PASSWORD   # superuser — NEVER used by the app (REQ-2)
+              valueFrom: {secretKeyRef: {name: clinic-postgres-secret, key: POSTGRES_PASSWORD}}
+            - {name: PGDATA, value: /var/lib/postgresql/data/pgdata}
+          volumeMounts:
+            - {name: data, mountPath: /var/lib/postgresql/data, subPath: pgdata}
+          resources:
+            requests: {cpu: 100m, memory: 256Mi}
+            limits: {memory: 1Gi}
+          readinessProbe:
+            exec: {command: ["pg_isready", "-U", "postgres", "-d", "clinic"]}
+      volumes:
+        - name: data
+          persistentVolumeClaim: {claimName: clinic-postgres-data}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: clinic-postgres
+  namespace: dental-clinic
+spec:
+  selector: {app: clinic-postgres}
+  ports: [{port: 5432, targetPort: 5432}]   # ClusterIP — never NodePort/LoadBalancer (REQ-16)
+---
+# Schema/migrate Job — ArgoCD PreSync hook: backup-before-migrate, then apply ALL numbered
+# idempotent migrations shipped IN the API image (build/release-and-updates.md).
+# Runs as the SUPERUSER credential (seeds bypass RLS); the app role clinic_app cannot DDL.
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: clinic-migrate
+  namespace: dental-clinic
+  annotations:
+    argocd.argoproj.io/hook: PreSync
+    argocd.argoproj.io/hook-delete-policy: BeforeHookCreation
+spec:
+  backoffLimit: 1
+  template:
+    metadata:
+      labels:
+        app: clinic-migrate
+        clinic-db-access: "true"
+    spec:
+      restartPolicy: Never
+      imagePullSecrets: [{name: ghcr-pull}]
+      containers:
+        - name: migrate
+          image: ghcr.io/steficzko/dental-api:v0.1.3   # SAME tag as the api Deployment
+          command: ["python", "-m", "app.migrate"]  # idempotent /migrations/*.sql + clinic_app password
+          env:
+            - name: DATABASE_URL_SUPERUSER
+              valueFrom: {secretKeyRef: {name: clinic-postgres-secret, key: DATABASE_URL_SUPERUSER}}
+            - name: CLINIC_APP_DB_PASSWORD   # migrate.sh runs ALTER ROLE clinic_app PASSWORD (REQ-18)
+              valueFrom: {secretKeyRef: {name: clinic-postgres-secret, key: CLINIC_APP_DB_PASSWORD}}
+---
+# Hourly encrypted backup (REQ-17; decisions.md: backups are THE data concern).
+# pg_dump -Fc | age -r <public key> | mc pipe → MinIO bucket clinic-backups.
+# The in-cluster credential is scoped WRITE-MOSTLY to the clinic-backups bucket only —
+# it cannot read/list other apps' buckets; the age PRIVATE key (restore) lives offline
+# with Stefanos, never in the cluster. Bucket retention: mc ilm rule, e.g. expire >30d.
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: clinic-postgres-backup
+  namespace: dental-clinic
+spec:
+  schedule: "0 * * * *"
+  suspend: true               # until scoped MinIO key exists (Stefanos; then remove this line)
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          labels:
+            app: clinic-postgres-backup
+            clinic-db-access: "true"
+        spec:
+          restartPolicy: OnFailure
+          imagePullSecrets: [{name: ghcr-pull}]
+          containers:
+            - name: backup
+              image: ghcr.io/steficzko/dental-backup:v0.1.3   # tiny image: pg_dump + age + mc
+              command: ["/bin/sh", "-ec"]
+              args:
+                - |
+                  ts="$(date +%Y%m%dT%H%M%S)"
+                  mc alias set minio "$S3_ENDPOINT" "$S3_ACCESS_KEY" "$S3_SECRET_KEY"
+                  pg_dump -Fc "$DATABASE_URL_SUPERUSER" \
+                    | age -r "$AGE_RECIPIENT" \
+                    | mc pipe "minio/clinic-backups/clinic-postgres/${ts}.dump.age"
+              env:
+                - name: DATABASE_URL_SUPERUSER
+                  valueFrom: {secretKeyRef: {name: clinic-postgres-secret, key: DATABASE_URL_SUPERUSER}}
+                - name: AGE_RECIPIENT
+                  valueFrom: {configMapKeyRef: {name: clinic-backup-config, key: AGE_RECIPIENT}}
+                - name: S3_ENDPOINT
+                  valueFrom: {secretKeyRef: {name: clinic-backup-s3-secret, key: S3_ENDPOINT}}
+                - name: S3_ACCESS_KEY
+                  valueFrom: {secretKeyRef: {name: clinic-backup-s3-secret, key: S3_ACCESS_KEY}}
+                - name: S3_SECRET_KEY
+                  valueFrom: {secretKeyRef: {name: clinic-backup-s3-secret, key: S3_SECRET_KEY}}
+---
+# age RECIPIENT is a public key — safe in a plain ConfigMap (encryption-only, REQ-17/18).
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: clinic-backup-config
+  namespace: dental-clinic
+data:
+  AGE_RECIPIENT: "age1292xyq2l38qj6ue964zsnuvlszqyftvds6v7ghj7aplsem8fyd3sx43dfq"

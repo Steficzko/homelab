@@ -1,0 +1,100 @@
+# Deployed via ArgoCD (bootstrap: dental-clinic.yaml). Source of truth: saas.dental deploy/
+# Namespace-internal segmentation (REQ-11, REQ-16). Assumes ingress-nginx runs in
+# namespace "ingress-nginx" and LiteLLM in namespace "litellm" (adjust labels to cluster).
+---
+# SPA: in from ingress controller only; out to the API only.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: clinic-spa
+  namespace: dental-clinic
+spec:
+  podSelector:
+    matchLabels: {app: clinic-spa}
+  policyTypes: [Ingress, Egress]
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels: {kubernetes.io/metadata.name: ingress-nginx}
+  egress:
+    - to:
+        - podSelector: {matchLabels: {app: clinic-api}}
+      ports: [{port: 8000}]
+    - to: []   # kube-dns
+      ports: [{port: 53, protocol: UDP}, {port: 53, protocol: TCP}]
+---
+# API: in from SPA (public path) and n8n (voice callback); out to Postgres, n8n, LiteLLM
+# side left closed — the API never calls LLMs directly. MinIO egress added in voice phase.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: clinic-api
+  namespace: dental-clinic
+spec:
+  podSelector:
+    matchLabels: {app: clinic-api}
+  policyTypes: [Ingress, Egress]
+  ingress:
+    - from:
+        - podSelector: {matchLabels: {app: clinic-spa}}
+        - podSelector: {matchLabels: {app: clinic-n8n}}   # /internal/voice-callback (REQ-12)
+      ports: [{port: 8000}]
+  egress:
+    - to:
+        - podSelector: {matchLabels: {app: clinic-postgres}}
+      ports: [{port: 5432}]
+    - to:
+        - podSelector: {matchLabels: {app: clinic-n8n}}   # voice dispatch (phase 2)
+      ports: [{port: 5678}]
+    - to: []   # kube-dns
+      ports: [{port: 53, protocol: UDP}, {port: 53, protocol: TCP}]
+---
+# Postgres: ONLY pods labeled clinic-db-access (api, migrate job, backup job) may connect.
+# Never exposed at ingress, never nodePort (REQ-16). Deny-all egress except DNS.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: clinic-postgres
+  namespace: dental-clinic
+spec:
+  podSelector:
+    matchLabels: {app: clinic-postgres}
+  policyTypes: [Ingress, Egress]
+  ingress:
+    - from:
+        - podSelector: {matchLabels: {clinic-db-access: "true"}}
+      ports: [{port: 5432}]
+  egress:
+    - to: []   # kube-dns only
+      ports: [{port: 53, protocol: UDP}, {port: 53, protocol: TCP}]
+---
+# n8n (voice phase): NO ingress resource exists for it anywhere; this policy additionally
+# blocks all in-cluster callers except the API pod (REQ-11 — kills the historical
+# /webhook/* CF-Access bypass by never exposing n8n at all). Egress: LiteLLM + API
+# callback + DNS only — a rogue workflow cannot exfiltrate (REQ-13 defense in depth).
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: clinic-n8n
+  namespace: dental-clinic
+spec:
+  podSelector:
+    matchLabels: {app: clinic-n8n}
+  policyTypes: [Ingress, Egress]
+  ingress:
+    - from:
+        - podSelector: {matchLabels: {app: clinic-api}}
+      ports: [{port: 5678}]
+  egress:
+    - to:
+        - namespaceSelector:
+            matchLabels: {kubernetes.io/metadata.name: litellm}
+    - to:
+        - podSelector: {matchLabels: {app: clinic-api}}
+      ports: [{port: 8000}]
+    - to:
+        - podSelector: {matchLabels: {app: clinic-n8n-postgres}}  # n8n's own tiny DB, if used
+      ports: [{port: 5432}]
+    - to: []   # kube-dns
+      ports: [{port: 53, protocol: UDP}, {port: 53, protocol: TCP}]
+    # + MinIO namespace for audio fetch (added with voice phase)

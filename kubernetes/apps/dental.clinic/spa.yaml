@@ -1,0 +1,73 @@
+# Deployed via ArgoCD (bootstrap: dental-clinic.yaml). Source of truth: saas.dental deploy/
+# SPA: versioned nginx image with the built PWA baked in (decisions.md — NOT ConfigMap HTML).
+# Bundle ships ZERO secrets (REQ-20).
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: clinic-spa
+  namespace: dental-clinic
+  labels: {app: clinic-spa}
+spec:
+  replicas: 1
+  selector:
+    matchLabels: {app: clinic-spa}
+  template:
+    metadata:
+      labels: {app: clinic-spa}
+    spec:
+      imagePullSecrets: [{name: ghcr-pull}]
+      containers:
+        - name: nginx
+          image: ghcr.io/steficzko/dental-spa:v0.1.3   # registry placeholder; semver, never :latest
+          ports: [{containerPort: 8080, name: http}]
+          volumeMounts:
+            - {name: nginx-conf, mountPath: /etc/nginx/conf.d}
+          resources:
+            requests: {cpu: 10m, memory: 32Mi}
+            limits: {memory: 128Mi}
+          readinessProbe:
+            httpGet: {path: /, port: 8080}
+      volumes:
+        - name: nginx-conf
+          configMap: {name: clinic-nginx-conf}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: clinic-spa
+  namespace: dental-clinic
+spec:
+  selector: {app: clinic-spa}
+  ports: [{name: http, port: 80, targetPort: 8080}]
+---
+# nginx: SPA + /api/ proxy to the API ONLY (never to n8n — REQ-20, threat model §1.2).
+# /internal/ is unreachable from outside the cluster (REQ-12 path isolation).
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: clinic-nginx-conf
+  namespace: dental-clinic
+data:
+  default.conf: |
+    server {
+      listen 8080;
+      server_name _;
+      root /usr/share/nginx/html;
+
+      # API proxy — preserves Host so the API can resolve the tenant (REQ-3).
+      location /api/ {
+        proxy_pass http://clinic-api:8000/api/;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        client_max_body_size 25m;   # voice-phase audio uploads
+        proxy_read_timeout 60s;
+      }
+
+      # Internal API surface must never be reachable via ingress (REQ-12).
+      location /internal/ { return 404; }
+
+      # SPA routing (PWA).
+      location / { try_files $uri $uri/ /index.html; }
+    }

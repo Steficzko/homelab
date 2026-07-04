@@ -1,0 +1,7 @@
+# Deployed via ArgoCD (bootstrap: dental-clinic.yaml). Source of truth: saas.dental deploy/ Mirrors kubernetes/apps/bjj/ pattern.
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: dental-clinic
+  labels:
+    app.kubernetes.io/part-of: clinic

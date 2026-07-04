@@ -1,0 +1,49 @@
+# Deployed via ArgoCD (bootstrap: dental-clinic.yaml). Source of truth: saas.dental deploy/
+# Wildcard host: every <slug>.kostikidis.net hits the SPA; the API decides whether
+# the tenant exists (unknown slug → static not-found, REQ-4). Adding a clinic = INSERT a
+# tenant row — no change to this file, ever (decisions.md routing pattern).
+# CATCH-ALL CAVEATS (domain flattened 2026-07-04, .blanka. level dropped):
+#  - ingress-nginx gives exact-host ingresses (immich.kostikidis.net, ...) precedence over
+#    this wildcard, so existing apps are unaffected; every OTHER subdomain lands here.
+#  - CF Access policies on *.kostikidis.net MUST EXEMPT tenant hosts — the app has its own
+#    login; CF Access in front would lock the doctors out (deploy checklist item).
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: dental-clinic
+  namespace: dental-clinic
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    nginx.ingress.kubernetes.io/proxy-body-size: "25m"
+spec:
+  ingressClassName: nginx
+  tls:
+    - hosts: ["*.kostikidis.net"]
+      secretName: blanka-wildcard-tls
+  rules:
+    - host: "*.kostikidis.net"
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service: {name: clinic-spa, port: {number: 80}}
+---
+# Wildcard cert for the clinic NAMESPACE. Even if the cluster already holds a
+# *.kostikidis.net cert elsewhere, cert secrets are namespaced — this namespace needs its
+# own copy (or a reflector). Same DNS name, no new DNS record needed.
+# NOTE: Let's Encrypt issues wildcards via DNS-01 ONLY — the ClusterIssuer needs a
+# Cloudflare API-token solver (token in SOPS, REQ-18). HTTP-01 cannot issue this cert.
+# Also needs the wildcard DNS record *.kostikidis.net (+ cf tunnel route if tunneled).
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: blanka-wildcard
+  namespace: dental-clinic
+spec:
+  secretName: blanka-wildcard-tls
+  issuerRef: {name: letsencrypt-prod, kind: ClusterIssuer}
+  dnsNames:
+    - "*.kostikidis.net"
+    - "kostikidis.net"
