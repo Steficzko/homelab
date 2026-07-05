@@ -48,6 +48,8 @@ spec:
       ports: [{port: 5678}]
     - to: []   # kube-dns
       ports: [{port: 53, protocol: UDP}, {port: 53, protocol: TCP}]
+    - to: []   # external SMTP (password-reset email). ponytail: any-host:587 —
+      ports: [{port: 587, protocol: TCP}]   # tighten to Google SMTP CIDRs or an internal relay if pentester wants
 ---
 # Postgres: ONLY pods labeled clinic-db-access (api, migrate job, backup job) may connect.
 # Never exposed at ingress, never nodePort (REQ-16). Deny-all egress except DNS.
