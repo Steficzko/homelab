@@ -19,10 +19,10 @@ spec:
       imagePullSecrets: [{name: ghcr-pull}]
       containers:
         - name: api
-          image: ghcr.io/steficzko/dental-api:v0.8.0   # registry placeholder
+          image: ghcr.io/steficzko/dental-api:v0.8.1   # registry placeholder
           ports: [{containerPort: 8000, name: http}]
           env:
-            - {name: BASE_DOMAIN, value: "kostikidis.net"}  # rebrand = this one value
+            - {name: BASE_DOMAIN, value: "gompha.com,kostikidis.net"}  # rebrand = this one value
             - name: DATABASE_URL          # postgresql://clinic_app:...@clinic-postgres/clinic
               valueFrom: {secretKeyRef: {name: clinic-api-secret, key: DATABASE_URL}}
             - name: N8N_SHARED_SECRET     # REQ-12 (voice phase)

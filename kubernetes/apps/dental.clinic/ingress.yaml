@@ -29,6 +29,18 @@ spec:
             pathType: Prefix
             backend:
               service: {name: clinic-spa, port: {number: 80}}
+    # gompha.com tenant wildcard (multi-domain, Option B). No TLS block here:
+    # gompha.com is a SEPARATE CF account and TLS terminates at Cloudflare's edge
+    # (the cloudflared-gompha tunnel reaches this ingress over HTTP). The gompha
+    # landing (apex + www) and auto.gompha.com are EXACT hosts → ingress-nginx
+    # gives them precedence, so this wildcard only catches <slug>.gompha.com tenants.
+    - host: "*.gompha.com"
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service: {name: clinic-spa, port: {number: 80}}
 ---
 # Wildcard cert for the clinic NAMESPACE. Even if the cluster already holds a
 # *.kostikidis.net cert elsewhere, cert secrets are namespaced — this namespace needs its
