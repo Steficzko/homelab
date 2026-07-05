@@ -101,7 +101,6 @@ metadata:
   namespace: dental-clinic
 spec:
   schedule: "0 * * * *"
-  suspend: true               # until scoped MinIO key exists (Stefanos; then remove this line)
   concurrencyPolicy: Forbid
   successfulJobsHistoryLimit: 1
   failedJobsHistoryLimit: 3
@@ -123,6 +122,13 @@ spec:
                 - |
                   ts="$(date +%Y%m%dT%H%M%S)"
                   mc alias set minio "$S3_ENDPOINT" "$S3_ACCESS_KEY" "$S3_SECRET_KEY"
+                  # Wait for DB reachability first: K3s NetworkPolicy takes ~30-45s to admit a
+                  # freshly-created pod through to clinic-postgres. Without this the dump runs
+                  # too early and silently uploads an EMPTY file (found 2026-07-05).
+                  for i in $(seq 1 40); do
+                    pg_isready -d "$DATABASE_URL_SUPERUSER" -t 5 >/dev/null 2>&1 && break
+                    sleep 3
+                  done
                   pg_dump -Fc "$DATABASE_URL_SUPERUSER" \
                     | age -r "$AGE_RECIPIENT" \
                     | mc pipe "minio/clinic-backups/clinic-postgres/${ts}.dump.age"
