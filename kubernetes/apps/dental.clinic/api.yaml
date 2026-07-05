@@ -23,6 +23,13 @@ spec:
           ports: [{containerPort: 8000, name: http}]
           env:
             - {name: BASE_DOMAIN, value: "gompha.com,kostikidis.net"}  # rebrand = this one value
+            # SMTP (password-reset sender). Only the password is secret; the rest are plain.
+            - {name: SMTP_HOST, value: "smtp.gmail.com"}
+            - {name: SMTP_PORT, value: "587"}
+            - {name: SMTP_USERNAME, value: "kostikidis.network@gmail.com"}
+            - {name: SMTP_FROM, value: "kostikidis.network@gmail.com"}   # From = authed account (Gmail rule)
+            - name: SMTP_PASSWORD         # Google app-password (16 chars), in SOPS
+              valueFrom: {secretKeyRef: {name: clinic-api-secret, key: SMTP_PASSWORD}}
             - name: DATABASE_URL          # postgresql://clinic_app:...@clinic-postgres/clinic
               valueFrom: {secretKeyRef: {name: clinic-api-secret, key: DATABASE_URL}}
             - name: N8N_SHARED_SECRET     # REQ-12 (voice phase)

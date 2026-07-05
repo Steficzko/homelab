@@ -1,0 +1,26 @@
+# auto.gompha.com — Gompha product automation (n8n). HTTP-only: gompha.com is in a
+# separate CF account with no cert-manager DNS-01 token, so TLS terminates at the
+# Cloudflare edge and the tunnel reaches the ingress over HTTP.
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: n8n
+  namespace: gompha
+  annotations:
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    nginx.ingress.kubernetes.io/proxy-body-size: "0"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: auto.gompha.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: n8n-web
+                port:
+                  number: 5678

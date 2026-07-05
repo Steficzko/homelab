@@ -1,0 +1,34 @@
+# gompha.com apex + www. Exact hosts — ingress-nginx gives these precedence over the
+# *.gompha.com tenant wildcard (dental-clinic ns), so the landing never shadows a tenant.
+# HTTP-only: gompha.com is in a separate CF account with no cert-manager DNS-01 token,
+# so TLS terminates at Cloudflare's edge and the tunnel reaches the ingress over HTTP.
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: landing
+  namespace: gompha
+  annotations:
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: gompha.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: landing
+                port:
+                  number: 80
+    - host: www.gompha.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: landing
+                port:
+                  number: 80
