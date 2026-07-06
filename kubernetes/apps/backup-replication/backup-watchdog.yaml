@@ -1,0 +1,61 @@
+# Backup watchdog — a dead-man's-switch for the logical backups. Every 30 min it inspects
+# MinIO (size + freshness of the newest object) and pings an Uptime Kuma PUSH monitor per
+# backup ONLY if healthy. If a backup failed, wrote an empty file, or never ran, the ping is
+# withheld and the Kuma monitor goes DOWN (interval 90 min) -> alert. This catches the exact
+# failure mode that bit the dental backup (silent empty 200 B dumps) without needing an HTTP
+# client inside the (minimal) backup images. greece-restore pings itself from its own script.
+# Push URLs are in the SOPS 'kuma-push' secret (out-of-band). Monitors live in the CZ Kuma.
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: backup-watchdog
+  namespace: backup
+spec:
+  schedule: "*/30 * * * *"
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      backoffLimit: 1
+      template:
+        spec:
+          restartPolicy: OnFailure
+          containers:
+            - name: watchdog
+              image: nixery.dev/shell/minio-client/curl/jq   # mc + curl + jq in one
+              envFrom:
+                - secretRef: { name: minio-replication-secret }   # SRC_/DST_ ACCESS_KEY + SECRET_KEY
+              env:
+                - { name: SRC_ENDPOINT, value: "http://192.168.1.100:9100" }
+                - { name: DST_ENDPOINT, value: "http://100.85.129.88:9100" }
+                - { name: HOME, value: "/tmp" }
+                - name: PUSH_DENTAL
+                  valueFrom: { secretKeyRef: { name: kuma-push, key: DENTAL } }
+                - name: PUSH_GOMPHA_N8N
+                  valueFrom: { secretKeyRef: { name: kuma-push, key: GOMPHA_N8N } }
+                - name: PUSH_REPLICATION
+                  valueFrom: { secretKeyRef: { name: kuma-push, key: REPLICATION } }
+              command: ["/bin/sh", "-c"]
+              args:
+                - |
+                  set -u
+                  mc alias set src "$SRC_ENDPOINT" "$SRC_ACCESS_KEY" "$SRC_SECRET_KEY" >/dev/null
+                  mc alias set dst "$DST_ENDPOINT" "$DST_ACCESS_KEY" "$DST_SECRET_KEY" >/dev/null
+                  # check NAME PATH MIN_BYTES MAX_AGE_SEC PUSH_URL
+                  check() {
+                    j=$(mc ls --json "$2" 2>/dev/null | jq -s 'sort_by(.lastModified)|last // empty')
+                    sz=$(printf '%s' "$j" | jq -r '.size // 0')
+                    lm=$(printf '%s' "$j" | jq -r '.lastModified // empty')
+                    age=999999; [ -n "$lm" ] && age=$(( $(date +%s) - $(date -d "$lm" +%s) ))
+                    if [ "${sz:-0}" -ge "$3" ] && [ "$age" -le "$4" ]; then
+                      curl -fsS --max-time 10 "$5?status=up&msg=$1-ok-${sz}b-$((age/60))m" >/dev/null 2>&1 \
+                        && echo "  $1: UP (size=${sz}B age=$((age/60))m)"
+                    else
+                      echo "  $1: UNHEALTHY (size=${sz:-0}B age=$((age/60))m) -> withholding ping; Kuma will alert"
+                    fi
+                  }
+                  echo "== backup-watchdog $(date -u +%FT%TZ) =="
+                  check dental      "src/clinic-backups/clinic-postgres/" 50000 5400 "$PUSH_DENTAL"
+                  check gompha-n8n  "src/app-backups/gompha-n8n/"          100  5400 "$PUSH_GOMPHA_N8N"
+                  check replication "dst/clinic-backups/clinic-postgres/" 50000 7200 "$PUSH_REPLICATION"
