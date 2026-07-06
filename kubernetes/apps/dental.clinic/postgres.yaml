@@ -81,7 +81,7 @@ spec:
       imagePullSecrets: [{name: ghcr-pull}]
       containers:
         - name: migrate
-          image: ghcr.io/steficzko/dental-api:v0.21.0   # SAME tag as the api Deployment
+          image: ghcr.io/steficzko/dental-api:v0.21.1   # SAME tag as the api Deployment
           command: ["python", "-m", "app.migrate"]  # idempotent /migrations/*.sql + clinic_app password
           env:
             - name: DATABASE_URL_SUPERUSER
@@ -116,7 +116,7 @@ spec:
           imagePullSecrets: [{name: ghcr-pull}]
           containers:
             - name: backup
-              image: ghcr.io/steficzko/dental-backup:v0.21.0   # tiny image: pg_dump + age + mc
+              image: ghcr.io/steficzko/dental-backup:v0.21.1   # tiny image: pg_dump + age + mc
               command: ["/bin/sh", "-ec"]
               args:
                 - |
