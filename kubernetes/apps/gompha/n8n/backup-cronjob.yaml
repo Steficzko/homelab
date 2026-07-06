@@ -87,7 +87,7 @@ spec:
                 - { name: HOME,      value: /work }
                 - { name: BUCKET,    value: app-backups }
                 - { name: PREFIX,    value: gompha-n8n }
-                - { name: RETENTION, value: "7d" }    # 7d of hourly exports = 168 restore points
+                - { name: RETENTION, value: "30d" }   # 30d of hourly exports
               command:
                 - /bin/sh
                 - -c
