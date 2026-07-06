@@ -1,0 +1,102 @@
+# Greece WARM-STANDBY for the Gompha dental product (demo + tenant clinics + n8n).
+# Deploy on unraid-ptolemaida via Portainer, alongside the bjj-failover stack.
+# Mirrors disaster-recovery/greece/failover-stack.yml (gym) for the dental app.
+#
+# Network aliases reproduce the Prague k8s SHORT service names (clinic-postgres,
+# clinic-api) so restored data + the clinic-api DATABASE_URL and the SPA nginx
+# /api proxy resolve UNCHANGED after a plain restore — no editing of restored data.
+#
+# clinic-postgres runs by DEFAULT (warm — seeded by restore-dental-from-minio.sh).
+# clinic-api / clinic-spa / n8n / cloudflared are in the "failover" profile so they
+# only start on cutover (prevents double webhook/schedule execution against shared
+# external state, and double tunnel-serving):
+#   docker compose --profile failover up -d
+#
+# Portainer stack ENV VARS (pull from Prague SOPS — see restore-dental-from-minio.sh header):
+#   CLINIC_POSTGRES_USER  CLINIC_POSTGRES_DB  CLINIC_POSTGRES_PASSWORD
+#   CLINIC_DATABASE_URL   CLINIC_N8N_SHARED_SECRET   CLINIC_SMTP_PASSWORD
+#   GOMPHA_N8N_ENCRYPTION_KEY   GOMPHA_CF_TUNNEL_TOKEN
+# Prereq: `docker login ghcr.io` on the host (for the dental-api / dental-spa images).
+services:
+  clinic-postgres:
+    image: postgres:16-alpine
+    container_name: clinic-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${CLINIC_POSTGRES_USER}
+      POSTGRES_DB: ${CLINIC_POSTGRES_DB}
+      POSTGRES_PASSWORD: ${CLINIC_POSTGRES_PASSWORD}
+      PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - /mnt/user/appdata/dental-failover/clinic-postgres:/var/lib/postgresql/data
+    networks:
+      default:
+        aliases: [clinic-postgres]
+
+  clinic-api:
+    image: ghcr.io/steficzko/dental-api:v0.15.0
+    container_name: clinic-api
+    restart: unless-stopped
+    profiles: ["failover"]
+    environment:
+      BASE_DOMAIN: "gompha.com,kostikidis.net"
+      SMTP_HOST: smtp.gmail.com
+      SMTP_PORT: "587"
+      SMTP_USERNAME: kostikidis.network@gmail.com
+      SMTP_FROM: kostikidis.network@gmail.com
+      SMTP_PASSWORD: ${CLINIC_SMTP_PASSWORD}
+      DATABASE_URL: ${CLINIC_DATABASE_URL}          # clinic_app@clinic-postgres/clinic
+      N8N_SHARED_SECRET: ${CLINIC_N8N_SHARED_SECRET}
+    networks:
+      default:
+        aliases: [clinic-api]
+    depends_on: [clinic-postgres]
+
+  clinic-spa:
+    image: ghcr.io/steficzko/dental-spa:v0.15.0
+    container_name: clinic-spa
+    restart: unless-stopped
+    profiles: ["failover"]
+    # Reproduce the Prague clinic-nginx-conf (SPA + /api proxy to clinic-api, preserve Host).
+    volumes:
+      - /mnt/user/appdata/dental-failover/nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+    networks:
+      default:
+        aliases: [clinic-spa]
+    depends_on: [clinic-api]
+
+  # Gompha product automation. Separate N8N_ENCRYPTION_KEY from the gym n8n.
+  n8n:
+    image: n8nio/n8n:2.27.0
+    container_name: gompha-n8n
+    restart: unless-stopped
+    profiles: ["failover"]
+    user: "1000:1000"
+    environment:
+      N8N_ENCRYPTION_KEY: ${GOMPHA_N8N_ENCRYPTION_KEY}
+      N8N_HOST: auto.gompha.com
+      N8N_PORT: "5678"
+      N8N_PROTOCOL: https
+      WEBHOOK_URL: https://auto.gompha.com/
+      GENERIC_TIMEZONE: Europe/Prague
+      N8N_TRUST_PROXY: "true"
+    volumes:
+      - /mnt/user/appdata/dental-failover/n8n:/home/node/.n8n
+    networks:
+      default:
+        aliases: [n8n-web, gompha-n8n]
+
+  # Dedicated Greece gompha tunnel (separate from Prague's, like the gym's "TeamElwany GR").
+  # Its Cloudflare ingress: demo/blanca/*.gompha.com -> http://clinic-spa:8080,
+  # auto.gompha.com -> http://n8n:5678. DNS is flipped to it by the failover script.
+  cloudflared:
+    image: cloudflare/cloudflared:2026.6.1
+    container_name: gompha-failover-cloudflared
+    restart: unless-stopped
+    profiles: ["failover"]
+    command: tunnel --no-autoupdate run --token ${GOMPHA_CF_TUNNEL_TOKEN}
+    depends_on: [clinic-spa, n8n]
+
+networks:
+  default:
+    name: dental-failover
