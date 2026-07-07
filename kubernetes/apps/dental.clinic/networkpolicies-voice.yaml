@@ -1,0 +1,31 @@
+# Voice pipeline egress (v0.29.0, docs/voice-pipeline-plan.md; decisions.md
+# 2026-07-07 "direct, not n8n"). ADDITIVE to the existing clinic-api policy.
+# Opens clinic-api egress to EXACTLY: ai/whisper:8000, ai/ollama:11434 (NOT
+# litellm — a router that can carry a cloud route), and the LAN MinIO for the
+# audio archive. The ai-side ingress lives in apps/ai/{whisper,ollama}-cpu/.
+# manifest-reviewer approved (2026-07-07).
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: clinic-api-voice-egress
+  namespace: dental-clinic
+spec:
+  podSelector:
+    matchLabels: {app: clinic-api}
+  policyTypes: [Egress]
+  egress:
+    - to:
+        - namespaceSelector:
+            matchLabels: {kubernetes.io/metadata.name: ai}
+          podSelector:
+            matchLabels: {app: whisper}
+      ports: [{port: 8000}]
+    - to:
+        - namespaceSelector:
+            matchLabels: {kubernetes.io/metadata.name: ai}
+          podSelector:
+            matchLabels: {app: ollama}
+      ports: [{port: 11434}]
+    - to:                                  # MinIO audio archive (LAN host)
+        - ipBlock: {cidr: 192.168.1.100/32}
+      ports: [{port: 9100}]

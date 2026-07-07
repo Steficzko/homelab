@@ -19,7 +19,7 @@ spec:
       imagePullSecrets: [{name: ghcr-pull}]
       containers:
         - name: api
-          image: ghcr.io/steficzko/dental-api:v0.29.0   # registry placeholder
+          image: ghcr.io/steficzko/dental-api:v0.30.0   # registry placeholder
           ports: [{containerPort: 8000, name: http}]
           env:
             - {name: BASE_DOMAIN, value: "gompha.com,kostikidis.net"}  # rebrand = this one value
@@ -34,6 +34,21 @@ spec:
               valueFrom: {secretKeyRef: {name: clinic-api-secret, key: DATABASE_URL}}
             - name: N8N_SHARED_SECRET     # REQ-12 (voice phase)
               valueFrom: {secretKeyRef: {name: clinic-api-secret, key: N8N_SHARED_SECRET}}
+            # ---- voice pipeline (v0.29.0, migration 0028; docs/voice-pipeline-plan.md).
+            # ON-PREM: whisper + ollama in the ai namespace (NOT litellm — app/voice.py
+            # assert_onprem allowlists exactly these two hosts; the netpol pins them).
+            - {name: VOICE_WHISPER_URL, value: "http://whisper.ai.svc:8000"}
+            - {name: VOICE_LLM_URL, value: "http://ollama.ai.svc:11434"}
+            - {name: VOICE_KEEP_AUDIO, value: "true"}   # keep audio; MinIO 2-day ILM auto-expires it
+            # MinIO audio archive. Endpoint is a LAN host (not secret); keys are SOPS.
+            # Until the MINIO_* keys land in clinic-api-secret, upload answers 503 (safe).
+            - {name: MINIO_ENDPOINT, value: "192.168.1.100:9100"}
+            - {name: MINIO_BUCKET, value: "clinic-voice"}
+            - {name: MINIO_SECURE, value: "false"}
+            - name: MINIO_ACCESS_KEY
+              valueFrom: {secretKeyRef: {name: clinic-api-secret, key: MINIO_ACCESS_KEY, optional: true}}
+            - name: MINIO_SECRET_KEY
+              valueFrom: {secretKeyRef: {name: clinic-api-secret, key: MINIO_SECRET_KEY, optional: true}}
           resources:
             requests: {cpu: 50m, memory: 128Mi}
             limits: {memory: 512Mi}

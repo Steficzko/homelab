@@ -1,0 +1,19 @@
+# Additive: admit clinic-api (dental-clinic ns) to whisper for on-prem voice
+# transcription (saas.dental v0.29.0 voice pipeline). The base whisper policy
+# otherwise admits only litellm. Only clinic-api, only :8000.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: whisper-from-clinic-api
+  namespace: ai
+spec:
+  podSelector:
+    matchLabels: {app: whisper}
+  policyTypes: [Ingress]
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels: {kubernetes.io/metadata.name: dental-clinic}
+          podSelector:
+            matchLabels: {app: clinic-api}
+      ports: [{port: 8000}]
