@@ -175,16 +175,19 @@ data:
         }
       }
 
-      var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-      if (reduce) { settleAll(); return; }
+      // Reduce-motion: don't FREEZE (users kept seeing a dead chart) — run a CALM
+      // variant instead: no rapid flicker, teeth just fill in gently and the perio
+      // bars drift slowly. Still animated, but nothing jarring/strobing.
+      var CALM = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
 
       /* ---------------- perio motion (bars up & down) ---------------- */
       var perioRAF = null, perioT0 = 0;
+      var AMP = CALM ? 0.6 : 1.15, SPD = CALM ? 0.0009 : 0.0016;
       function perioFrame(now) {
         if (!perioT0) perioT0 = now;
         var t = now - perioT0, pts = [];
         for (var i = 0; i < bars.length; i++) {
-          var depth = BASE[i] + 1.15 * Math.sin(t * 0.0016 + i * 0.55);
+          var depth = BASE[i] + AMP * Math.sin(t * SPD + i * 0.55);
           if (depth < 1) depth = 1;
           var h = depth * MM, deep = depth >= 5, col = deep ? ENDO : C.crown;
           bars[i].setAttribute('height', h); bars[i].setAttribute('fill', col);
@@ -201,12 +204,13 @@ data:
       var timers = [];
       function later(fn, ms) { timers.push(setTimeout(fn, ms)); }
       function flick(g, fin) {
+        if (CALM) { later(function () { apply(g, fin); }, 40); return; } // gentle: straight to final
         var frames = [{ crown: PAL[0] }, { crown: PAL[1], endo: true }, { crown: PAL[2] },
           { crown: C.implant, implant: true }, { missing: true }, { crown: PAL[4] }];
         frames.forEach(function (f, k) { later(function () { apply(g, f); }, k * 90); });
         later(function () { apply(g, fin); }, frames.length * 90);
       }
-      var STEP = 120, FLICK = 6 * 90 + 60;
+      var STEP = CALM ? 150 : 120, FLICK = CALM ? 120 : 6 * 90 + 60;
       function pass(order, done) {
         order.forEach(function (col, k) {
           later(function () { (byCol[col] || []).forEach(function (g) { flick(g, FINAL[g.dataset.fdi]); }); }, k * STEP);
@@ -948,7 +952,7 @@ data:
     \     <div class=\"fcol\">\n        <h5>Contact</h5>\n        <a href=\"mailto:hello@gompha.com\">hello@gompha.com</a>\n
     \       <a href=\"mailto:hello@gompha.com\">Book a walkthrough</a>\n      </div>\n
     \   </div>\n    <div class=\"base\">© 2026 Gompha · Your practice, anchored.</div>\n
-    \ </div>\n</footer>\n\n<script src=\"reveal.js?v=3\"></script>\n<script src=\"heroanim.js?v=3\"></script>\n</body>\n</html>\n"
+    \ </div>\n</footer>\n\n<script src=\"reveal.js?v=3\"></script>\n<script src=\"heroanim.js?v=4\"></script>\n</body>\n</html>\n"
   odontogram.svg: '<svg viewBox="0 0 568 172" xmlns="http://www.w3.org/2000/svg" role="img"
     aria-label="Two-layer tooth chart: crown colour is the restoration type, a red
     root is a root canal, the coloured dot is provenance — green done in-house, blue
