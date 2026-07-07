@@ -12,7 +12,7 @@ data:
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css?v=3">
     <style>
     /* founders — page-local, no other page uses it */
     .founder-grid{display:grid;grid-template-columns:1fr 1fr;gap:26px;max-width:920px;margin:0 auto}
@@ -80,7 +80,7 @@ data:
       </div>
     </footer>
 
-    <script src="reveal.js"></script>
+    <script src="reveal.js?v=3"></script>
     </body>
     </html>
   heroanim.js: |
@@ -246,7 +246,7 @@ data:
     that anchors your tooth chart, schedule, cases and deal ledger into one record
     — built for clinics that negotiate.\">\n<link rel=\"preconnect\" href=\"https://fonts.googleapis.com\">\n<link
     rel=\"preconnect\" href=\"https://fonts.gstatic.com\" crossorigin>\n<link href=\"https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800;900&family=Inter:wght@400;500;600;700&display=swap\"
-    rel=\"stylesheet\">\n<link rel=\"stylesheet\" href=\"style.css\">\n</head>\n<body>\n\n<nav>\n
+    rel=\"stylesheet\">\n<link rel=\"stylesheet\" href=\"style.css?v=3\">\n</head>\n<body>\n\n<nav>\n
     \ <div class=\"wrap nav-in\">\n    <div class=\"logo\"><a href=\"index.html\">G<span
     class=\"socket\"></span>mpha</a></div>\n    <div class=\"nav-links\">\n      <a
     href=\"index.html#capabilities\">Capabilities</a>\n      <a href=\"roadmap.html\">Roadmap</a>\n
@@ -948,7 +948,7 @@ data:
     \     <div class=\"fcol\">\n        <h5>Contact</h5>\n        <a href=\"mailto:hello@gompha.com\">hello@gompha.com</a>\n
     \       <a href=\"mailto:hello@gompha.com\">Book a walkthrough</a>\n      </div>\n
     \   </div>\n    <div class=\"base\">© 2026 Gompha · Your practice, anchored.</div>\n
-    \ </div>\n</footer>\n\n<script src=\"reveal.js\"></script>\n<script src=\"heroanim.js\"></script>\n</body>\n</html>\n"
+    \ </div>\n</footer>\n\n<script src=\"reveal.js?v=3\"></script>\n<script src=\"heroanim.js?v=3\"></script>\n</body>\n</html>\n"
   odontogram.svg: '<svg viewBox="0 0 568 172" xmlns="http://www.w3.org/2000/svg" role="img"
     aria-label="Two-layer tooth chart: crown colour is the restoration type, a red
     root is a root canal, the coloured dot is provenance — green done in-house, blue
@@ -1294,7 +1294,7 @@ data:
     PMS. An honest built-vs-planned roadmap, updated per release.\">\n<link rel=\"preconnect\"
     href=\"https://fonts.googleapis.com\">\n<link rel=\"preconnect\" href=\"https://fonts.gstatic.com\"
     crossorigin>\n<link href=\"https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800;900&family=Inter:wght@400;500;600;700&display=swap\"
-    rel=\"stylesheet\">\n<link rel=\"stylesheet\" href=\"style.css\">\n</head>\n<body>\n\n<nav>\n
+    rel=\"stylesheet\">\n<link rel=\"stylesheet\" href=\"style.css?v=3\">\n</head>\n<body>\n\n<nav>\n
     \ <div class=\"wrap nav-in\">\n    <div class=\"logo\"><a href=\"index.html\">G<span
     class=\"socket\"></span>mpha</a></div>\n    <div class=\"nav-links\">\n      <a
     href=\"index.html#capabilities\">Capabilities</a>\n      <a href=\"roadmap.html\"
@@ -1419,7 +1419,7 @@ data:
     \     <div class=\"fcol\">\n        <h5>Contact</h5>\n        <a href=\"mailto:hello@gompha.com\">hello@gompha.com</a>\n
     \       <a href=\"mailto:hello@gompha.com\">Book a walkthrough</a>\n      </div>\n
     \   </div>\n    <div class=\"base\">© 2026 Gompha · Your practice, anchored.</div>\n
-    \ </div>\n</footer>\n\n<script src=\"reveal.js\"></script>\n</body>\n</html>\n"
+    \ </div>\n</footer>\n\n<script src=\"reveal.js?v=3\"></script>\n</body>\n</html>\n"
   safety.html: "<!DOCTYPE html>\n<html lang=\"en\" class=\"no-js\">\n<head>\n<meta
     charset=\"UTF-8\">\n<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n<meta
     name=\"robots\" content=\"noindex\">\n<title>Data safety — Gompha</title>\n<meta
@@ -1427,7 +1427,7 @@ data:
     tenant isolation, encrypted backups, walled access by role, session control, and
     a no-hostage promise.\">\n<link rel=\"preconnect\" href=\"https://fonts.googleapis.com\">\n<link
     rel=\"preconnect\" href=\"https://fonts.gstatic.com\" crossorigin>\n<link href=\"https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800;900&family=Inter:wght@400;500;600;700&display=swap\"
-    rel=\"stylesheet\">\n<link rel=\"stylesheet\" href=\"style.css\">\n</head>\n<body>\n\n<nav>\n
+    rel=\"stylesheet\">\n<link rel=\"stylesheet\" href=\"style.css?v=3\">\n</head>\n<body>\n\n<nav>\n
     \ <div class=\"wrap nav-in\">\n    <div class=\"logo\"><a href=\"index.html\">G<span
     class=\"socket\"></span>mpha</a></div>\n    <div class=\"nav-links\">\n      <a
     href=\"index.html#capabilities\">Capabilities</a>\n      <a href=\"roadmap.html\">Roadmap</a>\n
@@ -1515,7 +1515,7 @@ data:
     \     <div class=\"fcol\">\n        <h5>Contact</h5>\n        <a href=\"mailto:hello@gompha.com\">hello@gompha.com</a>\n
     \       <a href=\"mailto:hello@gompha.com\">Book a walkthrough</a>\n      </div>\n
     \   </div>\n    <div class=\"base\">© 2026 Gompha · Your practice, anchored.</div>\n
-    \ </div>\n</footer>\n\n<script src=\"reveal.js\"></script>\n</body>\n</html>\n"
+    \ </div>\n</footer>\n\n<script src=\"reveal.js?v=3\"></script>\n</body>\n</html>\n"
   scale.html: "<!DOCTYPE html>\n<html lang=\"en\" class=\"no-js\">\n<head>\n<meta
     charset=\"UTF-8\">\n<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n<meta
     name=\"robots\" content=\"noindex\">\n<title>Scaling &amp; ownership — Gompha</title>\n<meta
@@ -1523,7 +1523,7 @@ data:
     take your data when you leave. How Gompha scales up and down — and why your records
     are never held hostage.\">\n<link rel=\"preconnect\" href=\"https://fonts.googleapis.com\">\n<link
     rel=\"preconnect\" href=\"https://fonts.gstatic.com\" crossorigin>\n<link href=\"https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800;900&family=Inter:wght@400;500;600;700&display=swap\"
-    rel=\"stylesheet\">\n<link rel=\"stylesheet\" href=\"style.css\">\n</head>\n<body>\n\n<nav>\n
+    rel=\"stylesheet\">\n<link rel=\"stylesheet\" href=\"style.css?v=3\">\n</head>\n<body>\n\n<nav>\n
     \ <div class=\"wrap nav-in\">\n    <div class=\"logo\"><a href=\"index.html\">G<span
     class=\"socket\"></span>mpha</a></div>\n    <div class=\"nav-links\">\n      <a
     href=\"index.html#capabilities\">Capabilities</a>\n      <a href=\"roadmap.html\">Roadmap</a>\n
@@ -1661,7 +1661,7 @@ data:
     \     <div class=\"fcol\">\n        <h5>Contact</h5>\n        <a href=\"mailto:hello@gompha.com\">hello@gompha.com</a>\n
     \       <a href=\"mailto:hello@gompha.com\">Book a walkthrough</a>\n      </div>\n
     \   </div>\n    <div class=\"base\">© 2026 Gompha · Your practice, anchored.</div>\n
-    \ </div>\n</footer>\n\n<script src=\"reveal.js\"></script>\n</body>\n</html>\n"
+    \ </div>\n</footer>\n\n<script src=\"reveal.js?v=3\"></script>\n</body>\n</html>\n"
   style.css: "/* Gompha marketing site — shared design system.\n   Extracted from
     the original single-file landing so every page (home, roadmap,\n   scale) reads
     as one system. Self-contained: fonts are the only external ask.\n   ponytail:
