@@ -1,41 +1,690 @@
 apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: landing-html
-  namespace: gompha
 data:
-  # Gompha landing page (self-contained; inline CSS+JS). High-contrast + animations, v0.9 features. 2026-07-05.
-  index.html: |
+  founders.html: |
     <!DOCTYPE html>
     <html lang="en" class="no-js">
     <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gompha — Your practice, anchored.</title>
-    <meta name="description" content="Gompha is the dental practice management system that anchors your tooth chart, schedule, cases and deal ledger into one record — built for clinics that negotiate.">
+    <title>Founders — Gompha</title>
+    <meta name="description" content="Who built Gompha — the people behind the dental practice management system.">
+    <meta name="robots" content="noindex">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
     <style>
+    /* founders — page-local, no other page uses it */
+    .founder-grid{display:grid;grid-template-columns:1fr 1fr;gap:26px;max-width:920px;margin:0 auto}
+    @media(max-width:760px){.founder-grid{grid-template-columns:1fr}}
+    .founder{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:34px;display:flex;flex-direction:column}
+    .founder .avatar{width:72px;height:72px;border-radius:50%;background:linear-gradient(135deg,var(--navy),var(--teal));display:flex;align-items:center;justify-content:center;font-family:var(--heading-font);font-weight:900;color:#fff;font-size:26px;margin-bottom:18px}
+    .founder .role{font-family:var(--heading-font);font-weight:800;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--teal-text)}
+    .founder h3{font-size:23px;margin:6px 0 10px}
+    .founder p{font-size:15.5px;color:var(--body);margin-bottom:10px}
+    .founder .links{margin-top:auto;padding-top:12px}
+    .founder .links a{margin-right:16px;font-size:14.5px}
+    </style>
+    </head>
+    <body>
+
+    <header class="hero short">
+      <div class="glow g1"></div><div class="glow g2"></div>
+      <div class="wrap">
+        <div class="logo anim d1" style="color:#fff;margin-bottom:22px">G<span class="socket"></span>mpha</div>
+        <h1 class="anim d2">The people behind Gompha</h1>
+        <p class="tagline anim d3">Gompha is built by a small team who actually sit in the clinic — a builder who ships the software and a dentist who runs the chair it's shaped around.</p>
+      </div>
+    </header>
+
+    <section>
+      <div class="wrap">
+        <div class="founder-grid stagger">
+          <div class="founder">
+            <div class="avatar">S</div>
+            <span class="role">Founder · Builder</span>
+            <h3>Stefanos Kostikidis</h3>
+            <p>Builds and runs the whole platform — the app, the data model, the deploy and the infrastructure. Gompha is designed, coded and shipped end-to-end from a real clinic's needs, not a spec sheet.</p>
+            <p><em>Short bio / experience — placeholder.</em></p>
+            <div class="links">
+              <!-- placeholder: point at the real CV/LinkedIn when ready -->
+              <a href="#">View CV →</a>
+              <a href="mailto:hello@gompha.com">Email</a>
+            </div>
+          </div>
+          <div class="founder">
+            <div class="avatar">A</div>
+            <span class="role">Co-founder · Clinical</span>
+            <h3>Dr. Ali <em style="font-weight:600;color:var(--body)">— placeholder</em></h3>
+            <p>The dentist Gompha is built around. Runs a real practice in Erbil and shapes every clinical decision — the odontogram, the deal ledger, how the chair actually works day to day.</p>
+            <p><em>Short bio / credentials — placeholder.</em></p>
+            <div class="links">
+              <a href="#">Profile →</a>
+            </div>
+          </div>
+        </div>
+
+        <p style="text-align:center;max-width:640px;margin:44px auto 0;color:var(--body);font-size:16px">
+          <strong>Who built it:</strong> Gompha is designed and developed by Stefanos Kostikidis, in close partnership with Dr.&nbsp;Ali, whose practice is its first home.
+        </p>
+      </div>
+    </section>
+
+    <footer>
+      <div class="wrap">
+        <div class="base" style="border:none">© 2026 Gompha · Your practice, anchored.</div>
+      </div>
+    </footer>
+
+    <script src="reveal.js"></script>
+    </body>
+    </html>
+  index.html: "<!DOCTYPE html>\n<html lang=\"en\" class=\"no-js\">\n<head>\n<meta
+    charset=\"UTF-8\">\n<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n<meta
+    name=\"robots\" content=\"noindex\">\n<title>Gompha — Your practice, anchored.</title>\n<meta
+    name=\"description\" content=\"Gompha is the dental practice management system
+    that anchors your tooth chart, schedule, cases and deal ledger into one record
+    — built for clinics that negotiate.\">\n<link rel=\"preconnect\" href=\"https://fonts.googleapis.com\">\n<link
+    rel=\"preconnect\" href=\"https://fonts.gstatic.com\" crossorigin>\n<link href=\"https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800;900&family=Inter:wght@400;500;600;700&display=swap\"
+    rel=\"stylesheet\">\n<link rel=\"stylesheet\" href=\"style.css\">\n</head>\n<body>\n\n<nav>\n
+    \ <div class=\"wrap nav-in\">\n    <div class=\"logo\"><a href=\"index.html\">G<span
+    class=\"socket\"></span>mpha</a></div>\n    <div class=\"nav-links\">\n      <a
+    href=\"index.html#capabilities\">Capabilities</a>\n      <a href=\"roadmap.html\">Roadmap</a>\n
+    \     <a href=\"scale.html\">Scaling &amp; ownership</a>\n      <a href=\"safety.html\">Data
+    safety</a>\n      <a href=\"index.html#demos\">Live demos</a>\n      <a href=\"index.html#contact\"
+    class=\"btn btn-primary\" style=\"padding:10px 20px\">Join the waitlist</a>\n
+    \   </div>\n  </div>\n</nav>\n\n<!-- HERO -->\n<header class=\"hero\">\n  <div
+    class=\"glow g1\"></div><div class=\"glow g2\"></div>\n  <div class=\"wrap\">\n
+    \   <span class=\"pill anim d1\">\U0001F9B7 <span><b>Live v0.22.3</b> — running
+    in a real Erbil clinic</span></span>\n    <h1 class=\"anim d2\">Your practice,
+    anchored.</h1>\n    <p class=\"tagline anim d3\">Gompha holds your tooth chart,
+    your schedule, every case and every negotiated deal in one record — and remembers
+    who approved the price and why. Nothing floats loose. Nothing gets forgotten.</p>\n
+    \   <div class=\"cta-row anim d4\">\n      <a href=\"index.html#demos\" class=\"btn
+    btn-primary\">Try a live demo</a>\n      <a href=\"roadmap.html\" class=\"btn
+    btn-ghost\">See the roadmap →</a>\n    </div>\n    <p class=\"trust anim d4\">Built
+    for cash &amp; bargaining markets — where the price is a conversation, not a list.</p>\n
+    \ </div>\n</header>\n\n<!-- ANCHOR THESIS -->\n<section id=\"thesis\">\n  <div
+    class=\"wrap\">\n    <div class=\"sec-head reveal\">\n      <span class=\"eyebrow\">The
+    name</span>\n      <h2>Gomphosis — the joint that anchors every tooth</h2>\n      <p>In
+    anatomy, <em>gomphosis</em> is the peg-in-socket bond that locks each tooth solidly
+    into the jaw — the reason a healthy tooth doesn't move. Gompha does the same for
+    your practice: it anchors the four things that usually float loose into one record.</p>\n
+    \   </div>\n    <div class=\"id-grid stagger\">\n      <div class=\"id-card\"><span
+    class=\"tag\">Tooth</span><h3>Two-layer odontogram</h3><p>Crown, root and state
+    per tooth, tracked over time with per-doctor provenance colors.</p></div>\n      <div
+    class=\"id-card\"><span class=\"tag\">Patient</span><h3>The full timeline</h3><p>History,
+    perio trends, charges, debt and contact — one continuous, anchored record.</p></div>\n
+    \     <div class=\"id-card\"><span class=\"tag\">Case</span><h3>Procedures &amp;
+    sessions</h3><p>Every case assembled from procedure line-items that book, schedule
+    and follow the patient through.</p></div>\n      <div class=\"id-card\"><span
+    class=\"tag\">Deal</span><h3>The negotiated price</h3><p>Agreed vs standard price,
+    who approved it, and the human reason — held, not forgotten.</p></div>\n    </div>\n
+    \ </div>\n</section>\n\n<!-- CAPABILITIES -->\n<section id=\"capabilities\" style=\"background:var(--bg-alt)\">\n
+    \ <div class=\"wrap\">\n    <div class=\"sec-head reveal\">\n      <span class=\"eyebrow\">What
+    it does</span>\n      <h2>A PMS shaped like your chair, not a spreadsheet</h2>\n
+    \     <p>Everything a modern clinic needs — with the parts Western software forgot.
+    Everything below is <strong>live today</strong>. What's coming lives on the <a
+    href=\"roadmap.html\">roadmap</a>.</p>\n    </div>\n    <div class=\"feat-grid
+    stagger\">\n      <div class=\"feat\"><span class=\"ico\">\U0001F9B7</span><h3>Two-layer
+    odontogram <span class=\"ship\">Shipped</span></h3><p>A real tooth chart: crown
+    work, root work and tooth state over time — plus a children's (deciduous) chart
+    and full history. Most regional tools have no chart at all.</p></div>\n      <div
+    class=\"feat\"><span class=\"ico\">\U0001F91D</span><h3>The deal ledger <span
+    class=\"ship\">Shipped</span></h3><p>Capture the <em>negotiated</em> price, the
+    approver and the reason. The negotiation becomes data you can see across the whole
+    clinic.</p></div>\n      <div class=\"feat\"><span class=\"ico\">\U0001F9FE</span><h3>Per-case
+    procedures <span class=\"ship\">Shipped</span></h3><p>Build a case from procedure
+    line-items — clinical, lab or material-linked. Per-doctor catalogs, with per-procedure
+    income attribution baked in.</p></div>\n      <div class=\"feat\"><span class=\"ico\">\U0001F4E6</span><h3>Inventory
+    control <span class=\"ship\">Shipped</span></h3><p>Real stock: packs &amp; pieces,
+    locked-FX cost that never revalues on a recount, per-doctor or clinic ownership,
+    expiry/batch, low-stock alerts.</p></div>\n      <div class=\"feat\"><span class=\"ico\">\U0001F4B0</span><h3>Cost
+    floor on every deal <span class=\"ship\">Shipped</span></h3><p>Materials tie to
+    procedures, so each case shows its real cost floor — your honest bargaining line,
+    right on the sheet.</p></div>\n      <div class=\"feat\"><span class=\"ico\">\U0001F4CA</span><h3>Perio
+    charting <span class=\"ship\">Shipped</span></h3><p>Pocket depths per visit, drawn
+    as a trend line — see the mouth improving, not just today's numbers.</p></div>\n
+    \     <div class=\"feat\"><span class=\"ico\">\U0001F5D3️</span><h3>Room-grid
+    scheduling <span class=\"ship\">Shipped</span></h3><p>Reception sees rooms as
+    columns, doctors color-coded, with hard double-booking protection and an emergency
+    override. Plus a 7-day panorama week wall.</p></div>\n      <div class=\"feat\"><span
+    class=\"ico\">⏱️</span><h3>Agenda, arrival &amp; punctuality <span class=\"ship\">Shipped</span></h3><p>Doctor's
+    mobile day list with a countdown to the next patient; reception checks patients
+    in, waiting-room panel, running-late cascade flags reception instantly.</p></div>\n
+    \     <div class=\"feat\"><span class=\"ico\">\U0001F4B5</span><h3>Dual currency,
+    done right <span class=\"ship\">Shipped</span></h3><p>IQD + USD with an \"FX of
+    the day.\" Every row stores the rate used, so totals stay honest as rates move.</p></div>\n
+    \     <div class=\"feat\"><span class=\"ico\">\U0001F4C8</span><h3>Income &amp;
+    partnership P&amp;L <span class=\"ship\">Shipped</span></h3><p>Per-doctor income
+    attribution and an Earnings screen — money-privacy walls keep each doctor's numbers
+    their own.</p></div>\n      <div class=\"feat\"><span class=\"ico\">\U0001F510</span><h3>Sessions
+    &amp; your devices <span class=\"ship\">Shipped</span></h3><p>Role-aware session
+    lengths, device capture, and a \"Your devices\" panel — sign a lost phone out
+    from anywhere.</p></div>\n      <div class=\"feat\"><span class=\"ico\">\U0001F5E3️</span><h3>Voice
+    → deal note <span class=\"ship soon\">Planned</span></h3><p>Dictate a chair-side
+    note → structured encounter and deal, hands on the patient. The moat feature —
+    spec'd, not yet built.</p></div>\n    </div>\n  </div>\n</section>\n\n<!-- DEAL
+    LEDGER SPOTLIGHT -->\n<section id=\"ledger\">\n  <div class=\"wrap\">\n    <div
+    class=\"spot reveal\">\n      <div>\n        <span class=\"moat\">The moat</span>\n
+    \       <h2>No other PMS remembers the deal</h2>\n        <p>Dentrix and Open
+    Dental assume a fixed price list. But in the real world, the price is negotiated
+    — a discount for a cousin, a free cleaning, a cash rate. Gompha anchors that:
+    what was agreed, who approved it, and why.</p>\n        <p>Next time that patient
+    walks in, the whole clinic knows the story — not just the doctor who made the
+    deal.</p>\n        <a href=\"index.html#demos\" class=\"btn btn-gold\">See it
+    in the live demo</a>\n      </div>\n      <div class=\"sheet\">\n        <div
+    class=\"row\"><span class=\"k\">Procedure</span><span class=\"v\">Zirconia crown
+    · tooth 11</span></div>\n        <div class=\"row\"><span class=\"k\">Standard
+    price</span><span class=\"strike\">$450</span></div>\n        <div class=\"row\"><span
+    class=\"k\">Agreed price</span><span class=\"agreed\">$380</span></div>\n        <div
+    class=\"row\"><span class=\"k\">Cost floor (materials)</span><span class=\"v\">$120</span></div>\n
+    \       <div class=\"row\"><span class=\"k\">Approved by</span><span class=\"v\">Dr.
+    Ali</span></div>\n        <div class=\"row\"><span class=\"k\">Currency</span><span
+    class=\"v\">USD @ FX 1,500</span></div>\n        <div class=\"ctx\">\"70 off —
+    Hiba's cousin, paying cash today, added free polish.\"</div>\n      </div>\n    </div>\n
+    \ </div>\n</section>\n\n<!-- COMPARE -->\n<section id=\"compare\" style=\"background:var(--bg-alt)\">\n
+    \ <div class=\"wrap\">\n    <div class=\"sec-head reveal\">\n      <span class=\"eyebrow\">Why
+    Gompha wins</span>\n      <h2>Built for how you actually run the chair</h2>\n
+    \     <p>Dentrix is built for an insurance claim. EasyClinic is a calendar with
+    invoices. Gompha is built for the deal.</p>\n    </div>\n    <div class=\"cmp
+    reveal\">\n      <table>\n        <thead>\n          <tr><th>Capability</th><th
+    class=\"us\">Gompha</th><th>Dentrix / Open Dental</th><th>Regional tools</th></tr>\n
+    \       </thead>\n        <tbody>\n          <tr><td>Negotiated-price deal ledger</td><td
+    class=\"us\">✓</td><td class=\"n\">✕ fixed list</td><td class=\"n\">✕</td></tr>\n
+    \         <tr><td>Two-layer visual odontogram</td><td class=\"us\">✓</td><td class=\"y\">✓
+    (legacy)</td><td class=\"n\">✕ no chart</td></tr>\n          <tr><td>Per-case
+    procedures + inventory link</td><td class=\"us\">✓</td><td class=\"y\">✓ (heavy)</td><td
+    class=\"n\">✕</td></tr>\n          <tr><td>Dual currency (IQD+USD, FX/day)</td><td
+    class=\"us\">✓</td><td class=\"n\">✕</td><td>partial</td></tr>\n          <tr><td>Cost-floor
+    bargaining assistant</td><td class=\"us\">✓</td><td class=\"n\">✕</td><td class=\"n\">✕</td></tr>\n
+    \         <tr><td>Doctor-mobile + reception-web shells</td><td class=\"us\">✓</td><td
+    class=\"n\">✕ desktop-bound</td><td>partial</td></tr>\n          <tr><td>Made
+    for cash / bargaining markets</td><td class=\"us\">✓</td><td class=\"n\">✕ insurance-first</td><td>partial</td></tr>\n
+    \         <tr><td>Cloud, subdomain-per-clinic, white-label</td><td class=\"us\">✓</td><td
+    class=\"n\">✕</td><td>partial</td></tr>\n        </tbody>\n      </table>\n    </div>\n
+    \ </div>\n</section>\n\n<!-- DEMOS -->\n<section id=\"demos\">\n  <div class=\"wrap\">\n
+    \   <div class=\"sec-head reveal\">\n      <span class=\"eyebrow\">Try it live</span>\n
+    \     <h2>Two demos — pick the one that fits your clinic</h2>\n      <p>Both run
+    the real software with seeded data. Pick a role and walk straight in — no signup.</p>\n
+    \   </div>\n    <div class=\"demo-grid stagger\">\n      <div class=\"demo-card\">\n
+    \       <span class=\"kind\">Multi-doctor clinic</span>\n        <h3>The clinic
+    demo</h3>\n        <p>A busy practice: several doctors, reception, rooms and the
+    full financial picture — how Gompha runs a real chair-heavy clinic.</p>\n        <ul>\n
+    \         <li>Pick a role: doctor, reception, admin or maintenance</li>\n          <li>Room-grid
+    schedule + panorama week wall</li>\n          <li>Deal ledger, inventory and per-doctor
+    P&amp;L</li>\n        </ul>\n        <a href=\"https://demo.gompha.com\" class=\"btn
+    btn-primary\">Open the clinic demo →</a>\n      </div>\n      <div class=\"demo-card
+    solo\">\n        <span class=\"kind\">Single-doctor practice</span>\n        <h3>The
+    solo demo</h3>\n        <p>One dentist, one chair, no reception desk. The same
+    engine with the multi-user machinery folded away — just the chart, the deals and
+    money in / money out.</p>\n        <ul>\n          <li>One login — you're the
+    whole clinic</li>\n          <li>Money collapses to a simple in / out / drawer</li>\n
+    \         <li>Grow into the full clinic when you hire</li>\n        </ul>\n        <a
+    href=\"https://demosolo.gompha.com\" class=\"btn btn-gold\">Open the solo demo
+    →</a>\n        <p class=\"flag\">⚑ Solo mode is on the roadmap — this demo goes
+    live with it. See <a href=\"scale.html\">Scaling &amp; ownership</a>.</p>\n      </div>\n
+    \   </div>\n  </div>\n</section>\n\n<!-- PRICING -->\n<section id=\"pricing\"
+    style=\"background:var(--bg-alt)\">\n  <div class=\"wrap\">\n    <div class=\"sec-head
+    reveal\">\n      <span class=\"eyebrow\">Pricing</span>\n      <h2>One clinic,
+    one subdomain, one fair price</h2>\n      <p>Priced per clinic by size — never
+    per seat. Start solo, grow to a full clinic on the same account.</p>\n    </div>\n
+    \   <div class=\"price-grid stagger\">\n      <div class=\"plan\">\n        <h3>Solo</h3>\n
+    \       <div class=\"amt\">$—<small>/mo</small></div>\n        <p class=\"note\">Single
+    dentist, one chair.</p>\n        <ul>\n          <li>Odontogram + perio charting</li>\n
+    \         <li>Deal ledger &amp; debtors</li>\n          <li>Scheduling + doctor
+    agenda</li>\n          <li>Inventory + dual currency</li>\n          <li>Money
+    in / out / drawer</li>\n        </ul>\n        <a href=\"index.html#contact\"
+    class=\"btn btn-ghost\">Request pricing</a>\n      </div>\n      <div class=\"plan
+    feat-plan\">\n        <h3>Clinic</h3>\n        <div class=\"amt\">$—<small>/mo</small></div>\n
+    \       <p class=\"note\">Multi-doctor, multi-room practice.</p>\n        <ul>\n
+    \         <li>Everything in Solo</li>\n          <li>Rooms, shared-room scheduling</li>\n
+    \         <li>Per-case procedures + catalogs</li>\n          <li>Roles: doctor
+    / reception / admin</li>\n          <li>Per-doctor income &amp; P&amp;L</li>\n
+    \       </ul>\n        <a href=\"index.html#contact\" class=\"btn btn-primary\">Request
+    pricing</a>\n      </div>\n      <div class=\"plan\">\n        <h3>Pro · White-label</h3>\n
+    \       <div class=\"amt\">Custom</div>\n        <p class=\"note\">Your brand,
+    your colors, your domain.</p>\n        <ul>\n          <li>Everything in Clinic</li>\n
+    \         <li>White-label branding <span class=\"ship soon\">Planned</span></li>\n
+    \         <li>Self-host / on-prem option <span class=\"ship soon\">Planned</span></li>\n
+    \         <li>Voice notes &amp; X-ray viewer <span class=\"ship soon\">Planned</span></li>\n
+    \         <li>Dedicated onboarding</li>\n        </ul>\n        <a href=\"index.html#contact\"
+    class=\"btn btn-gold\">Talk to us</a>\n      </div>\n    </div>\n    <p class=\"indicative\">Prices
+    are indicative — final pricing quoted on request, tailored to chairs and clinic
+    size.</p>\n  </div>\n</section>\n\n<!-- CONTACT / WAITLIST -->\n<section id=\"contact\">\n
+    \ <div class=\"wrap\">\n    <div class=\"sec-head reveal\">\n      <span class=\"eyebrow\">Get
+    in</span>\n      <h2>Join the waitlist</h2>\n      <p>Be one of the first clinics
+    on Gompha. Ask for pricing, book a walkthrough, or get early access.</p>\n    </div>\n
+    \   <!-- ponytail: mailto action = zero backend. Swap for a real form endpoint
+    when you have one. -->\n    <form class=\"form reveal\" action=\"mailto:kostikidis.network@gmail.com\"
+    method=\"post\" enctype=\"text/plain\">\n      <label for=\"name\">Name</label>\n
+    \     <input id=\"name\" name=\"name\" required placeholder=\"Dr. Jane Doe\">\n
+    \     <label for=\"clinic\">Clinic</label>\n      <input id=\"clinic\" name=\"clinic\"
+    placeholder=\"Clinic name &amp; city\">\n      <label for=\"email\">Email</label>\n
+    \     <input id=\"email\" name=\"email\" type=\"email\" required placeholder=\"you@clinic.com\">\n
+    \     <label for=\"interest\">I'm interested in</label>\n      <select id=\"interest\"
+    name=\"interest\">\n        <option>Joining the waitlist</option>\n        <option>Pricing
+    for my clinic</option>\n        <option>A live walkthrough</option>\n        <option>Solo
+    practice (single doctor)</option>\n        <option>White-label / self-host</option>\n
+    \     </select>\n      <label for=\"msg\">Anything else?</label>\n      <textarea
+    id=\"msg\" name=\"message\" placeholder=\"How many chairs, doctors, and what you
+    use today…\"></textarea>\n      <button type=\"submit\" class=\"btn btn-primary\">Request
+    early access</button>\n      <p class=\"fine\">No spam. We'll only reach out about
+    Gompha.</p>\n    </form>\n  </div>\n</section>\n\n<footer>\n  <div class=\"wrap\">\n
+    \   <div class=\"fcols\">\n      <div class=\"fcol\" style=\"max-width:280px\">\n
+    \       <div class=\"logo\">G<span class=\"socket\"></span>mpha</div>\n        <p
+    style=\"margin-top:10px;color:#a7bcda\">Your practice, anchored. Every tooth tracked.
+    Every deal remembered.</p>\n      </div>\n      <div class=\"fcol\">\n        <h5>Product</h5>\n
+    \       <a href=\"index.html#capabilities\">Capabilities</a>\n        <a href=\"roadmap.html\">Roadmap</a>\n
+    \       <a href=\"scale.html\">Scaling &amp; ownership</a>\n        <a href=\"safety.html\">Data
+    safety</a>\n        <a href=\"index.html#pricing\">Pricing</a>\n      </div>\n
+    \     <div class=\"fcol\">\n        <h5>Try it</h5>\n        <a href=\"https://demo.gompha.com\">Clinic
+    demo</a>\n        <a href=\"https://demosolo.gompha.com\">Solo demo</a>\n        <a
+    href=\"index.html#contact\">Join the waitlist</a>\n      </div>\n      <div class=\"fcol\">\n
+    \       <h5>Contact</h5>\n        <a href=\"mailto:hello@gompha.com\">hello@gompha.com</a>\n
+    \       <a href=\"index.html#contact\">Book a walkthrough</a>\n      </div>\n
+    \   </div>\n    <div class=\"base\">© 2026 Gompha · Your practice, anchored.</div>\n
+    \ </div>\n</footer>\n\n<script src=\"reveal.js\"></script>\n</body>\n</html>\n"
+  reveal.js: |
+    // Progressive scroll-reveal, shared by every page. No deps.
+    document.documentElement.classList.add('js');
+    (function(){
+      var els = document.querySelectorAll('.reveal, .stagger');
+      if (!('IntersectionObserver' in window)) { els.forEach(function(e){e.classList.add('in');}); return; }
+      var io = new IntersectionObserver(function(entries){
+        entries.forEach(function(en){ if(en.isIntersecting){ en.target.classList.add('in'); io.unobserve(en.target); } });
+      }, { threshold: 0.12, rootMargin: '0px 0px -8% 0px' });
+      els.forEach(function(e){ io.observe(e); });
+    })();
+  roadmap.html: "<!DOCTYPE html>\n<html lang=\"en\" class=\"no-js\">\n<head>\n<meta
+    charset=\"UTF-8\">\n<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n<meta
+    name=\"robots\" content=\"noindex\">\n<title>Roadmap — Gompha</title>\n<meta name=\"description\"
+    content=\"What's shipped, what's building, and what's next in Gompha — the dental
+    PMS. An honest built-vs-planned roadmap, updated per release.\">\n<link rel=\"preconnect\"
+    href=\"https://fonts.googleapis.com\">\n<link rel=\"preconnect\" href=\"https://fonts.gstatic.com\"
+    crossorigin>\n<link href=\"https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800;900&family=Inter:wght@400;500;600;700&display=swap\"
+    rel=\"stylesheet\">\n<link rel=\"stylesheet\" href=\"style.css\">\n</head>\n<body>\n\n<nav>\n
+    \ <div class=\"wrap nav-in\">\n    <div class=\"logo\"><a href=\"index.html\">G<span
+    class=\"socket\"></span>mpha</a></div>\n    <div class=\"nav-links\">\n      <a
+    href=\"index.html#capabilities\">Capabilities</a>\n      <a href=\"roadmap.html\"
+    class=\"active\">Roadmap</a>\n      <a href=\"scale.html\">Scaling &amp; ownership</a>\n
+    \     <a href=\"safety.html\">Data safety</a>\n      <a href=\"index.html#demos\">Live
+    demos</a>\n      <a href=\"index.html#contact\" class=\"btn btn-primary\" style=\"padding:10px
+    20px\">Join the waitlist</a>\n    </div>\n  </div>\n</nav>\n\n<header class=\"hero
+    short\">\n  <div class=\"glow g1\"></div><div class=\"glow g2\"></div>\n  <div
+    class=\"wrap\">\n    <span class=\"pill anim d1\">\U0001F9B7 <span>Currently live:
+    <b>v0.22.3</b></span></span>\n    <h1 class=\"anim d2\">The roadmap</h1>\n    <p
+    class=\"tagline anim d3\">Everything Gompha can do today, what we're building
+    right now, and what's next — labelled honestly. If it says <em>Planned</em>, it
+    isn't built yet. No vaporware in the \"shipped\" column.</p>\n  </div>\n</header>\n\n<section
+    class=\"tight\">\n  <div class=\"wrap\">\n    <div class=\"tl-legend reveal\">\n
+    \     <span><i class=\"dot done\"></i> Shipped &amp; live</span>\n      <span><i
+    class=\"dot build\"></i> Building now</span>\n      <span><i class=\"dot plan\"></i>
+    Planned / next</span>\n    </div>\n\n    <!-- SHIPPED -->\n    <div class=\"phase
+    reveal\">\n      <h2><span class=\"badge done\">Shipped</span> Live today in a
+    real clinic</h2>\n      <p class=\"lede\">Running in production at v0.22.3 — over
+    twenty releases, zero image drift. This is the software you can log into right
+    now.</p>\n      <ul class=\"tl\">\n        <li class=\"done\"><span class=\"ver\">v0.4
+    · odontogram</span><h4>Two-layer tooth chart</h4><p>Crown work, root work and
+    tooth state per tooth, over time, with per-doctor provenance colors. Later: a
+    children's (deciduous) chart and full chart history (v0.15).</p></li>\n        <li
+    class=\"done\"><span class=\"ver\">core · the moat</span><h4>The deal ledger</h4><p>Every
+    charge stores the agreed price vs the standard price, who approved the discount,
+    and the reason in plain words. The negotiation becomes clinic-wide data.</p></li>\n
+    \       <li class=\"done\"><span class=\"ver\">v0.5 · perio + stock</span><h4>Perio
+    charting &amp; the cost floor</h4><p>Pocket depths per visit drawn as a trend
+    line; materials tie to procedures so each case shows its real material cost floor
+    — your honest bargaining line.</p></li>\n        <li class=\"done\"><span class=\"ver\">v0.6
+    → v0.20 · scheduling</span><h4>Scheduling built for a real chair</h4><p>Room-grid
+    day view with hard double-booking protection, the panorama week wall (7 day-columns),
+    patient arrival + punctuality tracking, and a reception mobile pass.</p></li>\n
+    \       <li class=\"done\"><span class=\"ver\">v0.8 · inventory</span><h4>Inventory
+    control</h4><p>Packs &amp; pieces, locked-FX cost that never revalues on a recount,
+    per-doctor or clinic ownership, expiry/batch and low-stock alerts.</p></li>\n
+    \       <li class=\"done\"><span class=\"ver\">v0.6 → v0.17 · cases</span><h4>Per-case
+    procedures &amp; print docs</h4><p>Cases built from procedure line-items with
+    per-doctor catalogs; multi-session tracking; printable treatment plan, budget
+    and insurance note; medical intake.</p></li>\n        <li class=\"done\"><span
+    class=\"ver\">v0.16 · financials</span><h4>Income attribution &amp; partnership
+    P&amp;L</h4><p>Per-doctor income attribution and an Earnings screen, with money-privacy
+    walls so each doctor's numbers stay their own. Append-only money, void-only, honest
+    balances.</p></li>\n        <li class=\"done\"><span class=\"ver\">core · money
+    reality</span><h4>Dual currency, done right</h4><p>IQD + USD with an admin \"FX
+    of the day.\" Every row stores its amount, currency and the rate used — totals
+    don't drift when the rate moves.</p></li>\n        <li class=\"done\"><span class=\"ver\">v0.7
+    · roles</span><h4>Role-shaped interfaces, one codebase</h4><p>Doctor mobile-clinical,
+    reception web-scheduling, admin config + money, and a maintenance role walled
+    off from all patient data by default-deny authz.</p></li>\n        <li class=\"done\"><span
+    class=\"ver\">v0.22 · sessions</span><h4>Session management &amp; your devices</h4><p>Role-aware
+    session lengths, device capture and a \"Your devices\" panel — sign a lost phone
+    out from anywhere. Security-audited before ship.</p></li>\n        <li class=\"done\"><span
+    class=\"ver\">v0.21 · reminders</span><h4>Tap-to-send appointment reminders</h4><p>Reception
+    taps a patient to send a reminder over WhatsApp, Viber or a call — defaults to
+    WhatsApp when a number's on file.</p></li>\n        <li class=\"done\"><span class=\"ver\">infra
+    · safety</span><h4>Encrypted backups &amp; tenant isolation</h4><p>Hourly age-encrypted
+    backups; row-level security forced on every tenant table so no clinic can ever
+    see another's data.</p></li>\n      </ul>\n    </div>\n\n    <!-- BUILDING -->\n
+    \   <div class=\"phase reveal\">\n      <h2><span class=\"badge build\">Building</span>
+    In progress right now</h2>\n      <p class=\"lede\">Spec locked, partly built,
+    landing in upcoming releases.</p>\n      <ul class=\"tl\">\n        <li class=\"build\"><span
+    class=\"ver\">odontogram v2</span><h4>Richer clinical charting</h4><p>Ortho spans
+    (retainer / wire / aligner), a planned-treatment state, mixed-dentition ghost
+    teeth, and a doctor→reception print-request handoff. First pieces already shipping.</p></li>\n
+    \       <li class=\"build\"><span class=\"ver\">auth hardening</span><h4>Trusted
+    devices, PIN &amp; OTP</h4><p>Per-staff PIN, email OTP on a new device, trusted-device
+    memory and a bot check — plus an audit log of who booked and who took each payment.</p></li>\n
+    \       <li class=\"build\"><span class=\"ver\">reports</span><h4>Daily cash report</h4><p>End-of-day
+    money reconciliation for the front desk. Built, rolling out.</p></li>\n        <li
+    class=\"build\"><span class=\"ver\">solo mode</span><h4>Single-doctor mode</h4><p>One
+    setting folds away the multi-user machinery — role pickers, per-doctor splits
+    — for a one-person practice. Powers the upcoming solo demo. See <a href=\"scale.html\">Scaling
+    &amp; ownership</a>.</p></li>\n        <li class=\"build\"><span class=\"ver\">i18n</span><h4>Arabic
+    translation</h4><p>The Arabic/RTL switch is already live; filling in the full
+    translation is ongoing.</p></li>\n      </ul>\n    </div>\n\n    <!-- PLANNED
+    -->\n    <div class=\"phase reveal\">\n      <h2><span class=\"badge plan\">Planned</span>
+    What's next</h2>\n      <p class=\"lede\">Designed and on the board — not yet
+    built. Listed so you can see where Gompha is going, not what it pretends to be.</p>\n
+    \     <ul class=\"tl\">\n        <li class=\"plan\"><span class=\"ver\">the cherry</span><h4>Voice
+    → deal note</h4><p>Dictate a chair-side note in your own words → a structured
+    encounter and deal, with the discount reason and the next appointment pulled out.
+    Hands stay on the patient. This is the headline moat feature — and it's zero code
+    today.</p></li>\n        <li class=\"plan\"><span class=\"ver\">imaging</span><h4>In-app
+    X-ray &amp; photo viewer</h4><p>Imaging IDs already link to the record; the on-card
+    viewer that pulls the image from your local image server is still to build.</p></li>\n
+    \       <li class=\"plan\"><span class=\"ver\">portability</span><h4>Export &amp;
+    import your data</h4><p>Self-serve export of your whole clinic to a portable bundle,
+    and provider-assisted import into a new tenant. \"Leave a practice, take your
+    data.\" Full story on <a href=\"scale.html\">Scaling &amp; ownership</a>.</p></li>\n
+    \       <li class=\"plan\"><span class=\"ver\">onboarding</span><h4>Self-serve
+    clinic setup</h4><p>A guided wizard that stands up a new clinic — rooms, doctors,
+    catalog — without a hand-run CLI.</p></li>\n        <li class=\"plan\"><span class=\"ver\">inventory
+    phase 2</span><h4>Procedure recipes &amp; auto-decrement</h4><p>Define each procedure's
+    material recipe once; stock draws down automatically as cases are done.</p></li>\n
+    \       <li class=\"plan\"><span class=\"ver\">commercial</span><h4>White-label
+    &amp; self-host</h4><p>Your brand, colors and domain; and an on-your-own-box option
+    for operators who want it — with licensing to match.</p></li>\n        <li class=\"plan\"><span
+    class=\"ver\">growth</span><h4>QR patient onboarding &amp; recall</h4><p>Patients
+    scan a QR to book; night-before reminders and recall broadcasts once a vetted
+    messaging account is in place.</p></li>\n        <li class=\"plan\"><span class=\"ver\">reach</span><h4>GCC
+    expansion</h4><p>Iraq is the proving ground. The Gulf — where clinics have card
+    rails and pay for PMS without blinking — is where this goes next.</p></li>\n      </ul>\n
+    \   </div>\n  </div>\n</section>\n\n<!-- CTA STRIP -->\n<section class=\"strip\">\n
+    \ <div class=\"wrap reveal\">\n    <h2>Want a say in what ships next?</h2>\n    <p>Founding
+    clinics shape the roadmap. Tell us what your chair actually needs.</p>\n    <div
+    class=\"cta-row\">\n      <a href=\"index.html#demos\" class=\"btn btn-primary\">Try
+    a live demo</a>\n      <a href=\"index.html#contact\" class=\"btn btn-gold\">Join
+    the waitlist</a>\n    </div>\n  </div>\n</section>\n\n<footer>\n  <div class=\"wrap\">\n
+    \   <div class=\"fcols\">\n      <div class=\"fcol\" style=\"max-width:280px\">\n
+    \       <div class=\"logo\">G<span class=\"socket\"></span>mpha</div>\n        <p
+    style=\"margin-top:10px;color:#a7bcda\">Your practice, anchored. Every tooth tracked.
+    Every deal remembered.</p>\n      </div>\n      <div class=\"fcol\">\n        <h5>Product</h5>\n
+    \       <a href=\"index.html#capabilities\">Capabilities</a>\n        <a href=\"roadmap.html\">Roadmap</a>\n
+    \       <a href=\"scale.html\">Scaling &amp; ownership</a>\n        <a href=\"safety.html\">Data
+    safety</a>\n        <a href=\"index.html#pricing\">Pricing</a>\n      </div>\n
+    \     <div class=\"fcol\">\n        <h5>Try it</h5>\n        <a href=\"https://demo.gompha.com\">Clinic
+    demo</a>\n        <a href=\"https://demosolo.gompha.com\">Solo demo</a>\n        <a
+    href=\"index.html#contact\">Join the waitlist</a>\n      </div>\n      <div class=\"fcol\">\n
+    \       <h5>Contact</h5>\n        <a href=\"mailto:hello@gompha.com\">hello@gompha.com</a>\n
+    \       <a href=\"index.html#contact\">Book a walkthrough</a>\n      </div>\n
+    \   </div>\n    <div class=\"base\">© 2026 Gompha · Your practice, anchored.</div>\n
+    \ </div>\n</footer>\n\n<script src=\"reveal.js\"></script>\n</body>\n</html>\n"
+  safety.html: "<!DOCTYPE html>\n<html lang=\"en\" class=\"no-js\">\n<head>\n<meta
+    charset=\"UTF-8\">\n<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n<meta
+    name=\"robots\" content=\"noindex\">\n<title>Data safety — Gompha</title>\n<meta
+    name=\"description\" content=\"How Gompha keeps your clinic's data safe: hard
+    tenant isolation, encrypted backups, walled access by role, session control, and
+    a no-hostage promise.\">\n<link rel=\"preconnect\" href=\"https://fonts.googleapis.com\">\n<link
+    rel=\"preconnect\" href=\"https://fonts.gstatic.com\" crossorigin>\n<link href=\"https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800;900&family=Inter:wght@400;500;600;700&display=swap\"
+    rel=\"stylesheet\">\n<link rel=\"stylesheet\" href=\"style.css\">\n</head>\n<body>\n\n<nav>\n
+    \ <div class=\"wrap nav-in\">\n    <div class=\"logo\"><a href=\"index.html\">G<span
+    class=\"socket\"></span>mpha</a></div>\n    <div class=\"nav-links\">\n      <a
+    href=\"index.html#capabilities\">Capabilities</a>\n      <a href=\"roadmap.html\">Roadmap</a>\n
+    \     <a href=\"scale.html\">Scaling &amp; ownership</a>\n      <a href=\"safety.html\"
+    class=\"active\">Data safety</a>\n      <a href=\"index.html#demos\">Live demos</a>\n
+    \     <a href=\"index.html#contact\" class=\"btn btn-primary\" style=\"padding:10px
+    20px\">Join the waitlist</a>\n    </div>\n  </div>\n</nav>\n\n<header class=\"hero
+    short\">\n  <div class=\"glow g1\"></div><div class=\"glow g2\"></div>\n  <div
+    class=\"wrap\">\n    <span class=\"pill anim d1\">\U0001F512 <span>Your clinic's
+    data, kept yours</span></span>\n    <h1 class=\"anim d2\">Data safety</h1>\n    <p
+    class=\"tagline anim d3\">Patient records are the most sensitive thing a clinic
+    holds. Gompha is built so your data is isolated from every other clinic, backed
+    up, walled off by role, and never held hostage — here's exactly how.</p>\n  </div>\n</header>\n\n<!--
+    CORE GUARANTEES -->\n<section>\n  <div class=\"wrap\">\n    <div class=\"sec-head
+    reveal\">\n      <span class=\"eyebrow\">The foundations</span>\n      <h2>Four
+    things we don't compromise on</h2>\n      <p>These are live in the software today
+    — not a policy page, but how it's actually built.</p>\n    </div>\n    <div class=\"feat-grid
+    stagger\">\n      <div class=\"feat\"><span class=\"ico\">\U0001F9F1</span><h3>Hard
+    tenant isolation <span class=\"ship\">Live</span></h3><p>Every clinic is its own
+    tenant on its own subdomain, with row-level security forced at the database itself.
+    A clinic literally cannot query another clinic's records — it's enforced below
+    the app, not just inside it.</p></div>\n      <div class=\"feat\"><span class=\"ico\">\U0001F5C4️</span><h3>Encrypted
+    backups <span class=\"ship\">Live</span></h3><p>Your data is backed up every hour,
+    encrypted with a modern age key before it ever leaves the server, and stored off
+    the main box. A bad day doesn't mean a lost clinic.</p></div>\n      <div class=\"feat\"><span
+    class=\"ico\">\U0001F6AA</span><h3>Walled access by role <span class=\"ship\">Live</span></h3><p>People
+    only see what their job needs. Maintenance configures the software with <em>zero</em>
+    access to any patient data; reception can take money but never see clinic totals;
+    each doctor's earnings stay their own.</p></div>\n      <div class=\"feat\"><span
+    class=\"ico\">\U0001F4F1</span><h3>Session &amp; device control <span class=\"ship\">Live</span></h3><p>Sessions
+    time out by role, every device is recorded, and a \"Your devices\" panel lets
+    you sign a lost or stolen phone out from anywhere — instantly.</p></div>\n    </div>\n
+    \ </div>\n</section>\n\n<!-- NO HOSTAGE -->\n<section style=\"background:var(--bg-alt)\">\n
+    \ <div class=\"wrap\">\n    <div class=\"spot reveal\">\n      <div>\n        <span
+    class=\"moat\">The promise</span>\n        <h2>Your data is never held hostage</h2>\n
+    \       <p>If you ever stop paying, writing pauses — but you can always <em>read</em>
+    your entire clinic. Even a suspended or expired account keeps full read access
+    to every record. No one locks you out of your own history to force a renewal.</p>\n
+    \       <p>And you'll be able to take it with you: self-serve export of your whole
+    clinic, and clean import into a new tenant, are on the way — <span class=\"ship
+    soon\">Planned</span>. Full story on <a href=\"scale.html\">Scaling &amp; ownership</a>.</p>\n
+    \       <a href=\"index.html#contact\" class=\"btn btn-gold\">Ask us anything
+    about it</a>\n      </div>\n      <div class=\"sheet\">\n        <div class=\"row\"><span
+    class=\"k\">Read your records</span><span class=\"agreed\">Always — even if unpaid</span></div>\n
+    \       <div class=\"row\"><span class=\"k\">Backups</span><span class=\"v\">Hourly
+    · encrypted · off-box</span></div>\n        <div class=\"row\"><span class=\"k\">Clinic
+    isolation</span><span class=\"v\">Row-level, database-enforced</span></div>\n
+    \       <div class=\"row\"><span class=\"k\">Export your data</span><span class=\"v\">Planned
+    — self-serve</span></div>\n        <div class=\"row\"><span class=\"k\">Passwords
+    / secrets</span><span class=\"v\">Hashed · never exported</span></div>\n      </div>\n
+    \   </div>\n  </div>\n</section>\n\n<!-- HOW MONEY & RECORDS ARE PROTECTED -->\n<section>\n
+    \ <div class=\"wrap\">\n    <div class=\"sec-head reveal\">\n      <span class=\"eyebrow\">Under
+    the hood</span>\n      <h2>Records that can't quietly change on you</h2>\n      <p>Trust
+    in a clinic system comes from knowing the history is honest and the boundaries
+    hold.</p>\n    </div>\n    <div class=\"id-grid stagger\">\n      <div class=\"id-card\"><span
+    class=\"tag\">Live</span><h3>Append-only money</h3><p>Payments aren't edited or
+    deleted — they're voided, leaving a trail. Balances are derived, so the ledger
+    can't silently drift.</p></div>\n      <div class=\"id-card\"><span class=\"tag\">Live</span><h3>Money-privacy
+    walls</h3><p>Who can see totals, costs and earnings is enforced per role — a receptionist
+    posts a payment without ever seeing the clinic's numbers.</p></div>\n      <div
+    class=\"id-card\"><span class=\"tag\">Live</span><h3>Consent to share</h3><p>Patients
+    belong to a doctor; another doctor gets access only through a request the owner
+    approves — scoped and audited, not open by default.</p></div>\n      <div class=\"id-card\"><span
+    class=\"tag\">Building</span><h3>Who-did-what audit</h3><p>A per-staff activity
+    log — who booked, who took each payment — so accountability is on the record,
+    not on memory.</p></div>\n    </div>\n    <p class=\"indicative\" style=\"max-width:680px;margin:40px
+    auto 0\">Gompha is built for a cash, real-world market — we focus on concrete
+    safety (isolation, encryption, backups, walled access), not compliance paperwork.
+    Have a specific security question for your clinic? <a href=\"index.html#contact\">Just
+    ask.</a></p>\n  </div>\n</section>\n\n<!-- CTA STRIP -->\n<section class=\"strip\">\n
+    \ <div class=\"wrap reveal\">\n    <h2>Safe enough to trust with your whole clinic</h2>\n
+    \   <p>See it running with real seeded data — then ask us the hard questions.</p>\n
+    \   <div class=\"cta-row\">\n      <a href=\"index.html#demos\" class=\"btn btn-primary\">Try
+    a live demo</a>\n      <a href=\"index.html#contact\" class=\"btn btn-gold\">Talk
+    to us</a>\n    </div>\n  </div>\n</section>\n\n<footer>\n  <div class=\"wrap\">\n
+    \   <div class=\"fcols\">\n      <div class=\"fcol\" style=\"max-width:280px\">\n
+    \       <div class=\"logo\">G<span class=\"socket\"></span>mpha</div>\n        <p
+    style=\"margin-top:10px;color:#a7bcda\">Your practice, anchored. Every tooth tracked.
+    Every deal remembered.</p>\n      </div>\n      <div class=\"fcol\">\n        <h5>Product</h5>\n
+    \       <a href=\"index.html#capabilities\">Capabilities</a>\n        <a href=\"roadmap.html\">Roadmap</a>\n
+    \       <a href=\"scale.html\">Scaling &amp; ownership</a>\n        <a href=\"safety.html\">Data
+    safety</a>\n        <a href=\"index.html#pricing\">Pricing</a>\n      </div>\n
+    \     <div class=\"fcol\">\n        <h5>Try it</h5>\n        <a href=\"https://demo.gompha.com\">Clinic
+    demo</a>\n        <a href=\"https://demosolo.gompha.com\">Solo demo</a>\n        <a
+    href=\"index.html#contact\">Join the waitlist</a>\n      </div>\n      <div class=\"fcol\">\n
+    \       <h5>Contact</h5>\n        <a href=\"mailto:hello@gompha.com\">hello@gompha.com</a>\n
+    \       <a href=\"index.html#contact\">Book a walkthrough</a>\n      </div>\n
+    \   </div>\n    <div class=\"base\">© 2026 Gompha · Your practice, anchored.</div>\n
+    \ </div>\n</footer>\n\n<script src=\"reveal.js\"></script>\n</body>\n</html>\n"
+  scale.html: "<!DOCTYPE html>\n<html lang=\"en\" class=\"no-js\">\n<head>\n<meta
+    charset=\"UTF-8\">\n<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n<meta
+    name=\"robots\" content=\"noindex\">\n<title>Scaling &amp; ownership — Gompha</title>\n<meta
+    name=\"description\" content=\"Start as one doctor, grow to a full clinic, and
+    take your data when you leave. How Gompha scales up and down — and why your records
+    are never held hostage.\">\n<link rel=\"preconnect\" href=\"https://fonts.googleapis.com\">\n<link
+    rel=\"preconnect\" href=\"https://fonts.gstatic.com\" crossorigin>\n<link href=\"https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800;900&family=Inter:wght@400;500;600;700&display=swap\"
+    rel=\"stylesheet\">\n<link rel=\"stylesheet\" href=\"style.css\">\n</head>\n<body>\n\n<nav>\n
+    \ <div class=\"wrap nav-in\">\n    <div class=\"logo\"><a href=\"index.html\">G<span
+    class=\"socket\"></span>mpha</a></div>\n    <div class=\"nav-links\">\n      <a
+    href=\"index.html#capabilities\">Capabilities</a>\n      <a href=\"roadmap.html\">Roadmap</a>\n
+    \     <a href=\"scale.html\" class=\"active\">Scaling &amp; ownership</a>\n      <a
+    href=\"safety.html\">Data safety</a>\n      <a href=\"index.html#demos\">Live
+    demos</a>\n      <a href=\"index.html#contact\" class=\"btn btn-primary\" style=\"padding:10px
+    20px\">Join the waitlist</a>\n    </div>\n  </div>\n</nav>\n\n<header class=\"hero
+    short\">\n  <div class=\"glow g1\"></div><div class=\"glow g2\"></div>\n  <div
+    class=\"wrap\">\n    <span class=\"pill anim d1\">\U0001F4D0 <span>Grows with
+    you — up <b>and</b> down</span></span>\n    <h1 class=\"anim d2\">Start as one.
+    Grow to many. Leave with your data.</h1>\n    <p class=\"tagline anim d3\">Gompha
+    is one engine that fits a single dentist or a busy multi-doctor clinic. Turn on
+    what you need, turn off what you don't, and never worry that your records are
+    locked in someone else's box.</p>\n    <div class=\"cta-row anim d4\">\n      <a
+    href=\"index.html#demos\" class=\"btn btn-primary\">See both demos</a>\n      <a
+    href=\"roadmap.html\" class=\"btn btn-ghost\">Where this is on the roadmap →</a>\n
+    \   </div>\n  </div>\n</header>\n\n<!-- 1. SOLO → MANY -->\n<section>\n  <div
+    class=\"wrap\">\n    <div class=\"sec-head reveal\">\n      <span class=\"eyebrow\">Up
+    and down</span>\n      <h2>One chair or ten — the same account grows with you</h2>\n
+    \     <p>You don't pick a \"size\" and get boxed in. Solo mode hides the multi-user
+    machinery; the day you hire, you switch it on.</p>\n    </div>\n    <div class=\"split
+    reveal\">\n      <div class=\"txt\">\n        <span class=\"ship soon\">Solo mode
+    — Planned</span>\n        <h3>Solo: you are the whole clinic</h3>\n        <p>One
+    login, one chair. No role pickers, no per-doctor splits, no reception desk. Money
+    collapses to a plain <em>in / out / drawer</em>. The chart, the deals and the
+    schedule — nothing else in the way.</p>\n        <p>The multi-doctor engine is
+    already live in a real four-doctor clinic today. Solo mode is the setting that
+    folds it away for a one-person practice — it's on the <a href=\"roadmap.html\">build
+    list now</a>, and it powers the upcoming solo demo.</p>\n      </div>\n      <div
+    class=\"panel\">\n        <div class=\"prow\"><b>Reception desk</b><span class=\"toggle
+    off\"></span></div>\n        <div class=\"prow\"><b>Multiple doctors</b><span
+    class=\"toggle off\"></span></div>\n        <div class=\"prow\"><b>Per-doctor
+    P&amp;L splits</b><span class=\"toggle off\"></span></div>\n        <div class=\"prow\"><b>Tooth
+    chart &amp; deals</b><span class=\"toggle\"></span></div>\n        <div class=\"prow\"><b>Money:
+    in / out / drawer</b><span class=\"toggle\"></span></div>\n      </div>\n    </div>\n
+    \   <div class=\"split rev reveal\">\n      <div class=\"txt\">\n        <span
+    class=\"ship\">Multi-doctor — Live</span>\n        <h3>Clinic: doctors, reception,
+    rooms</h3>\n        <p>Add doctors and a front desk and the full machinery appears:
+    room-grid scheduling, shared-room partitioning, per-doctor catalogs and income
+    attribution, and the money-privacy walls that keep each doctor's numbers their
+    own.</p>\n        <p>Upscaling from solo to a clinic is a deliberate one-time
+    step — ownership and income are reconciled cleanly, not silently flipped. Downscaling
+    never deletes: modules soft-disable so the history and audit trail stay intact.</p>\n
+    \     </div>\n      <div class=\"panel\">\n        <div class=\"prow\"><b>Reception
+    desk</b><span class=\"toggle\"></span></div>\n        <div class=\"prow\"><b>Multiple
+    doctors</b><span class=\"toggle\"></span></div>\n        <div class=\"prow\"><b>Rooms
+    &amp; shared-room scheduling</b><span class=\"toggle\"></span></div>\n        <div
+    class=\"prow\"><b>Per-doctor P&amp;L splits</b><span class=\"toggle\"></span></div>\n
+    \       <div class=\"prow\"><b>Walled maintenance role</b><span class=\"toggle\"></span></div>\n
+    \     </div>\n    </div>\n  </div>\n</section>\n\n<!-- 2. NEVER HOSTAGE -->\n<section
+    style=\"background:var(--bg-alt)\">\n  <div class=\"wrap\">\n    <div class=\"sec-head
+    reveal\">\n      <span class=\"eyebrow\">Your data, your data</span>\n      <h2>Your
+    records are never held hostage</h2>\n      <p>Software should never be a hostage
+    negotiation. Two rules — one already live, one on the way.</p>\n    </div>\n    <div
+    class=\"feat-grid stagger\">\n      <div class=\"feat\"><span class=\"ico\">\U0001F513</span><h3>Reads
+    always work <span class=\"ship\">Live</span></h3><p>Stop paying and writing pauses
+    — but you can always <em>read</em> your whole clinic. Even a suspended or expired
+    account keeps full read access to every record. No one locks you out of your own
+    history.</p></div>\n      <div class=\"feat\"><span class=\"ico\">\U0001F4E4</span><h3>Self-serve
+    export <span class=\"ship soon\">Planned</span></h3><p>Download your entire clinic
+    as a portable bundle — structured data plus human-readable CSVs — on your own,
+    whenever you want. Works even in read-only mode.</p></div>\n      <div class=\"feat\"><span
+    class=\"ico\">\U0001F4E5</span><h3>Clean import <span class=\"ship soon\">Planned</span></h3><p>Bring
+    that bundle into a fresh Gompha tenant with every reference remapped correctly.
+    Money travels verbatim and is never re-valued; secrets are scrubbed on the way
+    out.</p></div>\n    </div>\n  </div>\n</section>\n\n<!-- 3. LEAVE A PRACTICE -->\n<section>\n
+    \ <div class=\"wrap\">\n    <div class=\"split reveal\">\n      <div class=\"txt\">\n
+    \       <span class=\"ship soon\">Planned</span>\n        <h3>Leave a practice
+    — take your data</h3>\n        <p>A doctor's patients are the doctor's relationships.
+    When someone moves on, they should be able to take their slice — their patients,
+    their charts, their history — not walk away empty-handed.</p>\n        <p>Gompha's
+    portability works on two axes: <b>scope</b> — the whole clinic or a single doctor's
+    slice; and <b>category</b> — clinical only, or clinical plus the money. You choose
+    what leaves.</p>\n        <p>And it's <b>consented</b>: an employed doctor exporting
+    their own slice is off by default until the clinic owner grants it — scoped, expiring
+    and audited. It reconciles \"his data, his clients\" with the clinic's right to
+    control who walks out with what.</p>\n      </div>\n      <div class=\"panel\">\n
+    \       <div class=\"prow\"><b>Whole clinic</b><span style=\"color:var(--teal-text);font-weight:800\">or
+    a single doctor</span></div>\n        <div class=\"prow\"><b>Clinical records</b><span
+    style=\"color:var(--teal-text);font-weight:800\">✓ always</span></div>\n        <div
+    class=\"prow\"><b>Financials</b><span style=\"color:var(--body)\">opt in</span></div>\n
+    \       <div class=\"prow\"><b>Passwords &amp; secrets</b><span style=\"color:#adbccf\">✕
+    scrubbed</span></div>\n        <div class=\"prow\"><b>Owner consent</b><span style=\"color:var(--gold);font-weight:800\">required</span></div>\n
+    \     </div>\n    </div>\n  </div>\n</section>\n\n<!-- 4. MODULES ON/OFF -->\n<section
+    style=\"background:var(--bg-alt)\">\n  <div class=\"wrap\">\n    <div class=\"sec-head
+    reveal\">\n      <span class=\"eyebrow\">Only what you use</span>\n      <h2>Turn
+    reception, financials and stock on or off</h2>\n      <p>Not every clinic wants
+    every module. A solo dentist doesn't need a reception view; a doctor who doesn't
+    touch stock shouldn't see it.</p>\n    </div>\n    <div class=\"split reveal\">\n
+    \     <div class=\"txt\">\n        <h3>Shaped to the clinic, two ways</h3>\n        <p><b>Today,
+    by role <span class=\"ship\">Live</span></b> — interfaces are already shaped per
+    person: maintenance is walled off from all patient data, reception can post money
+    but never see clinic totals, doctors get a clinical mobile view with no admin
+    clutter.</p>\n        <p><b>Next, by setting <span class=\"ship soon\">Planned</span></b>
+    — a per-clinic switch turns whole modules on or off: no reception desk, collapse
+    the financials, hide per-doctor costs. Visibility only — it stays simple, never
+    a tangle of per-button permissions.</p>\n      </div>\n      <div class=\"panel\">\n
+    \       <div class=\"prow\"><b>Reception desk</b><span class=\"toggle\"></span></div>\n
+    \       <div class=\"prow\"><b>Financials &amp; P&amp;L</b><span class=\"toggle\"></span></div>\n
+    \       <div class=\"prow\"><b>Stock / inventory</b><span class=\"toggle off\"></span></div>\n
+    \       <div class=\"prow\"><b>Per-doctor cost floors</b><span class=\"toggle
+    off\"></span></div>\n        <div class=\"prow\"><b>Tooth chart &amp; scheduling</b><span
+    class=\"toggle\"></span></div>\n      </div>\n    </div>\n  </div>\n</section>\n\n<!--
+    5. TENANT MODEL -->\n<section>\n  <div class=\"wrap\">\n    <div class=\"sec-head
+    reveal\">\n      <span class=\"eyebrow\">How it's built to scale</span>\n      <h2>One
+    clinic, one subdomain, isolated by design</h2>\n      <p>Every clinic is its own
+    tenant on its own subdomain, with row-level security forced at the database so
+    no clinic can ever see another's data. That's what makes both solo and multi-branch
+    honest.</p>\n    </div>\n    <div class=\"id-grid stagger\">\n      <div class=\"id-card\"><span
+    class=\"tag\">Live</span><h3>Subdomain per clinic</h3><p>yourclinic.gompha.com
+    — your own space, your own data, hard-isolated from every other tenant.</p></div>\n
+    \     <div class=\"id-card\"><span class=\"tag\">Live</span><h3>Row-level security</h3><p>Isolation
+    enforced in the database itself, not just the app — a clinic literally cannot
+    query another's records.</p></div>\n      <div class=\"id-card\"><span class=\"tag\">Planned</span><h3>White-label</h3><p>Your
+    brand, colors and domain on top of the same engine — an upgrade, not a rebuild.</p></div>\n
+    \     <div class=\"id-card\"><span class=\"tag\">Planned</span><h3>Multi-branch
+    chains</h3><p>Two or more locations under one operator, priced per branch. Rare
+    today, real as clinics grow.</p></div>\n    </div>\n  </div>\n</section>\n\n<!--
+    CTA STRIP -->\n<section class=\"strip\">\n  <div class=\"wrap reveal\">\n    <h2>Try
+    the size that fits you</h2>\n    <p>Walk through the multi-doctor clinic today.
+    The single-doctor demo goes live with solo mode.</p>\n    <div class=\"cta-row\">\n
+    \     <a href=\"https://demo.gompha.com\" class=\"btn btn-primary\">Clinic demo</a>\n
+    \     <a href=\"https://demosolo.gompha.com\" class=\"btn btn-gold\">Solo demo
+    (soon)</a>\n    </div>\n  </div>\n</section>\n\n<footer>\n  <div class=\"wrap\">\n
+    \   <div class=\"fcols\">\n      <div class=\"fcol\" style=\"max-width:280px\">\n
+    \       <div class=\"logo\">G<span class=\"socket\"></span>mpha</div>\n        <p
+    style=\"margin-top:10px;color:#a7bcda\">Your practice, anchored. Every tooth tracked.
+    Every deal remembered.</p>\n      </div>\n      <div class=\"fcol\">\n        <h5>Product</h5>\n
+    \       <a href=\"index.html#capabilities\">Capabilities</a>\n        <a href=\"roadmap.html\">Roadmap</a>\n
+    \       <a href=\"scale.html\">Scaling &amp; ownership</a>\n        <a href=\"safety.html\">Data
+    safety</a>\n        <a href=\"index.html#pricing\">Pricing</a>\n      </div>\n
+    \     <div class=\"fcol\">\n        <h5>Try it</h5>\n        <a href=\"https://demo.gompha.com\">Clinic
+    demo</a>\n        <a href=\"https://demosolo.gompha.com\">Solo demo</a>\n        <a
+    href=\"index.html#contact\">Join the waitlist</a>\n      </div>\n      <div class=\"fcol\">\n
+    \       <h5>Contact</h5>\n        <a href=\"mailto:hello@gompha.com\">hello@gompha.com</a>\n
+    \       <a href=\"index.html#contact\">Book a walkthrough</a>\n      </div>\n
+    \   </div>\n    <div class=\"base\">© 2026 Gompha · Your practice, anchored.</div>\n
+    \ </div>\n</footer>\n\n<script src=\"reveal.js\"></script>\n</body>\n</html>\n"
+  style.css: |
+    /* Gompha marketing site — shared design system.
+       Extracted from the original single-file landing so every page (home, roadmap,
+       scale) reads as one system. Self-contained: fonts are the only external ask.
+       ponytail: one shared stylesheet instead of triplicating this block per page. */
     :root{
-      /* High-contrast palette */
-      --ink:#06182e;          /* headings — near-black navy */
-      --ink-2:#0a2a52;
-      --navy:#002F6C;         /* existing app token */
-      --body:#233247;         /* body text — ~11:1 on white */
-      --teal:#0FA697;         /* signature fill */
-      --teal-bright:#14C8B6;
-      --teal-text:#0A7D70;    /* AA teal for text/links on white */
-      --gold:#C9871A;         /* deeper gold for contrast */
-      --gold-bright:#E5A83B;
-      --bg:#ffffff;
-      --bg-alt:#EAF1F7;
-      --card:#ffffff;
-      --line:#D3DEEA;
+      --ink:#06182e; --ink-2:#0a2a52; --navy:#002F6C;
+      --body:#233247;
+      --teal:#0FA697; --teal-bright:#14C8B6; --teal-text:#0A7D70;
+      --gold:#C9871A; --gold-bright:#E5A83B;
+      --bg:#ffffff; --bg-alt:#EAF1F7; --card:#ffffff; --line:#D3DEEA;
       --heading-font:'Montserrat',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
       --body-font:'Inter',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
     }
-    :root[data-theme="dark"], html:not([data-theme="light"]) {}
     @media (prefers-color-scheme: dark){
       :root:not([data-theme="light"]){
         --ink:#f2f7ff; --ink-2:#dbe8ff; --navy:#8fb4ff;
@@ -53,7 +702,9 @@ data:
     body{font-family:var(--body-font);color:var(--body);background:var(--bg);line-height:1.65;-webkit-font-smoothing:antialiased;font-size:16.5px}
     h1,h2,h3,h4{font-family:var(--heading-font);color:var(--ink);line-height:1.12;letter-spacing:-.02em}
     a{color:var(--teal-text);text-decoration:none;font-weight:600}
+    em{color:inherit}
     .wrap{max-width:1140px;margin:0 auto;padding:0 24px}
+    .narrow{max-width:820px}
     .btn{display:inline-block;padding:15px 28px;border-radius:12px;font-family:var(--heading-font);font-weight:800;font-size:15px;cursor:pointer;border:none;transition:transform .16s ease,box-shadow .16s ease,background .16s ease}
     .btn:hover{transform:translateY(-3px)}
     .btn-primary{background:var(--teal);color:#022b26;box-shadow:0 10px 24px -8px rgba(15,166,151,.7)}
@@ -65,24 +716,28 @@ data:
 
     /* logo socket */
     .logo{font-family:var(--heading-font);font-weight:900;font-size:24px;color:var(--ink);letter-spacing:-.02em;display:inline-flex;align-items:center}
+    .logo a{color:inherit;font-weight:900}
     .socket{display:inline-flex;align-items:center;justify-content:center;width:.8em;height:.8em;border:.14em solid var(--teal);border-radius:50%;margin:0 .03em;position:relative;top:.03em}
     .socket:after{content:"";width:.28em;height:.28em;background:var(--teal);border-radius:50%}
 
     /* NAV */
     nav{position:sticky;top:0;z-index:50;background:color-mix(in srgb,var(--bg) 90%,transparent);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
-    .nav-in{display:flex;align-items:center;justify-content:space-between;height:68px}
-    .nav-links{display:flex;gap:30px;align-items:center}
+    .nav-in{display:flex;align-items:center;justify-content:space-between;height:68px;gap:20px}
+    .nav-links{display:flex;gap:28px;align-items:center}
     .nav-links a{color:var(--body);font-weight:600;font-size:15px}
     .nav-links a:hover{color:var(--ink)}
-    @media(max-width:780px){.nav-links a:not(.btn){display:none}}
+    .nav-links a.active{color:var(--teal-text)}
+    @media(max-width:820px){.nav-links a:not(.btn){display:none}}
 
     /* HERO */
     .hero{background:linear-gradient(135deg,#00204d 0%,#013a6b 48%,#0a7d72 130%);color:#fff;padding:104px 0 116px;position:relative;overflow:hidden}
+    .hero.short{padding:76px 0 84px}
     .hero .glow{position:absolute;border-radius:50%;filter:blur(10px);pointer-events:none;opacity:.5}
     .hero .g1{right:-140px;top:-90px;width:460px;height:460px;background:radial-gradient(circle,rgba(45,212,196,.55),transparent 68%);animation:float 11s ease-in-out infinite}
     .hero .g2{left:-120px;bottom:-160px;width:420px;height:420px;background:radial-gradient(circle,rgba(66,133,244,.35),transparent 70%);animation:float 14s ease-in-out infinite reverse}
-    .hero h1{color:#fff;font-size:clamp(40px,6.4vw,68px);font-weight:900;max-width:15ch;text-shadow:0 2px 24px rgba(0,0,0,.25)}
-    .hero .tagline{font-size:clamp(19px,2.4vw,24px);color:#e2eeff;margin:24px 0 36px;max-width:56ch;font-weight:500}
+    .hero h1{color:#fff;font-size:clamp(38px,6.2vw,66px);font-weight:900;max-width:16ch;text-shadow:0 2px 24px rgba(0,0,0,.25)}
+    .hero.short h1{font-size:clamp(32px,5vw,52px);max-width:22ch}
+    .hero .tagline{font-size:clamp(18px,2.3vw,23px);color:#e2eeff;margin:24px 0 36px;max-width:60ch;font-weight:500}
     .hero .cta-row{display:flex;gap:14px;flex-wrap:wrap}
     .hero .pill{display:inline-flex;align-items:center;gap:8px;background:rgba(45,212,196,.16);border:1px solid rgba(45,212,196,.5);color:#c7fff6;padding:8px 16px;border-radius:999px;font-size:13px;font-weight:700;margin-bottom:28px}
     .hero .pill b{color:#fff}
@@ -90,11 +745,12 @@ data:
 
     /* SECTIONS */
     section{padding:92px 0}
+    section.tight{padding:64px 0}
     .sec-head{text-align:center;max-width:760px;margin:0 auto 56px}
     .sec-head h2{font-size:clamp(29px,4vw,42px);font-weight:900;margin:12px 0}
     .sec-head p{font-size:18.5px;color:var(--body)}
 
-    /* anchor cards */
+    /* anchor / id cards */
     .id-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}
     @media(max-width:900px){.id-grid{grid-template-columns:repeat(2,1fr)}}
     @media(max-width:480px){.id-grid{grid-template-columns:1fr}}
@@ -113,13 +769,16 @@ data:
     .feat .ico{font-size:30px;margin-bottom:14px;display:block}
     .feat h3{font-size:18.5px;margin-bottom:8px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
     .feat p{font-size:15px;color:var(--body)}
-    .ship{font-family:var(--heading-font);font-size:10.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:#022b26;background:var(--teal-bright);padding:3px 8px;border-radius:5px}
+
+    /* status badges — shared by feature cards and roadmap */
+    .ship{font-family:var(--heading-font);font-size:10.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:#022b26;background:var(--teal-bright);padding:3px 8px;border-radius:5px;white-space:nowrap}
     .ship.new{background:var(--gold-bright);color:#3a2600}
+    .ship.building{background:transparent;color:var(--gold);border:1.5px solid var(--gold)}
     .ship.soon{background:transparent;color:var(--teal-text);border:1.5px solid var(--teal-text)}
 
     /* Deal spotlight */
     .spot{background:linear-gradient(135deg,var(--navy) 0%,#012a5c 100%);color:#fff;border-radius:24px;padding:56px;display:grid;grid-template-columns:1.1fr 1fr;gap:46px;align-items:center;box-shadow:0 30px 70px -34px rgba(0,20,50,.7)}
-    :root[data-theme="dark"] .spot, html:not([data-theme="light"]) .spot{background:linear-gradient(135deg,#04122b,#0a2247)}
+    :root[data-theme="dark"] .spot{background:linear-gradient(135deg,#04122b,#0a2247)}
     @media(max-width:820px){.spot{grid-template-columns:1fr;padding:34px}}
     .spot h2{color:#fff;font-size:clamp(27px,3.4vw,37px);font-weight:900}
     .spot p{color:#d9e6fb;font-size:17px;margin:16px 0}
@@ -143,6 +802,60 @@ data:
     td.y{color:var(--teal-text);font-weight:800}
     td.n{color:#adbccf}
     tbody td.us{background:color-mix(in srgb,var(--teal) 15%,transparent);font-weight:800;color:var(--teal-text)}
+
+    /* Demo cards */
+    .demo-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+    @media(max-width:760px){.demo-grid{grid-template-columns:1fr}}
+    .demo-card{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:34px;display:flex;flex-direction:column;transition:transform .2s ease,box-shadow .2s ease,border-color .2s}
+    .demo-card:hover{transform:translateY(-4px);box-shadow:0 24px 52px -26px rgba(3,32,58,.5);border-color:var(--teal)}
+    .demo-card .kind{font-family:var(--heading-font);font-weight:800;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--teal-text)}
+    .demo-card h3{font-size:24px;margin:8px 0 6px}
+    .demo-card p{font-size:15.5px;color:var(--body);margin-bottom:8px}
+    .demo-card ul{list-style:none;margin:12px 0 22px;flex:1}
+    .demo-card li{padding:7px 0 7px 26px;position:relative;font-size:14.5px;color:var(--body)}
+    .demo-card li:before{content:"→";position:absolute;left:0;color:var(--teal-text);font-weight:900}
+    .demo-card .btn{text-align:center}
+    .demo-card.solo{border-style:dashed}
+    .demo-card .flag{font-size:12.5px;color:var(--gold);font-weight:700;margin-top:10px}
+
+    /* Timeline (roadmap) */
+    .tl-legend{display:flex;gap:14px;flex-wrap:wrap;justify-content:center;margin-bottom:44px}
+    .tl-legend span{display:inline-flex;align-items:center;gap:7px;font-size:13.5px;font-weight:600;color:var(--body)}
+    .dot{width:12px;height:12px;border-radius:50%;display:inline-block}
+    .dot.done{background:var(--teal)}
+    .dot.build{background:var(--gold)}
+    .dot.plan{background:transparent;border:2px solid var(--teal-text)}
+    .phase{margin:0 auto 48px;max-width:900px}
+    .phase>h2{display:flex;align-items:center;gap:12px;font-size:26px;margin-bottom:6px}
+    .phase>p.lede{color:var(--body);font-size:16px;margin-bottom:22px;padding-left:28px}
+    .phase .badge{font-family:var(--heading-font);font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;padding:5px 11px;border-radius:6px}
+    .badge.done{background:var(--teal);color:#022b26}
+    .badge.build{background:var(--gold-bright);color:#3a2600}
+    .badge.plan{background:transparent;color:var(--teal-text);border:1.5px solid var(--teal-text)}
+    .tl{list-style:none;border-left:2px solid var(--line);margin-left:6px;padding-left:0}
+    .tl li{position:relative;padding:0 0 26px 30px}
+    .tl li:before{content:"";position:absolute;left:-7px;top:4px;width:12px;height:12px;border-radius:50%;background:var(--line)}
+    .tl li.done:before{background:var(--teal)}
+    .tl li.build:before{background:var(--gold)}
+    .tl li.plan:before{background:var(--bg);border:2px solid var(--teal-text);left:-8px}
+    .tl li .ver{font-family:var(--heading-font);font-weight:800;color:var(--ink);font-size:15px}
+    .tl li h4{font-size:16.5px;margin:2px 0 4px;color:var(--ink)}
+    .tl li p{font-size:14.5px;color:var(--body)}
+
+    /* Split feature rows (scale page) */
+    .split{display:grid;grid-template-columns:1fr 1fr;gap:44px;align-items:center;margin:0 auto 30px}
+    .split.rev .txt{order:2}
+    @media(max-width:820px){.split{grid-template-columns:1fr;gap:24px}.split.rev .txt{order:0}}
+    .split .txt h3{font-size:24px;margin:8px 0 12px}
+    .split .txt p{font-size:16px;margin-bottom:12px}
+    .panel{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:26px;box-shadow:0 20px 46px -26px rgba(3,32,58,.4)}
+    .panel .prow{display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid var(--line);font-size:15px;color:var(--body)}
+    .panel .prow:last-child{border-bottom:none}
+    .panel .prow b{color:var(--ink);font-family:var(--heading-font)}
+    .toggle{width:40px;height:22px;border-radius:999px;background:var(--teal);position:relative;flex:none}
+    .toggle.off{background:var(--line)}
+    .toggle:after{content:"";position:absolute;top:2px;width:18px;height:18px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.3);right:2px}
+    .toggle.off:after{right:auto;left:2px}
 
     /* Pricing */
     .price-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;align-items:stretch}
@@ -175,11 +888,20 @@ data:
     .form .btn{width:100%;margin-top:24px}
     .form .fine{text-align:center;font-size:13px;color:var(--body);margin-top:14px}
 
-    footer{background:#04122b;color:#a7bcda;padding:44px 0;text-align:center;font-size:14px}
-    footer .logo{color:#fff;margin-bottom:10px}
+    /* CTA strip */
+    .strip{background:var(--bg-alt);text-align:center}
+    .strip h2{font-size:clamp(26px,3.4vw,38px);margin-bottom:14px}
+    .strip p{font-size:18px;max-width:640px;margin:0 auto 26px}
+    .strip .cta-row{display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
+
+    footer{background:#04122b;color:#a7bcda;padding:44px 0;font-size:14px}
+    footer .fcols{display:flex;justify-content:space-between;flex-wrap:wrap;gap:28px;margin-bottom:24px}
+    footer .logo{color:#fff}
     footer .logo .socket{border-color:#fff}
     footer .logo .socket:after{background:#fff}
-    footer a{color:#d9e6fb}
+    footer a{color:#d9e6fb;display:block;padding:4px 0}
+    footer .fcol h5{font-family:var(--heading-font);color:#fff;font-size:13px;letter-spacing:.08em;text-transform:uppercase;margin-bottom:8px}
+    footer .base{text-align:center;border-top:1px solid #14304f;padding-top:20px;color:#7f9ac0}
 
     /* ANIMATIONS */
     @keyframes float{0%,100%{transform:translate(0,0)}50%{transform:translate(-24px,26px)}}
@@ -188,7 +910,6 @@ data:
     .hero .anim{opacity:0;animation:fadeUp .7s cubic-bezier(.2,.7,.2,1) forwards}
     .hero .d1{animation-delay:.05s}.hero .d2{animation-delay:.18s}.hero .d3{animation-delay:.32s}.hero .d4{animation-delay:.46s}
     .socket{animation:pulse 2.6s ease-out infinite}
-    /* scroll reveal (progressive: only hides when JS is active) */
     .js .reveal{opacity:0;transform:translateY(26px);transition:opacity .6s ease,transform .6s cubic-bezier(.2,.7,.2,1)}
     .js .reveal.in{opacity:1;transform:none}
     .js .stagger>*{opacity:0;transform:translateY(24px);transition:opacity .55s ease,transform .55s cubic-bezier(.2,.7,.2,1)}
@@ -206,239 +927,7 @@ data:
       .js .reveal,.js .stagger>*,.hero .anim{opacity:1!important;transform:none!important}
       html{scroll-behavior:auto}
     }
-    </style>
-    </head>
-    <body>
-
-    <nav>
-      <div class="wrap nav-in">
-        <div class="logo">G<span class="socket"></span>mpha</div>
-        <div class="nav-links">
-          <a href="#capabilities">Capabilities</a>
-          <a href="#ledger">The Deal Ledger</a>
-          <a href="#compare">Compare</a>
-          <a href="#pricing">Pricing</a>
-          <a href="#contact" class="btn btn-primary" style="padding:10px 20px">Join the waitlist</a>
-        </div>
-      </div>
-    </nav>
-
-    <!-- HERO -->
-    <header class="hero">
-      <div class="glow g1"></div><div class="glow g2"></div>
-      <div class="wrap">
-        <span class="pill anim d1">🦷 <span><b>v0.9</b> — now with per-case procedures + inventory</span></span>
-        <h1 class="anim d2">Your practice, anchored.</h1>
-        <p class="tagline anim d3">Gompha holds your tooth chart, your schedule, every case and every negotiated deal in one record — and remembers who approved the price and why. Nothing floats loose. Nothing gets forgotten.</p>
-        <div class="cta-row anim d4">
-          <a href="#contact" class="btn btn-primary">Join the waitlist</a>
-          <a href="https://demo.gompha.com" class="btn btn-ghost">See the live demo →</a>
-        </div>
-        <p class="trust anim d4">Built for cash &amp; bargaining markets — where the price is a conversation, not a list.</p>
-      </div>
-    </header>
-
-    <!-- ANCHOR THESIS -->
-    <section id="thesis">
-      <div class="wrap">
-        <div class="sec-head reveal">
-          <span class="eyebrow">The name</span>
-          <h2>Gomphosis — the joint that anchors every tooth</h2>
-          <p>In anatomy, <em>gomphosis</em> is the peg-in-socket bond that locks each tooth solidly into the jaw — the reason a healthy tooth doesn't move. Gompha does the same for your practice: it anchors the four things that usually float loose into one record.</p>
-        </div>
-        <div class="id-grid stagger">
-          <div class="id-card"><span class="tag">Tooth</span><h3>Two-layer odontogram</h3><p>Crown, root and state per tooth, tracked over time with per-doctor provenance colors.</p></div>
-          <div class="id-card"><span class="tag">Patient</span><h3>The full timeline</h3><p>History, perio trends, charges, debt and contact — one continuous, anchored record.</p></div>
-          <div class="id-card"><span class="tag">Case</span><h3>Procedures &amp; sessions</h3><p>Every case assembled from procedure line-items that book, schedule and follow the patient through.</p></div>
-          <div class="id-card"><span class="tag">Deal</span><h3>The negotiated price</h3><p>Agreed vs standard price, who approved it, and the human reason — held, not forgotten.</p></div>
-        </div>
-      </div>
-    </section>
-
-    <!-- CAPABILITIES -->
-    <section id="capabilities" style="background:var(--bg-alt)">
-      <div class="wrap">
-        <div class="sec-head reveal">
-          <span class="eyebrow">What it does</span>
-          <h2>A PMS shaped like your chair, not a spreadsheet</h2>
-          <p>Everything a modern clinic needs — with the parts Western software forgot. All of the below is <strong>live today</strong>.</p>
-        </div>
-        <div class="feat-grid stagger">
-          <div class="feat"><span class="ico">🦷</span><h3>Two-layer odontogram <span class="ship">Shipped</span></h3><p>A real tooth chart: crown work, root work and tooth state over time — not a checklist. Most regional tools have no chart at all.</p></div>
-          <div class="feat"><span class="ico">🤝</span><h3>The deal ledger <span class="ship">Shipped</span></h3><p>Capture the <em>negotiated</em> price, the approver and the reason. The negotiation becomes data you can see across the whole clinic.</p></div>
-          <div class="feat"><span class="ico">🧾</span><h3>Per-case procedures <span class="ship new">New in v0.9</span></h3><p>Build a case from procedure line-items — clinical, lab, or material-linked. Per-doctor catalogs, and per-procedure income attribution baked in.</p></div>
-          <div class="feat"><span class="ico">📦</span><h3>Inventory control <span class="ship new">New</span></h3><p>Real stock: packs &amp; pieces, locked-FX cost that never revalues on a recount, per-doctor or clinic ownership, expiry/batch, low-stock alerts.</p></div>
-          <div class="feat"><span class="ico">💰</span><h3>Cost floor on every deal <span class="ship">Shipped</span></h3><p>Materials tie to procedures, so each case shows its real cost floor — your honest bargaining line, right on the sheet.</p></div>
-          <div class="feat"><span class="ico">📊</span><h3>Perio charting <span class="ship">Shipped</span></h3><p>Pocket depths per visit, drawn as a trend line — see the mouth improving, not just today's numbers.</p></div>
-          <div class="feat"><span class="ico">🗓️</span><h3>Room-grid scheduling <span class="ship">Shipped</span></h3><p>Reception sees rooms as columns, doctors color-coded, with hard double-booking protection and an emergency override.</p></div>
-          <div class="feat"><span class="ico">⏱️</span><h3>Doctor agenda + countdown <span class="ship">Shipped</span></h3><p>Mobile day list, current patient on top, a countdown to the next — with a running-late cascade that flags reception instantly.</p></div>
-          <div class="feat"><span class="ico">🔒</span><h3>Patient-focus lock <span class="ship">Shipped</span></h3><p>Hit <em>Start</em> and the phone goes kiosk-mode on that one patient. No fat-finger navigation mid-treatment.</p></div>
-          <div class="feat"><span class="ico">💵</span><h3>Dual currency, done right <span class="ship">Shipped</span></h3><p>IQD + USD with an "FX of the day." Every row stores the rate used, so totals stay honest as rates move.</p></div>
-          <div class="feat"><span class="ico">👥</span><h3>Role-shaped interfaces <span class="ship">Shipped</span></h3><p>Doctor mobile-clinical, reception web-scheduling, admin-config, maintenance walled from all patient data — one codebase.</p></div>
-          <div class="feat"><span class="ico">📈</span><h3>Partnership financials <span class="ship soon">Coming</span></h3><p>Per-doctor P&amp;L with privacy, owner splits, renter/visitor models, scoped expenses and monthly reports. Spec locked, building now.</p></div>
-        </div>
-      </div>
-    </section>
-
-    <!-- DEAL LEDGER SPOTLIGHT -->
-    <section id="ledger">
-      <div class="wrap">
-        <div class="spot reveal">
-          <div>
-            <span class="moat">The moat</span>
-            <h2>No other PMS remembers the deal</h2>
-            <p>Dentrix and Open Dental assume a fixed price list. But in the real world, the price is negotiated — a discount for a cousin, a free cleaning, a cash rate. Gompha anchors that: what was agreed, who approved it, and why.</p>
-            <p>Next time that patient walks in, the whole clinic knows the story — not just the doctor who made the deal.</p>
-            <a href="#contact" class="btn btn-gold">See it on your data</a>
-          </div>
-          <div class="sheet">
-            <div class="row"><span class="k">Procedure</span><span class="v">Zirconia crown · tooth 11</span></div>
-            <div class="row"><span class="k">Standard price</span><span class="strike">$450</span></div>
-            <div class="row"><span class="k">Agreed price</span><span class="agreed">$380</span></div>
-            <div class="row"><span class="k">Cost floor (materials)</span><span class="v">$120</span></div>
-            <div class="row"><span class="k">Approved by</span><span class="v">Dr. Ali</span></div>
-            <div class="row"><span class="k">Currency</span><span class="v">USD @ FX 1,500</span></div>
-            <div class="ctx">"70 off — Hiba's cousin, paying cash today, added free polish."</div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- COMPARE -->
-    <section id="compare" style="background:var(--bg-alt)">
-      <div class="wrap">
-        <div class="sec-head reveal">
-          <span class="eyebrow">Why Gompha wins</span>
-          <h2>Built for how you actually run the chair</h2>
-          <p>Dentrix is built for an insurance claim. EasyClinic is a calendar with invoices. Gompha is built for the deal.</p>
-        </div>
-        <div class="cmp reveal">
-          <table>
-            <thead>
-              <tr><th>Capability</th><th class="us">Gompha</th><th>Dentrix / Open Dental</th><th>Regional tools</th></tr>
-            </thead>
-            <tbody>
-              <tr><td>Negotiated-price deal ledger</td><td class="us">✓</td><td class="n">✕ fixed list</td><td class="n">✕</td></tr>
-              <tr><td>Two-layer visual odontogram</td><td class="us">✓</td><td class="y">✓ (legacy)</td><td class="n">✕ no chart</td></tr>
-              <tr><td>Per-case procedures + inventory link</td><td class="us">✓</td><td class="y">✓ (heavy)</td><td class="n">✕</td></tr>
-              <tr><td>Dual currency (IQD+USD, FX/day)</td><td class="us">✓</td><td class="n">✕</td><td>partial</td></tr>
-              <tr><td>Cost-floor bargaining assistant</td><td class="us">✓</td><td class="n">✕</td><td class="n">✕</td></tr>
-              <tr><td>Doctor-mobile + reception-web shells</td><td class="us">✓</td><td class="n">✕ desktop-bound</td><td>partial</td></tr>
-              <tr><td>Made for cash / bargaining markets</td><td class="us">✓</td><td class="n">✕ insurance-first</td><td>partial</td></tr>
-              <tr><td>Cloud, subdomain-per-clinic, white-label</td><td class="us">✓</td><td class="n">✕</td><td>partial</td></tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </section>
-
-    <!-- PRICING -->
-    <section id="pricing">
-      <div class="wrap">
-        <div class="sec-head reveal">
-          <span class="eyebrow">Pricing</span>
-          <h2>One clinic, one subdomain, one fair price</h2>
-          <p>Hosted and managed, or self-hosted on your own server. No per-claim fees, no surprises.</p>
-        </div>
-        <div class="price-grid stagger">
-          <div class="plan">
-            <h3>Solo</h3>
-            <div class="amt">$—<small>/mo</small></div>
-            <p class="note">Single dentist, one chair.</p>
-            <ul>
-              <li>Odontogram + perio charting</li>
-              <li>Deal ledger &amp; debtors</li>
-              <li>Scheduling + doctor agenda</li>
-              <li>Inventory + dual currency</li>
-              <li>Email support</li>
-            </ul>
-            <a href="#contact" class="btn btn-ghost">Request pricing</a>
-          </div>
-          <div class="plan feat-plan">
-            <h3>Clinic</h3>
-            <div class="amt">$—<small>/mo</small></div>
-            <p class="note">Multi-doctor, multi-room practice.</p>
-            <ul>
-              <li>Everything in Solo</li>
-              <li>Rooms, shared-room scheduling</li>
-              <li>Per-case procedures + catalogs</li>
-              <li>Roles: doctor / reception / admin</li>
-              <li>Patient timeline &amp; panorama</li>
-              <li>Priority support</li>
-            </ul>
-            <a href="#contact" class="btn btn-primary">Request pricing</a>
-          </div>
-          <div class="plan">
-            <h3>Pro · White-label</h3>
-            <div class="amt">Custom</div>
-            <p class="note">Your brand, your colors, your domain.</p>
-            <ul>
-              <li>Everything in Clinic</li>
-              <li>Partnership financials + P&amp;L</li>
-              <li>White-label branding</li>
-              <li>Self-host / on-prem option</li>
-              <li>Voice notes &amp; X-ray viewer (roadmap)</li>
-              <li>Dedicated onboarding</li>
-            </ul>
-            <a href="#contact" class="btn btn-gold">Talk to us</a>
-          </div>
-        </div>
-        <p class="indicative">Prices are indicative — final pricing quoted on request, tailored to chairs and clinic size.</p>
-      </div>
-    </section>
-
-    <!-- CONTACT / WAITLIST -->
-    <section id="contact">
-      <div class="wrap">
-        <div class="sec-head reveal">
-          <span class="eyebrow">Get in</span>
-          <h2>Join the waitlist</h2>
-          <p>Be one of the first clinics on Gompha. Ask for pricing, book a walkthrough, or get early access.</p>
-        </div>
-        <!-- ponytail: mailto action = zero backend. Swap for a real form endpoint when you have one. -->
-        <form class="form reveal" action="mailto:kostikidis.network@gmail.com" method="post" enctype="text/plain">
-          <label for="name">Name</label>
-          <input id="name" name="name" required placeholder="Dr. Jane Doe">
-          <label for="clinic">Clinic</label>
-          <input id="clinic" name="clinic" placeholder="Clinic name &amp; city">
-          <label for="email">Email</label>
-          <input id="email" name="email" type="email" required placeholder="you@clinic.com">
-          <label for="interest">I'm interested in</label>
-          <select id="interest" name="interest">
-            <option>Joining the waitlist</option>
-            <option>Pricing for my clinic</option>
-            <option>A live walkthrough</option>
-            <option>White-label / self-host</option>
-          </select>
-          <label for="msg">Anything else?</label>
-          <textarea id="msg" name="message" placeholder="How many chairs, doctors, and what you use today…"></textarea>
-          <button type="submit" class="btn btn-primary">Request early access</button>
-          <p class="fine">No spam. We'll only reach out about Gompha.</p>
-        </form>
-      </div>
-    </section>
-
-    <footer>
-      <div class="wrap">
-        <div class="logo">G<span class="socket"></span>mpha</div>
-        <p>Your practice, anchored. Every tooth tracked. Every deal remembered.</p>
-        <p style="margin-top:8px">© 2026 Gompha · <a href="#contact">Contact</a> · <a href="https://demo.gompha.com">Live demo</a></p>
-      </div>
-    </footer>
-
-    <script>
-      // progressive enhancement: mark JS active so reveal styles apply
-      document.documentElement.classList.remove('no-js');
-      document.documentElement.classList.add('js');
-      (function(){
-        var els = document.querySelectorAll('.reveal, .stagger');
-        if (!('IntersectionObserver' in window)) { els.forEach(function(e){e.classList.add('in');}); return; }
-        var io = new IntersectionObserver(function(entries){
-          entries.forEach(function(en){ if(en.isIntersecting){ en.target.classList.add('in'); io.unobserve(en.target); } });
-        }, { threshold: 0.12, rootMargin: '0px 0px -8% 0px' });
-        els.forEach(function(e){ io.observe(e); });
-      })();
-    </script>
-    </body>
-    </html>
-
+kind: ConfigMap
+metadata:
+  name: landing-html
+  namespace: gompha
