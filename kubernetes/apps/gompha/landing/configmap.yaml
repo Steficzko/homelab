@@ -84,126 +84,160 @@ data:
     </body>
     </html>
   heroanim.js: |
-    // Hero odontogram animation: a left->right wave where each tooth cycles through
-    // real restorations (crown / filling / bridge / root-canal / implant / missing)
-    // then settles into a charted mouth. No glow — the dental work itself is the
-    // animation. Drives the inline #hero-odo SVG. Honours prefers-reduced-motion.
+    // Hero chart animation. Two live-looking charts share the window:
+    //  1) ODONTOGRAM — a wave sweeps L->R then R->L (back and forth), each tooth
+    //     flickering through crown/filling/bridge/root-canal/implant/missing, then
+    //     settling into a charted mouth.
+    //  2) PERIO — after the sweep it FLIPS to the periodontal chart, whose pocket
+    //     bars move up and down (deeper/shallower), red where deep.
+    // Then it flips back and loops. Honours prefers-reduced-motion (odo, static).
     (function () {
       var svg = document.getElementById('hero-odo');
       if (!svg) return;
+      var NS = 'http://www.w3.org/2000/svg';
 
+      /* ---------------- odontogram state ---------------- */
       var C = { crown: '#2b6cb0', implant: '#12a3ba', inlay: '#e0a13c', onlay: '#7b6cc9', bridge: '#2f9e5f' };
-      var ENDO = '#d9534f', WHITE = '#ffffff';
-      var GREEN = '#1a7f37', BLUE = '#2563eb', GRAY = '#9aa0a6';
-      var PAL = [C.crown, C.inlay, C.onlay, C.implant, C.bridge]; // flicker palette
-
-      // The chart each tooth settles into (a believable mouth).
+      var ENDO = '#d9534f', WHITE = '#ffffff', GREEN = '#1a7f37', BLUE = '#2563eb', GRAY = '#9aa0a6';
+      var PAL = [C.crown, C.inlay, C.onlay, C.implant, C.bridge];
       var FINAL = {
-        '16': { crown: C.crown, endo: true, dot: GREEN },
-        '14': { crown: C.inlay, dot: GREEN },
-        '11': { crown: C.crown, dot: BLUE },
-        '21': { crown: C.crown, dot: GRAY },
-        '24': { missing: true },
-        '26': { crown: C.implant, implant: true, dot: GREEN },
-        '46': { crown: C.inlay, dot: BLUE },
-        '47': { endo: true, dot: GREEN },
-        '36': { crown: C.onlay, dot: GREEN },
-        '31': { crown: C.crown, dot: BLUE },
-        '34': { crown: C.bridge, dot: GREEN },
-        '35': { crown: C.bridge, dot: GREEN }
+        '16': { crown: C.crown, endo: true, dot: GREEN }, '14': { crown: C.inlay, dot: GREEN },
+        '11': { crown: C.crown, dot: BLUE }, '21': { crown: C.crown, dot: GRAY },
+        '24': { missing: true }, '26': { crown: C.implant, implant: true, dot: GREEN },
+        '46': { crown: C.inlay, dot: BLUE }, '47': { endo: true, dot: GREEN },
+        '36': { crown: C.onlay, dot: GREEN }, '31': { crown: C.crown, dot: BLUE },
+        '34': { crown: C.bridge, dot: GREEN }, '35': { crown: C.bridge, dot: GREEN }
       };
-
       function apply(g, s) {
         s = s || {};
         var crown = g.querySelector('.crown'), shine = g.querySelector('.shine');
         var screw = g.querySelector('.screw'), thread = g.querySelector('.thread');
         var xm = g.querySelector('.xmark'), dot = g.querySelector('.dot');
-        var roots = g.querySelectorAll('.root');
-        var gone = !!(s.implant || s.missing);
-        for (var i = 0; i < roots.length; i++) {
-          roots[i].setAttribute('fill', s.endo ? ENDO : WHITE);
-          roots[i].style.display = gone ? 'none' : '';
-        }
-        screw.style.display = s.implant ? '' : 'none';
-        thread.style.display = s.implant ? '' : 'none';
-        crown.style.display = s.missing ? 'none' : '';
-        crown.setAttribute('fill', s.crown || WHITE);
-        shine.style.display = s.crown ? '' : 'none';
-        xm.style.display = s.missing ? '' : 'none';
-        if (s.dot) { dot.setAttribute('fill', s.dot); dot.style.display = ''; }
-        else dot.style.display = 'none';
+        var roots = g.querySelectorAll('.root'), gone = !!(s.implant || s.missing);
+        for (var i = 0; i < roots.length; i++) { roots[i].setAttribute('fill', s.endo ? ENDO : WHITE); roots[i].style.display = gone ? 'none' : ''; }
+        screw.style.display = s.implant ? '' : 'none'; thread.style.display = s.implant ? '' : 'none';
+        crown.style.display = s.missing ? 'none' : ''; crown.setAttribute('fill', s.crown || WHITE);
+        shine.style.display = s.crown ? '' : 'none'; xm.style.display = s.missing ? '' : 'none';
+        if (s.dot) { dot.setAttribute('fill', s.dot); dot.style.display = ''; } else dot.style.display = 'none';
       }
-
       var teeth = [].slice.call(svg.querySelectorAll('.tooth'));
       var bridges = [].slice.call(svg.querySelectorAll('.bridge'));
       var byCol = {};
       teeth.forEach(function (g) { (byCol[g.dataset.i] = byCol[g.dataset.i] || []).push(g); });
+      function settleAll() { teeth.forEach(function (g) { apply(g, FINAL[g.dataset.fdi]); }); bridges.forEach(function (b) { b.style.display = ''; }); }
+      function blankAll() { teeth.forEach(function (g) { apply(g, {}); }); bridges.forEach(function (b) { b.style.display = 'none'; }); }
 
-      function settleAll() {
-        teeth.forEach(function (g) { apply(g, FINAL[g.dataset.fdi]); });
-        bridges.forEach(function (b) { b.style.display = ''; });
-      }
-      function blankAll() {
-        teeth.forEach(function (g) { apply(g, {}); });
-        bridges.forEach(function (b) { b.style.display = 'none'; });
+      /* ---------------- build perio chart (bars that move up/down) ---------------- */
+      var GUM = 42, MM = 8.5, X0 = 17, SLOT = 33, MIDGAP = 14;
+      var FDI = ['18','17','16','15','14','13','12','11','21','22','23','24','25','26','27','28'];
+      var BASE = [3,2,2,3,2,2,2,3,2,3,2,2,3,5,6,4];
+      function cx(i) { return X0 + (i + 0.5) * SLOT + (i >= 8 ? MIDGAP : 0); }
+      function el(tag, attrs) { var e = document.createElementNS(NS, tag); for (var k in attrs) e.setAttribute(k, attrs[k]); return e; }
+
+      var perioSvg = el('svg', { id: 'hero-perio', viewBox: '0 0 568 172', role: 'img',
+        'aria-label': 'Periodontal chart: pocket-depth bars per tooth moving up and down, red where deep.' });
+      perioSvg.appendChild(el('line', { x1: 16, y1: GUM, x2: 552, y2: GUM, stroke: '#7d8b93', 'stroke-dasharray': '3 3', opacity: '.6' }));
+      [3, 6, 9].forEach(function (m) { perioSvg.appendChild(el('line', { x1: 16, y1: GUM + m * MM, x2: 552, y2: GUM + m * MM, stroke: '#d3deea' })); });
+      perioSvg.appendChild(el('text', { x: 8, y: GUM - 4, 'font-size': 9, 'font-weight': 700, fill: '#7d8b93', 'font-family': 'Inter,sans-serif' })).textContent = 'gum';
+      var bars = [], dots = [];
+      FDI.forEach(function (f, i) {
+        var r = el('rect', { x: cx(i) - 7, y: GUM, width: 14, height: 0, rx: 3, fill: C.crown });
+        perioSvg.appendChild(r); bars.push(r);
+        var t = el('text', { x: cx(i), y: 162, 'font-size': 10, 'font-weight': 600, fill: '#7d8b93', 'text-anchor': 'middle', 'font-family': 'Inter,sans-serif' });
+        t.textContent = f; perioSvg.appendChild(t);
+      });
+      var pline = el('polyline', { fill: 'none', stroke: '#0a2a52', 'stroke-width': 1.5, opacity: '.5', points: '' });
+      perioSvg.appendChild(pline);
+      FDI.forEach(function (f, i) { var d = el('circle', { r: 2.5, fill: C.crown, cx: cx(i), cy: GUM }); perioSvg.appendChild(d); dots.push(d); });
+
+      /* ---------------- wrap both charts + swap legend/title/url ---------------- */
+      var body = svg.parentNode;
+      var legendOdo = svg.nextElementSibling && svg.nextElementSibling.classList.contains('od-key') ? svg.nextElementSibling : null;
+      var odoWrap = document.createElement('div'); odoWrap.className = 'hero-chart';
+      body.insertBefore(odoWrap, svg); odoWrap.appendChild(svg); if (legendOdo) odoWrap.appendChild(legendOdo);
+      var perioWrap = document.createElement('div'); perioWrap.className = 'hero-chart'; perioWrap.style.display = 'none';
+      perioWrap.appendChild(perioSvg);
+      var legendPerio = document.createElement('div'); legendPerio.className = 'od-key';
+      legendPerio.innerHTML = '<span><i style="background:#2b6cb0"></i>pocket depth</span><span><i style="background:#d9534f"></i>deep ≥5&nbsp;mm</span><span><i style="background:#0a2a52"></i>gum-line trend</span>';
+      perioWrap.appendChild(legendPerio); body.appendChild(perioWrap);
+
+      var title = document.getElementById('hero-title');
+      var url = document.querySelector('.appwin-url');
+      function setMode(m) {
+        if (m === 'perio') {
+          odoWrap.style.display = 'none'; perioWrap.style.display = '';
+          if (title) title.textContent = 'Periodontal chart';
+          if (url) url.textContent = 'demo.gompha.com › patient · perio chart';
+        } else {
+          perioWrap.style.display = 'none'; odoWrap.style.display = '';
+          if (title) title.textContent = 'Two-layer odontogram';
+          if (url) url.textContent = 'demo.gompha.com › patient · tooth chart';
+        }
       }
 
       var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (reduce) { settleAll(); return; }
+
+      /* ---------------- perio motion (bars up & down) ---------------- */
+      var perioRAF = null, perioT0 = 0;
+      function perioFrame(now) {
+        if (!perioT0) perioT0 = now;
+        var t = now - perioT0, pts = [];
+        for (var i = 0; i < bars.length; i++) {
+          var depth = BASE[i] + 1.15 * Math.sin(t * 0.0016 + i * 0.55);
+          if (depth < 1) depth = 1;
+          var h = depth * MM, deep = depth >= 5, col = deep ? ENDO : C.crown;
+          bars[i].setAttribute('height', h); bars[i].setAttribute('fill', col);
+          var cy = GUM + h; dots[i].setAttribute('cy', cy); dots[i].setAttribute('fill', col);
+          pts.push(cx(i) + ',' + cy);
+        }
+        pline.setAttribute('points', pts.join(' '));
+        perioRAF = requestAnimationFrame(perioFrame);
+      }
+      function startPerio() { perioT0 = 0; perioRAF = requestAnimationFrame(perioFrame); }
+      function stopPerio() { if (perioRAF) cancelAnimationFrame(perioRAF); perioRAF = null; }
+
+      /* ---------------- odontogram sweep ---------------- */
       var timers = [];
       function later(fn, ms) { timers.push(setTimeout(fn, ms)); }
-
-      // Reduced motion: one calm left-to-right settle (no flicker, no loop).
-      function calmBuild() {
-        blankAll();
-        for (var c = 0; c < 16; c++) {
-          (function (col) {
-            later(function () {
-              (byCol[col] || []).forEach(function (g) { apply(g, FINAL[g.dataset.fdi]); });
-              if (col === 15) bridges.forEach(function (b) { b.style.display = ''; });
-            }, col * 110);
-          })(c);
-        }
-      }
-
-      // Flicker one tooth through combinations, then settle to its final state.
       function flick(g, fin) {
-        var frames = [
-          { crown: PAL[0] }, { crown: PAL[1], endo: true }, { crown: PAL[2] },
-          { crown: C.implant, implant: true }, { missing: true }, { crown: PAL[4] }
-        ];
-        frames.forEach(function (f, k) { later(function () { apply(g, f); }, k * 95); });
-        later(function () { apply(g, fin); }, frames.length * 95);
+        var frames = [{ crown: PAL[0] }, { crown: PAL[1], endo: true }, { crown: PAL[2] },
+          { crown: C.implant, implant: true }, { missing: true }, { crown: PAL[4] }];
+        frames.forEach(function (f, k) { later(function () { apply(g, f); }, k * 90); });
+        later(function () { apply(g, fin); }, frames.length * 90);
       }
+      var STEP = 120, FLICK = 6 * 90 + 60;
+      function pass(order, done) {
+        order.forEach(function (col, k) {
+          later(function () { (byCol[col] || []).forEach(function (g) { flick(g, FINAL[g.dataset.fdi]); }); }, k * STEP);
+        });
+        later(function () { bridges.forEach(function (b) { b.style.display = ''; }); done && done(); }, order.length * STEP + FLICK);
+      }
+      var FWD = [], REV = [];
+      for (var c = 0; c < 16; c++) { FWD.push(c); REV.push(15 - c); }
 
-      var STEP = 130, FLICK = 6 * 95 + 60, REST = 2200;
-      function sweep() {
-        blankAll();
-        for (var c = 0; c < 16; c++) {
-          (function (col) {
-            later(function () {
-              (byCol[col] || []).forEach(function (g) { flick(g, FINAL[g.dataset.fdi]); });
-            }, col * STEP);
-          })(c);
-        }
-        var done = 16 * STEP + FLICK;
-        later(function () { bridges.forEach(function (b) { b.style.display = ''; }); }, done);
-        later(sweep, done + REST); // loop
+      var PERIO_MS = 5200, PAUSE = 900;
+      function cycle() {
+        setMode('odo'); blankAll();
+        pass(FWD, function () {                        // sweep left -> right
+          later(function () {
+            pass(REV, function () {                    // sweep right -> left (back)
+              later(function () {                      // flip to perio
+                setMode('perio'); startPerio();
+                later(function () { stopPerio(); cycle(); }, PERIO_MS); // flip back & loop
+              }, PAUSE);
+            });
+          }, 500);
+        });
       }
 
       var started = false;
-      function start() {
-        if (started) return; started = true;
-        if (reduce) calmBuild(); else sweep();
-      }
-      // Start when the hero scrolls in — but the hero is at the top, so also start
-      // shortly after load as a guaranteed fallback if the observer never fires.
+      function start() { if (started) return; started = true; cycle(); }
       if ('IntersectionObserver' in window) {
-        var io = new IntersectionObserver(function (ents) {
-          ents.forEach(function (e) { if (e.isIntersecting) { io.disconnect(); start(); } });
-        }, { threshold: 0.1 });
+        var io = new IntersectionObserver(function (e) { e.forEach(function (x) { if (x.isIntersecting) { io.disconnect(); start(); } }); }, { threshold: 0.1 });
         io.observe(svg);
       }
-      setTimeout(start, 800);
+      setTimeout(start, 800); // guaranteed start (hero is above the fold)
     })();
   index.html: "<!DOCTYPE html>\n<html lang=\"en\" class=\"no-js\">\n<head>\n<meta
     charset=\"UTF-8\">\n<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n<meta
@@ -234,12 +268,13 @@ data:
     anim d3\">\n      <div class=\"appwin-bar\"><span class=\"td r\"></span><span
     class=\"td y\"></span><span class=\"td g\"></span><span class=\"appwin-url\">demo.gompha.com
     › patient · tooth chart</span></div>\n      <div class=\"appwin-body\">\n        <div
-    class=\"appwin-cap\">Two-layer odontogram <span class=\"pin\">live screen</span></div>\n
-    \       <svg id=\"hero-odo\" viewBox=\"0 0 568 172\" xmlns=\"http://www.w3.org/2000/svg\"
-    role=\"img\" aria-label=\"Animated tooth chart building itself: each tooth cycles
-    through crowns, fillings, bridges, root canals, implants and missing teeth, then
-    settles.\"><line x1=\"16\" y1=\"83\" x2=\"552\" y2=\"83\" stroke=\"#d3deea\"/><text
-    x=\"6\" y=\"87\" font-size=\"10\" font-weight=\"700\" fill=\"#7d8b93\" font-family=\"Inter,sans-serif\">R</text><text
+    class=\"appwin-cap\"><span id=\"hero-title\">Two-layer odontogram</span> <span
+    class=\"pin\">live screen</span></div>\n        <svg id=\"hero-odo\" viewBox=\"0
+    0 568 172\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" aria-label=\"Animated
+    tooth chart building itself: each tooth cycles through crowns, fillings, bridges,
+    root canals, implants and missing teeth, then settles.\"><line x1=\"16\" y1=\"83\"
+    x2=\"552\" y2=\"83\" stroke=\"#d3deea\"/><text x=\"6\" y=\"87\" font-size=\"10\"
+    font-weight=\"700\" fill=\"#7d8b93\" font-family=\"Inter,sans-serif\">R</text><text
     x=\"562\" y=\"87\" font-size=\"10\" font-weight=\"700\" fill=\"#7d8b93\" text-anchor=\"end\"
     font-family=\"Inter,sans-serif\">L</text><g class=\"tooth\" data-fdi=\"18\" data-i=\"0\"><g
     transform=\"translate(33.5 70) scale(0.75 -0.75) translate(-20 0)\"><path class=\"root\"
