@@ -100,7 +100,7 @@ data:
     \ </div>\n</nav>\n\n<!-- HERO -->\n<header class=\"hero\">\n  <div class=\"glow
     g1\"></div><div class=\"glow g2\"></div>\n  <div class=\"wrap hero-grid\">\n    <div
     class=\"hero-copy\">\n      <span class=\"pill anim d1\">\U0001F9B7 <span><b>Live
-    v0.22.3</b> — running in a real Erbil clinic</span></span>\n      <h1 class=\"anim
+    v0.27.0</b> — running in a real Erbil clinic</span></span>\n      <h1 class=\"anim
     d2\">Your practice, anchored.</h1>\n      <p class=\"tagline anim d3\">Gompha
     holds your tooth chart, your schedule, every case and every negotiated deal in
     one record — and remembers who approved the price and why. Nothing floats loose.
@@ -270,7 +270,15 @@ data:
     their own.</p></div>\n      <div class=\"feat\"><span class=\"ico\">\U0001F510</span><h3>Sessions
     &amp; your devices <span class=\"ship\">Shipped</span></h3><p>Role-aware session
     lengths, device capture, and a \"Your devices\" panel — sign a lost phone out
-    from anywhere.</p></div>\n      <div class=\"feat\"><span class=\"ico\">\U0001F5E3️</span><h3>Voice
+    from anywhere.</p></div>\n      <div class=\"feat\"><span class=\"ico\">\U0001F464</span><h3>Solo
+    Mode <span class=\"ship new\">New</span></h3><p>One dentist, one chair? Solo Mode
+    folds away the multi-user machinery — role pickers, per-doctor splits — for a
+    clean single-person clinic. Grow into the full clinic when you hire. <a href=\"https://demosolo.gompha.com\">Live
+    demo →</a></p></div>\n      <div class=\"feat\"><span class=\"ico\">\U0001F4E6</span><h3>Export
+    &amp; import your data <span class=\"ship new\">New</span></h3><p>Take your whole
+    clinic with you — self-serve export to a portable bundle, and provider-assisted
+    import into a fresh tenant. Your data is never held hostage. See <a href=\"scale.html\">Scaling
+    &amp; ownership</a>.</p></div>\n      <div class=\"feat\"><span class=\"ico\">\U0001F5E3️</span><h3>Voice
     → deal note <span class=\"ship soon\">Planned</span></h3><p>Dictate a chair-side
     note → structured encounter and deal, hands on the patient. The moat feature —
     spec'd, not yet built.</p></div>\n    </div>\n  </div>\n</section>\n\n<!-- DEMOS
@@ -285,27 +293,25 @@ data:
     a role: doctor, reception, admin or maintenance</li>\n          <li>Room-grid
     schedule + panorama week wall</li>\n          <li>Deal ledger, inventory and per-doctor
     P&amp;L</li>\n        </ul>\n        <a href=\"https://demo.gompha.com\" class=\"btn
-    btn-primary\">Open the clinic demo →</a>\n      </div>\n      <div class=\"demo-card
-    solo\">\n        <span class=\"kind\">Single-doctor practice</span>\n        <h3>The
-    solo demo</h3>\n        <p>One dentist, one chair, no reception desk. The same
-    engine with the multi-user machinery folded away — just the chart, the deals and
-    money in / money out.</p>\n        <ul>\n          <li>One login — you're the
-    whole clinic</li>\n          <li>Money collapses to a simple in / out / drawer</li>\n
+    btn-primary\">Open the clinic demo →</a>\n      </div>\n      <div class=\"demo-card\">\n
+    \       <span class=\"kind\">Single-doctor practice · live</span>\n        <h3>The
+    solo demo</h3>\n        <p>One dentist, one chair, no reception desk. Solo Mode
+    folds the multi-user machinery away — just the chart, the deals and money in /
+    money out. Live now.</p>\n        <ul>\n          <li>One login — you're the whole
+    clinic</li>\n          <li>Money collapses to a simple in / out / drawer</li>\n
     \         <li>Grow into the full clinic when you hire</li>\n        </ul>\n        <a
     href=\"https://demosolo.gompha.com\" class=\"btn btn-gold\">Open the solo demo
-    →</a>\n        <p class=\"flag\">⚑ Solo mode is on the roadmap — this demo goes
-    live with it. See <a href=\"scale.html\">Scaling &amp; ownership</a>.</p>\n      </div>\n
-    \   </div>\n  </div>\n</section>\n\n<footer>\n  <div class=\"wrap\">\n    <div
-    class=\"fcols\">\n      <div class=\"fcol\" style=\"max-width:280px\">\n        <div
-    class=\"logo\">G<span class=\"socket\"></span>mpha</div>\n        <p style=\"margin-top:10px;color:#a7bcda\">Your
-    practice, anchored. Every tooth tracked. Every deal remembered.</p>\n      </div>\n
-    \     <div class=\"fcol\">\n        <h5>Product</h5>\n        <a href=\"index.html#capabilities\">Capabilities</a>\n
-    \       <a href=\"roadmap.html\">Roadmap</a>\n        <a href=\"scale.html\">Scaling
-    &amp; ownership</a>\n        <a href=\"safety.html\">Data safety</a>\n      </div>\n
-    \     <div class=\"fcol\">\n        <h5>Try it</h5>\n        <a href=\"https://demo.gompha.com\">Clinic
-    demo</a>\n        <a href=\"https://demosolo.gompha.com\">Solo demo</a>\n        <a
-    href=\"mailto:hello@gompha.com\">Get in touch</a>\n      </div>\n      <div class=\"fcol\">\n
-    \       <h5>Contact</h5>\n        <a href=\"mailto:hello@gompha.com\">hello@gompha.com</a>\n
+    →</a>\n      </div>\n    </div>\n  </div>\n</section>\n\n<footer>\n  <div class=\"wrap\">\n
+    \   <div class=\"fcols\">\n      <div class=\"fcol\" style=\"max-width:280px\">\n
+    \       <div class=\"logo\">G<span class=\"socket\"></span>mpha</div>\n        <p
+    style=\"margin-top:10px;color:#a7bcda\">Your practice, anchored. Every tooth tracked.
+    Every deal remembered.</p>\n      </div>\n      <div class=\"fcol\">\n        <h5>Product</h5>\n
+    \       <a href=\"index.html#capabilities\">Capabilities</a>\n        <a href=\"roadmap.html\">Roadmap</a>\n
+    \       <a href=\"scale.html\">Scaling &amp; ownership</a>\n        <a href=\"safety.html\">Data
+    safety</a>\n      </div>\n      <div class=\"fcol\">\n        <h5>Try it</h5>\n
+    \       <a href=\"https://demo.gompha.com\">Clinic demo</a>\n        <a href=\"https://demosolo.gompha.com\">Solo
+    demo</a>\n        <a href=\"mailto:hello@gompha.com\">Get in touch</a>\n      </div>\n
+    \     <div class=\"fcol\">\n        <h5>Contact</h5>\n        <a href=\"mailto:hello@gompha.com\">hello@gompha.com</a>\n
     \       <a href=\"mailto:hello@gompha.com\">Book a walkthrough</a>\n      </div>\n
     \   </div>\n    <div class=\"base\">© 2026 Gompha · Your practice, anchored.</div>\n
     \ </div>\n</footer>\n\n<script src=\"reveal.js\"></script>\n</body>\n</html>\n"
@@ -664,7 +670,7 @@ data:
     style=\"padding:10px 20px\">Get in touch</a>\n    </div>\n  </div>\n</nav>\n\n<header
     class=\"hero short\">\n  <div class=\"glow g1\"></div><div class=\"glow g2\"></div>\n
     \ <div class=\"wrap\">\n    <span class=\"pill anim d1\">\U0001F9B7 <span>Currently
-    live: <b>v0.22.3</b></span></span>\n    <h1 class=\"anim d2\">The roadmap</h1>\n
+    live: <b>v0.27.0</b></span></span>\n    <h1 class=\"anim d2\">The roadmap</h1>\n
     \   <p class=\"tagline anim d3\">Everything Gompha can do today, what we're building
     right now, and what's next — labelled honestly. If it says <em>Planned</em>, it
     isn't built yet. No vaporware in the \"shipped\" column.</p>\n  </div>\n</header>\n\n<section
@@ -673,7 +679,7 @@ data:
     class=\"dot build\"></i> Building now</span>\n      <span><i class=\"dot plan\"></i>
     Planned / next</span>\n    </div>\n\n    <!-- SHIPPED -->\n    <div class=\"phase
     reveal\">\n      <h2><span class=\"badge done\">Shipped</span> Live today in a
-    real clinic</h2>\n      <p class=\"lede\">Running in production at v0.22.3 — over
+    real clinic</h2>\n      <p class=\"lede\">Running in production at v0.27.0 — over
     twenty releases, zero image drift. This is the software you can log into right
     now.</p>\n      <ul class=\"tl\">\n        <li class=\"done\"><span class=\"ver\">v0.4
     · odontogram</span><h4>Two-layer tooth chart</h4><p>Crown work, root work and
@@ -714,38 +720,40 @@ data:
     WhatsApp when a number's on file.</p></li>\n        <li class=\"done\"><span class=\"ver\">infra
     · safety</span><h4>Encrypted backups &amp; tenant isolation</h4><p>Hourly age-encrypted
     backups; row-level security forced on every tenant table so no clinic can ever
-    see another's data.</p></li>\n      </ul>\n    </div>\n\n    <!-- BUILDING -->\n
-    \   <div class=\"phase reveal\">\n      <h2><span class=\"badge build\">Building</span>
-    In progress right now</h2>\n      <p class=\"lede\">Spec locked, partly built,
-    landing in upcoming releases.</p>\n      <ul class=\"tl\">\n        <li class=\"build\"><span
-    class=\"ver\">odontogram v2</span><h4>Richer clinical charting</h4><p>Ortho spans
-    (retainer / wire / aligner), a planned-treatment state, mixed-dentition ghost
-    teeth, and a doctor→reception print-request handoff. First pieces already shipping.</p></li>\n
-    \       <li class=\"build\"><span class=\"ver\">auth hardening</span><h4>Trusted
-    devices, PIN &amp; OTP</h4><p>Per-staff PIN, email OTP on a new device, trusted-device
-    memory and a bot check — plus an audit log of who booked and who took each payment.</p></li>\n
-    \       <li class=\"build\"><span class=\"ver\">reports</span><h4>Daily cash report</h4><p>End-of-day
-    money reconciliation for the front desk. Built, rolling out.</p></li>\n        <li
-    class=\"build\"><span class=\"ver\">solo mode</span><h4>Single-doctor mode</h4><p>One
-    setting folds away the multi-user machinery — role pickers, per-doctor splits
-    — for a one-person practice. Powers the upcoming solo demo. See <a href=\"scale.html\">Scaling
-    &amp; ownership</a>.</p></li>\n        <li class=\"build\"><span class=\"ver\">i18n</span><h4>Arabic
-    translation</h4><p>The Arabic/RTL switch is already live; filling in the full
-    translation is ongoing.</p></li>\n      </ul>\n    </div>\n\n    <!-- PLANNED
-    -->\n    <div class=\"phase reveal\">\n      <h2><span class=\"badge plan\">Planned</span>
-    What's next</h2>\n      <p class=\"lede\">Designed and on the board — not yet
-    built. Listed so you can see where Gompha is going, not what it pretends to be.</p>\n
-    \     <ul class=\"tl\">\n        <li class=\"plan\"><span class=\"ver\">the cherry</span><h4>Voice
-    → deal note</h4><p>Dictate a chair-side note in your own words → a structured
-    encounter and deal, with the discount reason and the next appointment pulled out.
-    Hands stay on the patient. This is the headline moat feature — and it's zero code
-    today.</p></li>\n        <li class=\"plan\"><span class=\"ver\">imaging</span><h4>In-app
-    X-ray &amp; photo viewer</h4><p>Imaging IDs already link to the record; the on-card
+    see another's data.</p></li>\n        <li class=\"done\"><span class=\"ver\">v0.24
+    · solo mode</span><h4>Solo Mode</h4><p>One setting folds away the multi-user machinery
+    — role pickers, per-doctor splits, reception — for a clean one-person clinic.
+    Live, with its own <a href=\"https://demosolo.gompha.com\">public demo</a> (v0.27).</p></li>\n
+    \       <li class=\"done\"><span class=\"ver\">v0.25 · portability</span><h4>Export
+    &amp; import your data</h4><p>Self-serve export of your whole clinic to a portable
+    bundle, and provider-assisted import into a fresh tenant — references remapped,
+    money verbatim. \"Leave a practice, take your data.\" <a href=\"scale.html\">Details
+    →</a></p></li>\n      </ul>\n    </div>\n\n    <!-- BUILDING -->\n    <div class=\"phase
+    reveal\">\n      <h2><span class=\"badge build\">Building</span> In progress right
+    now</h2>\n      <p class=\"lede\">Spec locked, partly built, landing in upcoming
+    releases.</p>\n      <ul class=\"tl\">\n        <li class=\"build\"><span class=\"ver\">odontogram
+    v2</span><h4>Richer clinical charting</h4><p>Ortho spans (retainer / wire / aligner),
+    a planned-treatment state, mixed-dentition ghost teeth, and a doctor→reception
+    print-request handoff. First pieces already shipping.</p></li>\n        <li class=\"build\"><span
+    class=\"ver\">auth hardening</span><h4>Trusted devices, PIN &amp; OTP</h4><p>Per-staff
+    PIN, email OTP on a new device, trusted-device memory and a bot check — plus an
+    audit log of who booked and who took each payment.</p></li>\n        <li class=\"build\"><span
+    class=\"ver\">portability v2</span><h4>Single-doctor data slice</h4><p>Whole-clinic
+    export/import is live; next is exporting one doctor's own slice (their patients
+    + history) with owner consent, so a doctor who leaves can take theirs.</p></li>\n
+    \       <li class=\"build\"><span class=\"ver\">i18n</span><h4>Arabic translation</h4><p>The
+    Arabic/RTL switch is already live; filling in the full translation is ongoing.</p></li>\n
+    \     </ul>\n    </div>\n\n    <!-- PLANNED -->\n    <div class=\"phase reveal\">\n
+    \     <h2><span class=\"badge plan\">Planned</span> What's next</h2>\n      <p
+    class=\"lede\">Designed and on the board — not yet built. Listed so you can see
+    where Gompha is going, not what it pretends to be.</p>\n      <ul class=\"tl\">\n
+    \       <li class=\"plan\"><span class=\"ver\">the cherry</span><h4>Voice → deal
+    note</h4><p>Dictate a chair-side note in your own words → a structured encounter
+    and deal, with the discount reason and the next appointment pulled out. Hands
+    stay on the patient. This is the headline moat feature — and it's zero code today.</p></li>\n
+    \       <li class=\"plan\"><span class=\"ver\">imaging</span><h4>In-app X-ray
+    &amp; photo viewer</h4><p>Imaging IDs already link to the record; the on-card
     viewer that pulls the image from your local image server is still to build.</p></li>\n
-    \       <li class=\"plan\"><span class=\"ver\">portability</span><h4>Export &amp;
-    import your data</h4><p>Self-serve export of your whole clinic to a portable bundle,
-    and provider-assisted import into a new tenant. \"Leave a practice, take your
-    data.\" Full story on <a href=\"scale.html\">Scaling &amp; ownership</a>.</p></li>\n
     \       <li class=\"plan\"><span class=\"ver\">onboarding</span><h4>Self-serve
     clinic setup</h4><p>A guided wizard that stands up a new clinic — rooms, doctors,
     catalog — without a hand-run CLI.</p></li>\n        <li class=\"plan\"><span class=\"ver\">inventory
@@ -903,17 +911,16 @@ data:
     and down</span>\n      <h2>One chair or ten — the same account grows with you</h2>\n
     \     <p>You don't pick a \"size\" and get boxed in. Solo mode hides the multi-user
     machinery; the day you hire, you switch it on.</p>\n    </div>\n    <div class=\"split
-    reveal\">\n      <div class=\"txt\">\n        <span class=\"ship soon\">Solo mode
-    — Planned</span>\n        <h3>Solo: you are the whole clinic</h3>\n        <p>One
-    login, one chair. No role pickers, no per-doctor splits, no reception desk. Money
-    collapses to a plain <em>in / out / drawer</em>. The chart, the deals and the
-    schedule — nothing else in the way.</p>\n        <p>The multi-doctor engine is
-    already live in a real four-doctor clinic today. Solo mode is the setting that
-    folds it away for a one-person practice — it's on the <a href=\"roadmap.html\">build
-    list now</a>, and it powers the upcoming solo demo.</p>\n      </div>\n      <div
-    class=\"panel\">\n        <div class=\"prow\"><b>Reception desk</b><span class=\"toggle
-    off\"></span></div>\n        <div class=\"prow\"><b>Multiple doctors</b><span
-    class=\"toggle off\"></span></div>\n        <div class=\"prow\"><b>Per-doctor
+    reveal\">\n      <div class=\"txt\">\n        <span class=\"ship\">Solo Mode —
+    Live</span>\n        <h3>Solo: you are the whole clinic</h3>\n        <p>One login,
+    one chair. No role pickers, no per-doctor splits, no reception desk. Money collapses
+    to a plain <em>in / out / drawer</em>. The chart, the deals and the schedule —
+    nothing else in the way.</p>\n        <p>The multi-doctor engine runs a real four-doctor
+    clinic; Solo Mode folds it away for a one-person practice. It's <strong>live now</strong>
+    — walk through it at the <a href=\"https://demosolo.gompha.com\">solo demo</a>.</p>\n
+    \     </div>\n      <div class=\"panel\">\n        <div class=\"prow\"><b>Reception
+    desk</b><span class=\"toggle off\"></span></div>\n        <div class=\"prow\"><b>Multiple
+    doctors</b><span class=\"toggle off\"></span></div>\n        <div class=\"prow\"><b>Per-doctor
     P&amp;L splits</b><span class=\"toggle off\"></span></div>\n        <div class=\"prow\"><b>Tooth
     chart &amp; deals</b><span class=\"toggle\"></span></div>\n        <div class=\"prow\"><b>Money:
     in / out / drawer</b><span class=\"toggle\"></span></div>\n      </div>\n    </div>\n
@@ -935,36 +942,38 @@ data:
     style=\"background:var(--bg-alt)\">\n  <div class=\"wrap\">\n    <div class=\"sec-head
     reveal\">\n      <span class=\"eyebrow\">Your data, your data</span>\n      <h2>Your
     records are never held hostage</h2>\n      <p>Software should never be a hostage
-    negotiation. Two rules — one already live, one on the way.</p>\n    </div>\n    <div
-    class=\"feat-grid stagger\">\n      <div class=\"feat\"><span class=\"ico\">\U0001F513</span><h3>Reads
-    always work <span class=\"ship\">Live</span></h3><p>Stop paying and writing pauses
-    — but you can always <em>read</em> your whole clinic. Even a suspended or expired
-    account keeps full read access to every record. No one locks you out of your own
-    history.</p></div>\n      <div class=\"feat\"><span class=\"ico\">\U0001F4E4</span><h3>Self-serve
-    export <span class=\"ship soon\">Planned</span></h3><p>Download your entire clinic
-    as a portable bundle — structured data plus human-readable CSVs — on your own,
-    whenever you want. Works even in read-only mode.</p></div>\n      <div class=\"feat\"><span
-    class=\"ico\">\U0001F4E5</span><h3>Clean import <span class=\"ship soon\">Planned</span></h3><p>Bring
-    that bundle into a fresh Gompha tenant with every reference remapped correctly.
-    Money travels verbatim and is never re-valued; secrets are scrubbed on the way
-    out.</p></div>\n    </div>\n  </div>\n</section>\n\n<!-- 3. LEAVE A PRACTICE -->\n<section>\n
-    \ <div class=\"wrap\">\n    <div class=\"split reveal\">\n      <div class=\"txt\">\n
-    \       <span class=\"ship soon\">Planned</span>\n        <h3>Leave a practice
-    — take your data</h3>\n        <p>A doctor's patients are the doctor's relationships.
-    When someone moves on, they should be able to take their slice — their patients,
-    their charts, their history — not walk away empty-handed.</p>\n        <p>Gompha's
-    portability works on two axes: <b>scope</b> — the whole clinic or a single doctor's
-    slice; and <b>category</b> — clinical only, or clinical plus the money. You choose
-    what leaves.</p>\n        <p>And it's <b>consented</b>: an employed doctor exporting
-    their own slice is off by default until the clinic owner grants it — scoped, expiring
-    and audited. It reconciles \"his data, his clients\" with the clinic's right to
-    control who walks out with what.</p>\n      </div>\n      <div class=\"panel\">\n
-    \       <div class=\"prow\"><b>Whole clinic</b><span style=\"color:var(--teal-text);font-weight:800\">or
-    a single doctor</span></div>\n        <div class=\"prow\"><b>Clinical records</b><span
-    style=\"color:var(--teal-text);font-weight:800\">✓ always</span></div>\n        <div
-    class=\"prow\"><b>Financials</b><span style=\"color:var(--body)\">opt in</span></div>\n
-    \       <div class=\"prow\"><b>Passwords &amp; secrets</b><span style=\"color:#adbccf\">✕
-    scrubbed</span></div>\n        <div class=\"prow\"><b>Owner consent</b><span style=\"color:var(--gold);font-weight:800\">required</span></div>\n
+    negotiation. Reads always work, and full clinic export &amp; import are live today.</p>\n
+    \   </div>\n    <div class=\"feat-grid stagger\">\n      <div class=\"feat\"><span
+    class=\"ico\">\U0001F513</span><h3>Reads always work <span class=\"ship\">Live</span></h3><p>Stop
+    paying and writing pauses — but you can always <em>read</em> your whole clinic.
+    Even a suspended or expired account keeps full read access to every record. No
+    one locks you out of your own history.</p></div>\n      <div class=\"feat\"><span
+    class=\"ico\">\U0001F4E4</span><h3>Self-serve export <span class=\"ship\">Live</span></h3><p>Download
+    your entire clinic as a portable bundle — structured data plus human-readable
+    CSVs — on your own, whenever you want. Works even in read-only mode.</p></div>\n
+    \     <div class=\"feat\"><span class=\"ico\">\U0001F4E5</span><h3>Clean import
+    <span class=\"ship\">Live</span></h3><p>Bring that bundle into a fresh Gompha
+    tenant with every reference remapped correctly. Money travels verbatim and is
+    never re-valued; secrets are scrubbed on the way out.</p></div>\n    </div>\n
+    \ </div>\n</section>\n\n<!-- 3. LEAVE A PRACTICE -->\n<section>\n  <div class=\"wrap\">\n
+    \   <div class=\"split reveal\">\n      <div class=\"txt\">\n        <span class=\"ship\">Whole-clinic:
+    Live · doctor-slice: Planned</span>\n        <h3>Leave a practice — take your
+    data</h3>\n        <p>Taking a <em>whole clinic</em> to a new tenant works today.
+    Taking a single doctor's slice — their patients, their charts, their history —
+    is the next step, so a doctor who moves on doesn't walk away empty-handed.</p>\n
+    \       <p>Gompha's portability works on two axes: <b>scope</b> — the whole clinic
+    or a single doctor's slice; and <b>category</b> — clinical only, or clinical plus
+    the money. You choose what leaves.</p>\n        <p>And it's <b>consented</b>:
+    an employed doctor exporting their own slice is off by default until the clinic
+    owner grants it — scoped, expiring and audited. It reconciles \"his data, his
+    clients\" with the clinic's right to control who walks out with what.</p>\n      </div>\n
+    \     <div class=\"panel\">\n        <div class=\"prow\"><b>Whole clinic</b><span
+    style=\"color:var(--teal-text);font-weight:800\">or a single doctor</span></div>\n
+    \       <div class=\"prow\"><b>Clinical records</b><span style=\"color:var(--teal-text);font-weight:800\">✓
+    always</span></div>\n        <div class=\"prow\"><b>Financials</b><span style=\"color:var(--body)\">opt
+    in</span></div>\n        <div class=\"prow\"><b>Passwords &amp; secrets</b><span
+    style=\"color:#adbccf\">✕ scrubbed</span></div>\n        <div class=\"prow\"><b>Owner
+    consent</b><span style=\"color:var(--gold);font-weight:800\">required</span></div>\n
     \     </div>\n    </div>\n  </div>\n</section>\n\n<!-- 4. MODULES ON/OFF -->\n<section
     style=\"background:var(--bg-alt)\">\n  <div class=\"wrap\">\n    <div class=\"sec-head
     reveal\">\n      <span class=\"eyebrow\">Only what you use</span>\n      <h2>Turn
@@ -975,38 +984,38 @@ data:
     by role <span class=\"ship\">Live</span></b> — interfaces are already shaped per
     person: maintenance is walled off from all patient data, reception can post money
     but never see clinic totals, doctors get a clinical mobile view with no admin
-    clutter.</p>\n        <p><b>Next, by setting <span class=\"ship soon\">Planned</span></b>
-    — a per-clinic switch turns whole modules on or off: no reception desk, collapse
-    the financials, hide per-doctor costs. Visibility only — it stays simple, never
-    a tangle of per-button permissions.</p>\n      </div>\n      <div class=\"panel\">\n
-    \       <div class=\"prow\"><b>Reception desk</b><span class=\"toggle\"></span></div>\n
-    \       <div class=\"prow\"><b>Financials &amp; P&amp;L</b><span class=\"toggle\"></span></div>\n
-    \       <div class=\"prow\"><b>Stock / inventory</b><span class=\"toggle off\"></span></div>\n
-    \       <div class=\"prow\"><b>Per-doctor cost floors</b><span class=\"toggle
-    off\"></span></div>\n        <div class=\"prow\"><b>Tooth chart &amp; scheduling</b><span
-    class=\"toggle\"></span></div>\n      </div>\n    </div>\n  </div>\n</section>\n\n<!--
-    5. TENANT MODEL -->\n<section>\n  <div class=\"wrap\">\n    <div class=\"sec-head
-    reveal\">\n      <span class=\"eyebrow\">How it's built to scale</span>\n      <h2>One
-    clinic, one subdomain, isolated by design</h2>\n      <p>Every clinic is its own
-    tenant on its own subdomain, with row-level security forced at the database so
-    no clinic can ever see another's data. That's what makes both solo and multi-branch
-    honest.</p>\n    </div>\n    <div class=\"id-grid stagger\">\n      <div class=\"id-card\"><span
-    class=\"tag\">Live</span><h3>Subdomain per clinic</h3><p>yourclinic.gompha.com
-    — your own space, your own data, hard-isolated from every other tenant.</p></div>\n
-    \     <div class=\"id-card\"><span class=\"tag\">Live</span><h3>Row-level security</h3><p>Isolation
-    enforced in the database itself, not just the app — a clinic literally cannot
-    query another's records.</p></div>\n      <div class=\"id-card\"><span class=\"tag\">Planned</span><h3>White-label</h3><p>Your
-    brand, colors and domain on top of the same engine — an upgrade, not a rebuild.</p></div>\n
-    \     <div class=\"id-card\"><span class=\"tag\">Planned</span><h3>Multi-branch
-    chains</h3><p>Two or more locations under one operator, priced per branch. Rare
-    today, real as clinics grow.</p></div>\n    </div>\n  </div>\n</section>\n\n<!--
-    CTA STRIP -->\n<section class=\"strip\">\n  <div class=\"wrap reveal\">\n    <h2>Try
-    the size that fits you</h2>\n    <p>Walk through the multi-doctor clinic today.
-    The single-doctor demo goes live with solo mode.</p>\n    <div class=\"cta-row\">\n
-    \     <a href=\"https://demo.gompha.com\" class=\"btn btn-primary\">Clinic demo</a>\n
-    \     <a href=\"https://demosolo.gompha.com\" class=\"btn btn-gold\">Solo demo
-    (soon)</a>\n    </div>\n  </div>\n</section>\n\n<footer>\n  <div class=\"wrap\">\n
-    \   <div class=\"fcols\">\n      <div class=\"fcol\" style=\"max-width:280px\">\n
+    clutter.</p>\n        <p><b>And by mode <span class=\"ship\">Live</span></b> —
+    Solo Mode already turns whole chunks of UI off for a one-person clinic (reception,
+    per-doctor splits, role pickers), and collapses the money view. Visibility only
+    — it stays simple, never a tangle of per-button permissions.</p>\n      </div>\n
+    \     <div class=\"panel\">\n        <div class=\"prow\"><b>Reception desk</b><span
+    class=\"toggle\"></span></div>\n        <div class=\"prow\"><b>Financials &amp;
+    P&amp;L</b><span class=\"toggle\"></span></div>\n        <div class=\"prow\"><b>Stock
+    / inventory</b><span class=\"toggle off\"></span></div>\n        <div class=\"prow\"><b>Per-doctor
+    cost floors</b><span class=\"toggle off\"></span></div>\n        <div class=\"prow\"><b>Tooth
+    chart &amp; scheduling</b><span class=\"toggle\"></span></div>\n      </div>\n
+    \   </div>\n  </div>\n</section>\n\n<!-- 5. TENANT MODEL -->\n<section>\n  <div
+    class=\"wrap\">\n    <div class=\"sec-head reveal\">\n      <span class=\"eyebrow\">How
+    it's built to scale</span>\n      <h2>One clinic, one subdomain, isolated by design</h2>\n
+    \     <p>Every clinic is its own tenant on its own subdomain, with row-level security
+    forced at the database so no clinic can ever see another's data. That's what makes
+    both solo and multi-branch honest.</p>\n    </div>\n    <div class=\"id-grid stagger\">\n
+    \     <div class=\"id-card\"><span class=\"tag\">Live</span><h3>Subdomain per
+    clinic</h3><p>yourclinic.gompha.com — your own space, your own data, hard-isolated
+    from every other tenant.</p></div>\n      <div class=\"id-card\"><span class=\"tag\">Live</span><h3>Row-level
+    security</h3><p>Isolation enforced in the database itself, not just the app —
+    a clinic literally cannot query another's records.</p></div>\n      <div class=\"id-card\"><span
+    class=\"tag\">Planned</span><h3>White-label</h3><p>Your brand, colors and domain
+    on top of the same engine — an upgrade, not a rebuild.</p></div>\n      <div class=\"id-card\"><span
+    class=\"tag\">Planned</span><h3>Multi-branch chains</h3><p>Two or more locations
+    under one operator, priced per branch. Rare today, real as clinics grow.</p></div>\n
+    \   </div>\n  </div>\n</section>\n\n<!-- CTA STRIP -->\n<section class=\"strip\">\n
+    \ <div class=\"wrap reveal\">\n    <h2>Try the size that fits you</h2>\n    <p>Walk
+    through the multi-doctor clinic, or the single-doctor Solo Mode demo — both live
+    now.</p>\n    <div class=\"cta-row\">\n      <a href=\"https://demo.gompha.com\"
+    class=\"btn btn-primary\">Clinic demo</a>\n      <a href=\"https://demosolo.gompha.com\"
+    class=\"btn btn-gold\">Solo demo</a>\n    </div>\n  </div>\n</section>\n\n<footer>\n
+    \ <div class=\"wrap\">\n    <div class=\"fcols\">\n      <div class=\"fcol\" style=\"max-width:280px\">\n
     \       <div class=\"logo\">G<span class=\"socket\"></span>mpha</div>\n        <p
     style=\"margin-top:10px;color:#a7bcda\">Your practice, anchored. Every tooth tracked.
     Every deal remembered.</p>\n      </div>\n      <div class=\"fcol\">\n        <h5>Product</h5>\n
