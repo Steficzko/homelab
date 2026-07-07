@@ -123,16 +123,18 @@ data:
     \       </div>\n      </div>\n    </div>\n  </div>\n</header>\n\n<!-- RECEPTION
     DESKTOP (prominent) -->\n<section id=\"reception\">\n  <div class=\"wrap\">\n
     \   <div class=\"sec-head reveal\">\n      <span class=\"eyebrow\">Reception runs
-    the day</span>\n      <h2>The whole clinic on one wide screen</h2>\n      <p>Rooms
-    across the top, the day down the side, every doctor colour-coded. Double-booking
-    is blocked, arrivals light up, and running-late ripples to the front desk in real
-    time.</p>\n    </div>\n    <div class=\"monitor reveal\">\n      <div class=\"bezel\">\n
-    \       <div class=\"screen\">\n          <!-- Live reception schedule: auto-logs
-    in as reception (demo tenant)\n               and lands on /schedule via the goto
-    deep link (SPA v0.25.1). The\n               wide viewport makes the app render
-    its desktop room-grid. -->\n          <iframe class=\"rc-frame\" src=\"https://demo.gompha.com/?demo=reception&goto=/schedule\"
-    title=\"Gompha — live reception schedule, auto-signed in\" loading=\"lazy\"></iframe>\n
-    \       </div>\n      </div>\n      <div class=\"neck\"></div>\n      <div class=\"base\"></div>\n
+    the week</span>\n      <h2>The whole week on one ultra-wide screen</h2>\n      <p>Seven
+    days across the wall, every doctor colour-coded, arrivals and running-late flagged
+    live. This is the real reception panorama — signed in and running, not a picture.</p>\n
+    \   </div>\n    <div class=\"monitor reveal\">\n      <div class=\"bezel\">\n
+    \       <span class=\"cam\"></span>\n        <div class=\"screen\">\n          <!--
+    Live reception panorama: auto-logs in as reception (demo tenant)\n               and
+    lands on the week via goto=/weeks (SPA v0.25.1). The wide\n               viewport
+    makes the app render its full desktop week wall. -->\n          <iframe class=\"rc-frame\"
+    src=\"https://demo.gompha.com/?demo=reception&goto=/weeks\" title=\"Gompha — live
+    reception week, auto-signed in\" loading=\"lazy\"></iframe>\n        </div>\n
+    \       <span class=\"brand\">Gompha</span>\n        <span class=\"led\"></span>\n
+    \     </div>\n      <div class=\"neck\"></div>\n      <div class=\"base\"></div>\n
     \   </div>\n  </div>\n</section>\n\n<!-- ANCHOR THESIS -->\n<section id=\"thesis\">\n
     \ <div class=\"wrap\">\n    <div class=\"sec-head reveal\">\n      <span class=\"eyebrow\">The
     name</span>\n      <h2>Gomphosis — the joint that anchors every tooth</h2>\n      <p>In
@@ -1080,15 +1082,19 @@ data:
     solid #0FA697;padding:8px 10px;border-radius:7px;font-size:12px;font-style:italic;color:#0b2647;margin-top:8px}\n.pv-bal{display:flex;justify-content:space-between;text-align:center;gap:6px}\n.pv-bal
     div{flex:1}\n.pv-bal .k{font-size:10px;color:#7a8aa0;text-transform:uppercase;letter-spacing:.04em;font-weight:700}\n.pv-bal
     .v{font-family:var(--heading-font);font-weight:900;font-size:16px;color:#0b2647;margin-top:2px}\n.pv-bal
-    .v.owe{color:#c0392b}\n\n/* ---- Wide desktop monitor — live reception schedule
-    iframed inside ---- */\n.monitor{max-width:1080px;margin:0 auto}\n.monitor .bezel{background:#0b0e16;border-radius:16px;padding:12px;box-shadow:0
-    44px 100px -34px rgba(0,10,30,.62),0 0 0 1px rgba(255,255,255,.05)}\n.monitor
-    .screen{position:relative;border-radius:8px;overflow:hidden;background:#fff;aspect-ratio:16/10}\n.monitor
-    .screen iframe.rc-frame{position:absolute;inset:0;width:100%;height:100%;border:0;background:#fff}\n.monitor
-    .neck{width:40px;height:24px;background:linear-gradient(#161b29,#0b0e16);margin:0
-    auto}\n.monitor .base{width:200px;height:9px;background:#0b0e16;margin:0 auto;border-radius:0
-    0 9px 9px;box-shadow:0 8px 18px -8px rgba(0,0,0,.5)}\n@media(max-width:720px){.monitor
-    .screen{aspect-ratio:4/3}}\n\n/* SECTIONS */\nsection{padding:92px 0}\nsection.tight{padding:64px
+    .v.owe{color:#c0392b}\n\n/* ---- Ultra-wide desktop monitor — live reception week
+    iframed inside ---- */\n.monitor{max-width:1160px;margin:0 auto}\n.monitor .bezel{position:relative;background:linear-gradient(#161922,#0b0d12);border-radius:16px;padding:13px
+    13px 26px;box-shadow:0 54px 120px -38px rgba(0,10,30,.72),inset 0 0 0 1px rgba(255,255,255,.06)}\n.monitor
+    .cam{position:absolute;top:6px;left:50%;transform:translateX(-50%);width:6px;height:6px;border-radius:50%;background:#2a2f3a;box-shadow:inset
+    0 0 0 1px #05070b}\n.monitor .screen{position:relative;border-radius:5px;overflow:hidden;background:#0a0d14;aspect-ratio:21/9}\n.monitor
+    .screen iframe.rc-frame{position:absolute;inset:0;width:100%;height:100%;border:0;background:#eef2f7}\n.monitor
+    .brand{position:absolute;bottom:8px;left:50%;transform:translateX(-50%);font-family:var(--heading-font);font-weight:800;font-size:10px;letter-spacing:.14em;color:#3b4353;text-transform:uppercase}\n.monitor
+    .led{position:absolute;bottom:11px;right:22px;width:6px;height:6px;border-radius:50%;background:#14C8B6;box-shadow:0
+    0 7px #14C8B6}\n.monitor .neck{width:118px;height:48px;margin:0 auto;background:linear-gradient(#1b1f28,#0d1016);clip-path:polygon(32%
+    0,68% 0,86% 100%,14% 100%)}\n.monitor .base{width:320px;max-width:60%;height:14px;margin:-1px
+    auto 0;background:linear-gradient(#20242e,#0b0d12);border-radius:50%;box-shadow:0
+    20px 30px -14px rgba(0,0,0,.6)}\n@media(max-width:760px){.monitor .screen{aspect-ratio:16/10}.monitor
+    .bezel{padding:9px 9px 20px}}\n\n/* SECTIONS */\nsection{padding:92px 0}\nsection.tight{padding:64px
     0}\n.sec-head{text-align:center;max-width:760px;margin:0 auto 56px}\n.sec-head
     h2{font-size:clamp(29px,4vw,42px);font-weight:900;margin:12px 0}\n.sec-head p{font-size:18.5px;color:var(--body)}\n\n/*
     anchor / id cards */\n.id-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}\n@media(max-width:900px){.id-grid{grid-template-columns:repeat(2,1fr)}}\n@media(max-width:480px){.id-grid{grid-template-columns:1fr}}\n.id-card{background:var(--card);border:1px
