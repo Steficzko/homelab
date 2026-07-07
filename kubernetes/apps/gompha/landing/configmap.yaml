@@ -128,11 +128,11 @@ data:
     live. This is the real reception panorama — signed in and running, not a picture.</p>\n
     \   </div>\n    <div class=\"monitor reveal\">\n      <div class=\"bezel\">\n
     \       <span class=\"cam\"></span>\n        <div class=\"screen\">\n          <!--
-    Live reception panorama: auto-logs in as reception (demo tenant)\n               and
-    lands on the week via goto=/weeks (SPA v0.25.1). The wide\n               viewport
-    makes the app render its full desktop week wall. -->\n          <iframe class=\"rc-frame\"
-    src=\"https://demo.gompha.com/?demo=reception&goto=/weeks\" title=\"Gompha — live
-    reception week, auto-signed in\" loading=\"lazy\"></iframe>\n        </div>\n
+    The ONE live app window on the page (two live iframes share one\n               demo
+    login cookie and clobber each other). Reception's wide home\n               IS
+    the week panorama, so no goto needed — the proven auto-login. -->\n          <iframe
+    class=\"rc-frame\" src=\"https://demo.gompha.com/?demo=reception\" title=\"Gompha
+    — live reception week, auto-signed in\" loading=\"lazy\"></iframe>\n        </div>\n
     \       <span class=\"brand\">Gompha</span>\n        <span class=\"led\"></span>\n
     \     </div>\n      <div class=\"neck\"></div>\n      <div class=\"base\"></div>\n
     \   </div>\n  </div>\n</section>\n\n<!-- ANCHOR THESIS -->\n<section id=\"thesis\">\n
@@ -165,23 +165,56 @@ data:
     no digging.</li>\n          <li><b>One tap to reach them</b> — call or WhatsApp
     straight from the card.</li>\n        </ul>\n      </div>\n      <div class=\"reveal\"
     style=\"justify-self:center\">\n        <div class=\"phone\">\n          <div
-    class=\"island\"></div>\n          <div class=\"phone-screen\">\n            <!--
-    Live patient view: auto-logs in (demo tenant) and opens a real\n                 patient
-    card via the &goto=firstpatient deep link (SPA v0.25.1). -->\n            <iframe
-    class=\"pv-frame\" src=\"https://demo.gompha.com/?demo=doctor&goto=firstpatient\"
-    title=\"Gompha — live patient view, auto-signed in\" loading=\"lazy\"></iframe>\n
-    \         </div>\n        </div>\n        <p class=\"phone-cap\">Live app — a
-    real patient, auto-signed in. <a href=\"https://demo.gompha.com/?demo=doctor&goto=firstpatient\"
-    target=\"_blank\" rel=\"noopener\">Open it full-size →</a></p>\n      </div>\n
-    \   </div>\n  </div>\n</section>\n\n<!-- DEAL LEDGER SPOTLIGHT -->\n<section id=\"ledger\">\n
-    \ <div class=\"wrap\">\n    <div class=\"spot reveal\">\n      <div>\n        <span
-    class=\"moat\">The moat</span>\n        <h2>No other PMS remembers the deal</h2>\n
-    \       <p>Dentrix and Open Dental assume a fixed price list. But in the real
-    world, the price is negotiated — a discount for a cousin, a free cleaning, a cash
-    rate. Gompha anchors that: what was agreed, who approved it, and why.</p>\n        <p>Next
-    time that patient walks in, the whole clinic knows the story — not just the doctor
-    who made the deal.</p>\n        <a href=\"index.html#demos\" class=\"btn btn-gold\">See
-    it in the live demo</a>\n      </div>\n      <div class=\"sheet\">\n        <div
+    class=\"island\"></div>\n          <div class=\"phone-screen\">\n            <div
+    class=\"pv\">\n              <div class=\"pv-head\">\n                <span class=\"bk\">‹</span>\n
+    \               <span class=\"l\">G<span class=\"socket\"></span>mpha</span>\n
+    \               <span class=\"sp\">Patient</span>\n              </div>\n              <div
+    class=\"pv-body\">\n                <div class=\"pv-hero\">\n                  <div
+    class=\"nm\">Layla Hama</div>\n                  <div class=\"meta\">Female ·
+    34 · patient #1042 · since 2023</div>\n                  <div class=\"chips\">\n
+    \                   <span class=\"chip\">\U0001F4DE 0750 118 44</span>\n                    <span
+    class=\"chip\">\U0001F7E2 WhatsApp</span>\n                    <span class=\"chip
+    debt\">Owes $120</span>\n                  </div>\n                </div>\n                <div
+    class=\"pv-card\">\n                  <h4>Tooth chart <span class=\"tag\">3 crowns
+    · 1 implant</span></h4>\n                  <img src=\"odontogram.svg\" alt=\"Patient
+    tooth chart — crowns, a root canal, an implant, a bridge and a missing tooth\"
+    width=\"568\" height=\"172\" loading=\"lazy\">\n                </div>\n                <div
+    class=\"pv-card\">\n                  <h4>Perio <span class=\"tag\">BOP 14% ·
+    2 deep</span></h4>\n                  <img src=\"perio.svg\" alt=\"Patient periodontal
+    line chart\" width=\"568\" height=\"150\" loading=\"lazy\">\n                </div>\n
+    \               <div class=\"pv-card\">\n                  <h4>Treatments</h4>\n
+    \                 <div class=\"pv-row\"><span><span class=\"rn\"><span class=\"pv-dot\"
+    style=\"background:#1a7f37\"></span>Zirconia crown · 11</span><br><span class=\"rs\">Dr.
+    Ali · done</span></span><span class=\"amt\">$380</span></div>\n                  <div
+    class=\"pv-row\"><span><span class=\"rn\"><span class=\"pv-dot\" style=\"background:#5b7185\"></span>Implant
+    · 26</span><br><span class=\"rs\">Dr. Zana · in progress</span></span><span class=\"amt\">$900</span></div>\n
+    \                 <div class=\"pv-row\"><span><span class=\"rn\"><span class=\"pv-dot\"
+    style=\"background:#d9534f\"></span>Root canal · 16</span><br><span class=\"rs\">Dr.
+    Ali · done</span></span><span class=\"amt\">$220</span></div>\n                </div>\n
+    \               <div class=\"pv-card pv-deal\">\n                  <h4>The deal
+    <span class=\"tag\">the moat</span></h4>\n                  <div class=\"drow\"><span>Standard
+    price</span><span class=\"strike\">$450</span></div>\n                  <div class=\"drow\"><span>Agreed
+    price</span><span class=\"agreed\">$380</span></div>\n                  <div class=\"drow\"><span>Approved
+    by</span><b>Dr. Ali</b></div>\n                  <div class=\"ctx\">\"70 off —
+    cousin, paying cash today, added free polish.\"</div>\n                </div>\n
+    \               <div class=\"pv-card\">\n                  <h4>Balance <span class=\"tag\">USD
+    @ FX 1,500</span></h4>\n                  <div class=\"pv-bal\">\n                    <div><div
+    class=\"k\">Charged</div><div class=\"v\">$1,500</div></div>\n                    <div><div
+    class=\"k\">Paid</div><div class=\"v\">$1,380</div></div>\n                    <div><div
+    class=\"k\">Owes</div><div class=\"v owe\">$120</div></div>\n                  </div>\n
+    \               </div>\n              </div>\n            </div>\n          </div>\n
+    \       </div>\n        <p class=\"phone-cap\">The patient card in phone mode.
+    <a href=\"https://demo.gompha.com/?demo=doctor\" target=\"_blank\" rel=\"noopener\">Try
+    the live app →</a></p>\n      </div>\n    </div>\n  </div>\n</section>\n\n<!--
+    DEAL LEDGER SPOTLIGHT -->\n<section id=\"ledger\">\n  <div class=\"wrap\">\n    <div
+    class=\"spot reveal\">\n      <div>\n        <span class=\"moat\">The moat</span>\n
+    \       <h2>No other PMS remembers the deal</h2>\n        <p>Dentrix and Open
+    Dental assume a fixed price list. But in the real world, the price is negotiated
+    — a discount for a cousin, a free cleaning, a cash rate. Gompha anchors that:
+    what was agreed, who approved it, and why.</p>\n        <p>Next time that patient
+    walks in, the whole clinic knows the story — not just the doctor who made the
+    deal.</p>\n        <a href=\"index.html#demos\" class=\"btn btn-gold\">See it
+    in the live demo</a>\n      </div>\n      <div class=\"sheet\">\n        <div
     class=\"row\"><span class=\"k\">Procedure</span><span class=\"v\">Zirconia crown
     · tooth 11</span></div>\n        <div class=\"row\"><span class=\"k\">Standard
     price</span><span class=\"strike\">$450</span></div>\n        <div class=\"row\"><span
