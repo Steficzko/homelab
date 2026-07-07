@@ -1,5 +1,88 @@
 apiVersion: v1
 data:
+  founders.ar.html: |
+    <!DOCTYPE html>
+    <html lang="ar" dir="rtl" class="no-js">
+    <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>المؤسّسون — جومفا</title>
+    <meta name="description" content="من بنى جومفا — الأشخاص وراء نظام إدارة عيادات الأسنان.">
+    <meta name="robots" content="noindex">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css?v=5">
+    <style>
+    .founder-grid{display:grid;grid-template-columns:1fr 1fr;gap:26px;max-width:920px;margin:0 auto}
+    @media(max-width:760px){.founder-grid{grid-template-columns:1fr}}
+    .founder{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:34px;display:flex;flex-direction:column}
+    .founder .avatar{width:72px;height:72px;border-radius:50%;background:linear-gradient(135deg,var(--navy),var(--teal));display:flex;align-items:center;justify-content:center;font-family:var(--heading-font);font-weight:900;color:#fff;font-size:26px;margin-bottom:18px}
+    .founder .role{font-family:var(--heading-font);font-weight:800;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--teal-text)}
+    .founder h3{font-size:23px;margin:6px 0 10px}
+    .founder p{font-size:15.5px;color:var(--body);margin-bottom:10px}
+    .founder .links{margin-top:auto;padding-top:12px}
+    .founder .links a{margin-left:16px;font-size:14.5px}
+    </style>
+    </head>
+    <body>
+
+    <header class="hero short">
+      <div class="glow g1"></div><div class="glow g2"></div>
+      <div class="wrap">
+        <div class="logo anim d1" style="color:#fff;margin-bottom:22px">G<span class="socket"></span>mpha</div>
+        <h1 class="anim d2">الأشخاص وراء جومفا</h1>
+        <p class="tagline anim d3">يبني جومفا فريق صغير يجلس فعلاً في العيادة — بانٍ يشحن البرنامج، وطبيب يدير الكرسي الذي صُمِّم على شكله.</p>
+      </div>
+    </header>
+
+    <section>
+      <div class="wrap">
+        <div class="founder-grid stagger">
+          <div class="founder">
+            <div class="avatar">S</div>
+            <span class="role">مؤسّس · يبني المنتج</span>
+            <h3>Stefanos Kostikidis</h3>
+            <p>بنى ستيفانوس جومفا بالكامل — التطبيق الذي يستخدمه الأطباء والاستقبال كل يوم، والخوادم التي يعمل عليها — ويُبقيه يعمل. مهندس عصامي بخلفية عشرين عاماً في إدارة عمليات ميدانية حقيقية، يبني برمجيات لعيادات حقيقية، لا لورقة مواصفات.</p>
+            <p>طريقته بسيطة: أبقِه صادقاً، أبقِه موثوقاً، وحُلّ المشكلة الحقيقية — لا أول ما يبدو سهلاً.</p>
+            <div class="links">
+              <a href="https://github.com/Steficzko/homelab">الحافظة (GitOps عام) ←</a>
+              <a href="https://kostikidis.net">kostikidis.net</a>
+              <a href="mailto:kostikidis.network@gmail.com">البريد</a>
+            </div>
+          </div>
+          <div class="founder">
+            <div class="avatar">A</div>
+            <span class="role">شريك مؤسّس · سريري</span>
+            <h3>د. علي عدنان</h3>
+            <p>جرّاح فم وشريك في ملكية <strong>عيادة بلانكا للأسنان</strong> في أربيل — عيادة جومفا التجريبية. يشكّل كل قرار سريري في التطبيق — مخطط الأسنان، ومخطط اللثة، وسجل الاتفاقات، وكيف يعمل الكرسي يوماً بيوم.</p>
+            <ul style="list-style:none;margin:0 0 4px;color:var(--body);font-size:14.5px">
+              <li>▪️ ماجستير جراحة الفم — جامعة UIC برشلونة</li>
+              <li>▪️ معتمد من EAO في زراعة الأسنان</li>
+            </ul>
+            <div class="links">
+              <a href="https://www.linkedin.com/in/ali-adnan-49469774">لينكدإن ←</a>
+              <a href="mailto:aliadnan@uic.es">aliadnan@uic.es</a>
+            </div>
+          </div>
+        </div>
+
+        <p style="text-align:center;max-width:640px;margin:44px auto 0;color:var(--body);font-size:16px">
+          <strong>من بناه:</strong> صُمِّم جومفا وطُوِّر بواسطة Stefanos Kostikidis، بشراكة وثيقة مع د. علي عدنان، صاحب أول عيادة يعمل فيها.
+        </p>
+        <p style="text-align:center;margin:22px auto 0"><a href="founders.html">English</a></p>
+      </div>
+    </section>
+
+    <footer>
+      <div class="wrap">
+        <div class="base" style="border:none">© 2026 جومفا · عيادتك، راسخة.</div>
+      </div>
+    </footer>
+
+    <script src="reveal.js?v=5"></script>
+    </body>
+    </html>
   founders.html: |
     <!DOCTYPE html>
     <html lang="en" class="no-js">
@@ -259,8 +342,8 @@ data:
     rel=\"stylesheet\">\n<link rel=\"stylesheet\" href=\"style.css?v=5\">\n</head>\n<body>\n\n<nav>\n
     \ <div class=\"wrap nav-in\">\n    <div class=\"logo\"><a href=\"index.ar.html\">G<span
     class=\"socket\"></span>mpha</a></div>\n    <div class=\"nav-links\">\n      <a
-    href=\"index.ar.html#capabilities\">المزايا</a>\n      <a href=\"roadmap.html\">خارطة
-    الطريق</a>\n      <a href=\"scale.html\">التوسّع والملكية</a>\n      <a href=\"safety.html\">أمان
+    href=\"index.ar.html#capabilities\">المزايا</a>\n      <a href=\"roadmap.ar.html\">خارطة
+    الطريق</a>\n      <a href=\"scale.ar.html\">التوسّع والملكية</a>\n      <a href=\"safety.ar.html\">أمان
     البيانات</a>\n      <a href=\"index.ar.html#demos\">تجارب حيّة</a>\n      <a href=\"index.html\"
     class=\"langtoggle\">EN</a>\n      <a href=\"mailto:hello@gompha.com\" class=\"btn
     btn-primary\" style=\"padding:10px 20px\">تواصل معنا</a>\n    </div>\n  </div>\n</nav>\n\n<!--
@@ -271,7 +354,7 @@ data:
     راسخة.</h1>\n      <p class=\"tagline anim d3\">يجمع جومفا مخطط أسنانك، ومواعيدك،
     وكل حالة، وكل اتفاق سعر في سجل واحد — ويتذكّر من وافق على السعر ولماذا. لا شيء
     يضيع، ولا شيء يُنسى.</p>\n      <div class=\"cta-row anim d4\">\n        <a href=\"index.ar.html#demos\"
-    class=\"btn btn-primary\">جرّب تجربة حيّة</a>\n        <a href=\"roadmap.html\"
+    class=\"btn btn-primary\">جرّب تجربة حيّة</a>\n        <a href=\"roadmap.ar.html\"
     class=\"btn btn-ghost\">← اطّلع على خارطة الطريق</a>\n      </div>\n      <p class=\"trust
     anim d4\">مصمَّم لأسواق النقد والمساومة — حيث السعر حوار، لا قائمة ثابتة.</p>\n
     \   </div>\n    <div class=\"appwin anim d3\">\n      <div class=\"appwin-bar\"><span
@@ -871,7 +954,7 @@ data:
     \ <div class=\"wrap\">\n    <div class=\"sec-head reveal\">\n      <span class=\"eyebrow\">ماذا
     يفعل</span>\n      <h2>نظام إدارة على شكل كرسيّك، لا جدول بيانات</h2>\n      <p>كل
     ما تحتاجه عيادة حديثة — مع الأجزاء التي نسيتها البرمجيات الغربية. كل ما يلي <strong>متاح
-    اليوم</strong>. وما هو قادم على <a href=\"roadmap.html\">خارطة الطريق</a>.</p>\n
+    اليوم</strong>. وما هو قادم على <a href=\"roadmap.ar.html\">خارطة الطريق</a>.</p>\n
     \   </div>\n    <div class=\"feat-grid stagger\">\n      <div class=\"feat\"><span
     class=\"ico\">\U0001F9B7</span><h3>مخطط أسنان ثنائي الطبقة <span class=\"ship\">متاح</span></h3><p>مخطط
     أسنان حقيقي: أعمال التاج والجذر وحالة السن عبر الزمن — مع مخطط لبنيّ للأطفال وتاريخ
@@ -910,7 +993,7 @@ data:
     حيّة ←</a></p></div>\n      <div class=\"feat\"><span class=\"ico\">\U0001F4E6</span><h3>تصدير
     واستيراد بياناتك <span class=\"ship new\">جديد</span></h3><p>خذ عيادتك كاملة معك
     — تصدير ذاتي إلى حزمة قابلة للنقل، واستيراد بمساعدة المزوّد إلى مستأجر جديد. بياناتك
-    لا تُحتجَز أبداً. راجع <a href=\"scale.html\">التوسّع والملكية</a>.</p></div>\n
+    لا تُحتجَز أبداً. راجع <a href=\"scale.ar.html\">التوسّع والملكية</a>.</p></div>\n
     \     <div class=\"feat\"><span class=\"ico\">\U0001F5E3️</span><h3>الصوت ← ملاحظة
     الاتفاق <span class=\"ship soon\">مخطّط له</span></h3><p>أملِ ملاحظة بجانب الكرسي
     ← لقاء واتفاق مُنظَّمان، ويداك على المريض. الميزة الحصينة — مُحدَّدة، لم تُبنَ
@@ -936,12 +1019,13 @@ data:
     \       <div class=\"logo\">G<span class=\"socket\"></span>mpha</div>\n        <p
     style=\"margin-top:10px;color:#a7bcda\">عيادتك، راسخة. كل سِنّ مُتابَع. كل اتفاق
     محفوظ.</p>\n      </div>\n      <div class=\"fcol\">\n        <h5>المنتج</h5>\n
-    \       <a href=\"index.ar.html#capabilities\">المزايا</a>\n        <a href=\"roadmap.html\">خارطة
-    الطريق</a>\n        <a href=\"scale.html\">التوسّع والملكية</a>\n        <a href=\"safety.html\">أمان
-    البيانات</a>\n      </div>\n      <div class=\"fcol\">\n        <h5>جرّبه</h5>\n
-    \       <a href=\"https://demo.gompha.com\">تجربة العيادة</a>\n        <a href=\"https://demosolo.gompha.com\">التجربة
-    الفردية</a>\n        <a href=\"mailto:hello@gompha.com\">تواصل معنا</a>\n      </div>\n
-    \     <div class=\"fcol\">\n        <h5>تواصل</h5>\n        <a href=\"mailto:hello@gompha.com\">hello@gompha.com</a>\n
+    \       <a href=\"index.ar.html#capabilities\">المزايا</a>\n        <a href=\"roadmap.ar.html\">خارطة
+    الطريق</a>\n        <a href=\"scale.ar.html\">التوسّع والملكية</a>\n        <a
+    href=\"safety.ar.html\">أمان البيانات</a>\n      </div>\n      <div class=\"fcol\">\n
+    \       <h5>جرّبه</h5>\n        <a href=\"https://demo.gompha.com\">تجربة العيادة</a>\n
+    \       <a href=\"https://demosolo.gompha.com\">التجربة الفردية</a>\n        <a
+    href=\"mailto:hello@gompha.com\">تواصل معنا</a>\n      </div>\n      <div class=\"fcol\">\n
+    \       <h5>تواصل</h5>\n        <a href=\"mailto:hello@gompha.com\">hello@gompha.com</a>\n
     \       <a href=\"index.html\">English site</a>\n      </div>\n    </div>\n    <div
     class=\"base\">© 2026 جومفا · عيادتك، راسخة.</div>\n  </div>\n</footer>\n\n<script
     src=\"reveal.js?v=5\"></script>\n<script src=\"heroanim.js?v=5\"></script>\n</body>\n</html>\n"
@@ -1993,6 +2077,128 @@ data:
       }, { threshold: 0.12, rootMargin: '0px 0px -8% 0px' });
       els.forEach(function(e){ io.observe(e); });
     })();
+  roadmap.ar.html: "<!DOCTYPE html>\n<html lang=\"ar\" dir=\"rtl\" class=\"no-js\">\n<head>\n<meta
+    charset=\"UTF-8\">\n<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n<meta
+    name=\"robots\" content=\"noindex\">\n<title>خارطة الطريق — جومفا</title>\n<meta
+    name=\"description\" content=\"ما أُطلق، وما يُبنى الآن، وما هو قادم في جومفا
+    — نظام إدارة عيادات الأسنان. خارطة طريق صادقة بين المُنجَز والمخطَّط.\">\n<link
+    rel=\"preconnect\" href=\"https://fonts.googleapis.com\">\n<link rel=\"preconnect\"
+    href=\"https://fonts.gstatic.com\" crossorigin>\n<link href=\"https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&display=swap\"
+    rel=\"stylesheet\">\n<link rel=\"stylesheet\" href=\"style.css?v=5\">\n</head>\n<body>\n\n<nav>\n
+    \ <div class=\"wrap nav-in\">\n    <div class=\"logo\"><a href=\"index.ar.html\">G<span
+    class=\"socket\"></span>mpha</a></div>\n    <div class=\"nav-links\">\n      <a
+    href=\"index.ar.html#capabilities\">المزايا</a>\n      <a href=\"roadmap.ar.html\"
+    class=\"active\">خارطة الطريق</a>\n      <a href=\"scale.ar.html\">التوسّع والملكية</a>\n
+    \     <a href=\"safety.ar.html\">أمان البيانات</a>\n      <a href=\"index.ar.html#demos\">تجارب
+    حيّة</a>\n      <a href=\"roadmap.html\" class=\"langtoggle\">EN</a>\n      <a
+    href=\"mailto:hello@gompha.com\" class=\"btn btn-primary\" style=\"padding:10px
+    20px\">تواصل معنا</a>\n    </div>\n  </div>\n</nav>\n\n<header class=\"hero short\">\n
+    \ <div class=\"glow g1\"></div><div class=\"glow g2\"></div>\n  <div class=\"wrap\">\n
+    \   <span class=\"pill anim d1\">\U0001F9B7 <span>قيد التشغيل حالياً: <b>v0.27.0</b></span></span>\n
+    \   <h1 class=\"anim d2\">خارطة الطريق</h1>\n    <p class=\"tagline anim d3\">كل
+    ما يفعله جومفا اليوم، وما نبنيه الآن، وما هو قادم — موسوماً بصدق. إن كُتب <em>مخطّط
+    له</em> فهو لم يُبنَ بعد. لا وعود زائفة في عمود «المُطلَق».</p>\n  </div>\n</header>\n\n<section
+    class=\"tight\">\n  <div class=\"wrap\">\n    <div class=\"tl-legend reveal\">\n
+    \     <span><i class=\"dot done\"></i> مُطلَق وحيّ</span>\n      <span><i class=\"dot
+    build\"></i> قيد البناء الآن</span>\n      <span><i class=\"dot plan\"></i> مخطّط
+    له / التالي</span>\n    </div>\n\n    <!-- SHIPPED -->\n    <div class=\"phase
+    reveal\">\n      <h2><span class=\"badge done\">مُطلَق</span> مُتاح اليوم في عيادة
+    حقيقية</h2>\n      <p class=\"lede\">يعمل في الإنتاج على النسخة v0.27.0 — أكثر
+    من عشرين إصداراً دون انحراف. هذا هو البرنامج الذي يمكنك الدخول إليه الآن.</p>\n
+    \     <ul class=\"tl\">\n        <li class=\"done\"><span class=\"ver\">v0.4 ·
+    المخطط</span><h4>مخطط أسنان ثنائي الطبقة</h4><p>أعمال التاج والجذر وحالة كل سِنّ
+    عبر الزمن، بألوان تميّز كل طبيب. لاحقاً: مخطط لبنيّ للأطفال وتاريخ كامل (v0.15).</p></li>\n
+    \       <li class=\"done\"><span class=\"ver\">أساس · الميزة</span><h4>سجل الاتفاقات</h4><p>كل
+    رسم يحفظ السعر المتفق عليه مقابل القياسي، ومن وافق على الخصم، والسبب بكلمات واضحة.
+    يصبح التفاوض بيانات على مستوى العيادة.</p></li>\n        <li class=\"done\"><span
+    class=\"ver\">v0.5 · اللثة والمخزون</span><h4>مخطط اللثة والحد الأدنى للتكلفة</h4><p>أعماق
+    الجيوب لكل زيارة كمنحنى؛ المواد مرتبطة بالإجراءات فتُظهر كل حالة حدها الأدنى الحقيقي
+    للتكلفة — خط مساومتك الصادق.</p></li>\n        <li class=\"done\"><span class=\"ver\">v0.6
+    ← v0.20 · الجدولة</span><h4>جدولة مصمَّمة لكرسي حقيقي</h4><p>عرض يومي بشبكة الغرف
+    مع حماية صارمة من الحجز المزدوج، وجدار أسبوعي بانورامي (7 أعمدة)، وتتبّع وصول
+    المرضى والانضباط، ونسخة استقبال للهاتف.</p></li>\n        <li class=\"done\"><span
+    class=\"ver\">v0.8 · المخزون</span><h4>إدارة المخزون</h4><p>عبوات وقطع، تكلفة
+    مثبّتة الصرف لا تتغير عند الجرد، ملكية لكل طبيب أو للعيادة، صلاحية ودفعات وتنبيهات
+    نفاد.</p></li>\n        <li class=\"done\"><span class=\"ver\">v0.6 ← v0.17 ·
+    الحالات</span><h4>إجراءات لكل حالة ومستندات للطباعة</h4><p>حالات مبنية من بنود
+    إجراءات بكتالوج لكل طبيب؛ تتبّع متعدد الجلسات؛ خطة علاج وميزانية وملاحظة تأمين
+    قابلة للطباعة؛ استمارة طبية.</p></li>\n        <li class=\"done\"><span class=\"ver\">v0.16
+    · المالية</span><h4>نسب الدخل وأرباح الشراكة</h4><p>نسب الدخل لكل طبيب وشاشة أرباح،
+    مع جدران خصوصية تُبقي أرقام كل طبيب له. مال إضافي-فقط، إلغاء فقط، أرصدة صادقة.</p></li>\n
+    \       <li class=\"done\"><span class=\"ver\">أساس · واقع المال</span><h4>عملة
+    مزدوجة بإتقان</h4><p>دينار + دولار مع «سعر صرف اليوم». كل سطر يحفظ مبلغه وعملته
+    والسعر المستخدم — لا تنحرف المجاميع عند تغيّر السعر.</p></li>\n        <li class=\"done\"><span
+    class=\"ver\">v0.7 · الأدوار</span><h4>واجهات على شكل الدور، قاعدة كود واحدة</h4><p>الطبيب
+    سريري على الهاتف، الاستقبال جدولة على الويب، المدير إعداد ومال، ودور صيانة معزول
+    عن كل بيانات المرضى بمنع افتراضي.</p></li>\n        <li class=\"done\"><span class=\"ver\">v0.22
+    · الجلسات</span><h4>إدارة الجلسات وأجهزتك</h4><p>مدد جلسات حسب الدور، وتسجيل الأجهزة،
+    ولوحة «أجهزتك» — سجّل خروج هاتف مفقود من أي مكان. دُقّق أمنياً قبل الإطلاق.</p></li>\n
+    \       <li class=\"done\"><span class=\"ver\">v0.21 · التذكير</span><h4>تذكير
+    المواعيد بلمسة</h4><p>يضغط الاستقبال على مريض ليرسل تذكيراً عبر واتساب أو فايبر
+    أو اتصال — يختار واتساب افتراضياً عند وجود رقم.</p></li>\n        <li class=\"done\"><span
+    class=\"ver\">بنية · الأمان</span><h4>نسخ احتياطي مشفّر وعزل المستأجرين</h4><p>نسخ
+    احتياطي مشفّر كل ساعة؛ أمان على مستوى الصف مفروض على كل جدول، فلا ترى أي عيادة
+    بيانات أخرى.</p></li>\n        <li class=\"done\"><span class=\"ver\">v0.24 ·
+    الوضع الفردي</span><h4>الوضع الفردي</h4><p>إعداد واحد يطوي آليات تعدد المستخدمين
+    — اختيار الأدوار وتقسيمات الأطباء والاستقبال — لعيادة فردية نظيفة. حيّ، مع <a
+    href=\"https://demosolo.gompha.com\">تجربته العامة</a> (v0.27).</p></li>\n        <li
+    class=\"done\"><span class=\"ver\">v0.25 · قابلية النقل</span><h4>تصدير واستيراد
+    بياناتك</h4><p>تصدير ذاتي لعيادتك كاملة إلى حزمة قابلة للنقل، واستيراد بمساعدة
+    المزوّد إلى مستأجر جديد — مراجع مُعاد ربطها، ومال حرفي. «غادر عيادة وخذ بياناتك».
+    <a href=\"scale.ar.html\">التفاصيل ←</a></p></li>\n      </ul>\n    </div>\n\n
+    \   <!-- BUILDING -->\n    <div class=\"phase reveal\">\n      <h2><span class=\"badge
+    build\">قيد البناء</span> قيد التنفيذ الآن</h2>\n      <p class=\"lede\">المواصفات
+    مُثبَّتة، بُنيت جزئياً، تصل في الإصدارات القادمة.</p>\n      <ul class=\"tl\">\n
+    \       <li class=\"build\"><span class=\"ver\">المخطط v2</span><h4>مخطط سريري
+    أغنى</h4><p>امتدادات تقويم (مثبّت / سلك / شفاف)، حالة علاج مخطّط له، أسنان شبحية
+    للأسنان المختلطة، وتسليم طلب طباعة من الطبيب إلى الاستقبال. أولى القطع تُطلق.</p></li>\n
+    \       <li class=\"build\"><span class=\"ver\">تعزيز الدخول</span><h4>أجهزة موثوقة،
+    PIN وOTP</h4><p>رمز PIN لكل موظف، رمز OTP بالبريد على جهاز جديد، ذاكرة أجهزة موثوقة
+    وفحص ضد الآليات — مع سجل لمن حجز ومن استلم كل دفعة.</p></li>\n        <li class=\"build\"><span
+    class=\"ver\">قابلية النقل v2</span><h4>شريحة بيانات لطبيب واحد</h4><p>تصدير/استيراد
+    العيادة كاملة متاح؛ التالي تصدير شريحة طبيب واحد (مرضاه وتاريخه) بموافقة المالك،
+    ليأخذ الطبيب المغادر نصيبه.</p></li>\n        <li class=\"build\"><span class=\"ver\">التعريب</span><h4>الترجمة
+    العربية</h4><p>مبدّل العربية/الاتجاه متاح؛ استكمال الترجمة الكاملة جارٍ.</p></li>\n
+    \     </ul>\n    </div>\n\n    <!-- PLANNED -->\n    <div class=\"phase reveal\">\n
+    \     <h2><span class=\"badge plan\">مخطّط له</span> ما هو قادم</h2>\n      <p
+    class=\"lede\">مُصمَّم وعلى اللوحة — لم يُبنَ بعد. مذكور لترى إلى أين يتجه جومفا،
+    لا ما يدّعيه.</p>\n      <ul class=\"tl\">\n        <li class=\"plan\"><span class=\"ver\">الجوهرة</span><h4>الصوت
+    ← ملاحظة الاتفاق</h4><p>أملِ ملاحظة بجانب الكرسي بكلماتك ← لقاء واتفاق مُنظَّمان،
+    مع سبب الخصم والموعد التالي مُستخرَجَين. يداك على المريض. الميزة الحصينة الأبرز
+    — وبلا كود اليوم.</p></li>\n        <li class=\"plan\"><span class=\"ver\">التصوير</span><h4>عارض
+    الأشعة والصور داخل التطبيق</h4><p>معرّفات الصور مرتبطة بالسجل؛ العارض على البطاقة
+    الذي يجلب الصورة من خادم صورك المحلي لم يُبنَ بعد.</p></li>\n        <li class=\"plan\"><span
+    class=\"ver\">الإعداد</span><h4>إعداد عيادة ذاتي</h4><p>معالج موجَّه ينشئ عيادة
+    جديدة — غرف وأطباء وكتالوج — دون أمر يدوي.</p></li>\n        <li class=\"plan\"><span
+    class=\"ver\">المخزون المرحلة 2</span><h4>وصفات الإجراءات والخصم التلقائي</h4><p>عرّف
+    وصفة مواد كل إجراء مرة واحدة؛ يُخصم المخزون تلقائياً مع إنجاز الحالات.</p></li>\n
+    \       <li class=\"plan\"><span class=\"ver\">تجاري</span><h4>علامة بيضاء واستضافة
+    ذاتية</h4><p>علامتك وألوانك ونطاقك؛ وخيار على خادمك الخاص لمن يريد — مع ترخيص
+    مناسب.</p></li>\n        <li class=\"plan\"><span class=\"ver\">النمو</span><h4>تسجيل
+    المرضى بـ QR والاستدعاء</h4><p>يمسح المريض رمز QR ليحجز؛ تذكير قبل الليلة واستدعاء
+    جماعي حين يتوفر حساب مراسلة موثّق.</p></li>\n        <li class=\"plan\"><span
+    class=\"ver\">التوسّع</span><h4>التوسّع إلى الخليج</h4><p>العراق ميدان الإثبات.
+    الخليج — حيث للعيادات قنوات بطاقات وتدفع لأنظمة الإدارة دون تردد — هو الوجهة التالية.</p></li>\n
+    \     </ul>\n    </div>\n  </div>\n</section>\n\n<!-- CTA STRIP -->\n<section
+    class=\"strip\">\n  <div class=\"wrap reveal\">\n    <h2>تريد رأياً فيما يُطلق
+    تالياً؟</h2>\n    <p>العيادات المؤسِّسة تشكّل خارطة الطريق. أخبرنا بما يحتاجه
+    كرسيك فعلاً.</p>\n    <div class=\"cta-row\">\n      <a href=\"index.ar.html#demos\"
+    class=\"btn btn-primary\">جرّب تجربة حيّة</a>\n      <a href=\"mailto:hello@gompha.com\"
+    class=\"btn btn-gold\">تواصل معنا</a>\n    </div>\n  </div>\n</section>\n\n<footer>\n
+    \ <div class=\"wrap\">\n    <div class=\"fcols\">\n      <div class=\"fcol\" style=\"max-width:280px\">\n
+    \       <div class=\"logo\">G<span class=\"socket\"></span>mpha</div>\n        <p
+    style=\"margin-top:10px;color:#a7bcda\">عيادتك، راسخة. كل سِنّ مُتابَع. كل اتفاق
+    محفوظ.</p>\n      </div>\n      <div class=\"fcol\">\n        <h5>المنتج</h5>\n
+    \       <a href=\"index.ar.html#capabilities\">المزايا</a>\n        <a href=\"roadmap.ar.html\">خارطة
+    الطريق</a>\n        <a href=\"scale.ar.html\">التوسّع والملكية</a>\n        <a
+    href=\"safety.ar.html\">أمان البيانات</a>\n      </div>\n      <div class=\"fcol\">\n
+    \       <h5>جرّبه</h5>\n        <a href=\"https://demo.gompha.com\">تجربة العيادة</a>\n
+    \       <a href=\"https://demosolo.gompha.com\">التجربة الفردية</a>\n        <a
+    href=\"mailto:hello@gompha.com\">تواصل معنا</a>\n      </div>\n      <div class=\"fcol\">\n
+    \       <h5>تواصل</h5>\n        <a href=\"mailto:hello@gompha.com\">hello@gompha.com</a>\n
+    \       <a href=\"index.html\">English site</a>\n      </div>\n    </div>\n    <div
+    class=\"base\">© 2026 جومفا · عيادتك، راسخة.</div>\n  </div>\n</footer>\n\n<script
+    src=\"reveal.js?v=5\"></script>\n</body>\n</html>\n"
   roadmap.html: "<!DOCTYPE html>\n<html lang=\"en\" class=\"no-js\">\n<head>\n<meta
     charset=\"UTF-8\">\n<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n<meta
     name=\"robots\" content=\"noindex\">\n<title>Roadmap — Gompha</title>\n<meta name=\"description\"
@@ -2006,12 +2212,13 @@ data:
     href=\"index.html#capabilities\">Capabilities</a>\n      <a href=\"roadmap.html\"
     class=\"active\">Roadmap</a>\n      <a href=\"scale.html\">Scaling &amp; ownership</a>\n
     \     <a href=\"safety.html\">Data safety</a>\n      <a href=\"index.html#demos\">Live
-    demos</a>\n      <a href=\"mailto:hello@gompha.com\" class=\"btn btn-primary\"
-    style=\"padding:10px 20px\">Get in touch</a>\n    </div>\n  </div>\n</nav>\n\n<header
-    class=\"hero short\">\n  <div class=\"glow g1\"></div><div class=\"glow g2\"></div>\n
-    \ <div class=\"wrap\">\n    <span class=\"pill anim d1\">\U0001F9B7 <span>Currently
-    live: <b>v0.27.0</b></span></span>\n    <h1 class=\"anim d2\">The roadmap</h1>\n
-    \   <p class=\"tagline anim d3\">Everything Gompha can do today, what we're building
+    demos</a>\n      <a href=\"roadmap.ar.html\" class=\"langtoggle\">ع</a>\n      <a
+    href=\"mailto:hello@gompha.com\" class=\"btn btn-primary\" style=\"padding:10px
+    20px\">Get in touch</a>\n    </div>\n  </div>\n</nav>\n\n<header class=\"hero
+    short\">\n  <div class=\"glow g1\"></div><div class=\"glow g2\"></div>\n  <div
+    class=\"wrap\">\n    <span class=\"pill anim d1\">\U0001F9B7 <span>Currently live:
+    <b>v0.27.0</b></span></span>\n    <h1 class=\"anim d2\">The roadmap</h1>\n    <p
+    class=\"tagline anim d3\">Everything Gompha can do today, what we're building
     right now, and what's next — labelled honestly. If it says <em>Planned</em>, it
     isn't built yet. No vaporware in the \"shipped\" column.</p>\n  </div>\n</header>\n\n<section
     class=\"tight\">\n  <div class=\"wrap\">\n    <div class=\"tl-legend reveal\">\n
@@ -2126,6 +2333,99 @@ data:
     \       <a href=\"mailto:hello@gompha.com\">Book a walkthrough</a>\n      </div>\n
     \   </div>\n    <div class=\"base\">© 2026 Gompha · Your practice, anchored.</div>\n
     \ </div>\n</footer>\n\n<script src=\"reveal.js?v=5\"></script>\n</body>\n</html>\n"
+  safety.ar.html: "<!DOCTYPE html>\n<html lang=\"ar\" dir=\"rtl\" class=\"no-js\">\n<head>\n<meta
+    charset=\"UTF-8\">\n<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n<meta
+    name=\"robots\" content=\"noindex\">\n<title>أمان البيانات — جومفا</title>\n<meta
+    name=\"description\" content=\"كيف يحافظ جومفا على أمان بيانات عيادتك: عزل صارم
+    للمستأجرين، نسخ احتياطي مشفّر، وصول محجوز حسب الدور، تحكّم بالجلسات، ووعد بعدم
+    الاحتجاز.\">\n<link rel=\"preconnect\" href=\"https://fonts.googleapis.com\">\n<link
+    rel=\"preconnect\" href=\"https://fonts.gstatic.com\" crossorigin>\n<link href=\"https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&display=swap\"
+    rel=\"stylesheet\">\n<link rel=\"stylesheet\" href=\"style.css?v=5\">\n</head>\n<body>\n\n<nav>\n
+    \ <div class=\"wrap nav-in\">\n    <div class=\"logo\"><a href=\"index.ar.html\">G<span
+    class=\"socket\"></span>mpha</a></div>\n    <div class=\"nav-links\">\n      <a
+    href=\"index.ar.html#capabilities\">المزايا</a>\n      <a href=\"roadmap.ar.html\">خارطة
+    الطريق</a>\n      <a href=\"scale.ar.html\">التوسّع والملكية</a>\n      <a href=\"safety.ar.html\"
+    class=\"active\">أمان البيانات</a>\n      <a href=\"index.ar.html#demos\">تجارب
+    حيّة</a>\n      <a href=\"safety.html\" class=\"langtoggle\">EN</a>\n      <a
+    href=\"mailto:hello@gompha.com\" class=\"btn btn-primary\" style=\"padding:10px
+    20px\">تواصل معنا</a>\n    </div>\n  </div>\n</nav>\n\n<header class=\"hero short\">\n
+    \ <div class=\"glow g1\"></div><div class=\"glow g2\"></div>\n  <div class=\"wrap\">\n
+    \   <span class=\"pill anim d1\">\U0001F512 <span>بيانات عيادتك، تبقى لك</span></span>\n
+    \   <h1 class=\"anim d2\">أمان البيانات</h1>\n    <p class=\"tagline anim d3\">سجلات
+    المرضى أكثر ما تملكه العيادة حساسية. بُني جومفا بحيث تكون بياناتك معزولة عن كل
+    عيادة أخرى، ومنسوخة احتياطياً، ومحجوزة حسب الدور، ولا تُحتجَز أبداً — وإليك كيف
+    بالضبط.</p>\n  </div>\n</header>\n\n<!-- CORE GUARANTEES -->\n<section>\n  <div
+    class=\"wrap\">\n    <div class=\"sec-head reveal\">\n      <span class=\"eyebrow\">الأسس</span>\n
+    \     <h2>أربعة أشياء لا نساوم عليها</h2>\n      <p>هذه حيّة في البرنامج اليوم
+    — لا صفحة سياسات، بل كيف بُني فعلاً.</p>\n    </div>\n    <div class=\"feat-grid
+    stagger\">\n      <div class=\"feat\"><span class=\"ico\">\U0001F9F1</span><h3>عزل
+    صارم للمستأجرين <span class=\"ship\">حيّ</span></h3><p>كل عيادة مستأجر خاص بها
+    على نطاق فرعي خاص، مع أمان على مستوى الصف مفروض في قاعدة البيانات نفسها. لا تستطيع
+    عيادة حرفياً الاستعلام عن سجلات عيادة أخرى — مفروض تحت التطبيق، لا داخله فقط.</p></div>\n
+    \     <div class=\"feat\"><span class=\"ico\">\U0001F5C4️</span><h3>نسخ احتياطي
+    مشفّر <span class=\"ship\">حيّ</span></h3><p>تُنسخ بياناتك كل ساعة، مشفّرة بمفتاح
+    age حديث قبل أن تغادر الخادم، ومخزّنة خارج الجهاز الرئيسي. اليوم السيّئ لا يعني
+    عيادة ضائعة.</p></div>\n      <div class=\"feat\"><span class=\"ico\">\U0001F6AA</span><h3>وصول
+    محجوز حسب الدور <span class=\"ship\">حيّ</span></h3><p>يرى الناس ما يحتاجه عملهم
+    فقط. الصيانة تُعِدّ البرنامج بـ<em>صفر</em> وصول لأي بيانات مرضى؛ الاستقبال يستلم
+    المال لكن لا يرى مجاميع العيادة؛ وأرباح كل طبيب تبقى له.</p></div>\n      <div
+    class=\"feat\"><span class=\"ico\">\U0001F4F1</span><h3>تحكّم بالجلسات والأجهزة
+    <span class=\"ship\">حيّ</span></h3><p>تنتهي الجلسات حسب الدور، ويُسجَّل كل جهاز،
+    ولوحة «أجهزتك» تتيح لك تسجيل خروج هاتف مفقود أو مسروق من أي مكان — فوراً.</p></div>\n
+    \   </div>\n  </div>\n</section>\n\n<!-- NO HOSTAGE -->\n<section style=\"background:var(--bg-alt)\">\n
+    \ <div class=\"wrap\">\n    <div class=\"spot reveal\">\n      <div>\n        <span
+    class=\"moat\">الوعد</span>\n        <h2>بياناتك لا تُحتجَز أبداً</h2>\n        <p>إن
+    توقفت يوماً عن الدفع، تتوقف الكتابة — لكن يمكنك دائماً <em>قراءة</em> عيادتك كاملة.
+    حتى الحساب المُعلَّق أو المنتهي يحتفظ بقراءة كاملة لكل سجل. لا أحد يحبسك عن تاريخك
+    لإجبارك على التجديد.</p>\n        <p>ويمكنك أخذها معك: التصدير الذاتي لعيادتك
+    كاملة والاستيراد النظيف إلى مستأجر جديد <span class=\"ship\">حيّان الآن</span>.
+    القصة كاملة في <a href=\"scale.ar.html\">التوسّع والملكية</a>.</p>\n        <a
+    href=\"mailto:hello@gompha.com\" class=\"btn btn-gold\">اسألنا أي شيء عنها</a>\n
+    \     </div>\n      <div class=\"sheet\">\n        <div class=\"row\"><span class=\"k\">قراءة
+    سجلاتك</span><span class=\"agreed\">دائماً — حتى دون دفع</span></div>\n        <div
+    class=\"row\"><span class=\"k\">النسخ الاحتياطي</span><span class=\"v\">كل ساعة
+    · مشفّر · خارج الجهاز</span></div>\n        <div class=\"row\"><span class=\"k\">عزل
+    العيادة</span><span class=\"v\">مستوى الصف، مفروض بقاعدة البيانات</span></div>\n
+    \       <div class=\"row\"><span class=\"k\">تصدير بياناتك</span><span class=\"v\">حيّ
+    — تصدير ذاتي</span></div>\n        <div class=\"row\"><span class=\"k\">كلمات
+    المرور / الأسرار</span><span class=\"v\">مُجزّأة · لا تُصدَّر أبداً</span></div>\n
+    \     </div>\n    </div>\n  </div>\n</section>\n\n<!-- HOW MONEY & RECORDS ARE
+    PROTECTED -->\n<section>\n  <div class=\"wrap\">\n    <div class=\"sec-head reveal\">\n
+    \     <span class=\"eyebrow\">تحت الغطاء</span>\n      <h2>سجلات لا تتغيّر عليك
+    بصمت</h2>\n      <p>الثقة بنظام عيادة تأتي من معرفة أن التاريخ صادق وأن الحدود
+    صامدة.</p>\n    </div>\n    <div class=\"id-grid stagger\">\n      <div class=\"id-card\"><span
+    class=\"tag\">حيّ</span><h3>مال إضافي-فقط</h3><p>المدفوعات لا تُعدَّل ولا تُحذف
+    — بل تُلغى تاركةً أثراً. الأرصدة مُشتقّة، فلا ينحرف السجل بصمت.</p></div>\n      <div
+    class=\"id-card\"><span class=\"tag\">حيّ</span><h3>جدران خصوصية المال</h3><p>من
+    يرى المجاميع والتكاليف والأرباح مفروض حسب الدور — يسجّل الاستقبال دفعة دون أن
+    يرى أرقام العيادة أبداً.</p></div>\n      <div class=\"id-card\"><span class=\"tag\">حيّ</span><h3>موافقة
+    على المشاركة</h3><p>المرضى ملك لطبيب؛ ولا يصل طبيب آخر إلا عبر طلب يوافق عليه
+    المالك — مُقيَّد ومُدقَّق، لا مفتوح افتراضياً.</p></div>\n      <div class=\"id-card\"><span
+    class=\"tag\">قيد البناء</span><h3>سجل مَن فعل ماذا</h3><p>سجل نشاط لكل موظف —
+    من حجز، ومن استلم كل دفعة — فتكون المساءلة في السجل، لا في الذاكرة.</p></div>\n
+    \   </div>\n    <p class=\"indicative\" style=\"max-width:680px;margin:40px auto
+    0\">بُني جومفا لسوق نقدي واقعي — نركّز على الأمان الملموس (العزل، التشفير، النسخ
+    الاحتياطي، الوصول المحجوز)، لا على أوراق الامتثال. لديك سؤال أمني محدّد لعيادتك؟
+    <a href=\"mailto:hello@gompha.com\">اسأل فقط.</a></p>\n  </div>\n</section>\n\n<!--
+    CTA STRIP -->\n<section class=\"strip\">\n  <div class=\"wrap reveal\">\n    <h2>آمن
+    بما يكفي لتأتمنه على عيادتك كاملة</h2>\n    <p>شاهده يعمل ببيانات حقيقية — ثم
+    اسألنا الأسئلة الصعبة.</p>\n    <div class=\"cta-row\">\n      <a href=\"index.ar.html#demos\"
+    class=\"btn btn-primary\">جرّب تجربة حيّة</a>\n      <a href=\"mailto:hello@gompha.com\"
+    class=\"btn btn-gold\">تحدّث إلينا</a>\n    </div>\n  </div>\n</section>\n\n<footer>\n
+    \ <div class=\"wrap\">\n    <div class=\"fcols\">\n      <div class=\"fcol\" style=\"max-width:280px\">\n
+    \       <div class=\"logo\">G<span class=\"socket\"></span>mpha</div>\n        <p
+    style=\"margin-top:10px;color:#a7bcda\">عيادتك، راسخة. كل سِنّ مُتابَع. كل اتفاق
+    محفوظ.</p>\n      </div>\n      <div class=\"fcol\">\n        <h5>المنتج</h5>\n
+    \       <a href=\"index.ar.html#capabilities\">المزايا</a>\n        <a href=\"roadmap.ar.html\">خارطة
+    الطريق</a>\n        <a href=\"scale.ar.html\">التوسّع والملكية</a>\n        <a
+    href=\"safety.ar.html\">أمان البيانات</a>\n      </div>\n      <div class=\"fcol\">\n
+    \       <h5>جرّبه</h5>\n        <a href=\"https://demo.gompha.com\">تجربة العيادة</a>\n
+    \       <a href=\"https://demosolo.gompha.com\">التجربة الفردية</a>\n        <a
+    href=\"mailto:hello@gompha.com\">تواصل معنا</a>\n      </div>\n      <div class=\"fcol\">\n
+    \       <h5>تواصل</h5>\n        <a href=\"mailto:hello@gompha.com\">hello@gompha.com</a>\n
+    \       <a href=\"index.html\">English site</a>\n      </div>\n    </div>\n    <div
+    class=\"base\">© 2026 جومفا · عيادتك، راسخة.</div>\n  </div>\n</footer>\n\n<script
+    src=\"reveal.js?v=5\"></script>\n</body>\n</html>\n"
   safety.html: "<!DOCTYPE html>\n<html lang=\"en\" class=\"no-js\">\n<head>\n<meta
     charset=\"UTF-8\">\n<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n<meta
     name=\"robots\" content=\"noindex\">\n<title>Data safety — Gompha</title>\n<meta
@@ -2139,33 +2439,34 @@ data:
     href=\"index.html#capabilities\">Capabilities</a>\n      <a href=\"roadmap.html\">Roadmap</a>\n
     \     <a href=\"scale.html\">Scaling &amp; ownership</a>\n      <a href=\"safety.html\"
     class=\"active\">Data safety</a>\n      <a href=\"index.html#demos\">Live demos</a>\n
-    \     <a href=\"mailto:hello@gompha.com\" class=\"btn btn-primary\" style=\"padding:10px
-    20px\">Get in touch</a>\n    </div>\n  </div>\n</nav>\n\n<header class=\"hero
-    short\">\n  <div class=\"glow g1\"></div><div class=\"glow g2\"></div>\n  <div
-    class=\"wrap\">\n    <span class=\"pill anim d1\">\U0001F512 <span>Your clinic's
-    data, kept yours</span></span>\n    <h1 class=\"anim d2\">Data safety</h1>\n    <p
-    class=\"tagline anim d3\">Patient records are the most sensitive thing a clinic
-    holds. Gompha is built so your data is isolated from every other clinic, backed
-    up, walled off by role, and never held hostage — here's exactly how.</p>\n  </div>\n</header>\n\n<!--
-    CORE GUARANTEES -->\n<section>\n  <div class=\"wrap\">\n    <div class=\"sec-head
-    reveal\">\n      <span class=\"eyebrow\">The foundations</span>\n      <h2>Four
-    things we don't compromise on</h2>\n      <p>These are live in the software today
-    — not a policy page, but how it's actually built.</p>\n    </div>\n    <div class=\"feat-grid
-    stagger\">\n      <div class=\"feat\"><span class=\"ico\">\U0001F9F1</span><h3>Hard
-    tenant isolation <span class=\"ship\">Live</span></h3><p>Every clinic is its own
-    tenant on its own subdomain, with row-level security forced at the database itself.
-    A clinic literally cannot query another clinic's records — it's enforced below
-    the app, not just inside it.</p></div>\n      <div class=\"feat\"><span class=\"ico\">\U0001F5C4️</span><h3>Encrypted
-    backups <span class=\"ship\">Live</span></h3><p>Your data is backed up every hour,
-    encrypted with a modern age key before it ever leaves the server, and stored off
-    the main box. A bad day doesn't mean a lost clinic.</p></div>\n      <div class=\"feat\"><span
-    class=\"ico\">\U0001F6AA</span><h3>Walled access by role <span class=\"ship\">Live</span></h3><p>People
-    only see what their job needs. Maintenance configures the software with <em>zero</em>
-    access to any patient data; reception can take money but never see clinic totals;
-    each doctor's earnings stay their own.</p></div>\n      <div class=\"feat\"><span
-    class=\"ico\">\U0001F4F1</span><h3>Session &amp; device control <span class=\"ship\">Live</span></h3><p>Sessions
-    time out by role, every device is recorded, and a \"Your devices\" panel lets
-    you sign a lost or stolen phone out from anywhere — instantly.</p></div>\n    </div>\n
+    \     <a href=\"safety.ar.html\" class=\"langtoggle\">ع</a>\n      <a href=\"mailto:hello@gompha.com\"
+    class=\"btn btn-primary\" style=\"padding:10px 20px\">Get in touch</a>\n    </div>\n
+    \ </div>\n</nav>\n\n<header class=\"hero short\">\n  <div class=\"glow g1\"></div><div
+    class=\"glow g2\"></div>\n  <div class=\"wrap\">\n    <span class=\"pill anim
+    d1\">\U0001F512 <span>Your clinic's data, kept yours</span></span>\n    <h1 class=\"anim
+    d2\">Data safety</h1>\n    <p class=\"tagline anim d3\">Patient records are the
+    most sensitive thing a clinic holds. Gompha is built so your data is isolated
+    from every other clinic, backed up, walled off by role, and never held hostage
+    — here's exactly how.</p>\n  </div>\n</header>\n\n<!-- CORE GUARANTEES -->\n<section>\n
+    \ <div class=\"wrap\">\n    <div class=\"sec-head reveal\">\n      <span class=\"eyebrow\">The
+    foundations</span>\n      <h2>Four things we don't compromise on</h2>\n      <p>These
+    are live in the software today — not a policy page, but how it's actually built.</p>\n
+    \   </div>\n    <div class=\"feat-grid stagger\">\n      <div class=\"feat\"><span
+    class=\"ico\">\U0001F9F1</span><h3>Hard tenant isolation <span class=\"ship\">Live</span></h3><p>Every
+    clinic is its own tenant on its own subdomain, with row-level security forced
+    at the database itself. A clinic literally cannot query another clinic's records
+    — it's enforced below the app, not just inside it.</p></div>\n      <div class=\"feat\"><span
+    class=\"ico\">\U0001F5C4️</span><h3>Encrypted backups <span class=\"ship\">Live</span></h3><p>Your
+    data is backed up every hour, encrypted with a modern age key before it ever leaves
+    the server, and stored off the main box. A bad day doesn't mean a lost clinic.</p></div>\n
+    \     <div class=\"feat\"><span class=\"ico\">\U0001F6AA</span><h3>Walled access
+    by role <span class=\"ship\">Live</span></h3><p>People only see what their job
+    needs. Maintenance configures the software with <em>zero</em> access to any patient
+    data; reception can take money but never see clinic totals; each doctor's earnings
+    stay their own.</p></div>\n      <div class=\"feat\"><span class=\"ico\">\U0001F4F1</span><h3>Session
+    &amp; device control <span class=\"ship\">Live</span></h3><p>Sessions time out
+    by role, every device is recorded, and a \"Your devices\" panel lets you sign
+    a lost or stolen phone out from anywhere — instantly.</p></div>\n    </div>\n
     \ </div>\n</section>\n\n<!-- NO HOSTAGE -->\n<section style=\"background:var(--bg-alt)\">\n
     \ <div class=\"wrap\">\n    <div class=\"spot reveal\">\n      <div>\n        <span
     class=\"moat\">The promise</span>\n        <h2>Your data is never held hostage</h2>\n
@@ -2222,6 +2523,141 @@ data:
     \       <a href=\"mailto:hello@gompha.com\">Book a walkthrough</a>\n      </div>\n
     \   </div>\n    <div class=\"base\">© 2026 Gompha · Your practice, anchored.</div>\n
     \ </div>\n</footer>\n\n<script src=\"reveal.js?v=5\"></script>\n</body>\n</html>\n"
+  scale.ar.html: "<!DOCTYPE html>\n<html lang=\"ar\" dir=\"rtl\" class=\"no-js\">\n<head>\n<meta
+    charset=\"UTF-8\">\n<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n<meta
+    name=\"robots\" content=\"noindex\">\n<title>التوسّع والملكية — جومفا</title>\n<meta
+    name=\"description\" content=\"ابدأ طبيباً واحداً، وتوسّع إلى عيادة كاملة، وخذ
+    بياناتك حين تغادر. كيف يتوسّع جومفا صعوداً ونزولاً — ولماذا لا تُحتجَز سجلاتك
+    أبداً.\">\n<link rel=\"preconnect\" href=\"https://fonts.googleapis.com\">\n<link
+    rel=\"preconnect\" href=\"https://fonts.gstatic.com\" crossorigin>\n<link href=\"https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&display=swap\"
+    rel=\"stylesheet\">\n<link rel=\"stylesheet\" href=\"style.css?v=5\">\n</head>\n<body>\n\n<nav>\n
+    \ <div class=\"wrap nav-in\">\n    <div class=\"logo\"><a href=\"index.ar.html\">G<span
+    class=\"socket\"></span>mpha</a></div>\n    <div class=\"nav-links\">\n      <a
+    href=\"index.ar.html#capabilities\">المزايا</a>\n      <a href=\"roadmap.ar.html\">خارطة
+    الطريق</a>\n      <a href=\"scale.ar.html\" class=\"active\">التوسّع والملكية</a>\n
+    \     <a href=\"safety.ar.html\">أمان البيانات</a>\n      <a href=\"index.ar.html#demos\">تجارب
+    حيّة</a>\n      <a href=\"scale.html\" class=\"langtoggle\">EN</a>\n      <a href=\"mailto:hello@gompha.com\"
+    class=\"btn btn-primary\" style=\"padding:10px 20px\">تواصل معنا</a>\n    </div>\n
+    \ </div>\n</nav>\n\n<header class=\"hero short\">\n  <div class=\"glow g1\"></div><div
+    class=\"glow g2\"></div>\n  <div class=\"wrap\">\n    <span class=\"pill anim
+    d1\">\U0001F4D0 <span>ينمو معك — صعوداً <b>ونزولاً</b></span></span>\n    <h1
+    class=\"anim d2\">ابدأ واحداً. توسّع إلى كثير. غادِر ببياناتك.</h1>\n    <p class=\"tagline
+    anim d3\">جومفا محرّك واحد يناسب طبيباً منفرداً أو عيادة مزدحمة متعددة الأطباء.
+    شغّل ما تحتاجه، وأطفئ ما لا تحتاجه، ولا تقلق أبداً من أن تُحبَس سجلاتك في صندوق
+    غيرك.</p>\n    <div class=\"cta-row anim d4\">\n      <a href=\"index.ar.html#demos\"
+    class=\"btn btn-primary\">شاهد التجربتين</a>\n      <a href=\"roadmap.ar.html\"
+    class=\"btn btn-ghost\">← أين هذا على خارطة الطريق</a>\n    </div>\n  </div>\n</header>\n\n<!--
+    1. SOLO -> MANY -->\n<section>\n  <div class=\"wrap\">\n    <div class=\"sec-head
+    reveal\">\n      <span class=\"eyebrow\">صعوداً ونزولاً</span>\n      <h2>كرسي
+    واحد أو عشرة — الحساب نفسه ينمو معك</h2>\n      <p>لا تختار «حجماً» وتُحبَس فيه.
+    يخفي الوضع الفردي آليات تعدد المستخدمين؛ ويوم توظّف، تُشغّلها.</p>\n    </div>\n
+    \   <div class=\"split reveal\">\n      <div class=\"txt\">\n        <span class=\"ship\">الوضع
+    الفردي — حيّ</span>\n        <h3>فردي: أنت العيادة كلها</h3>\n        <p>دخول
+    واحد، كرسي واحد. بلا اختيار أدوار، بلا تقسيمات أطباء، بلا استقبال. المال يتلخّص
+    إلى <em>داخل / خارج / درج</em>. المخطط والاتفاقات والمواعيد — لا شيء آخر في الطريق.</p>\n
+    \       <p>يشغّل المحرّك متعدد الأطباء عيادة حقيقية بأربعة أطباء؛ ويطويه الوضع
+    الفردي لعيادة الشخص الواحد. إنه <strong>حيّ الآن</strong> — جرّبه في <a href=\"https://demosolo.gompha.com\">التجربة
+    الفردية</a>.</p>\n      </div>\n      <div class=\"panel\">\n        <div class=\"prow\"><b>مكتب
+    الاستقبال</b><span class=\"toggle off\"></span></div>\n        <div class=\"prow\"><b>أطباء
+    متعددون</b><span class=\"toggle off\"></span></div>\n        <div class=\"prow\"><b>تقسيمات
+    أرباح الأطباء</b><span class=\"toggle off\"></span></div>\n        <div class=\"prow\"><b>مخطط
+    الأسنان والاتفاقات</b><span class=\"toggle\"></span></div>\n        <div class=\"prow\"><b>المال:
+    داخل / خارج / درج</b><span class=\"toggle\"></span></div>\n      </div>\n    </div>\n
+    \   <div class=\"split rev reveal\">\n      <div class=\"txt\">\n        <span
+    class=\"ship\">متعدد الأطباء — حيّ</span>\n        <h3>عيادة: أطباء واستقبال وغرف</h3>\n
+    \       <p>أضف أطباء ومكتب استقبال فتظهر الآلية الكاملة: جدولة بشبكة الغرف، وتقسيم
+    غرف مشتركة، وكتالوج لكل طبيب ونسب دخل، وجدران خصوصية تُبقي أرقام كل طبيب له.</p>\n
+    \       <p>التوسّع من فردي إلى عيادة خطوة واحدة مقصودة — تُسوَّى الملكية والدخل
+    بنظافة، لا تُقلب بصمت. والتقليص لا يحذف أبداً: تُعطَّل الوحدات بهدوء فيبقى التاريخ
+    وسجل التدقيق سليمَين.</p>\n      </div>\n      <div class=\"panel\">\n        <div
+    class=\"prow\"><b>مكتب الاستقبال</b><span class=\"toggle\"></span></div>\n        <div
+    class=\"prow\"><b>أطباء متعددون</b><span class=\"toggle\"></span></div>\n        <div
+    class=\"prow\"><b>غرف وجدولة غرف مشتركة</b><span class=\"toggle\"></span></div>\n
+    \       <div class=\"prow\"><b>تقسيمات أرباح الأطباء</b><span class=\"toggle\"></span></div>\n
+    \       <div class=\"prow\"><b>دور صيانة معزول</b><span class=\"toggle\"></span></div>\n
+    \     </div>\n    </div>\n  </div>\n</section>\n\n<!-- 2. NEVER HOSTAGE -->\n<section
+    style=\"background:var(--bg-alt)\">\n  <div class=\"wrap\">\n    <div class=\"sec-head
+    reveal\">\n      <span class=\"eyebrow\">بياناتك بياناتك</span>\n      <h2>سجلاتك
+    لا تُحتجَز أبداً</h2>\n      <p>لا ينبغي أن يكون البرنامج مساومة رهائن. القراءة
+    تعمل دائماً، وتصدير العيادة الكاملة واستيرادها متاحان اليوم.</p>\n    </div>\n
+    \   <div class=\"feat-grid stagger\">\n      <div class=\"feat\"><span class=\"ico\">\U0001F513</span><h3>القراءة
+    تعمل دائماً <span class=\"ship\">حيّ</span></h3><p>توقّف عن الدفع فتتوقف الكتابة
+    — لكن يمكنك دائماً <em>قراءة</em> عيادتك كاملة. حتى الحساب المُعلَّق أو المنتهي
+    يحتفظ بقراءة كاملة لكل سجل. لا أحد يحبسك عن تاريخك.</p></div>\n      <div class=\"feat\"><span
+    class=\"ico\">\U0001F4E4</span><h3>تصدير ذاتي <span class=\"ship\">حيّ</span></h3><p>نزّل
+    عيادتك كاملة كحزمة قابلة للنقل — بيانات مُنظَّمة مع ملفات CSV مقروءة — بنفسك،
+    متى شئت. يعمل حتى في وضع القراءة فقط.</p></div>\n      <div class=\"feat\"><span
+    class=\"ico\">\U0001F4E5</span><h3>استيراد نظيف <span class=\"ship\">حيّ</span></h3><p>أدخِل
+    تلك الحزمة إلى مستأجر جومفا جديد مع إعادة ربط كل مرجع بدقة. المال ينتقل حرفياً
+    ولا يُعاد تقييمه؛ وتُنظَّف الأسرار في الطريق.</p></div>\n    </div>\n  </div>\n</section>\n\n<!--
+    3. LEAVE A PRACTICE -->\n<section>\n  <div class=\"wrap\">\n    <div class=\"split
+    reveal\">\n      <div class=\"txt\">\n        <span class=\"ship\">العيادة كاملة:
+    حيّ · شريحة طبيب: مخطّط له</span>\n        <h3>غادِر عيادة — خذ بياناتك</h3>\n
+    \       <p>نقل <em>عيادة كاملة</em> إلى مستأجر جديد يعمل اليوم. نقل شريحة طبيب
+    واحد — مرضاه ومخططاته وتاريخه — هو الخطوة التالية، كي لا يغادر الطبيب صفر اليدين.</p>\n
+    \       <p>تعمل قابلية النقل في جومفا على محورين: <b>النطاق</b> — العيادة كاملة
+    أو شريحة طبيب واحد؛ و<b>الفئة</b> — سريري فقط، أو سريري مع المال. أنت تختار ما
+    يغادر.</p>\n        <p>وهي <b>بموافقة</b>: تصدير الطبيب الموظف لشريحته مُعطَّل
+    افتراضياً حتى يمنحه المالك — مُقيَّد، ومنتهٍ، ومُدقَّق. يوفّق بين «بياناته وعملائه»
+    وحق العيادة في التحكم بمن يخرج بأي بيانات.</p>\n      </div>\n      <div class=\"panel\">\n
+    \       <div class=\"prow\"><b>العيادة كاملة</b><span style=\"color:var(--teal-text);font-weight:800\">أو
+    طبيب واحد</span></div>\n        <div class=\"prow\"><b>السجلات السريرية</b><span
+    style=\"color:var(--teal-text);font-weight:800\">✓ دائماً</span></div>\n        <div
+    class=\"prow\"><b>المالية</b><span style=\"color:var(--body)\">اختياري</span></div>\n
+    \       <div class=\"prow\"><b>كلمات المرور والأسرار</b><span style=\"color:#adbccf\">✕
+    مُنظَّفة</span></div>\n        <div class=\"prow\"><b>موافقة المالك</b><span style=\"color:var(--gold);font-weight:800\">مطلوبة</span></div>\n
+    \     </div>\n    </div>\n  </div>\n</section>\n\n<!-- 4. MODULES ON/OFF -->\n<section
+    style=\"background:var(--bg-alt)\">\n  <div class=\"wrap\">\n    <div class=\"sec-head
+    reveal\">\n      <span class=\"eyebrow\">ما تستخدمه فقط</span>\n      <h2>شغّل
+    الاستقبال والمالية والمخزون أو أطفئها</h2>\n      <p>لا كل عيادة تريد كل وحدة.
+    الطبيب المنفرد لا يحتاج واجهة استقبال؛ والطبيب الذي لا يمسّ المخزون لا ينبغي أن
+    يراه.</p>\n    </div>\n    <div class=\"split reveal\">\n      <div class=\"txt\">\n
+    \       <h3>مُشكَّل للعيادة، بطريقتين</h3>\n        <p><b>اليوم، حسب الدور <span
+    class=\"ship\">حيّ</span></b> — الواجهات مُشكَّلة لكل شخص: الصيانة معزولة عن كل
+    بيانات المرضى، الاستقبال يسجّل المال لكن لا يرى مجاميع العيادة، والأطباء يحصلون
+    على واجهة سريرية للهاتف بلا فوضى إدارية.</p>\n        <p><b>وحسب الوضع <span class=\"ship\">حيّ</span></b>
+    — يطفئ الوضع الفردي أجزاءً كاملة من الواجهة لعيادة الشخص الواحد (الاستقبال، تقسيمات
+    الأطباء، اختيار الأدوار)، ويلخّص عرض المال. رؤية فقط — يبقى بسيطاً، لا متاهة أذونات
+    لكل زر.</p>\n      </div>\n      <div class=\"panel\">\n        <div class=\"prow\"><b>مكتب
+    الاستقبال</b><span class=\"toggle\"></span></div>\n        <div class=\"prow\"><b>المالية
+    والأرباح</b><span class=\"toggle\"></span></div>\n        <div class=\"prow\"><b>المخزون</b><span
+    class=\"toggle off\"></span></div>\n        <div class=\"prow\"><b>حدود التكلفة
+    لكل طبيب</b><span class=\"toggle off\"></span></div>\n        <div class=\"prow\"><b>مخطط
+    الأسنان والجدولة</b><span class=\"toggle\"></span></div>\n      </div>\n    </div>\n
+    \ </div>\n</section>\n\n<!-- 5. TENANT MODEL -->\n<section>\n  <div class=\"wrap\">\n
+    \   <div class=\"sec-head reveal\">\n      <span class=\"eyebrow\">كيف بُني ليتوسّع</span>\n
+    \     <h2>عيادة واحدة، نطاق واحد، معزولة بالتصميم</h2>\n      <p>كل عيادة مستأجر
+    خاص بها على نطاق فرعي خاص، مع أمان على مستوى الصف مفروض في قاعدة البيانات فلا
+    ترى أي عيادة بيانات أخرى. هذا ما يجعل الفردي ومتعدد الفروع صادقَين معاً.</p>\n
+    \   </div>\n    <div class=\"id-grid stagger\">\n      <div class=\"id-card\"><span
+    class=\"tag\">حيّ</span><h3>نطاق فرعي لكل عيادة</h3><p>yourclinic.gompha.com —
+    مساحتك، بياناتك، معزولة بإحكام عن كل مستأجر آخر.</p></div>\n      <div class=\"id-card\"><span
+    class=\"tag\">حيّ</span><h3>أمان على مستوى الصف</h3><p>العزل مفروض في قاعدة البيانات
+    نفسها، لا في التطبيق فقط — لا تستطيع عيادة حرفياً الاستعلام عن سجلات أخرى.</p></div>\n
+    \     <div class=\"id-card\"><span class=\"tag\">مخطّط له</span><h3>علامة بيضاء</h3><p>علامتك
+    وألوانك ونطاقك فوق المحرّك نفسه — ترقية، لا إعادة بناء.</p></div>\n      <div
+    class=\"id-card\"><span class=\"tag\">مخطّط له</span><h3>سلاسل متعددة الفروع</h3><p>موقعان
+    أو أكثر تحت مشغّل واحد، بسعر لكل فرع. نادر اليوم، حقيقي مع نمو العيادات.</p></div>\n
+    \   </div>\n  </div>\n</section>\n\n<!-- CTA STRIP -->\n<section class=\"strip\">\n
+    \ <div class=\"wrap reveal\">\n    <h2>جرّب الحجم الذي يناسبك</h2>\n    <p>تجوّل
+    في عيادة الأطباء المتعددين، أو تجربة الوضع الفردي لطبيب واحد — كلاهما حيّ الآن.</p>\n
+    \   <div class=\"cta-row\">\n      <a href=\"https://demo.gompha.com\" class=\"btn
+    btn-primary\">تجربة العيادة</a>\n      <a href=\"https://demosolo.gompha.com\"
+    class=\"btn btn-gold\">التجربة الفردية</a>\n    </div>\n  </div>\n</section>\n\n<footer>\n
+    \ <div class=\"wrap\">\n    <div class=\"fcols\">\n      <div class=\"fcol\" style=\"max-width:280px\">\n
+    \       <div class=\"logo\">G<span class=\"socket\"></span>mpha</div>\n        <p
+    style=\"margin-top:10px;color:#a7bcda\">عيادتك، راسخة. كل سِنّ مُتابَع. كل اتفاق
+    محفوظ.</p>\n      </div>\n      <div class=\"fcol\">\n        <h5>المنتج</h5>\n
+    \       <a href=\"index.ar.html#capabilities\">المزايا</a>\n        <a href=\"roadmap.ar.html\">خارطة
+    الطريق</a>\n        <a href=\"scale.ar.html\">التوسّع والملكية</a>\n        <a
+    href=\"safety.ar.html\">أمان البيانات</a>\n      </div>\n      <div class=\"fcol\">\n
+    \       <h5>جرّبه</h5>\n        <a href=\"https://demo.gompha.com\">تجربة العيادة</a>\n
+    \       <a href=\"https://demosolo.gompha.com\">التجربة الفردية</a>\n        <a
+    href=\"mailto:hello@gompha.com\">تواصل معنا</a>\n      </div>\n      <div class=\"fcol\">\n
+    \       <h5>تواصل</h5>\n        <a href=\"mailto:hello@gompha.com\">hello@gompha.com</a>\n
+    \       <a href=\"index.html\">English site</a>\n      </div>\n    </div>\n    <div
+    class=\"base\">© 2026 جومفا · عيادتك، راسخة.</div>\n  </div>\n</footer>\n\n<script
+    src=\"reveal.js?v=5\"></script>\n</body>\n</html>\n"
   scale.html: "<!DOCTYPE html>\n<html lang=\"en\" class=\"no-js\">\n<head>\n<meta
     charset=\"UTF-8\">\n<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n<meta
     name=\"robots\" content=\"noindex\">\n<title>Scaling &amp; ownership — Gompha</title>\n<meta
@@ -2235,12 +2671,13 @@ data:
     href=\"index.html#capabilities\">Capabilities</a>\n      <a href=\"roadmap.html\">Roadmap</a>\n
     \     <a href=\"scale.html\" class=\"active\">Scaling &amp; ownership</a>\n      <a
     href=\"safety.html\">Data safety</a>\n      <a href=\"index.html#demos\">Live
-    demos</a>\n      <a href=\"mailto:hello@gompha.com\" class=\"btn btn-primary\"
-    style=\"padding:10px 20px\">Get in touch</a>\n    </div>\n  </div>\n</nav>\n\n<header
-    class=\"hero short\">\n  <div class=\"glow g1\"></div><div class=\"glow g2\"></div>\n
-    \ <div class=\"wrap\">\n    <span class=\"pill anim d1\">\U0001F4D0 <span>Grows
-    with you — up <b>and</b> down</span></span>\n    <h1 class=\"anim d2\">Start as
-    one. Grow to many. Leave with your data.</h1>\n    <p class=\"tagline anim d3\">Gompha
+    demos</a>\n      <a href=\"scale.ar.html\" class=\"langtoggle\">ع</a>\n      <a
+    href=\"mailto:hello@gompha.com\" class=\"btn btn-primary\" style=\"padding:10px
+    20px\">Get in touch</a>\n    </div>\n  </div>\n</nav>\n\n<header class=\"hero
+    short\">\n  <div class=\"glow g1\"></div><div class=\"glow g2\"></div>\n  <div
+    class=\"wrap\">\n    <span class=\"pill anim d1\">\U0001F4D0 <span>Grows with
+    you — up <b>and</b> down</span></span>\n    <h1 class=\"anim d2\">Start as one.
+    Grow to many. Leave with your data.</h1>\n    <p class=\"tagline anim d3\">Gompha
     is one engine that fits a single dentist or a busy multi-doctor clinic. Turn on
     what you need, turn off what you don't, and never worry that your records are
     locked in someone else's box.</p>\n    <div class=\"cta-row anim d4\">\n      <a
