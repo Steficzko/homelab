@@ -180,81 +180,70 @@ data:
     from anywhere.</p></div>\n      <div class=\"feat\"><span class=\"ico\">\U0001F5E3️</span><h3>Voice
     → deal note <span class=\"ship soon\">Planned</span></h3><p>Dictate a chair-side
     note → structured encounter and deal, hands on the patient. The moat feature —
-    spec'd, not yet built.</p></div>\n    </div>\n  </div>\n</section>\n\n<!-- PRODUCT
-    SHOWCASE -->\n<section id=\"screens\">\n  <div class=\"wrap\">\n    <div class=\"sec-head
-    reveal\">\n      <span class=\"eyebrow\">See the real screens</span>\n      <h2>Not
-    a spreadsheet with a logo</h2>\n      <p>Actual Gompha screens — the periodontal
-    chart trends the mouth over time, and reception drives the day on a room-by-room
-    grid.</p>\n    </div>\n    <div class=\"showcase stagger\">\n      <div class=\"appwin\">\n
-    \       <div class=\"appwin-bar\"><span class=\"td r\"></span><span class=\"td
-    y\"></span><span class=\"td g\"></span><span class=\"appwin-url\">demo.gompha.com
-    › patient · perio chart</span></div>\n        <div class=\"appwin-body\">\n          <div
-    class=\"appwin-cap\">Periodontal line chart <span class=\"pin\">upper · buccal</span></div>\n
-    \         <img src=\"perio.svg\" alt=\"Periodontal line chart — gingival margin
-    and pocket-depth lines over each tooth, with two deep pockets and bleeding sites
-    flagged red\" width=\"568\" height=\"150\" loading=\"lazy\">\n          <div class=\"od-key\">\n
-    \           <span><i style=\"background:#d97706\"></i>gingival margin</span>\n
-    \           <span><i style=\"background:#2b6cb0\"></i>pocket bottom</span>\n            <span><i
-    style=\"background:#d9534f\"></i>deep pocket / bleeding</span>\n          </div>\n
-    \       </div>\n      </div>\n      <div class=\"appwin\">\n        <div class=\"appwin-bar\"><span
-    class=\"td r\"></span><span class=\"td y\"></span><span class=\"td g\"></span><span
-    class=\"appwin-url\">demo.gompha.com › reception · schedule</span></div>\n        <div
-    class=\"appwin-body\">\n          <div class=\"appwin-cap\">Room-grid schedule
-    <span class=\"pin\">rooms as columns</span></div>\n          <div class=\"sched\">\n
-    \           <div class=\"sh\"></div>\n            <div class=\"sh\"><span class=\"rdot\"
-    style=\"background:#4363d8\"></span>Room 1</div>\n            <div class=\"sh\"><span
-    class=\"rdot\" style=\"background:#e6194b\"></span>Room 2</div>\n            <div
-    class=\"sh\"><span class=\"rdot\" style=\"background:#3cb44b\"></span>Room 3</div>\n\n
-    \           <div class=\"tcol t\">09:00</div>\n            <div class=\"cell\"><div
-    class=\"appt\" style=\"background:#4363d8;top:2px;height:64px\">Layla H.<small>Crown
-    prep · Dr. Ali</small></div></div>\n            <div class=\"cell\"><div class=\"appt\"
-    style=\"background:#e6194b;top:2px;height:30px\">Omar K.<small>Check-up</small></div></div>\n
-    \           <div class=\"cell\"><div class=\"appt\" style=\"background:#3cb44b;top:2px;height:98px\">Sara
-    M.<small>Implant · Dr. Zana</small></div></div>\n\n            <div class=\"tcol
-    t\">09:30</div>\n            <div class=\"cell\"></div>\n            <div class=\"cell\"><div
-    class=\"appt\" style=\"background:#f58231;top:2px;height:64px\">Dana T.<small>Perio
-    · Dr. Nma</small></div></div>\n            <div class=\"cell\"></div>\n\n            <div
-    class=\"tcol t\">10:00</div>\n            <div class=\"cell\"><div class=\"appt\"
-    style=\"background:#e6194b;top:2px;height:30px\">Zaid A.<small>Filling</small></div></div>\n
-    \           <div class=\"cell\"></div>\n            <div class=\"cell\"><div class=\"appt\"
-    style=\"background:#4363d8;top:2px;height:64px\">Hiba S.<small>Whitening · Dr.
-    Ali</small></div></div>\n\n            <div class=\"tcol t\">10:30</div>\n            <div
-    class=\"cell\"><div class=\"appt\" style=\"background:#3cb44b;top:2px;height:64px\">Yusuf
-    R.<small>Extraction · Dr. Zana</small></div></div>\n            <div class=\"cell\"><div
-    class=\"appt\" style=\"background:#f58231;top:2px;height:30px\">Nour F.<small>Review</small></div></div>\n
-    \           <div class=\"cell\"></div>\n          </div>\n        </div>\n      </div>\n
-    \   </div>\n  </div>\n</section>\n\n<!-- MOBILE / DOCTOR PHONE -->\n<section id=\"mobile\"
-    style=\"background:var(--bg-alt)\">\n  <div class=\"wrap\">\n    <div class=\"mobwrap\">\n
-    \     <div class=\"txt mob-copy reveal\">\n        <span class=\"eyebrow\">In
-    the doctor's pocket</span>\n        <h2 style=\"font-size:clamp(28px,3.6vw,40px);margin:12px
-    0\">The chair-side app, built phone-first</h2>\n        <p style=\"font-size:17px;color:var(--body)\">The
-    doctor never touches a desktop. Their whole day is a vertical, distraction-free
-    feed — current patient on top, a live countdown to the next, and one tap into
-    treatment. <em>Scroll the phone →</em></p>\n        <ul class=\"mob-list\">\n
-    \         <li><b>In the chair</b> — who you're treating, an elapsed timer, and
-    whether you can take your time or someone's waiting.</li>\n          <li><b>Next
-    patient + countdown</b> — and a \"waiting outside\" flag the second reception
-    checks them in.</li>\n          <li><b>One-tap start</b> — locks the phone to
-    that patient so nothing gets fat-fingered mid-treatment.</li>\n          <li><b>Running-late
-    signal</b> — tell the front desk +15 / +30 without leaving the chair.</li>\n        </ul>\n
-    \     </div>\n      <div class=\"reveal\" style=\"justify-self:center\">\n        <div
-    class=\"phone\">\n          <div class=\"island\"></div>\n          <div class=\"phone-screen\">\n
-    \           <!-- Live demo, auto-logged as a doctor via the ?demo=doctor deep
-    link\n                 (SPA v0.24.0). Scrolls inside the phone; real app, real
-    data. -->\n            <iframe class=\"da-frame\" src=\"https://demo.gompha.com/?demo=doctor\"
-    title=\"Gompha — live doctor demo, pre-logged\" loading=\"lazy\"></iframe>\n          </div>\n
-    \       </div>\n        <p class=\"phone-cap\">Live app — auto-signed in as a
-    doctor. <a href=\"https://demo.gompha.com/?demo=doctor\" target=\"_blank\" rel=\"noopener\">Open
-    it full-size →</a></p>\n      </div>\n    </div>\n  </div>\n</section>\n\n<!--
-    DEAL LEDGER SPOTLIGHT -->\n<section id=\"ledger\">\n  <div class=\"wrap\">\n    <div
-    class=\"spot reveal\">\n      <div>\n        <span class=\"moat\">The moat</span>\n
-    \       <h2>No other PMS remembers the deal</h2>\n        <p>Dentrix and Open
-    Dental assume a fixed price list. But in the real world, the price is negotiated
-    — a discount for a cousin, a free cleaning, a cash rate. Gompha anchors that:
-    what was agreed, who approved it, and why.</p>\n        <p>Next time that patient
-    walks in, the whole clinic knows the story — not just the doctor who made the
-    deal.</p>\n        <a href=\"index.html#demos\" class=\"btn btn-gold\">See it
-    in the live demo</a>\n      </div>\n      <div class=\"sheet\">\n        <div
+    spec'd, not yet built.</p></div>\n    </div>\n  </div>\n</section>\n\n<!-- MOBILE
+    / PATIENT VIEW -->\n<section id=\"mobile\" style=\"background:var(--bg-alt)\">\n
+    \ <div class=\"wrap\">\n    <div class=\"mobwrap\">\n      <div class=\"txt mob-copy
+    reveal\">\n        <span class=\"eyebrow\">The whole patient, in your pocket</span>\n
+    \       <h2 style=\"font-size:clamp(28px,3.6vw,40px);margin:12px 0\">One patient,
+    one screen — in phone mode</h2>\n        <p style=\"font-size:17px;color:var(--body)\">Open
+    a patient on your phone and the whole story is right there: the tooth chart, the
+    perio trend, every treatment, the deal you agreed, and what they still owe. <em>Scroll
+    the phone →</em></p>\n        <ul class=\"mob-list\">\n          <li><b>The chart
+    at a glance</b> — crowns, implants and root canals, colour-coded by who did them.</li>\n
+    \         <li><b>The deal, remembered</b> — agreed vs standard price, who approved
+    it, and why.</li>\n          <li><b>Balance up front</b> — charged, paid and owed,
+    no digging.</li>\n          <li><b>One tap to reach them</b> — call or WhatsApp
+    straight from the card.</li>\n        </ul>\n      </div>\n      <div class=\"reveal\"
+    style=\"justify-self:center\">\n        <div class=\"phone\">\n          <div
+    class=\"island\"></div>\n          <div class=\"phone-screen\">\n            <div
+    class=\"pv\">\n              <div class=\"pv-head\">\n                <span class=\"bk\">‹</span>\n
+    \               <span class=\"l\">G<span class=\"socket\"></span>mpha</span>\n
+    \               <span class=\"sp\">Patient</span>\n              </div>\n              <div
+    class=\"pv-body\">\n                <div class=\"pv-hero\">\n                  <div
+    class=\"nm\">Layla Hama</div>\n                  <div class=\"meta\">Female ·
+    34 · patient #1042 · since 2023</div>\n                  <div class=\"chips\">\n
+    \                   <span class=\"chip\">\U0001F4DE 0750 118 44</span>\n                    <span
+    class=\"chip\">\U0001F7E2 WhatsApp</span>\n                    <span class=\"chip
+    debt\">Owes $120</span>\n                  </div>\n                </div>\n                <div
+    class=\"pv-card\">\n                  <h4>Tooth chart <span class=\"tag\">3 crowns
+    · 1 implant</span></h4>\n                  <img src=\"odontogram.svg\" alt=\"Patient
+    tooth chart — crowns, a root canal, an implant, a bridge and a missing tooth\"
+    width=\"568\" height=\"172\" loading=\"lazy\">\n                </div>\n                <div
+    class=\"pv-card\">\n                  <h4>Perio <span class=\"tag\">BOP 14% ·
+    2 deep</span></h4>\n                  <img src=\"perio.svg\" alt=\"Patient periodontal
+    line chart\" width=\"568\" height=\"150\" loading=\"lazy\">\n                </div>\n
+    \               <div class=\"pv-card\">\n                  <h4>Treatments</h4>\n
+    \                 <div class=\"pv-row\"><span><span class=\"rn\"><span class=\"pv-dot\"
+    style=\"background:#1a7f37\"></span>Zirconia crown · 11</span><br><span class=\"rs\">Dr.
+    Ali · done</span></span><span class=\"amt\">$380</span></div>\n                  <div
+    class=\"pv-row\"><span><span class=\"rn\"><span class=\"pv-dot\" style=\"background:#5b7185\"></span>Implant
+    · 26</span><br><span class=\"rs\">Dr. Zana · in progress</span></span><span class=\"amt\">$900</span></div>\n
+    \                 <div class=\"pv-row\"><span><span class=\"rn\"><span class=\"pv-dot\"
+    style=\"background:#d9534f\"></span>Root canal · 16</span><br><span class=\"rs\">Dr.
+    Ali · done</span></span><span class=\"amt\">$220</span></div>\n                </div>\n
+    \               <div class=\"pv-card pv-deal\">\n                  <h4>The deal
+    <span class=\"tag\">the moat</span></h4>\n                  <div class=\"drow\"><span>Standard
+    price</span><span class=\"strike\">$450</span></div>\n                  <div class=\"drow\"><span>Agreed
+    price</span><span class=\"agreed\">$380</span></div>\n                  <div class=\"drow\"><span>Approved
+    by</span><b>Dr. Ali</b></div>\n                  <div class=\"ctx\">\"70 off —
+    cousin, paying cash today, added free polish.\"</div>\n                </div>\n
+    \               <div class=\"pv-card\">\n                  <h4>Balance <span class=\"tag\">USD
+    @ FX 1,500</span></h4>\n                  <div class=\"pv-bal\">\n                    <div><div
+    class=\"k\">Charged</div><div class=\"v\">$1,500</div></div>\n                    <div><div
+    class=\"k\">Paid</div><div class=\"v\">$1,380</div></div>\n                    <div><div
+    class=\"k\">Owes</div><div class=\"v owe\">$120</div></div>\n                  </div>\n
+    \               </div>\n              </div>\n            </div>\n          </div>\n
+    \       </div>\n        <p class=\"phone-cap\">A designed preview. <a href=\"https://demo.gompha.com/?demo=doctor\"
+    target=\"_blank\" rel=\"noopener\">Open the live demo →</a></p>\n      </div>\n
+    \   </div>\n  </div>\n</section>\n\n<!-- DEAL LEDGER SPOTLIGHT -->\n<section id=\"ledger\">\n
+    \ <div class=\"wrap\">\n    <div class=\"spot reveal\">\n      <div>\n        <span
+    class=\"moat\">The moat</span>\n        <h2>No other PMS remembers the deal</h2>\n
+    \       <p>Dentrix and Open Dental assume a fixed price list. But in the real
+    world, the price is negotiated — a discount for a cousin, a free cleaning, a cash
+    rate. Gompha anchors that: what was agreed, who approved it, and why.</p>\n        <p>Next
+    time that patient walks in, the whole clinic knows the story — not just the doctor
+    who made the deal.</p>\n        <a href=\"index.html#demos\" class=\"btn btn-gold\">See
+    it in the live demo</a>\n      </div>\n      <div class=\"sheet\">\n        <div
     class=\"row\"><span class=\"k\">Procedure</span><span class=\"v\">Zirconia crown
     · tooth 11</span></div>\n        <div class=\"row\"><span class=\"k\">Standard
     price</span><span class=\"strike\">$450</span></div>\n        <div class=\"row\"><span
@@ -1129,45 +1118,40 @@ data:
     span{display:inline-flex;align-items:center;gap:6px}\n.od-key i{width:11px;height:11px;border-radius:50%;display:inline-block}\n\n/*
     Two-column hero (copy + product shot) */\n.hero-grid{display:grid;grid-template-columns:1.02fr
     .98fr;gap:52px;align-items:center;position:relative;z-index:2}\n@media(max-width:940px){.hero-grid{grid-template-columns:1fr;gap:40px}}\n.hero-copy{min-width:0}\n\n/*
-    Product showcase */\n.showcase{display:grid;grid-template-columns:1fr 1fr;gap:28px}\n@media(max-width:860px){.showcase{grid-template-columns:1fr}}\n\n/*
-    ---- Phone mockup (doctor mobile app, scrollable inside) ---- */\n.mobwrap{display:grid;grid-template-columns:1fr
+    ---- Phone mockup (the app in phone mode, scrollable inside) ---- */\n.mobwrap{display:grid;grid-template-columns:1fr
     340px;gap:56px;align-items:center}\n@media(max-width:860px){.mobwrap{grid-template-columns:1fr;gap:40px;justify-items:center}.mobwrap
     .txt{text-align:center}}\n.mob-copy h3{font-size:22px;margin:18px 0 8px}\n.mob-list{list-style:none;margin:16px
     0 0}\n.mob-list li{position:relative;padding:9px 0 9px 30px;font-size:15.5px;color:var(--body)}\n.mob-list
     li:before{content:\"\U0001F4F1\";position:absolute;left:0}\n.mob-list li b{color:var(--ink);font-family:var(--heading-font)}\n.phone{position:relative;width:330px;max-width:84vw;background:#0b0e16;border:13px
     solid #0b0e16;border-radius:46px;box-shadow:0 0 0 2px #2a3350,0 34px 80px -22px
     rgba(0,0,0,.62)}\n.phone .island{position:absolute;top:20px;left:50%;transform:translateX(-50%);width:92px;height:24px;background:#000;border-radius:16px;z-index:6}\n.phone:before,.phone:after{content:\"\";position:absolute;width:3px;background:#1b2238;border-radius:3px}\n.phone:before{height:50px;left:-16px;top:112px}\n.phone:after{height:32px;right:-16px;top:108px;box-shadow:0
-    46px 0 #1b2238}\n.phone-screen{position:relative;border-radius:34px;overflow:hidden;overflow-y:auto;background:#eef2f7;aspect-ratio:9/19.3;-webkit-overflow-scrolling:touch}\n.phone-screen
-    iframe.da-frame{position:absolute;inset:0;width:100%;height:100%;border:0;background:#eef2f7}\n.phone-screen::-webkit-scrollbar{width:5px}\n.phone-screen::-webkit-scrollbar-thumb{background:rgba(0,47,108,.25);border-radius:5px}\n.phone-cap{text-align:center;color:var(--body);font-size:13px;margin-top:14px}\n/*
-    doctor app UI (light, mirrors the real app) */\n.da{font-family:var(--body-font);color:#17324f;background:#eef2f7;min-height:100%}\n.da-head{position:sticky;top:0;z-index:3;background:#002F6C;color:#fff;padding:30px
-    15px 10px}\n.da-head .top{display:flex;align-items:center;justify-content:space-between}\n.da-head
-    .l{font-family:var(--heading-font);font-weight:900;font-size:17px;display:inline-flex;align-items:center}\n.da-head
-    .l .socket{width:.7em;height:.7em;border-color:#5fe6d6}.da-head .l .socket:after{background:#5fe6d6}\n.da-head
-    .who{font-size:12px;opacity:.92;display:flex;align-items:center;gap:6px}\n.da-head
-    .who .av{width:22px;height:22px;border-radius:50%;background:linear-gradient(135deg,#14b8a6,#0e7d72);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:11px}\n.da-tabs{display:flex;gap:7px;margin-top:11px}\n.da-tabs
-    span{font-size:12.5px;font-weight:700;padding:5px 12px;border-radius:999px;color:#cfe0ff}\n.da-tabs
-    span.on{background:rgba(255,255,255,.16);color:#fff}\n.da-body{padding:12px}\n.da-card{background:#fff;border-radius:14px;padding:15px;margin-bottom:11px;box-shadow:0
-    6px 18px -12px rgba(0,20,50,.4)}\n.da-card.now{border-left:4px solid #d9534f}\n.da-card
-    h3{font-size:12px;letter-spacing:.04em;text-transform:uppercase;color:#5a6b82;margin:0
-    0 6px;display:flex;align-items:center;justify-content:space-between;font-family:var(--heading-font)}\n.da-nm{font-size:19px;font-weight:800;color:#0b2647;font-family:var(--heading-font)}\n.da-sub{font-size:12.5px;color:#5a6b82;margin:2px
-    0 8px}\n.da-timer{font-family:var(--heading-font);font-weight:900;font-size:38px;letter-spacing:-.02em;color:#002F6C;line-height:1}\n.da-timer.over{color:#d9534f}\n.da-slack{font-size:12.5px;font-weight:600;margin:8px
-    0;padding:7px 10px;border-radius:8px}\n.da-slack.warn{background:#fff4e5;color:#a8620a}\n.da-slack.ok{background:#e8faf5;color:#0a7d70}\n.da-btn{display:block;width:100%;text-align:center;background:#0FA697;color:#02231f;font-family:var(--heading-font);font-weight:800;font-size:14px;padding:11px;border-radius:10px;margin-top:10px}\n.da-btn.dark{background:#002F6C;color:#fff}\n.da-chips{display:flex;align-items:center;gap:6px;margin-top:9px;font-size:12px;color:#5a6b82}\n.da-chip{background:#eef2f7;border-radius:7px;padding:4px
-    9px;font-weight:700;color:#17324f}\n.da-pill{font-size:10.5px;font-weight:800;padding:2px
-    8px;border-radius:999px}\n.da-pill.late{background:#fdeaea;color:#c0392b}\n.da-pill.wait{background:#e8faf5;color:#0a7d70}\n.da-row{display:flex;align-items:center;justify-content:space-between;padding:10px
-    0;border-bottom:1px solid #eef2f7}\n.da-row:last-child{border-bottom:none}\n.da-row
-    .rn{font-weight:700;color:#0b2647;font-size:14px}\n.da-row .rs{font-size:11.5px;color:#7a8aa0}\n.da-row.done{opacity:.55}\n.da-row
-    .chev{color:#b6c3d4;font-size:18px;font-weight:700}\n\n/* Schedule room-grid mock
-    */\n.sched{display:grid;grid-template-columns:44px repeat(3,1fr);gap:0;font-family:var(--body-font);border:1px
-    solid #e3ebf3;border-radius:10px;overflow:hidden;background:#fff}\n.sched .sh{background:#f3f7fb;font-family:var(--heading-font);font-weight:800;font-size:12px;color:#0b2647;padding:9px
-    8px;text-align:center;border-bottom:1px solid #e3ebf3}\n.sched .sh .rdot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:5px;vertical-align:middle}\n.sched
-    .tcol{background:#fafcfe;border-right:1px solid #e3ebf3}\n.sched .t{font-size:10.5px;color:#8494a8;font-weight:600;height:34px;display:flex;align-items:flex-start;justify-content:flex-end;padding:3px
-    6px 0 0}\n.sched .cell{border-right:1px solid #eef3f8;border-bottom:1px solid
-    #f0f5f9;height:34px;position:relative}\n.sched .appt{position:absolute;left:3px;right:3px;border-radius:6px;padding:4px
-    7px;color:#fff;font-size:11px;font-weight:700;line-height:1.25;box-shadow:0 3px
-    8px -3px rgba(0,20,50,.4);overflow:hidden}\n.sched .appt small{display:block;font-weight:600;opacity:.9;font-size:10px}\n\n/*
-    SECTIONS */\nsection{padding:92px 0}\nsection.tight{padding:64px 0}\n.sec-head{text-align:center;max-width:760px;margin:0
-    auto 56px}\n.sec-head h2{font-size:clamp(29px,4vw,42px);font-weight:900;margin:12px
-    0}\n.sec-head p{font-size:18.5px;color:var(--body)}\n\n/* anchor / id cards */\n.id-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}\n@media(max-width:900px){.id-grid{grid-template-columns:repeat(2,1fr)}}\n@media(max-width:480px){.id-grid{grid-template-columns:1fr}}\n.id-card{background:var(--card);border:1px
+    46px 0 #1b2238}\n.phone-screen{position:relative;border-radius:34px;overflow:hidden;overflow-y:auto;background:#eef2f7;aspect-ratio:9/19.3;-webkit-overflow-scrolling:touch}\n.phone-screen::-webkit-scrollbar{width:5px}\n.phone-screen::-webkit-scrollbar-thumb{background:rgba(0,47,108,.25);border-radius:5px}\n.phone-cap{text-align:center;color:var(--body);font-size:13px;margin-top:14px}\n\n/*
+    Patient view (app in phone mode) */\n.pv{font-family:var(--body-font);color:#17324f;background:#eef2f7;min-height:100%}\n.pv-head{position:sticky;top:0;z-index:3;background:#002F6C;color:#fff;padding:30px
+    14px 12px;display:flex;align-items:center;gap:10px}\n.pv-head .bk{font-size:20px;font-weight:700;opacity:.85}\n.pv-head
+    .l{font-family:var(--heading-font);font-weight:900;font-size:16px;display:inline-flex;align-items:center}\n.pv-head
+    .l .socket{width:.7em;height:.7em;border-color:#5fe6d6}.pv-head .l .socket:after{background:#5fe6d6}\n.pv-head
+    .sp{margin-left:auto;font-size:12px;opacity:.9}\n.pv-body{padding:12px}\n.pv-hero{background:linear-gradient(135deg,#0f2340,#123a63);color:#fff;border-radius:16px;padding:16px;margin-bottom:12px}\n.pv-hero
+    .nm{font-family:var(--heading-font);font-weight:900;font-size:21px}\n.pv-hero
+    .meta{font-size:12.5px;color:#c8dcf5;margin-top:2px}\n.pv-hero .chips{display:flex;gap:7px;flex-wrap:wrap;margin-top:11px}\n.pv-hero
+    .chip{background:rgba(255,255,255,.14);border-radius:8px;padding:5px 10px;font-size:12px;font-weight:700;display:inline-flex;align-items:center;gap:5px}\n.pv-hero
+    .chip.debt{background:#f8d7d7;color:#a01e1e}\n.pv-card{background:#fff;border-radius:14px;padding:14px;margin-bottom:11px;box-shadow:0
+    6px 18px -12px rgba(0,20,50,.4)}\n.pv-card h4{font-size:11.5px;letter-spacing:.05em;text-transform:uppercase;color:#5a6b82;margin:0
+    0 9px;display:flex;align-items:center;justify-content:space-between;font-family:var(--heading-font)}\n.pv-card
+    h4 .tag{font-size:11px;font-weight:800;color:#0a7d70;text-transform:none;letter-spacing:0}\n.pv-card
+    img{display:block;width:100%;height:auto;border:1px solid #eef2f7;border-radius:8px}\n.pv-row{display:flex;align-items:center;justify-content:space-between;padding:9px
+    0;border-bottom:1px solid #eef2f7;font-size:13px}\n.pv-row:last-child{border-bottom:none}\n.pv-row
+    .rn{font-weight:700;color:#0b2647}\n.pv-row .rs{font-size:11px;color:#7a8aa0}\n.pv-row
+    .amt{font-weight:800;color:#0b2647;font-family:var(--heading-font)}\n.pv-dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:7px;vertical-align:middle}\n.pv-deal
+    .drow{display:flex;justify-content:space-between;padding:7px 0;font-size:13px;color:#40506a}\n.pv-deal
+    .drow b{color:#0b2647}\n.pv-deal .strike{text-decoration:line-through;color:#9aa8bb}\n.pv-deal
+    .agreed{color:#0a7d70;font-weight:900}\n.pv-deal .ctx{background:#eafaf8;border-left:3px
+    solid #0FA697;padding:8px 10px;border-radius:7px;font-size:12px;font-style:italic;color:#0b2647;margin-top:8px}\n.pv-bal{display:flex;justify-content:space-between;text-align:center;gap:6px}\n.pv-bal
+    div{flex:1}\n.pv-bal .k{font-size:10px;color:#7a8aa0;text-transform:uppercase;letter-spacing:.04em;font-weight:700}\n.pv-bal
+    .v{font-family:var(--heading-font);font-weight:900;font-size:16px;color:#0b2647;margin-top:2px}\n.pv-bal
+    .v.owe{color:#c0392b}\n\n/* SECTIONS */\nsection{padding:92px 0}\nsection.tight{padding:64px
+    0}\n.sec-head{text-align:center;max-width:760px;margin:0 auto 56px}\n.sec-head
+    h2{font-size:clamp(29px,4vw,42px);font-weight:900;margin:12px 0}\n.sec-head p{font-size:18.5px;color:var(--body)}\n\n/*
+    anchor / id cards */\n.id-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}\n@media(max-width:900px){.id-grid{grid-template-columns:repeat(2,1fr)}}\n@media(max-width:480px){.id-grid{grid-template-columns:1fr}}\n.id-card{background:var(--card);border:1px
     solid var(--line);border-radius:16px;padding:28px;position:relative;overflow:hidden;transition:transform
     .2s ease,box-shadow .2s ease,border-color .2s}\n.id-card:hover{transform:translateY(-4px);box-shadow:0
     20px 44px -22px rgba(3,32,58,.5);border-color:var(--teal)}\n.id-card .tag{font-family:var(--heading-font);font-weight:800;font-size:12px;letter-spacing:.05em;color:#022b26;background:var(--teal-bright);display:inline-block;padding:4px
