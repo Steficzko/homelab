@@ -110,7 +110,7 @@ data:
     \     <p class=\"trust anim d4\">Built for cash &amp; bargaining markets — where
     the price is a conversation, not a list.</p>\n    </div>\n    <div class=\"appwin
     anim d3\">\n      <div class=\"appwin-bar\"><span class=\"td r\"></span><span
-    class=\"td y\"></span><span class=\"td g\"></span><span class=\"appwin-url\">blanca.gompha.com
+    class=\"td y\"></span><span class=\"td g\"></span><span class=\"appwin-url\">demo.gompha.com
     › patient · tooth chart</span></div>\n      <div class=\"appwin-body\">\n        <div
     class=\"appwin-cap\">Two-layer odontogram <span class=\"pin\">live screen</span></div>\n
     \       <img src=\"odontogram.svg\" alt=\"Gompha two-layer tooth chart — crowns,
@@ -187,7 +187,7 @@ data:
     chart trends the mouth over time, and reception drives the day on a room-by-room
     grid.</p>\n    </div>\n    <div class=\"showcase stagger\">\n      <div class=\"appwin\">\n
     \       <div class=\"appwin-bar\"><span class=\"td r\"></span><span class=\"td
-    y\"></span><span class=\"td g\"></span><span class=\"appwin-url\">blanca.gompha.com
+    y\"></span><span class=\"td g\"></span><span class=\"appwin-url\">demo.gompha.com
     › patient · perio chart</span></div>\n        <div class=\"appwin-body\">\n          <div
     class=\"appwin-cap\">Periodontal line chart <span class=\"pin\">upper · buccal</span></div>\n
     \         <img src=\"perio.svg\" alt=\"Periodontal line chart — gingival margin
@@ -198,7 +198,7 @@ data:
     style=\"background:#d9534f\"></i>deep pocket / bleeding</span>\n          </div>\n
     \       </div>\n      </div>\n      <div class=\"appwin\">\n        <div class=\"appwin-bar\"><span
     class=\"td r\"></span><span class=\"td y\"></span><span class=\"td g\"></span><span
-    class=\"appwin-url\">blanca.gompha.com › reception · schedule</span></div>\n        <div
+    class=\"appwin-url\">demo.gompha.com › reception · schedule</span></div>\n        <div
     class=\"appwin-body\">\n          <div class=\"appwin-cap\">Room-grid schedule
     <span class=\"pin\">rooms as columns</span></div>\n          <div class=\"sched\">\n
     \           <div class=\"sh\"></div>\n            <div class=\"sh\"><span class=\"rdot\"
