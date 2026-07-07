@@ -1,0 +1,22 @@
+# Custom nginx config for the landing: serve the ConfigMap docroot AND send
+# Cache-Control: no-cache so neither the browser nor Cloudflare's edge serves a
+# stale marketing page (the site is deployed by ConfigMap swaps, often).
+# CF respects origin no-cache/no-store and will not edge-cache these responses.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: landing-nginx
+  namespace: gompha
+data:
+  default.conf: |
+    server {
+      listen 80;
+      server_name _;
+      root /usr/share/nginx/html;
+      index index.html;
+      # Always revalidate — no stale HTML/CSS/JS/SVG at the browser or CF edge.
+      add_header Cache-Control "no-cache, must-revalidate" always;
+      location / {
+        try_files $uri $uri/ =404;
+      }
+    }
