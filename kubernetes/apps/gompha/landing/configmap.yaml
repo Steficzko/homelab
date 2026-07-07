@@ -12,7 +12,7 @@ data:
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css?v=3">
+    <link rel="stylesheet" href="style.css?v=5">
     <style>
     /* founders — page-local, no other page uses it */
     .founder-grid{display:grid;grid-template-columns:1fr 1fr;gap:26px;max-width:920px;margin:0 auto}
@@ -80,7 +80,7 @@ data:
       </div>
     </footer>
 
-    <script src="reveal.js?v=3"></script>
+    <script src="reveal.js?v=5"></script>
     </body>
     </html>
   heroanim.js: |
@@ -157,20 +157,26 @@ data:
       body.insertBefore(odoWrap, svg); odoWrap.appendChild(svg); if (legendOdo) odoWrap.appendChild(legendOdo);
       var perioWrap = document.createElement('div'); perioWrap.className = 'hero-chart'; perioWrap.style.display = 'none';
       perioWrap.appendChild(perioSvg);
+      var AR = document.documentElement.lang === 'ar';
+      var T = AR
+        ? { odo: 'مخطط الأسنان ثنائي الطبقة', perio: 'مخطط اللثة',
+            leg: '<span><i style="background:#2b6cb0"></i>عمق الجيب</span><span><i style="background:#d9534f"></i>عميق ≥5 مم</span><span><i style="background:#0a2a52"></i>خط اللثة</span>' }
+        : { odo: 'Two-layer odontogram', perio: 'Periodontal chart',
+            leg: '<span><i style="background:#2b6cb0"></i>pocket depth</span><span><i style="background:#d9534f"></i>deep ≥5&nbsp;mm</span><span><i style="background:#0a2a52"></i>gum-line trend</span>' };
       var legendPerio = document.createElement('div'); legendPerio.className = 'od-key';
-      legendPerio.innerHTML = '<span><i style="background:#2b6cb0"></i>pocket depth</span><span><i style="background:#d9534f"></i>deep ≥5&nbsp;mm</span><span><i style="background:#0a2a52"></i>gum-line trend</span>';
+      legendPerio.innerHTML = T.leg;
       perioWrap.appendChild(legendPerio); body.appendChild(perioWrap);
 
       var title = document.getElementById('hero-title');
-      var url = document.querySelector('.appwin-url');
+      var url = document.querySelector('.appwin-url'); // domain path — kept English both langs
       function setMode(m) {
         if (m === 'perio') {
           odoWrap.style.display = 'none'; perioWrap.style.display = '';
-          if (title) title.textContent = 'Periodontal chart';
+          if (title) title.textContent = T.perio;
           if (url) url.textContent = 'demo.gompha.com › patient · perio chart';
         } else {
           perioWrap.style.display = 'none'; odoWrap.style.display = '';
-          if (title) title.textContent = 'Two-layer odontogram';
+          if (title) title.textContent = T.odo;
           if (url) url.textContent = 'demo.gompha.com › patient · tooth chart';
         }
       }
@@ -243,6 +249,702 @@ data:
       }
       setTimeout(start, 800); // guaranteed start (hero is above the fold)
     })();
+  index.ar.html: "<!DOCTYPE html>\n<html lang=\"ar\" dir=\"rtl\" class=\"no-js\">\n<head>\n<meta
+    charset=\"UTF-8\">\n<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n<meta
+    name=\"robots\" content=\"noindex\">\n<title>جومفا — عيادتك، راسخة.</title>\n<meta
+    name=\"description\" content=\"جومفا هو نظام إدارة عيادات الأسنان الذي يجمع مخطط
+    الأسنان والمواعيد والحالات وسجل الاتفاقات في سجل واحد — مصمَّم للعيادات التي تتفاوض
+    على الأسعار.\">\n<link rel=\"preconnect\" href=\"https://fonts.googleapis.com\">\n<link
+    rel=\"preconnect\" href=\"https://fonts.gstatic.com\" crossorigin>\n<link href=\"https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&display=swap\"
+    rel=\"stylesheet\">\n<link rel=\"stylesheet\" href=\"style.css?v=5\">\n</head>\n<body>\n\n<nav>\n
+    \ <div class=\"wrap nav-in\">\n    <div class=\"logo\"><a href=\"index.ar.html\">G<span
+    class=\"socket\"></span>mpha</a></div>\n    <div class=\"nav-links\">\n      <a
+    href=\"index.ar.html#capabilities\">المزايا</a>\n      <a href=\"roadmap.html\">خارطة
+    الطريق</a>\n      <a href=\"scale.html\">التوسّع والملكية</a>\n      <a href=\"safety.html\">أمان
+    البيانات</a>\n      <a href=\"index.ar.html#demos\">تجارب حيّة</a>\n      <a href=\"index.html\"
+    class=\"langtoggle\">EN</a>\n      <a href=\"mailto:hello@gompha.com\" class=\"btn
+    btn-primary\" style=\"padding:10px 20px\">تواصل معنا</a>\n    </div>\n  </div>\n</nav>\n\n<!--
+    HERO -->\n<header class=\"hero\">\n  <div class=\"glow g1\"></div><div class=\"glow
+    g2\"></div>\n  <div class=\"wrap hero-grid\">\n    <div class=\"hero-copy\">\n
+    \     <span class=\"pill anim d1\">\U0001F9B7 <span>النسخة <b>v0.27.0</b> قيد
+    التشغيل — في عيادة حقيقية بأربيل</span></span>\n      <h1 class=\"anim d2\">عيادتك،
+    راسخة.</h1>\n      <p class=\"tagline anim d3\">يجمع جومفا مخطط أسنانك، ومواعيدك،
+    وكل حالة، وكل اتفاق سعر في سجل واحد — ويتذكّر من وافق على السعر ولماذا. لا شيء
+    يضيع، ولا شيء يُنسى.</p>\n      <div class=\"cta-row anim d4\">\n        <a href=\"index.ar.html#demos\"
+    class=\"btn btn-primary\">جرّب تجربة حيّة</a>\n        <a href=\"roadmap.html\"
+    class=\"btn btn-ghost\">← اطّلع على خارطة الطريق</a>\n      </div>\n      <p class=\"trust
+    anim d4\">مصمَّم لأسواق النقد والمساومة — حيث السعر حوار، لا قائمة ثابتة.</p>\n
+    \   </div>\n    <div class=\"appwin anim d3\">\n      <div class=\"appwin-bar\"><span
+    class=\"td r\"></span><span class=\"td y\"></span><span class=\"td g\"></span><span
+    class=\"appwin-url\" dir=\"ltr\">demo.gompha.com › patient · tooth chart</span></div>\n
+    \     <div class=\"appwin-body\">\n        <div class=\"appwin-cap\"><span id=\"hero-title\">مخطط
+    الأسنان ثنائي الطبقة</span> <span class=\"pin\">شاشة حيّة</span></div>\n        <svg
+    id=\"hero-odo\" viewBox=\"0 0 568 172\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\"
+    aria-label=\"Animated tooth chart building itself: each tooth cycles through crowns,
+    fillings, bridges, root canals, implants and missing teeth, then settles.\"><line
+    x1=\"16\" y1=\"83\" x2=\"552\" y2=\"83\" stroke=\"#d3deea\"/><text x=\"6\" y=\"87\"
+    font-size=\"10\" font-weight=\"700\" fill=\"#7d8b93\" font-family=\"Inter,sans-serif\">R</text><text
+    x=\"562\" y=\"87\" font-size=\"10\" font-weight=\"700\" fill=\"#7d8b93\" text-anchor=\"end\"
+    font-family=\"Inter,sans-serif\">L</text><g class=\"tooth\" data-fdi=\"18\" data-i=\"0\"><g
+    transform=\"translate(33.5 70) scale(0.75 -0.75) translate(-20 0)\"><path class=\"root\"
+    d=\"M17 30 Q16 50 20 55 Q24 50 23 30 Z\" fill=\"#ffffff\" stroke=\"#7d8b93\" stroke-width=\"1.3\"/><path
+    class=\"root\" d=\"M9 30 Q7 56 11 63 Q15 56 15 30 Z\" fill=\"#ffffff\" stroke=\"#7d8b93\"
+    stroke-width=\"1.3\"/><path class=\"root\" d=\"M25 30 Q25 56 29 63 Q33 56 31 30
+    Z\" fill=\"#ffffff\" stroke=\"#7d8b93\" stroke-width=\"1.3\"/><path class=\"screw\"
+    d=\"M15 30 h10 v24 l-5 8 l-5 -8 Z\" fill=\"#5b7185\" style=\"display:none\"/><path
+    class=\"thread\" d=\"M15 35 h10 M15 40 h10 M15 45 h10 M15 50 h10\" fill=\"none\"
+    stroke=\"#fff\" stroke-width=\"1.4\" style=\"display:none\"/><path class=\"crown\"
+    d=\"M6 30 L6 16 Q6 11 11 11 L15 14 L20 11 L25 14 L29 11 Q34 11 34 16 L34 30 Z\"
+    fill=\"#ffffff\" stroke=\"#7d8b93\" stroke-width=\"1.3\"/><path class=\"shine\"
+    d=\"M9 12 Q20 8 31 12\" fill=\"none\" stroke=\"rgba(255,255,255,.55)\" stroke-width=\"1\"
+    style=\"display:none\"/><path class=\"xmark\" d=\"M7 8 L33 60 M33 8 L7 60\" fill=\"none\"
+    stroke=\"#9aa6ad\" stroke-width=\"2\" stroke-linecap=\"round\" style=\"display:none\"/></g><circle
+    class=\"dot\" cx=\"33.5\" cy=\"56.5\" r=\"3.6\" fill=\"#1a7f37\" stroke=\"#fff\"
+    stroke-width=\"1\" style=\"display:none\"/><text x=\"33.5\" y=\"10\" font-size=\"10\"
+    font-weight=\"600\" fill=\"#7d8b93\" text-anchor=\"middle\" font-family=\"Inter,sans-serif\">18</text></g><g
+    class=\"tooth\" data-fdi=\"17\" data-i=\"1\"><g transform=\"translate(66.5 70)
+    scale(0.75 -0.75) translate(-20 0)\"><path class=\"root\" d=\"M17 30 Q16 50 20
+    55 Q24 50 23 30 Z\" fill=\"#ffffff\" stroke=\"#7d8b93\" stroke-width=\"1.3\"/><path
+    class=\"root\" d=\"M9 30 Q7 56 11 63 Q15 56 15 30 Z\" fill=\"#ffffff\" stroke=\"#7d8b93\"
+    stroke-width=\"1.3\"/><path class=\"root\" d=\"M25 30 Q25 56 29 63 Q33 56 31 30
+    Z\" fill=\"#ffffff\" stroke=\"#7d8b93\" stroke-width=\"1.3\"/><path class=\"screw\"
+    d=\"M15 30 h10 v24 l-5 8 l-5 -8 Z\" fill=\"#5b7185\" style=\"display:none\"/><path
+    class=\"thread\" d=\"M15 35 h10 M15 40 h10 M15 45 h10 M15 50 h10\" fill=\"none\"
+    stroke=\"#fff\" stroke-width=\"1.4\" style=\"display:none\"/><path class=\"crown\"
+    d=\"M6 30 L6 16 Q6 11 11 11 L15 14 L20 11 L25 14 L29 11 Q34 11 34 16 L34 30 Z\"
+    fill=\"#ffffff\" stroke=\"#7d8b93\" stroke-width=\"1.3\"/><path class=\"shine\"
+    d=\"M9 12 Q20 8 31 12\" fill=\"none\" stroke=\"rgba(255,255,255,.55)\" stroke-width=\"1\"
+    style=\"display:none\"/><path class=\"xmark\" d=\"M7 8 L33 60 M33 8 L7 60\" fill=\"none\"
+    stroke=\"#9aa6ad\" stroke-width=\"2\" stroke-linecap=\"round\" style=\"display:none\"/></g><circle
+    class=\"dot\" cx=\"66.5\" cy=\"56.5\" r=\"3.6\" fill=\"#1a7f37\" stroke=\"#fff\"
+    stroke-width=\"1\" style=\"display:none\"/><text x=\"66.5\" y=\"10\" font-size=\"10\"
+    font-weight=\"600\" fill=\"#7d8b93\" text-anchor=\"middle\" font-family=\"Inter,sans-serif\">17</text></g><g
+    class=\"tooth\" data-fdi=\"16\" data-i=\"2\"><g transform=\"translate(99.5 70)
+    scale(0.75 -0.75) translate(-20 0)\"><path class=\"root\" d=\"M17 30 Q16 50 20
+    55 Q24 50 23 30 Z\" fill=\"#ffffff\" stroke=\"#7d8b93\" stroke-width=\"1.3\"/><path
+    class=\"root\" d=\"M9 30 Q7 56 11 63 Q15 56 15 30 Z\" fill=\"#ffffff\" stroke=\"#7d8b93\"
+    stroke-width=\"1.3\"/><path class=\"root\" d=\"M25 30 Q25 56 29 63 Q33 56 31 30
+    Z\" fill=\"#ffffff\" stroke=\"#7d8b93\" stroke-width=\"1.3\"/><path class=\"screw\"
+    d=\"M15 30 h10 v24 l-5 8 l-5 -8 Z\" fill=\"#5b7185\" style=\"display:none\"/><path
+    class=\"thread\" d=\"M15 35 h10 M15 40 h10 M15 45 h10 M15 50 h10\" fill=\"none\"
+    stroke=\"#fff\" stroke-width=\"1.4\" style=\"display:none\"/><path class=\"crown\"
+    d=\"M6 30 L6 16 Q6 11 11 11 L15 14 L20 11 L25 14 L29 11 Q34 11 34 16 L34 30 Z\"
+    fill=\"#ffffff\" stroke=\"#7d8b93\" stroke-width=\"1.3\"/><path class=\"shine\"
+    d=\"M9 12 Q20 8 31 12\" fill=\"none\" stroke=\"rgba(255,255,255,.55)\" stroke-width=\"1\"
+    style=\"display:none\"/><path class=\"xmark\" d=\"M7 8 L33 60 M33 8 L7 60\" fill=\"none\"
+    stroke=\"#9aa6ad\" stroke-width=\"2\" stroke-linecap=\"round\" style=\"display:none\"/></g><circle
+    class=\"dot\" cx=\"99.5\" cy=\"56.5\" r=\"3.6\" fill=\"#1a7f37\" stroke=\"#fff\"
+    stroke-width=\"1\" style=\"display:none\"/><text x=\"99.5\" y=\"10\" font-size=\"10\"
+    font-weight=\"600\" fill=\"#7d8b93\" text-anchor=\"middle\" font-family=\"Inter,sans-serif\">16</text></g><g
+    class=\"tooth\" data-fdi=\"15\" data-i=\"3\"><g transform=\"translate(132.5 70)
+    scale(0.75 -0.75) translate(-20 0)\"><path class=\"root\" d=\"M13 30 Q14 58 20
+    64 Q26 58 27 30 Z\" fill=\"#ffffff\" stroke=\"#7d8b93\" stroke-width=\"1.3\"/><path
+    class=\"screw\" d=\"M15 30 h10 v24 l-5 8 l-5 -8 Z\" fill=\"#5b7185\" style=\"display:none\"/><path
+    class=\"thread\" d=\"M15 35 h10 M15 40 h10 M15 45 h10 M15 50 h10\" fill=\"none\"
+    stroke=\"#fff\" stroke-width=\"1.4\" style=\"display:none\"/><path class=\"crown\"
+    d=\"M10 30 L10 15 Q10 10 15 11 L20 14 L25 11 Q30 10 30 15 L30 30 Z\" fill=\"#ffffff\"
+    stroke=\"#7d8b93\" stroke-width=\"1.3\"/><path class=\"shine\" d=\"M9 12 Q20 8
+    31 12\" fill=\"none\" stroke=\"rgba(255,255,255,.55)\" stroke-width=\"1\" style=\"display:none\"/><path
+    class=\"xmark\" d=\"M7 8 L33 60 M33 8 L7 60\" fill=\"none\" stroke=\"#9aa6ad\"
+    stroke-width=\"2\" stroke-linecap=\"round\" style=\"display:none\"/></g><circle
+    class=\"dot\" cx=\"132.5\" cy=\"56.5\" r=\"3.6\" fill=\"#1a7f37\" stroke=\"#fff\"
+    stroke-width=\"1\" style=\"display:none\"/><text x=\"132.5\" y=\"10\" font-size=\"10\"
+    font-weight=\"600\" fill=\"#7d8b93\" text-anchor=\"middle\" font-family=\"Inter,sans-serif\">15</text></g><g
+    class=\"tooth\" data-fdi=\"14\" data-i=\"4\"><g transform=\"translate(165.5 70)
+    scale(0.75 -0.75) translate(-20 0)\"><path class=\"root\" d=\"M13 30 Q14 58 20
+    64 Q26 58 27 30 Z\" fill=\"#ffffff\" stroke=\"#7d8b93\" stroke-width=\"1.3\"/><path
+    class=\"screw\" d=\"M15 30 h10 v24 l-5 8 l-5 -8 Z\" fill=\"#5b7185\" style=\"display:none\"/><path
+    class=\"thread\" d=\"M15 35 h10 M15 40 h10 M15 45 h10 M15 50 h10\" fill=\"none\"
+    stroke=\"#fff\" stroke-width=\"1.4\" style=\"display:none\"/><path class=\"crown\"
+    d=\"M10 30 L10 15 Q10 10 15 11 L20 14 L25 11 Q30 10 30 15 L30 30 Z\" fill=\"#ffffff\"
+    stroke=\"#7d8b93\" stroke-width=\"1.3\"/><path class=\"shine\" d=\"M9 12 Q20 8
+    31 12\" fill=\"none\" stroke=\"rgba(255,255,255,.55)\" stroke-width=\"1\" style=\"display:none\"/><path
+    class=\"xmark\" d=\"M7 8 L33 60 M33 8 L7 60\" fill=\"none\" stroke=\"#9aa6ad\"
+    stroke-width=\"2\" stroke-linecap=\"round\" style=\"display:none\"/></g><circle
+    class=\"dot\" cx=\"165.5\" cy=\"56.5\" r=\"3.6\" fill=\"#1a7f37\" stroke=\"#fff\"
+    stroke-width=\"1\" style=\"display:none\"/><text x=\"165.5\" y=\"10\" font-size=\"10\"
+    font-weight=\"600\" fill=\"#7d8b93\" text-anchor=\"middle\" font-family=\"Inter,sans-serif\">14</text></g><g
+    class=\"tooth\" data-fdi=\"13\" data-i=\"5\"><g transform=\"translate(198.5 70)
+    scale(0.75 -0.75) translate(-20 0)\"><path class=\"root\" d=\"M13 30 Q15 61 20
+    68 Q25 61 27 30 Z\" fill=\"#ffffff\" stroke=\"#7d8b93\" stroke-width=\"1.3\"/><path
+    class=\"screw\" d=\"M15 30 h10 v24 l-5 8 l-5 -8 Z\" fill=\"#5b7185\" style=\"display:none\"/><path
+    class=\"thread\" d=\"M15 35 h10 M15 40 h10 M15 45 h10 M15 50 h10\" fill=\"none\"
+    stroke=\"#fff\" stroke-width=\"1.4\" style=\"display:none\"/><path class=\"crown\"
+    d=\"M11 30 L11 15 L20 6 L29 15 L29 30 Z\" fill=\"#ffffff\" stroke=\"#7d8b93\"
+    stroke-width=\"1.3\"/><path class=\"shine\" d=\"M9 12 Q20 8 31 12\" fill=\"none\"
+    stroke=\"rgba(255,255,255,.55)\" stroke-width=\"1\" style=\"display:none\"/><path
+    class=\"xmark\" d=\"M7 8 L33 60 M33 8 L7 60\" fill=\"none\" stroke=\"#9aa6ad\"
+    stroke-width=\"2\" stroke-linecap=\"round\" style=\"display:none\"/></g><circle
+    class=\"dot\" cx=\"198.5\" cy=\"56.5\" r=\"3.6\" fill=\"#1a7f37\" stroke=\"#fff\"
+    stroke-width=\"1\" style=\"display:none\"/><text x=\"198.5\" y=\"10\" font-size=\"10\"
+    font-weight=\"600\" fill=\"#7d8b93\" text-anchor=\"middle\" font-family=\"Inter,sans-serif\">13</text></g><g
+    class=\"tooth\" data-fdi=\"12\" data-i=\"6\"><g transform=\"translate(231.5 70)
+    scale(0.75 -0.75) translate(-20 0)\"><path class=\"root\" d=\"M13 30 Q15 60 20
+    66 Q25 60 27 30 Z\" fill=\"#ffffff\" stroke=\"#7d8b93\" stroke-width=\"1.3\"/><path
+    class=\"screw\" d=\"M15 30 h10 v24 l-5 8 l-5 -8 Z\" fill=\"#5b7185\" style=\"display:none\"/><path
+    class=\"thread\" d=\"M15 35 h10 M15 40 h10 M15 45 h10 M15 50 h10\" fill=\"none\"
+    stroke=\"#fff\" stroke-width=\"1.4\" style=\"display:none\"/><path class=\"crown\"
+    d=\"M9 30 L9 14 Q9 7 20 6 Q31 7 31 14 L31 30 Z\" fill=\"#ffffff\" stroke=\"#7d8b93\"
+    stroke-width=\"1.3\"/><path class=\"shine\" d=\"M9 12 Q20 8 31 12\" fill=\"none\"
+    stroke=\"rgba(255,255,255,.55)\" stroke-width=\"1\" style=\"display:none\"/><path
+    class=\"xmark\" d=\"M7 8 L33 60 M33 8 L7 60\" fill=\"none\" stroke=\"#9aa6ad\"
+    stroke-width=\"2\" stroke-linecap=\"round\" style=\"display:none\"/></g><circle
+    class=\"dot\" cx=\"231.5\" cy=\"56.5\" r=\"3.6\" fill=\"#1a7f37\" stroke=\"#fff\"
+    stroke-width=\"1\" style=\"display:none\"/><text x=\"231.5\" y=\"10\" font-size=\"10\"
+    font-weight=\"600\" fill=\"#7d8b93\" text-anchor=\"middle\" font-family=\"Inter,sans-serif\">12</text></g><g
+    class=\"tooth\" data-fdi=\"11\" data-i=\"7\"><g transform=\"translate(264.5 70)
+    scale(0.75 -0.75) translate(-20 0)\"><path class=\"root\" d=\"M13 30 Q15 60 20
+    66 Q25 60 27 30 Z\" fill=\"#ffffff\" stroke=\"#7d8b93\" stroke-width=\"1.3\"/><path
+    class=\"screw\" d=\"M15 30 h10 v24 l-5 8 l-5 -8 Z\" fill=\"#5b7185\" style=\"display:none\"/><path
+    class=\"thread\" d=\"M15 35 h10 M15 40 h10 M15 45 h10 M15 50 h10\" fill=\"none\"
+    stroke=\"#fff\" stroke-width=\"1.4\" style=\"display:none\"/><path class=\"crown\"
+    d=\"M9 30 L9 14 Q9 7 20 6 Q31 7 31 14 L31 30 Z\" fill=\"#ffffff\" stroke=\"#7d8b93\"
+    stroke-width=\"1.3\"/><path class=\"shine\" d=\"M9 12 Q20 8 31 12\" fill=\"none\"
+    stroke=\"rgba(255,255,255,.55)\" stroke-width=\"1\" style=\"display:none\"/><path
+    class=\"xmark\" d=\"M7 8 L33 60 M33 8 L7 60\" fill=\"none\" stroke=\"#9aa6ad\"
+    stroke-width=\"2\" stroke-linecap=\"round\" style=\"display:none\"/></g><circle
+    class=\"dot\" cx=\"264.5\" cy=\"56.5\" r=\"3.6\" fill=\"#1a7f37\" stroke=\"#fff\"
+    stroke-width=\"1\" style=\"display:none\"/><text x=\"264.5\" y=\"10\" font-size=\"10\"
+    font-weight=\"600\" fill=\"#7d8b93\" text-anchor=\"middle\" font-family=\"Inter,sans-serif\">11</text></g><g
+    class=\"tooth\" data-fdi=\"21\" data-i=\"8\"><g transform=\"translate(311.5 70)
+    scale(0.75 -0.75) translate(-20 0)\"><path class=\"root\" d=\"M13 30 Q15 60 20
+    66 Q25 60 27 30 Z\" fill=\"#ffffff\" stroke=\"#7d8b93\" stroke-width=\"1.3\"/><path
+    class=\"screw\" d=\"M15 30 h10 v24 l-5 8 l-5 -8 Z\" fill=\"#5b7185\" style=\"display:none\"/><path
+    class=\"thread\" d=\"M15 35 h10 M15 40 h10 M15 45 h10 M15 50 h10\" fill=\"none\"
+    stroke=\"#fff\" stroke-width=\"1.4\" style=\"display:none\"/><path class=\"crown\"
+    d=\"M9 30 L9 14 Q9 7 20 6 Q31 7 31 14 L31 30 Z\" fill=\"#ffffff\" stroke=\"#7d8b93\"
+    stroke-width=\"1.3\"/><path class=\"shine\" d=\"M9 12 Q20 8 31 12\" fill=\"none\"
+    stroke=\"rgba(255,255,255,.55)\" stroke-width=\"1\" style=\"display:none\"/><path
+    class=\"xmark\" d=\"M7 8 L33 60 M33 8 L7 60\" fill=\"none\" stroke=\"#9aa6ad\"
+    stroke-width=\"2\" stroke-linecap=\"round\" style=\"display:none\"/></g><circle
+    class=\"dot\" cx=\"311.5\" cy=\"56.5\" r=\"3.6\" fill=\"#1a7f37\" stroke=\"#fff\"
+    stroke-width=\"1\" style=\"display:none\"/><text x=\"311.5\" y=\"10\" font-size=\"10\"
+    font-weight=\"600\" fill=\"#7d8b93\" text-anchor=\"middle\" font-family=\"Inter,sans-serif\">21</text></g><g
+    class=\"tooth\" data-fdi=\"22\" data-i=\"9\"><g transform=\"translate(344.5 70)
+    scale(0.75 -0.75) translate(-20 0)\"><path class=\"root\" d=\"M13 30 Q15 60 20
+    66 Q25 60 27 30 Z\" fill=\"#ffffff\" stroke=\"#7d8b93\" stroke-width=\"1.3\"/><path
+    class=\"screw\" d=\"M15 30 h10 v24 l-5 8 l-5 -8 Z\" fill=\"#5b7185\" style=\"display:none\"/><path
+    class=\"thread\" d=\"M15 35 h10 M15 40 h10 M15 45 h10 M15 50 h10\" fill=\"none\"
+    stroke=\"#fff\" stroke-width=\"1.4\" style=\"display:none\"/><path class=\"crown\"
+    d=\"M9 30 L9 14 Q9 7 20 6 Q31 7 31 14 L31 30 Z\" fill=\"#ffffff\" stroke=\"#7d8b93\"
+    stroke-width=\"1.3\"/><path class=\"shine\" d=\"M9 12 Q20 8 31 12\" fill=\"none\"
+    stroke=\"rgba(255,255,255,.55)\" stroke-width=\"1\" style=\"display:none\"/><path
+    class=\"xmark\" d=\"M7 8 L33 60 M33 8 L7 60\" fill=\"none\" stroke=\"#9aa6ad\"
+    stroke-width=\"2\" stroke-linecap=\"round\" style=\"display:none\"/></g><circle
+    class=\"dot\" cx=\"344.5\" cy=\"56.5\" r=\"3.6\" fill=\"#1a7f37\" stroke=\"#fff\"
+    stroke-width=\"1\" style=\"display:none\"/><text x=\"344.5\" y=\"10\" font-size=\"10\"
+    font-weight=\"600\" fill=\"#7d8b93\" text-anchor=\"middle\" font-family=\"Inter,sans-serif\">22</text></g><g
+    class=\"tooth\" data-fdi=\"23\" data-i=\"10\"><g transform=\"translate(377.5 70)
+    scale(0.75 -0.75) translate(-20 0)\"><path class=\"root\" d=\"M13 30 Q15 61 20
+    68 Q25 61 27 30 Z\" fill=\"#ffffff\" stroke=\"#7d8b93\" stroke-width=\"1.3\"/><path
+    class=\"screw\" d=\"M15 30 h10 v24 l-5 8 l-5 -8 Z\" fill=\"#5b7185\" style=\"display:none\"/><path
+    class=\"thread\" d=\"M15 35 h10 M15 40 h10 M15 45 h10 M15 50 h10\" fill=\"none\"
+    stroke=\"#fff\" stroke-width=\"1.4\" style=\"display:none\"/><path class=\"crown\"
+    d=\"M11 30 L11 15 L20 6 L29 15 L29 30 Z\" fill=\"#ffffff\" stroke=\"#7d8b93\"
+    stroke-width=\"1.3\"/><path class=\"shine\" d=\"M9 12 Q20 8 31 12\" fill=\"none\"
+    stroke=\"rgba(255,255,255,.55)\" stroke-width=\"1\" style=\"display:none\"/><path
+    class=\"xmark\" d=\"M7 8 L33 60 M33 8 L7 60\" fill=\"none\" stroke=\"#9aa6ad\"
+    stroke-width=\"2\" stroke-linecap=\"round\" style=\"display:none\"/></g><circle
+    class=\"dot\" cx=\"377.5\" cy=\"56.5\" r=\"3.6\" fill=\"#1a7f37\" stroke=\"#fff\"
+    stroke-width=\"1\" style=\"display:none\"/><text x=\"377.5\" y=\"10\" font-size=\"10\"
+    font-weight=\"600\" fill=\"#7d8b93\" text-anchor=\"middle\" font-family=\"Inter,sans-serif\">23</text></g><g
+    class=\"tooth\" data-fdi=\"24\" data-i=\"11\"><g transform=\"translate(410.5 70)
+    scale(0.75 -0.75) translate(-20 0)\"><path class=\"root\" d=\"M13 30 Q14 58 20
+    64 Q26 58 27 30 Z\" fill=\"#ffffff\" stroke=\"#7d8b93\" stroke-width=\"1.3\"/><path
+    class=\"screw\" d=\"M15 30 h10 v24 l-5 8 l-5 -8 Z\" fill=\"#5b7185\" style=\"display:none\"/><path
+    class=\"thread\" d=\"M15 35 h10 M15 40 h10 M15 45 h10 M15 50 h10\" fill=\"none\"
+    stroke=\"#fff\" stroke-width=\"1.4\" style=\"display:none\"/><path class=\"crown\"
+    d=\"M10 30 L10 15 Q10 10 15 11 L20 14 L25 11 Q30 10 30 15 L30 30 Z\" fill=\"#ffffff\"
+    stroke=\"#7d8b93\" stroke-width=\"1.3\"/><path class=\"shine\" d=\"M9 12 Q20 8
+    31 12\" fill=\"none\" stroke=\"rgba(255,255,255,.55)\" stroke-width=\"1\" style=\"display:none\"/><path
+    class=\"xmark\" d=\"M7 8 L33 60 M33 8 L7 60\" fill=\"none\" stroke=\"#9aa6ad\"
+    stroke-width=\"2\" stroke-linecap=\"round\" style=\"display:none\"/></g><circle
+    class=\"dot\" cx=\"410.5\" cy=\"56.5\" r=\"3.6\" fill=\"#1a7f37\" stroke=\"#fff\"
+    stroke-width=\"1\" style=\"display:none\"/><text x=\"410.5\" y=\"10\" font-size=\"10\"
+    font-weight=\"600\" fill=\"#7d8b93\" text-anchor=\"middle\" font-family=\"Inter,sans-serif\">24</text></g><g
+    class=\"tooth\" data-fdi=\"25\" data-i=\"12\"><g transform=\"translate(443.5 70)
+    scale(0.75 -0.75) translate(-20 0)\"><path class=\"root\" d=\"M13 30 Q14 58 20
+    64 Q26 58 27 30 Z\" fill=\"#ffffff\" stroke=\"#7d8b93\" stroke-width=\"1.3\"/><path
+    class=\"screw\" d=\"M15 30 h10 v24 l-5 8 l-5 -8 Z\" fill=\"#5b7185\" style=\"display:none\"/><path
+    class=\"thread\" d=\"M15 35 h10 M15 40 h10 M15 45 h10 M15 50 h10\" fill=\"none\"
+    stroke=\"#fff\" stroke-width=\"1.4\" style=\"display:none\"/><path class=\"crown\"
+    d=\"M10 30 L10 15 Q10 10 15 11 L20 14 L25 11 Q30 10 30 15 L30 30 Z\" fill=\"#ffffff\"
+    stroke=\"#7d8b93\" stroke-width=\"1.3\"/><path class=\"shine\" d=\"M9 12 Q20 8
+    31 12\" fill=\"none\" stroke=\"rgba(255,255,255,.55)\" stroke-width=\"1\" style=\"display:none\"/><path
+    class=\"xmark\" d=\"M7 8 L33 60 M33 8 L7 60\" fill=\"none\" stroke=\"#9aa6ad\"
+    stroke-width=\"2\" stroke-linecap=\"round\" style=\"display:none\"/></g><circle
+    class=\"dot\" cx=\"443.5\" cy=\"56.5\" r=\"3.6\" fill=\"#1a7f37\" stroke=\"#fff\"
+    stroke-width=\"1\" style=\"display:none\"/><text x=\"443.5\" y=\"10\" font-size=\"10\"
+    font-weight=\"600\" fill=\"#7d8b93\" text-anchor=\"middle\" font-family=\"Inter,sans-serif\">25</text></g><g
+    class=\"tooth\" data-fdi=\"26\" data-i=\"13\"><g transform=\"translate(476.5 70)
+    scale(0.75 -0.75) translate(-20 0)\"><path class=\"root\" d=\"M17 30 Q16 50 20
+    55 Q24 50 23 30 Z\" fill=\"#ffffff\" stroke=\"#7d8b93\" stroke-width=\"1.3\"/><path
+    class=\"root\" d=\"M9 30 Q7 56 11 63 Q15 56 15 30 Z\" fill=\"#ffffff\" stroke=\"#7d8b93\"
+    stroke-width=\"1.3\"/><path class=\"root\" d=\"M25 30 Q25 56 29 63 Q33 56 31 30
+    Z\" fill=\"#ffffff\" stroke=\"#7d8b93\" stroke-width=\"1.3\"/><path class=\"screw\"
+    d=\"M15 30 h10 v24 l-5 8 l-5 -8 Z\" fill=\"#5b7185\" style=\"display:none\"/><path
+    class=\"thread\" d=\"M15 35 h10 M15 40 h10 M15 45 h10 M15 50 h10\" fill=\"none\"
+    stroke=\"#fff\" stroke-width=\"1.4\" style=\"display:none\"/><path class=\"crown\"
+    d=\"M6 30 L6 16 Q6 11 11 11 L15 14 L20 11 L25 14 L29 11 Q34 11 34 16 L34 30 Z\"
+    fill=\"#ffffff\" stroke=\"#7d8b93\" stroke-width=\"1.3\"/><path class=\"shine\"
+    d=\"M9 12 Q20 8 31 12\" fill=\"none\" stroke=\"rgba(255,255,255,.55)\" stroke-width=\"1\"
+    style=\"display:none\"/><path class=\"xmark\" d=\"M7 8 L33 60 M33 8 L7 60\" fill=\"none\"
+    stroke=\"#9aa6ad\" stroke-width=\"2\" stroke-linecap=\"round\" style=\"display:none\"/></g><circle
+    class=\"dot\" cx=\"476.5\" cy=\"56.5\" r=\"3.6\" fill=\"#1a7f37\" stroke=\"#fff\"
+    stroke-width=\"1\" style=\"display:none\"/><text x=\"476.5\" y=\"10\" font-size=\"10\"
+    font-weight=\"600\" fill=\"#7d8b93\" text-anchor=\"middle\" font-family=\"Inter,sans-serif\">26</text></g><g
+    class=\"tooth\" data-fdi=\"27\" data-i=\"14\"><g transform=\"translate(509.5 70)
+    scale(0.75 -0.75) translate(-20 0)\"><path class=\"root\" d=\"M17 30 Q16 50 20
+    55 Q24 50 23 30 Z\" fill=\"#ffffff\" stroke=\"#7d8b93\" stroke-width=\"1.3\"/><path
+    class=\"root\" d=\"M9 30 Q7 56 11 63 Q15 56 15 30 Z\" fill=\"#ffffff\" stroke=\"#7d8b93\"
+    stroke-width=\"1.3\"/><path class=\"root\" d=\"M25 30 Q25 56 29 63 Q33 56 31 30
+    Z\" fill=\"#ffffff\" stroke=\"#7d8b93\" stroke-width=\"1.3\"/><path class=\"screw\"
+    d=\"M15 30 h10 v24 l-5 8 l-5 -8 Z\" fill=\"#5b7185\" style=\"display:none\"/><path
+    class=\"thread\" d=\"M15 35 h10 M15 40 h10 M15 45 h10 M15 50 h10\" fill=\"none\"
+    stroke=\"#fff\" stroke-width=\"1.4\" style=\"display:none\"/><path class=\"crown\"
+    d=\"M6 30 L6 16 Q6 11 11 11 L15 14 L20 11 L25 14 L29 11 Q34 11 34 16 L34 30 Z\"
+    fill=\"#ffffff\" stroke=\"#7d8b93\" stroke-width=\"1.3\"/><path class=\"shine\"
+    d=\"M9 12 Q20 8 31 12\" fill=\"none\" stroke=\"rgba(255,255,255,.55)\" stroke-width=\"1\"
+    style=\"display:none\"/><path class=\"xmark\" d=\"M7 8 L33 60 M33 8 L7 60\" fill=\"none\"
+    stroke=\"#9aa6ad\" stroke-width=\"2\" stroke-linecap=\"round\" style=\"display:none\"/></g><circle
+    class=\"dot\" cx=\"509.5\" cy=\"56.5\" r=\"3.6\" fill=\"#1a7f37\" stroke=\"#fff\"
+    stroke-width=\"1\" style=\"display:none\"/><text x=\"509.5\" y=\"10\" font-size=\"10\"
+    font-weight=\"600\" fill=\"#7d8b93\" text-anchor=\"middle\" font-family=\"Inter,sans-serif\">27</text></g><g
+    class=\"tooth\" data-fdi=\"28\" data-i=\"15\"><g transform=\"translate(542.5 70)
+    scale(0.75 -0.75) translate(-20 0)\"><path class=\"root\" d=\"M17 30 Q16 50 20
+    55 Q24 50 23 30 Z\" fill=\"#ffffff\" stroke=\"#7d8b93\" stroke-width=\"1.3\"/><path
+    class=\"root\" d=\"M9 30 Q7 56 11 63 Q15 56 15 30 Z\" fill=\"#ffffff\" stroke=\"#7d8b93\"
+    stroke-width=\"1.3\"/><path class=\"root\" d=\"M25 30 Q25 56 29 63 Q33 56 31 30
+    Z\" fill=\"#ffffff\" stroke=\"#7d8b93\" stroke-width=\"1.3\"/><path class=\"screw\"
+    d=\"M15 30 h10 v24 l-5 8 l-5 -8 Z\" fill=\"#5b7185\" style=\"display:none\"/><path
+    class=\"thread\" d=\"M15 35 h10 M15 40 h10 M15 45 h10 M15 50 h10\" fill=\"none\"
+    stroke=\"#fff\" stroke-width=\"1.4\" style=\"display:none\"/><path class=\"crown\"
+    d=\"M6 30 L6 16 Q6 11 11 11 L15 14 L20 11 L25 14 L29 11 Q34 11 34 16 L34 30 Z\"
+    fill=\"#ffffff\" stroke=\"#7d8b93\" stroke-width=\"1.3\"/><path class=\"shine\"
+    d=\"M9 12 Q20 8 31 12\" fill=\"none\" stroke=\"rgba(255,255,255,.55)\" stroke-width=\"1\"
+    style=\"display:none\"/><path class=\"xmark\" d=\"M7 8 L33 60 M33 8 L7 60\" fill=\"none\"
+    stroke=\"#9aa6ad\" stroke-width=\"2\" stroke-linecap=\"round\" style=\"display:none\"/></g><circle
+    class=\"dot\" cx=\"542.5\" cy=\"56.5\" r=\"3.6\" fill=\"#1a7f37\" stroke=\"#fff\"
+    stroke-width=\"1\" style=\"display:none\"/><text x=\"542.5\" y=\"10\" font-size=\"10\"
+    font-weight=\"600\" fill=\"#7d8b93\" text-anchor=\"middle\" font-family=\"Inter,sans-serif\">28</text></g><g
+    class=\"tooth\" data-fdi=\"48\" data-i=\"0\"><g transform=\"translate(33.5 96)
+    scale(0.75) translate(-20 0)\"><path class=\"root\" d=\"M9 30 Q7 56 11 63 Q15
+    56 15 30 Z\" fill=\"#ffffff\" stroke=\"#7d8b93\" stroke-width=\"1.3\"/><path class=\"root\"
+    d=\"M25 30 Q25 56 29 63 Q33 56 31 30 Z\" fill=\"#ffffff\" stroke=\"#7d8b93\" stroke-width=\"1.3\"/><path
+    class=\"screw\" d=\"M15 30 h10 v24 l-5 8 l-5 -8 Z\" fill=\"#5b7185\" style=\"display:none\"/><path
+    class=\"thread\" d=\"M15 35 h10 M15 40 h10 M15 45 h10 M15 50 h10\" fill=\"none\"
+    stroke=\"#fff\" stroke-width=\"1.4\" style=\"display:none\"/><path class=\"crown\"
+    d=\"M6 30 L6 16 Q6 11 11 11 L15 14 L20 11 L25 14 L29 11 Q34 11 34 16 L34 30 Z\"
+    fill=\"#ffffff\" stroke=\"#7d8b93\" stroke-width=\"1.3\"/><path class=\"shine\"
+    d=\"M9 12 Q20 8 31 12\" fill=\"none\" stroke=\"rgba(255,255,255,.55)\" stroke-width=\"1\"
+    style=\"display:none\"/><path class=\"xmark\" d=\"M7 8 L33 60 M33 8 L7 60\" fill=\"none\"
+    stroke=\"#9aa6ad\" stroke-width=\"2\" stroke-linecap=\"round\" style=\"display:none\"/></g><circle
+    class=\"dot\" cx=\"33.5\" cy=\"109.5\" r=\"3.6\" fill=\"#1a7f37\" stroke=\"#fff\"
+    stroke-width=\"1\" style=\"display:none\"/><text x=\"33.5\" y=\"163\" font-size=\"10\"
+    font-weight=\"600\" fill=\"#7d8b93\" text-anchor=\"middle\" font-family=\"Inter,sans-serif\">48</text></g><g
+    class=\"tooth\" data-fdi=\"47\" data-i=\"1\"><g transform=\"translate(66.5 96)
+    scale(0.75) translate(-20 0)\"><path class=\"root\" d=\"M9 30 Q7 56 11 63 Q15
+    56 15 30 Z\" fill=\"#ffffff\" stroke=\"#7d8b93\" stroke-width=\"1.3\"/><path class=\"root\"
+    d=\"M25 30 Q25 56 29 63 Q33 56 31 30 Z\" fill=\"#ffffff\" stroke=\"#7d8b93\" stroke-width=\"1.3\"/><path
+    class=\"screw\" d=\"M15 30 h10 v24 l-5 8 l-5 -8 Z\" fill=\"#5b7185\" style=\"display:none\"/><path
+    class=\"thread\" d=\"M15 35 h10 M15 40 h10 M15 45 h10 M15 50 h10\" fill=\"none\"
+    stroke=\"#fff\" stroke-width=\"1.4\" style=\"display:none\"/><path class=\"crown\"
+    d=\"M6 30 L6 16 Q6 11 11 11 L15 14 L20 11 L25 14 L29 11 Q34 11 34 16 L34 30 Z\"
+    fill=\"#ffffff\" stroke=\"#7d8b93\" stroke-width=\"1.3\"/><path class=\"shine\"
+    d=\"M9 12 Q20 8 31 12\" fill=\"none\" stroke=\"rgba(255,255,255,.55)\" stroke-width=\"1\"
+    style=\"display:none\"/><path class=\"xmark\" d=\"M7 8 L33 60 M33 8 L7 60\" fill=\"none\"
+    stroke=\"#9aa6ad\" stroke-width=\"2\" stroke-linecap=\"round\" style=\"display:none\"/></g><circle
+    class=\"dot\" cx=\"66.5\" cy=\"109.5\" r=\"3.6\" fill=\"#1a7f37\" stroke=\"#fff\"
+    stroke-width=\"1\" style=\"display:none\"/><text x=\"66.5\" y=\"163\" font-size=\"10\"
+    font-weight=\"600\" fill=\"#7d8b93\" text-anchor=\"middle\" font-family=\"Inter,sans-serif\">47</text></g><g
+    class=\"tooth\" data-fdi=\"46\" data-i=\"2\"><g transform=\"translate(99.5 96)
+    scale(0.75) translate(-20 0)\"><path class=\"root\" d=\"M9 30 Q7 56 11 63 Q15
+    56 15 30 Z\" fill=\"#ffffff\" stroke=\"#7d8b93\" stroke-width=\"1.3\"/><path class=\"root\"
+    d=\"M25 30 Q25 56 29 63 Q33 56 31 30 Z\" fill=\"#ffffff\" stroke=\"#7d8b93\" stroke-width=\"1.3\"/><path
+    class=\"screw\" d=\"M15 30 h10 v24 l-5 8 l-5 -8 Z\" fill=\"#5b7185\" style=\"display:none\"/><path
+    class=\"thread\" d=\"M15 35 h10 M15 40 h10 M15 45 h10 M15 50 h10\" fill=\"none\"
+    stroke=\"#fff\" stroke-width=\"1.4\" style=\"display:none\"/><path class=\"crown\"
+    d=\"M6 30 L6 16 Q6 11 11 11 L15 14 L20 11 L25 14 L29 11 Q34 11 34 16 L34 30 Z\"
+    fill=\"#ffffff\" stroke=\"#7d8b93\" stroke-width=\"1.3\"/><path class=\"shine\"
+    d=\"M9 12 Q20 8 31 12\" fill=\"none\" stroke=\"rgba(255,255,255,.55)\" stroke-width=\"1\"
+    style=\"display:none\"/><path class=\"xmark\" d=\"M7 8 L33 60 M33 8 L7 60\" fill=\"none\"
+    stroke=\"#9aa6ad\" stroke-width=\"2\" stroke-linecap=\"round\" style=\"display:none\"/></g><circle
+    class=\"dot\" cx=\"99.5\" cy=\"109.5\" r=\"3.6\" fill=\"#1a7f37\" stroke=\"#fff\"
+    stroke-width=\"1\" style=\"display:none\"/><text x=\"99.5\" y=\"163\" font-size=\"10\"
+    font-weight=\"600\" fill=\"#7d8b93\" text-anchor=\"middle\" font-family=\"Inter,sans-serif\">46</text></g><g
+    class=\"tooth\" data-fdi=\"45\" data-i=\"3\"><g transform=\"translate(132.5 96)
+    scale(0.75) translate(-20 0)\"><path class=\"root\" d=\"M13 30 Q14 58 20 64 Q26
+    58 27 30 Z\" fill=\"#ffffff\" stroke=\"#7d8b93\" stroke-width=\"1.3\"/><path class=\"screw\"
+    d=\"M15 30 h10 v24 l-5 8 l-5 -8 Z\" fill=\"#5b7185\" style=\"display:none\"/><path
+    class=\"thread\" d=\"M15 35 h10 M15 40 h10 M15 45 h10 M15 50 h10\" fill=\"none\"
+    stroke=\"#fff\" stroke-width=\"1.4\" style=\"display:none\"/><path class=\"crown\"
+    d=\"M10 30 L10 15 Q10 10 15 11 L20 14 L25 11 Q30 10 30 15 L30 30 Z\" fill=\"#ffffff\"
+    stroke=\"#7d8b93\" stroke-width=\"1.3\"/><path class=\"shine\" d=\"M9 12 Q20 8
+    31 12\" fill=\"none\" stroke=\"rgba(255,255,255,.55)\" stroke-width=\"1\" style=\"display:none\"/><path
+    class=\"xmark\" d=\"M7 8 L33 60 M33 8 L7 60\" fill=\"none\" stroke=\"#9aa6ad\"
+    stroke-width=\"2\" stroke-linecap=\"round\" style=\"display:none\"/></g><circle
+    class=\"dot\" cx=\"132.5\" cy=\"109.5\" r=\"3.6\" fill=\"#1a7f37\" stroke=\"#fff\"
+    stroke-width=\"1\" style=\"display:none\"/><text x=\"132.5\" y=\"163\" font-size=\"10\"
+    font-weight=\"600\" fill=\"#7d8b93\" text-anchor=\"middle\" font-family=\"Inter,sans-serif\">45</text></g><g
+    class=\"tooth\" data-fdi=\"44\" data-i=\"4\"><g transform=\"translate(165.5 96)
+    scale(0.75) translate(-20 0)\"><path class=\"root\" d=\"M13 30 Q14 58 20 64 Q26
+    58 27 30 Z\" fill=\"#ffffff\" stroke=\"#7d8b93\" stroke-width=\"1.3\"/><path class=\"screw\"
+    d=\"M15 30 h10 v24 l-5 8 l-5 -8 Z\" fill=\"#5b7185\" style=\"display:none\"/><path
+    class=\"thread\" d=\"M15 35 h10 M15 40 h10 M15 45 h10 M15 50 h10\" fill=\"none\"
+    stroke=\"#fff\" stroke-width=\"1.4\" style=\"display:none\"/><path class=\"crown\"
+    d=\"M10 30 L10 15 Q10 10 15 11 L20 14 L25 11 Q30 10 30 15 L30 30 Z\" fill=\"#ffffff\"
+    stroke=\"#7d8b93\" stroke-width=\"1.3\"/><path class=\"shine\" d=\"M9 12 Q20 8
+    31 12\" fill=\"none\" stroke=\"rgba(255,255,255,.55)\" stroke-width=\"1\" style=\"display:none\"/><path
+    class=\"xmark\" d=\"M7 8 L33 60 M33 8 L7 60\" fill=\"none\" stroke=\"#9aa6ad\"
+    stroke-width=\"2\" stroke-linecap=\"round\" style=\"display:none\"/></g><circle
+    class=\"dot\" cx=\"165.5\" cy=\"109.5\" r=\"3.6\" fill=\"#1a7f37\" stroke=\"#fff\"
+    stroke-width=\"1\" style=\"display:none\"/><text x=\"165.5\" y=\"163\" font-size=\"10\"
+    font-weight=\"600\" fill=\"#7d8b93\" text-anchor=\"middle\" font-family=\"Inter,sans-serif\">44</text></g><g
+    class=\"tooth\" data-fdi=\"43\" data-i=\"5\"><g transform=\"translate(198.5 96)
+    scale(0.75) translate(-20 0)\"><path class=\"root\" d=\"M13 30 Q15 61 20 68 Q25
+    61 27 30 Z\" fill=\"#ffffff\" stroke=\"#7d8b93\" stroke-width=\"1.3\"/><path class=\"screw\"
+    d=\"M15 30 h10 v24 l-5 8 l-5 -8 Z\" fill=\"#5b7185\" style=\"display:none\"/><path
+    class=\"thread\" d=\"M15 35 h10 M15 40 h10 M15 45 h10 M15 50 h10\" fill=\"none\"
+    stroke=\"#fff\" stroke-width=\"1.4\" style=\"display:none\"/><path class=\"crown\"
+    d=\"M11 30 L11 15 L20 6 L29 15 L29 30 Z\" fill=\"#ffffff\" stroke=\"#7d8b93\"
+    stroke-width=\"1.3\"/><path class=\"shine\" d=\"M9 12 Q20 8 31 12\" fill=\"none\"
+    stroke=\"rgba(255,255,255,.55)\" stroke-width=\"1\" style=\"display:none\"/><path
+    class=\"xmark\" d=\"M7 8 L33 60 M33 8 L7 60\" fill=\"none\" stroke=\"#9aa6ad\"
+    stroke-width=\"2\" stroke-linecap=\"round\" style=\"display:none\"/></g><circle
+    class=\"dot\" cx=\"198.5\" cy=\"109.5\" r=\"3.6\" fill=\"#1a7f37\" stroke=\"#fff\"
+    stroke-width=\"1\" style=\"display:none\"/><text x=\"198.5\" y=\"163\" font-size=\"10\"
+    font-weight=\"600\" fill=\"#7d8b93\" text-anchor=\"middle\" font-family=\"Inter,sans-serif\">43</text></g><g
+    class=\"tooth\" data-fdi=\"42\" data-i=\"6\"><g transform=\"translate(231.5 96)
+    scale(0.75) translate(-20 0)\"><path class=\"root\" d=\"M13 30 Q15 60 20 66 Q25
+    60 27 30 Z\" fill=\"#ffffff\" stroke=\"#7d8b93\" stroke-width=\"1.3\"/><path class=\"screw\"
+    d=\"M15 30 h10 v24 l-5 8 l-5 -8 Z\" fill=\"#5b7185\" style=\"display:none\"/><path
+    class=\"thread\" d=\"M15 35 h10 M15 40 h10 M15 45 h10 M15 50 h10\" fill=\"none\"
+    stroke=\"#fff\" stroke-width=\"1.4\" style=\"display:none\"/><path class=\"crown\"
+    d=\"M9 30 L9 14 Q9 7 20 6 Q31 7 31 14 L31 30 Z\" fill=\"#ffffff\" stroke=\"#7d8b93\"
+    stroke-width=\"1.3\"/><path class=\"shine\" d=\"M9 12 Q20 8 31 12\" fill=\"none\"
+    stroke=\"rgba(255,255,255,.55)\" stroke-width=\"1\" style=\"display:none\"/><path
+    class=\"xmark\" d=\"M7 8 L33 60 M33 8 L7 60\" fill=\"none\" stroke=\"#9aa6ad\"
+    stroke-width=\"2\" stroke-linecap=\"round\" style=\"display:none\"/></g><circle
+    class=\"dot\" cx=\"231.5\" cy=\"109.5\" r=\"3.6\" fill=\"#1a7f37\" stroke=\"#fff\"
+    stroke-width=\"1\" style=\"display:none\"/><text x=\"231.5\" y=\"163\" font-size=\"10\"
+    font-weight=\"600\" fill=\"#7d8b93\" text-anchor=\"middle\" font-family=\"Inter,sans-serif\">42</text></g><g
+    class=\"tooth\" data-fdi=\"41\" data-i=\"7\"><g transform=\"translate(264.5 96)
+    scale(0.75) translate(-20 0)\"><path class=\"root\" d=\"M13 30 Q15 60 20 66 Q25
+    60 27 30 Z\" fill=\"#ffffff\" stroke=\"#7d8b93\" stroke-width=\"1.3\"/><path class=\"screw\"
+    d=\"M15 30 h10 v24 l-5 8 l-5 -8 Z\" fill=\"#5b7185\" style=\"display:none\"/><path
+    class=\"thread\" d=\"M15 35 h10 M15 40 h10 M15 45 h10 M15 50 h10\" fill=\"none\"
+    stroke=\"#fff\" stroke-width=\"1.4\" style=\"display:none\"/><path class=\"crown\"
+    d=\"M9 30 L9 14 Q9 7 20 6 Q31 7 31 14 L31 30 Z\" fill=\"#ffffff\" stroke=\"#7d8b93\"
+    stroke-width=\"1.3\"/><path class=\"shine\" d=\"M9 12 Q20 8 31 12\" fill=\"none\"
+    stroke=\"rgba(255,255,255,.55)\" stroke-width=\"1\" style=\"display:none\"/><path
+    class=\"xmark\" d=\"M7 8 L33 60 M33 8 L7 60\" fill=\"none\" stroke=\"#9aa6ad\"
+    stroke-width=\"2\" stroke-linecap=\"round\" style=\"display:none\"/></g><circle
+    class=\"dot\" cx=\"264.5\" cy=\"109.5\" r=\"3.6\" fill=\"#1a7f37\" stroke=\"#fff\"
+    stroke-width=\"1\" style=\"display:none\"/><text x=\"264.5\" y=\"163\" font-size=\"10\"
+    font-weight=\"600\" fill=\"#7d8b93\" text-anchor=\"middle\" font-family=\"Inter,sans-serif\">41</text></g><g
+    class=\"tooth\" data-fdi=\"31\" data-i=\"8\"><g transform=\"translate(311.5 96)
+    scale(0.75) translate(-20 0)\"><path class=\"root\" d=\"M13 30 Q15 60 20 66 Q25
+    60 27 30 Z\" fill=\"#ffffff\" stroke=\"#7d8b93\" stroke-width=\"1.3\"/><path class=\"screw\"
+    d=\"M15 30 h10 v24 l-5 8 l-5 -8 Z\" fill=\"#5b7185\" style=\"display:none\"/><path
+    class=\"thread\" d=\"M15 35 h10 M15 40 h10 M15 45 h10 M15 50 h10\" fill=\"none\"
+    stroke=\"#fff\" stroke-width=\"1.4\" style=\"display:none\"/><path class=\"crown\"
+    d=\"M9 30 L9 14 Q9 7 20 6 Q31 7 31 14 L31 30 Z\" fill=\"#ffffff\" stroke=\"#7d8b93\"
+    stroke-width=\"1.3\"/><path class=\"shine\" d=\"M9 12 Q20 8 31 12\" fill=\"none\"
+    stroke=\"rgba(255,255,255,.55)\" stroke-width=\"1\" style=\"display:none\"/><path
+    class=\"xmark\" d=\"M7 8 L33 60 M33 8 L7 60\" fill=\"none\" stroke=\"#9aa6ad\"
+    stroke-width=\"2\" stroke-linecap=\"round\" style=\"display:none\"/></g><circle
+    class=\"dot\" cx=\"311.5\" cy=\"109.5\" r=\"3.6\" fill=\"#1a7f37\" stroke=\"#fff\"
+    stroke-width=\"1\" style=\"display:none\"/><text x=\"311.5\" y=\"163\" font-size=\"10\"
+    font-weight=\"600\" fill=\"#7d8b93\" text-anchor=\"middle\" font-family=\"Inter,sans-serif\">31</text></g><g
+    class=\"tooth\" data-fdi=\"32\" data-i=\"9\"><g transform=\"translate(344.5 96)
+    scale(0.75) translate(-20 0)\"><path class=\"root\" d=\"M13 30 Q15 60 20 66 Q25
+    60 27 30 Z\" fill=\"#ffffff\" stroke=\"#7d8b93\" stroke-width=\"1.3\"/><path class=\"screw\"
+    d=\"M15 30 h10 v24 l-5 8 l-5 -8 Z\" fill=\"#5b7185\" style=\"display:none\"/><path
+    class=\"thread\" d=\"M15 35 h10 M15 40 h10 M15 45 h10 M15 50 h10\" fill=\"none\"
+    stroke=\"#fff\" stroke-width=\"1.4\" style=\"display:none\"/><path class=\"crown\"
+    d=\"M9 30 L9 14 Q9 7 20 6 Q31 7 31 14 L31 30 Z\" fill=\"#ffffff\" stroke=\"#7d8b93\"
+    stroke-width=\"1.3\"/><path class=\"shine\" d=\"M9 12 Q20 8 31 12\" fill=\"none\"
+    stroke=\"rgba(255,255,255,.55)\" stroke-width=\"1\" style=\"display:none\"/><path
+    class=\"xmark\" d=\"M7 8 L33 60 M33 8 L7 60\" fill=\"none\" stroke=\"#9aa6ad\"
+    stroke-width=\"2\" stroke-linecap=\"round\" style=\"display:none\"/></g><circle
+    class=\"dot\" cx=\"344.5\" cy=\"109.5\" r=\"3.6\" fill=\"#1a7f37\" stroke=\"#fff\"
+    stroke-width=\"1\" style=\"display:none\"/><text x=\"344.5\" y=\"163\" font-size=\"10\"
+    font-weight=\"600\" fill=\"#7d8b93\" text-anchor=\"middle\" font-family=\"Inter,sans-serif\">32</text></g><g
+    class=\"tooth\" data-fdi=\"33\" data-i=\"10\"><g transform=\"translate(377.5 96)
+    scale(0.75) translate(-20 0)\"><path class=\"root\" d=\"M13 30 Q15 61 20 68 Q25
+    61 27 30 Z\" fill=\"#ffffff\" stroke=\"#7d8b93\" stroke-width=\"1.3\"/><path class=\"screw\"
+    d=\"M15 30 h10 v24 l-5 8 l-5 -8 Z\" fill=\"#5b7185\" style=\"display:none\"/><path
+    class=\"thread\" d=\"M15 35 h10 M15 40 h10 M15 45 h10 M15 50 h10\" fill=\"none\"
+    stroke=\"#fff\" stroke-width=\"1.4\" style=\"display:none\"/><path class=\"crown\"
+    d=\"M11 30 L11 15 L20 6 L29 15 L29 30 Z\" fill=\"#ffffff\" stroke=\"#7d8b93\"
+    stroke-width=\"1.3\"/><path class=\"shine\" d=\"M9 12 Q20 8 31 12\" fill=\"none\"
+    stroke=\"rgba(255,255,255,.55)\" stroke-width=\"1\" style=\"display:none\"/><path
+    class=\"xmark\" d=\"M7 8 L33 60 M33 8 L7 60\" fill=\"none\" stroke=\"#9aa6ad\"
+    stroke-width=\"2\" stroke-linecap=\"round\" style=\"display:none\"/></g><circle
+    class=\"dot\" cx=\"377.5\" cy=\"109.5\" r=\"3.6\" fill=\"#1a7f37\" stroke=\"#fff\"
+    stroke-width=\"1\" style=\"display:none\"/><text x=\"377.5\" y=\"163\" font-size=\"10\"
+    font-weight=\"600\" fill=\"#7d8b93\" text-anchor=\"middle\" font-family=\"Inter,sans-serif\">33</text></g><g
+    class=\"tooth\" data-fdi=\"34\" data-i=\"11\"><g transform=\"translate(410.5 96)
+    scale(0.75) translate(-20 0)\"><path class=\"root\" d=\"M13 30 Q14 58 20 64 Q26
+    58 27 30 Z\" fill=\"#ffffff\" stroke=\"#7d8b93\" stroke-width=\"1.3\"/><path class=\"screw\"
+    d=\"M15 30 h10 v24 l-5 8 l-5 -8 Z\" fill=\"#5b7185\" style=\"display:none\"/><path
+    class=\"thread\" d=\"M15 35 h10 M15 40 h10 M15 45 h10 M15 50 h10\" fill=\"none\"
+    stroke=\"#fff\" stroke-width=\"1.4\" style=\"display:none\"/><path class=\"crown\"
+    d=\"M10 30 L10 15 Q10 10 15 11 L20 14 L25 11 Q30 10 30 15 L30 30 Z\" fill=\"#ffffff\"
+    stroke=\"#7d8b93\" stroke-width=\"1.3\"/><path class=\"shine\" d=\"M9 12 Q20 8
+    31 12\" fill=\"none\" stroke=\"rgba(255,255,255,.55)\" stroke-width=\"1\" style=\"display:none\"/><path
+    class=\"xmark\" d=\"M7 8 L33 60 M33 8 L7 60\" fill=\"none\" stroke=\"#9aa6ad\"
+    stroke-width=\"2\" stroke-linecap=\"round\" style=\"display:none\"/></g><circle
+    class=\"dot\" cx=\"410.5\" cy=\"109.5\" r=\"3.6\" fill=\"#1a7f37\" stroke=\"#fff\"
+    stroke-width=\"1\" style=\"display:none\"/><text x=\"410.5\" y=\"163\" font-size=\"10\"
+    font-weight=\"600\" fill=\"#7d8b93\" text-anchor=\"middle\" font-family=\"Inter,sans-serif\">34</text></g><g
+    class=\"tooth\" data-fdi=\"35\" data-i=\"12\"><g transform=\"translate(443.5 96)
+    scale(0.75) translate(-20 0)\"><path class=\"root\" d=\"M13 30 Q14 58 20 64 Q26
+    58 27 30 Z\" fill=\"#ffffff\" stroke=\"#7d8b93\" stroke-width=\"1.3\"/><path class=\"screw\"
+    d=\"M15 30 h10 v24 l-5 8 l-5 -8 Z\" fill=\"#5b7185\" style=\"display:none\"/><path
+    class=\"thread\" d=\"M15 35 h10 M15 40 h10 M15 45 h10 M15 50 h10\" fill=\"none\"
+    stroke=\"#fff\" stroke-width=\"1.4\" style=\"display:none\"/><path class=\"crown\"
+    d=\"M10 30 L10 15 Q10 10 15 11 L20 14 L25 11 Q30 10 30 15 L30 30 Z\" fill=\"#ffffff\"
+    stroke=\"#7d8b93\" stroke-width=\"1.3\"/><path class=\"shine\" d=\"M9 12 Q20 8
+    31 12\" fill=\"none\" stroke=\"rgba(255,255,255,.55)\" stroke-width=\"1\" style=\"display:none\"/><path
+    class=\"xmark\" d=\"M7 8 L33 60 M33 8 L7 60\" fill=\"none\" stroke=\"#9aa6ad\"
+    stroke-width=\"2\" stroke-linecap=\"round\" style=\"display:none\"/></g><circle
+    class=\"dot\" cx=\"443.5\" cy=\"109.5\" r=\"3.6\" fill=\"#1a7f37\" stroke=\"#fff\"
+    stroke-width=\"1\" style=\"display:none\"/><text x=\"443.5\" y=\"163\" font-size=\"10\"
+    font-weight=\"600\" fill=\"#7d8b93\" text-anchor=\"middle\" font-family=\"Inter,sans-serif\">35</text></g><g
+    class=\"tooth\" data-fdi=\"36\" data-i=\"13\"><g transform=\"translate(476.5 96)
+    scale(0.75) translate(-20 0)\"><path class=\"root\" d=\"M9 30 Q7 56 11 63 Q15
+    56 15 30 Z\" fill=\"#ffffff\" stroke=\"#7d8b93\" stroke-width=\"1.3\"/><path class=\"root\"
+    d=\"M25 30 Q25 56 29 63 Q33 56 31 30 Z\" fill=\"#ffffff\" stroke=\"#7d8b93\" stroke-width=\"1.3\"/><path
+    class=\"screw\" d=\"M15 30 h10 v24 l-5 8 l-5 -8 Z\" fill=\"#5b7185\" style=\"display:none\"/><path
+    class=\"thread\" d=\"M15 35 h10 M15 40 h10 M15 45 h10 M15 50 h10\" fill=\"none\"
+    stroke=\"#fff\" stroke-width=\"1.4\" style=\"display:none\"/><path class=\"crown\"
+    d=\"M6 30 L6 16 Q6 11 11 11 L15 14 L20 11 L25 14 L29 11 Q34 11 34 16 L34 30 Z\"
+    fill=\"#ffffff\" stroke=\"#7d8b93\" stroke-width=\"1.3\"/><path class=\"shine\"
+    d=\"M9 12 Q20 8 31 12\" fill=\"none\" stroke=\"rgba(255,255,255,.55)\" stroke-width=\"1\"
+    style=\"display:none\"/><path class=\"xmark\" d=\"M7 8 L33 60 M33 8 L7 60\" fill=\"none\"
+    stroke=\"#9aa6ad\" stroke-width=\"2\" stroke-linecap=\"round\" style=\"display:none\"/></g><circle
+    class=\"dot\" cx=\"476.5\" cy=\"109.5\" r=\"3.6\" fill=\"#1a7f37\" stroke=\"#fff\"
+    stroke-width=\"1\" style=\"display:none\"/><text x=\"476.5\" y=\"163\" font-size=\"10\"
+    font-weight=\"600\" fill=\"#7d8b93\" text-anchor=\"middle\" font-family=\"Inter,sans-serif\">36</text></g><g
+    class=\"tooth\" data-fdi=\"37\" data-i=\"14\"><g transform=\"translate(509.5 96)
+    scale(0.75) translate(-20 0)\"><path class=\"root\" d=\"M9 30 Q7 56 11 63 Q15
+    56 15 30 Z\" fill=\"#ffffff\" stroke=\"#7d8b93\" stroke-width=\"1.3\"/><path class=\"root\"
+    d=\"M25 30 Q25 56 29 63 Q33 56 31 30 Z\" fill=\"#ffffff\" stroke=\"#7d8b93\" stroke-width=\"1.3\"/><path
+    class=\"screw\" d=\"M15 30 h10 v24 l-5 8 l-5 -8 Z\" fill=\"#5b7185\" style=\"display:none\"/><path
+    class=\"thread\" d=\"M15 35 h10 M15 40 h10 M15 45 h10 M15 50 h10\" fill=\"none\"
+    stroke=\"#fff\" stroke-width=\"1.4\" style=\"display:none\"/><path class=\"crown\"
+    d=\"M6 30 L6 16 Q6 11 11 11 L15 14 L20 11 L25 14 L29 11 Q34 11 34 16 L34 30 Z\"
+    fill=\"#ffffff\" stroke=\"#7d8b93\" stroke-width=\"1.3\"/><path class=\"shine\"
+    d=\"M9 12 Q20 8 31 12\" fill=\"none\" stroke=\"rgba(255,255,255,.55)\" stroke-width=\"1\"
+    style=\"display:none\"/><path class=\"xmark\" d=\"M7 8 L33 60 M33 8 L7 60\" fill=\"none\"
+    stroke=\"#9aa6ad\" stroke-width=\"2\" stroke-linecap=\"round\" style=\"display:none\"/></g><circle
+    class=\"dot\" cx=\"509.5\" cy=\"109.5\" r=\"3.6\" fill=\"#1a7f37\" stroke=\"#fff\"
+    stroke-width=\"1\" style=\"display:none\"/><text x=\"509.5\" y=\"163\" font-size=\"10\"
+    font-weight=\"600\" fill=\"#7d8b93\" text-anchor=\"middle\" font-family=\"Inter,sans-serif\">37</text></g><g
+    class=\"tooth\" data-fdi=\"38\" data-i=\"15\"><g transform=\"translate(542.5 96)
+    scale(0.75) translate(-20 0)\"><path class=\"root\" d=\"M9 30 Q7 56 11 63 Q15
+    56 15 30 Z\" fill=\"#ffffff\" stroke=\"#7d8b93\" stroke-width=\"1.3\"/><path class=\"root\"
+    d=\"M25 30 Q25 56 29 63 Q33 56 31 30 Z\" fill=\"#ffffff\" stroke=\"#7d8b93\" stroke-width=\"1.3\"/><path
+    class=\"screw\" d=\"M15 30 h10 v24 l-5 8 l-5 -8 Z\" fill=\"#5b7185\" style=\"display:none\"/><path
+    class=\"thread\" d=\"M15 35 h10 M15 40 h10 M15 45 h10 M15 50 h10\" fill=\"none\"
+    stroke=\"#fff\" stroke-width=\"1.4\" style=\"display:none\"/><path class=\"crown\"
+    d=\"M6 30 L6 16 Q6 11 11 11 L15 14 L20 11 L25 14 L29 11 Q34 11 34 16 L34 30 Z\"
+    fill=\"#ffffff\" stroke=\"#7d8b93\" stroke-width=\"1.3\"/><path class=\"shine\"
+    d=\"M9 12 Q20 8 31 12\" fill=\"none\" stroke=\"rgba(255,255,255,.55)\" stroke-width=\"1\"
+    style=\"display:none\"/><path class=\"xmark\" d=\"M7 8 L33 60 M33 8 L7 60\" fill=\"none\"
+    stroke=\"#9aa6ad\" stroke-width=\"2\" stroke-linecap=\"round\" style=\"display:none\"/></g><circle
+    class=\"dot\" cx=\"542.5\" cy=\"109.5\" r=\"3.6\" fill=\"#1a7f37\" stroke=\"#fff\"
+    stroke-width=\"1\" style=\"display:none\"/><text x=\"542.5\" y=\"163\" font-size=\"10\"
+    font-weight=\"600\" fill=\"#7d8b93\" text-anchor=\"middle\" font-family=\"Inter,sans-serif\">38</text></g><rect
+    class=\"bridge\" data-run=\"11-12\" x=\"410.5\" y=\"107.5\" width=\"33\" height=\"4\"
+    rx=\"2\" fill=\"#2f9e5f\" style=\"display:none\"/></svg>\n        <div class=\"od-key\">\n
+    \         <span><i style=\"background:#2b6cb0\"></i>تاج</span>\n          <span><i
+    style=\"background:#d9534f\"></i>علاج عصب</span>\n          <span><i style=\"background:#5b7185\"></i>زرعة</span>\n
+    \         <span><i style=\"background:#1a7f37\"></i>داخل العيادة</span>\n          <span><i
+    style=\"background:#2563eb\"></i>خارج العيادة</span>\n          <span><i style=\"background:#9aa0a6\"></i>مخطّط
+    له</span>\n        </div>\n      </div>\n    </div>\n  </div>\n</header>\n\n<!--
+    ANCHOR THESIS -->\n<section id=\"thesis\">\n  <div class=\"wrap\">\n    <div class=\"sec-head
+    reveal\">\n      <span class=\"eyebrow\">الاسم</span>\n      <h2>الغومفوزس — المفصل
+    الذي يثبّت كل سِنّ</h2>\n      <p>في علم التشريح، «الغومفوزس» هو الرباط الذي يثبّت
+    كل سِنّ بإحكام في الفك — السبب في أن السِّنّ السليم لا يتحرك. جومفا يفعل الشيء
+    نفسه لعيادتك: يثبّت الأشياء الأربعة التي عادةً ما تضيع في سجل واحد.</p>\n    </div>\n
+    \   <div class=\"id-grid stagger\">\n      <div class=\"id-card\"><span class=\"tag\">السِّنّ</span><h3>مخطط
+    أسنان ثنائي الطبقة</h3><p>التاج والجذر وحالة كل سِنّ، مُتابَعة عبر الزمن بألوان
+    تُميّز كل طبيب.</p></div>\n      <div class=\"id-card\"><span class=\"tag\">المريض</span><h3>السجل
+    الكامل</h3><p>التاريخ، ومنحنيات اللثة، والرسوم، والديون، والتواصل — سجل واحد متصل
+    وراسخ.</p></div>\n      <div class=\"id-card\"><span class=\"tag\">الحالة</span><h3>الإجراءات
+    والجلسات</h3><p>كل حالة مبنية من بنود إجراءات تُحجز وتُجدوَل وتتابع المريض.</p></div>\n
+    \     <div class=\"id-card\"><span class=\"tag\">الاتفاق</span><h3>السعر المتفاوَض
+    عليه</h3><p>السعر المتفق عليه مقابل القياسي، ومن وافق، والسبب الإنساني — محفوظ
+    لا يُنسى.</p></div>\n    </div>\n  </div>\n</section>\n\n<!-- MOBILE / PATIENT
+    VIEW -->\n<section id=\"mobile\" style=\"background:var(--bg-alt)\">\n  <div class=\"wrap\">\n
+    \   <div class=\"mobwrap\">\n      <div class=\"txt mob-copy reveal\">\n        <span
+    class=\"eyebrow\">المريض كاملاً، في جيبك</span>\n        <h2 style=\"font-size:clamp(28px,3.6vw,40px);margin:12px
+    0\">مريض واحد، شاشة واحدة — بوضع الهاتف</h2>\n        <p style=\"font-size:17px;color:var(--body)\">افتح
+    ملف مريض على هاتفك وستجد القصة كاملة: مخطط الأسنان، ومنحنى اللثة، وكل علاج، والاتفاق
+    الذي عقدته، وما تبقّى عليه. <em>مرّر الهاتف ←</em></p>\n        <ul class=\"mob-list\">\n
+    \         <li><b>المخطط بلمحة</b> — التيجان والزرعات وعلاجات العصب، ملوّنة حسب
+    من أجراها.</li>\n          <li><b>الاتفاق محفوظ</b> — السعر المتفق عليه مقابل
+    القياسي، ومن وافق، ولماذا.</li>\n          <li><b>الرصيد أمامك</b> — المستحق والمدفوع
+    والمتبقّي، دون بحث.</li>\n          <li><b>تواصل بلمسة</b> — اتصال أو واتساب مباشرة
+    من البطاقة.</li>\n        </ul>\n      </div>\n      <div class=\"reveal\" style=\"justify-self:center\">\n
+    \       <div class=\"phone\">\n          <div class=\"island\"></div>\n          <div
+    class=\"phone-screen\">\n            <div class=\"pv\">\n              <div class=\"pv-head\">\n
+    \               <span class=\"bk\">›</span>\n                <span class=\"l\">G<span
+    class=\"socket\"></span>mpha</span>\n                <span class=\"sp\">المريض</span>\n
+    \             </div>\n              <div class=\"pv-body\">\n                <div
+    class=\"pv-hero\">\n                  <div class=\"nm\">ليلى هَمَ</div>\n                  <div
+    class=\"meta\">أنثى · 34 · مريضة رقم 1042 · منذ 2023</div>\n                  <div
+    class=\"chips\">\n                    <span class=\"chip\" dir=\"ltr\">\U0001F4DE
+    0750 118 44</span>\n                    <span class=\"chip\">\U0001F7E2 واتساب</span>\n
+    \                   <span class=\"chip debt\">عليها 120$</span>\n                  </div>\n
+    \               </div>\n                <div class=\"pv-card\">\n                  <h4>مخطط
+    الأسنان <span class=\"tag\">3 تيجان · زرعة واحدة</span></h4>\n                  <img
+    src=\"odontogram.svg\" alt=\"مخطط أسنان المريض — تيجان وعلاج عصب وزرعة وجسر وسِنّ
+    مفقود\" width=\"568\" height=\"172\" loading=\"lazy\">\n                </div>\n
+    \               <div class=\"pv-card\">\n                  <h4>اللثة <span class=\"tag\">نزف
+    14% · جيبان عميقان</span></h4>\n                  <img src=\"perio.svg\" alt=\"مخطط
+    لثة المريض\" width=\"568\" height=\"150\" loading=\"lazy\">\n                </div>\n
+    \               <div class=\"pv-card\">\n                  <h4>العلاجات</h4>\n
+    \                 <div class=\"pv-row\"><span><span class=\"rn\"><span class=\"pv-dot\"
+    style=\"background:#1a7f37\"></span>تاج زركونيا · 11</span><br><span class=\"rs\">د.
+    علي · مُنجز</span></span><span class=\"amt\">380$</span></div>\n                  <div
+    class=\"pv-row\"><span><span class=\"rn\"><span class=\"pv-dot\" style=\"background:#5b7185\"></span>زرعة
+    · 26</span><br><span class=\"rs\">د. زانا · قيد التنفيذ</span></span><span class=\"amt\">900$</span></div>\n
+    \                 <div class=\"pv-row\"><span><span class=\"rn\"><span class=\"pv-dot\"
+    style=\"background:#d9534f\"></span>علاج عصب · 16</span><br><span class=\"rs\">د.
+    علي · مُنجز</span></span><span class=\"amt\">220$</span></div>\n                </div>\n
+    \               <div class=\"pv-card pv-deal\">\n                  <h4>الاتفاق
+    <span class=\"tag\">الميزة الحصينة</span></h4>\n                  <div class=\"drow\"><span>السعر
+    القياسي</span><span class=\"strike\">450$</span></div>\n                  <div
+    class=\"drow\"><span>السعر المتفق عليه</span><span class=\"agreed\">380$</span></div>\n
+    \                 <div class=\"drow\"><span>وافق عليه</span><b>د. علي</b></div>\n
+    \                 <div class=\"ctx\">«خصم 70 — ابنة العم، تدفع نقداً اليوم، مع
+    تلميع مجاني.»</div>\n                </div>\n                <div class=\"pv-card\">\n
+    \                 <h4>الرصيد <span class=\"tag\">دولار بسعر صرف 1,500</span></h4>\n
+    \                 <div class=\"pv-bal\">\n                    <div><div class=\"k\">مُحتسَب</div><div
+    class=\"v\">1,500$</div></div>\n                    <div><div class=\"k\">مدفوع</div><div
+    class=\"v\">1,380$</div></div>\n                    <div><div class=\"k\">متبقٍّ</div><div
+    class=\"v owe\">120$</div></div>\n                  </div>\n                </div>\n
+    \             </div>\n            </div>\n          </div>\n        </div>\n        <p
+    class=\"phone-cap\">بطاقة المريض بوضع الهاتف. <a href=\"https://demo.gompha.com/?demo=doctor\"
+    target=\"_blank\" rel=\"noopener\">جرّب التطبيق الحي ←</a></p>\n      </div>\n
+    \   </div>\n  </div>\n</section>\n\n<!-- DEAL LEDGER SPOTLIGHT -->\n<section id=\"ledger\">\n
+    \ <div class=\"wrap\">\n    <div class=\"spot reveal\">\n      <div>\n        <span
+    class=\"moat\">الميزة الحصينة</span>\n        <h2>لا نظام آخر يتذكّر الاتفاق</h2>\n
+    \       <p>تفترض Dentrix وOpen Dental قائمة أسعار ثابتة. لكن في الواقع، السعر
+    يُتفاوَض عليه — خصم لابن العم، تنظيف مجاني، سعر نقدي. جومفا يثبّت ذلك: ما اتُّفق
+    عليه، ومن وافق، ولماذا.</p>\n        <p>في المرة القادمة التي يأتي فيها المريض،
+    تعرف العيادة كلها القصة — لا الطبيب الذي عقد الاتفاق وحده.</p>\n        <a href=\"index.ar.html#demos\"
+    class=\"btn btn-gold\">شاهدها في التجربة الحيّة</a>\n      </div>\n      <div
+    class=\"sheet\">\n        <div class=\"row\"><span class=\"k\">الإجراء</span><span
+    class=\"v\">تاج زركونيا · السن 11</span></div>\n        <div class=\"row\"><span
+    class=\"k\">السعر القياسي</span><span class=\"strike\">450$</span></div>\n        <div
+    class=\"row\"><span class=\"k\">السعر المتفق عليه</span><span class=\"agreed\">380$</span></div>\n
+    \       <div class=\"row\"><span class=\"k\">الحد الأدنى للتكلفة (المواد)</span><span
+    class=\"v\">120$</span></div>\n        <div class=\"row\"><span class=\"k\">وافق
+    عليه</span><span class=\"v\">د. علي</span></div>\n        <div class=\"row\"><span
+    class=\"k\">العملة</span><span class=\"v\">دولار بسعر 1,500</span></div>\n        <div
+    class=\"ctx\">«خصم 70 — ابنة عم هبة، تدفع نقداً اليوم، مع تلميع مجاني.»</div>\n
+    \     </div>\n    </div>\n  </div>\n</section>\n\n<!-- COMPARE -->\n<section id=\"compare\"
+    style=\"background:var(--bg-alt)\">\n  <div class=\"wrap\">\n    <div class=\"sec-head
+    reveal\">\n      <span class=\"eyebrow\">لماذا يتفوّق جومفا</span>\n      <h2>مصمَّم
+    لطريقة عملك الحقيقية على الكرسي</h2>\n      <p>Dentrix مصمَّم لمطالبة تأمين. EasyClinic
+    تقويم مع فواتير. جومفا مصمَّم للاتفاق.</p>\n    </div>\n    <div class=\"cmp reveal\">\n
+    \     <table>\n        <thead>\n          <tr><th>القدرة</th><th class=\"us\">جومفا</th><th>Dentrix
+    / Open Dental</th><th>أدوات إقليمية</th></tr>\n        </thead>\n        <tbody>\n
+    \         <tr><td>سجل اتفاقات بالسعر المتفاوَض</td><td class=\"us\">✓</td><td
+    class=\"n\">✕ قائمة ثابتة</td><td class=\"n\">✕</td></tr>\n          <tr><td>مخطط
+    أسنان مرئي ثنائي الطبقة</td><td class=\"us\">✓</td><td class=\"y\">✓ (قديم)</td><td
+    class=\"n\">✕ لا مخطط</td></tr>\n          <tr><td>إجراءات لكل حالة + ربط بالمخزون</td><td
+    class=\"us\">✓</td><td class=\"y\">✓ (ثقيل)</td><td class=\"n\">✕</td></tr>\n
+    \         <tr><td>عملة مزدوجة (دينار+دولار، سعر يومي)</td><td class=\"us\">✓</td><td
+    class=\"n\">✕</td><td>جزئي</td></tr>\n          <tr><td>مساعد المساومة بالحد الأدنى
+    للتكلفة</td><td class=\"us\">✓</td><td class=\"n\">✕</td><td class=\"n\">✕</td></tr>\n
+    \         <tr><td>واجهة الطبيب للهاتف + الاستقبال للويب</td><td class=\"us\">✓</td><td
+    class=\"n\">✕ مقيّد بالحاسوب</td><td>جزئي</td></tr>\n          <tr><td>مصمَّم
+    لأسواق النقد والمساومة</td><td class=\"us\">✓</td><td class=\"n\">✕ التأمين أولاً</td><td>جزئي</td></tr>\n
+    \         <tr><td>سحابي، نطاق لكل عيادة، علامة بيضاء</td><td class=\"us\">✓</td><td
+    class=\"n\">✕</td><td>جزئي</td></tr>\n        </tbody>\n      </table>\n    </div>\n
+    \ </div>\n</section>\n\n<!-- CAPABILITIES -->\n<section id=\"capabilities\" style=\"background:var(--bg-alt)\">\n
+    \ <div class=\"wrap\">\n    <div class=\"sec-head reveal\">\n      <span class=\"eyebrow\">ماذا
+    يفعل</span>\n      <h2>نظام إدارة على شكل كرسيّك، لا جدول بيانات</h2>\n      <p>كل
+    ما تحتاجه عيادة حديثة — مع الأجزاء التي نسيتها البرمجيات الغربية. كل ما يلي <strong>متاح
+    اليوم</strong>. وما هو قادم على <a href=\"roadmap.html\">خارطة الطريق</a>.</p>\n
+    \   </div>\n    <div class=\"feat-grid stagger\">\n      <div class=\"feat\"><span
+    class=\"ico\">\U0001F9B7</span><h3>مخطط أسنان ثنائي الطبقة <span class=\"ship\">متاح</span></h3><p>مخطط
+    أسنان حقيقي: أعمال التاج والجذر وحالة السن عبر الزمن — مع مخطط لبنيّ للأطفال وتاريخ
+    كامل. أغلب الأدوات الإقليمية بلا مخطط أصلاً.</p></div>\n      <div class=\"feat\"><span
+    class=\"ico\">\U0001F91D</span><h3>سجل الاتفاقات <span class=\"ship\">متاح</span></h3><p>سجّل
+    السعر المتفاوَض عليه، ومن وافق، والسبب. يصبح التفاوض بيانات تراها العيادة كلها.</p></div>\n
+    \     <div class=\"feat\"><span class=\"ico\">\U0001F9FE</span><h3>إجراءات لكل
+    حالة <span class=\"ship\">متاح</span></h3><p>ابنِ الحالة من بنود إجراءات — سريرية
+    أو مخبرية أو مرتبطة بالمواد. كتالوج لكل طبيب، مع نسب الدخل لكل إجراء.</p></div>\n
+    \     <div class=\"feat\"><span class=\"ico\">\U0001F4E6</span><h3>إدارة المخزون
+    <span class=\"ship\">متاح</span></h3><p>مخزون حقيقي: عبوات وقطع، تكلفة مثبّتة
+    الصرف لا تتغير عند الجرد، ملكية لكل طبيب أو للعيادة، صلاحية ودفعات، تنبيهات نفاد.</p></div>\n
+    \     <div class=\"feat\"><span class=\"ico\">\U0001F4B0</span><h3>الحد الأدنى
+    للتكلفة في كل اتفاق <span class=\"ship\">متاح</span></h3><p>المواد مرتبطة بالإجراءات،
+    فتظهر كل حالة حدها الأدنى الحقيقي للتكلفة — خط مساومتك الصادق، أمامك مباشرة.</p></div>\n
+    \     <div class=\"feat\"><span class=\"ico\">\U0001F4CA</span><h3>مخطط اللثة
+    <span class=\"ship\">متاح</span></h3><p>أعماق الجيوب لكل زيارة، مرسومة كمنحنى
+    — لترى الفم يتحسّن، لا أرقام اليوم فقط.</p></div>\n      <div class=\"feat\"><span
+    class=\"ico\">\U0001F5D3️</span><h3>جدولة بشبكة الغرف <span class=\"ship\">متاح</span></h3><p>يرى
+    الاستقبال الغرف كأعمدة، والأطباء بألوان، مع حماية صارمة من الحجز المزدوج وتجاوز
+    للطوارئ. مع جدار أسبوعي بانورامي لسبعة أيام.</p></div>\n      <div class=\"feat\"><span
+    class=\"ico\">⏱️</span><h3>الأجندة والوصول والانضباط <span class=\"ship\">متاح</span></h3><p>قائمة
+    يوم الطبيب على الهاتف مع عدّاد للمريض التالي؛ يسجّل الاستقبال الوصول، ولوحة غرفة
+    الانتظار، وتنبيه فوري عند التأخّر.</p></div>\n      <div class=\"feat\"><span
+    class=\"ico\">\U0001F4B5</span><h3>عملة مزدوجة، بإتقان <span class=\"ship\">متاح</span></h3><p>دينار
+    + دولار مع «سعر صرف اليوم». كل سطر يحفظ السعر المستخدم، فتبقى المجاميع صادقة عند
+    تغيّر السعر.</p></div>\n      <div class=\"feat\"><span class=\"ico\">\U0001F4C8</span><h3>الدخل
+    وأرباح الشراكة <span class=\"ship\">متاح</span></h3><p>نسب الدخل لكل طبيب وشاشة
+    أرباح — مع جدران خصوصية تُبقي أرقام كل طبيب له.</p></div>\n      <div class=\"feat\"><span
+    class=\"ico\">\U0001F510</span><h3>الجلسات وأجهزتك <span class=\"ship\">متاح</span></h3><p>مدد
+    جلسات حسب الدور، وتسجيل الأجهزة، ولوحة «أجهزتك» — سجّل خروج هاتف مفقود من أي مكان.</p></div>\n
+    \     <div class=\"feat\"><span class=\"ico\">\U0001F464</span><h3>الوضع الفردي
+    <span class=\"ship new\">جديد</span></h3><p>طبيب واحد وكرسي واحد؟ يطوي الوضع الفردي
+    آليات تعدد المستخدمين — اختيار الأدوار وتقسيمات الأطباء — لعيادة فردية نظيفة.
+    توسّع للعيادة الكاملة حين توظّف. <a href=\"https://demosolo.gompha.com\">تجربة
+    حيّة ←</a></p></div>\n      <div class=\"feat\"><span class=\"ico\">\U0001F4E6</span><h3>تصدير
+    واستيراد بياناتك <span class=\"ship new\">جديد</span></h3><p>خذ عيادتك كاملة معك
+    — تصدير ذاتي إلى حزمة قابلة للنقل، واستيراد بمساعدة المزوّد إلى مستأجر جديد. بياناتك
+    لا تُحتجَز أبداً. راجع <a href=\"scale.html\">التوسّع والملكية</a>.</p></div>\n
+    \     <div class=\"feat\"><span class=\"ico\">\U0001F5E3️</span><h3>الصوت ← ملاحظة
+    الاتفاق <span class=\"ship soon\">مخطّط له</span></h3><p>أملِ ملاحظة بجانب الكرسي
+    ← لقاء واتفاق مُنظَّمان، ويداك على المريض. الميزة الحصينة — مُحدَّدة، لم تُبنَ
+    بعد.</p></div>\n    </div>\n  </div>\n</section>\n\n<!-- DEMOS -->\n<section id=\"demos\">\n
+    \ <div class=\"wrap\">\n    <div class=\"sec-head reveal\">\n      <span class=\"eyebrow\">جرّبه
+    حياً</span>\n      <h2>تجربتان — اختر ما يناسب عيادتك</h2>\n      <p>كلاهما يشغّل
+    البرنامج الحقيقي ببيانات تجريبية. اختر دوراً وادخل مباشرة — دون تسجيل.</p>\n    </div>\n
+    \   <div class=\"demo-grid stagger\">\n      <div class=\"demo-card\">\n        <span
+    class=\"kind\">عيادة متعددة الأطباء</span>\n        <h3>تجربة العيادة</h3>\n        <p>عيادة
+    مزدحمة: عدة أطباء، استقبال، غرف، والصورة المالية كاملة — كيف يدير جومفا عيادة
+    مليئة بالكراسي.</p>\n        <ul>\n          <li>اختر دوراً: طبيب، استقبال، مدير
+    أو صيانة</li>\n          <li>جدول بشبكة الغرف + جدار أسبوعي بانورامي</li>\n          <li>سجل
+    الاتفاقات والمخزون وأرباح كل طبيب</li>\n        </ul>\n        <a href=\"https://demo.gompha.com\"
+    class=\"btn btn-primary\">افتح تجربة العيادة ←</a>\n      </div>\n      <div class=\"demo-card\">\n
+    \       <span class=\"kind\">عيادة طبيب واحد · حيّة</span>\n        <h3>التجربة
+    الفردية</h3>\n        <p>طبيب واحد، كرسي واحد، بلا استقبال. يطوي الوضع الفردي
+    آليات تعدد المستخدمين — فقط المخطط والاتفاقات ونقد داخل / خارج. حيّة الآن.</p>\n
+    \       <ul>\n          <li>دخول واحد — أنت العيادة كلها</li>\n          <li>المال
+    يتلخّص إلى داخل / خارج / درج</li>\n          <li>توسّع للعيادة الكاملة حين توظّف</li>\n
+    \       </ul>\n        <a href=\"https://demosolo.gompha.com\" class=\"btn btn-gold\">افتح
+    التجربة الفردية ←</a>\n      </div>\n    </div>\n  </div>\n</section>\n\n<footer>\n
+    \ <div class=\"wrap\">\n    <div class=\"fcols\">\n      <div class=\"fcol\" style=\"max-width:280px\">\n
+    \       <div class=\"logo\">G<span class=\"socket\"></span>mpha</div>\n        <p
+    style=\"margin-top:10px;color:#a7bcda\">عيادتك، راسخة. كل سِنّ مُتابَع. كل اتفاق
+    محفوظ.</p>\n      </div>\n      <div class=\"fcol\">\n        <h5>المنتج</h5>\n
+    \       <a href=\"index.ar.html#capabilities\">المزايا</a>\n        <a href=\"roadmap.html\">خارطة
+    الطريق</a>\n        <a href=\"scale.html\">التوسّع والملكية</a>\n        <a href=\"safety.html\">أمان
+    البيانات</a>\n      </div>\n      <div class=\"fcol\">\n        <h5>جرّبه</h5>\n
+    \       <a href=\"https://demo.gompha.com\">تجربة العيادة</a>\n        <a href=\"https://demosolo.gompha.com\">التجربة
+    الفردية</a>\n        <a href=\"mailto:hello@gompha.com\">تواصل معنا</a>\n      </div>\n
+    \     <div class=\"fcol\">\n        <h5>تواصل</h5>\n        <a href=\"mailto:hello@gompha.com\">hello@gompha.com</a>\n
+    \       <a href=\"index.html\">English site</a>\n      </div>\n    </div>\n    <div
+    class=\"base\">© 2026 جومفا · عيادتك، راسخة.</div>\n  </div>\n</footer>\n\n<script
+    src=\"reveal.js?v=5\"></script>\n<script src=\"heroanim.js?v=5\"></script>\n</body>\n</html>\n"
   index.html: "<!DOCTYPE html>\n<html lang=\"en\" class=\"no-js\">\n<head>\n<meta
     charset=\"UTF-8\">\n<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n<meta
     name=\"robots\" content=\"noindex\">\n<title>Gompha — Your practice, anchored.</title>\n<meta
@@ -250,31 +952,31 @@ data:
     that anchors your tooth chart, schedule, cases and deal ledger into one record
     — built for clinics that negotiate.\">\n<link rel=\"preconnect\" href=\"https://fonts.googleapis.com\">\n<link
     rel=\"preconnect\" href=\"https://fonts.gstatic.com\" crossorigin>\n<link href=\"https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800;900&family=Inter:wght@400;500;600;700&display=swap\"
-    rel=\"stylesheet\">\n<link rel=\"stylesheet\" href=\"style.css?v=3\">\n</head>\n<body>\n\n<nav>\n
+    rel=\"stylesheet\">\n<link rel=\"stylesheet\" href=\"style.css?v=5\">\n</head>\n<body>\n\n<nav>\n
     \ <div class=\"wrap nav-in\">\n    <div class=\"logo\"><a href=\"index.html\">G<span
     class=\"socket\"></span>mpha</a></div>\n    <div class=\"nav-links\">\n      <a
     href=\"index.html#capabilities\">Capabilities</a>\n      <a href=\"roadmap.html\">Roadmap</a>\n
     \     <a href=\"scale.html\">Scaling &amp; ownership</a>\n      <a href=\"safety.html\">Data
-    safety</a>\n      <a href=\"index.html#demos\">Live demos</a>\n      <a href=\"mailto:hello@gompha.com\"
-    class=\"btn btn-primary\" style=\"padding:10px 20px\">Get in touch</a>\n    </div>\n
-    \ </div>\n</nav>\n\n<!-- HERO -->\n<header class=\"hero\">\n  <div class=\"glow
-    g1\"></div><div class=\"glow g2\"></div>\n  <div class=\"wrap hero-grid\">\n    <div
-    class=\"hero-copy\">\n      <span class=\"pill anim d1\">\U0001F9B7 <span><b>Live
-    v0.27.0</b> — running in a real Erbil clinic</span></span>\n      <h1 class=\"anim
-    d2\">Your practice, anchored.</h1>\n      <p class=\"tagline anim d3\">Gompha
-    holds your tooth chart, your schedule, every case and every negotiated deal in
-    one record — and remembers who approved the price and why. Nothing floats loose.
-    Nothing gets forgotten.</p>\n      <div class=\"cta-row anim d4\">\n        <a
-    href=\"index.html#demos\" class=\"btn btn-primary\">Try a live demo</a>\n        <a
-    href=\"roadmap.html\" class=\"btn btn-ghost\">See the roadmap →</a>\n      </div>\n
-    \     <p class=\"trust anim d4\">Built for cash &amp; bargaining markets — where
-    the price is a conversation, not a list.</p>\n    </div>\n    <div class=\"appwin
-    anim d3\">\n      <div class=\"appwin-bar\"><span class=\"td r\"></span><span
-    class=\"td y\"></span><span class=\"td g\"></span><span class=\"appwin-url\">demo.gompha.com
-    › patient · tooth chart</span></div>\n      <div class=\"appwin-body\">\n        <div
-    class=\"appwin-cap\"><span id=\"hero-title\">Two-layer odontogram</span> <span
-    class=\"pin\">live screen</span></div>\n        <svg id=\"hero-odo\" viewBox=\"0
-    0 568 172\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" aria-label=\"Animated
+    safety</a>\n      <a href=\"index.html#demos\">Live demos</a>\n      <a href=\"index.ar.html\"
+    class=\"langtoggle\">ع</a>\n      <a href=\"mailto:hello@gompha.com\" class=\"btn
+    btn-primary\" style=\"padding:10px 20px\">Get in touch</a>\n    </div>\n  </div>\n</nav>\n\n<!--
+    HERO -->\n<header class=\"hero\">\n  <div class=\"glow g1\"></div><div class=\"glow
+    g2\"></div>\n  <div class=\"wrap hero-grid\">\n    <div class=\"hero-copy\">\n
+    \     <span class=\"pill anim d1\">\U0001F9B7 <span><b>Live v0.27.0</b> — running
+    in a real Erbil clinic</span></span>\n      <h1 class=\"anim d2\">Your practice,
+    anchored.</h1>\n      <p class=\"tagline anim d3\">Gompha holds your tooth chart,
+    your schedule, every case and every negotiated deal in one record — and remembers
+    who approved the price and why. Nothing floats loose. Nothing gets forgotten.</p>\n
+    \     <div class=\"cta-row anim d4\">\n        <a href=\"index.html#demos\" class=\"btn
+    btn-primary\">Try a live demo</a>\n        <a href=\"roadmap.html\" class=\"btn
+    btn-ghost\">See the roadmap →</a>\n      </div>\n      <p class=\"trust anim d4\">Built
+    for cash &amp; bargaining markets — where the price is a conversation, not a list.</p>\n
+    \   </div>\n    <div class=\"appwin anim d3\">\n      <div class=\"appwin-bar\"><span
+    class=\"td r\"></span><span class=\"td y\"></span><span class=\"td g\"></span><span
+    class=\"appwin-url\">demo.gompha.com › patient · tooth chart</span></div>\n      <div
+    class=\"appwin-body\">\n        <div class=\"appwin-cap\"><span id=\"hero-title\">Two-layer
+    odontogram</span> <span class=\"pin\">live screen</span></div>\n        <svg id=\"hero-odo\"
+    viewBox=\"0 0 568 172\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" aria-label=\"Animated
     tooth chart building itself: each tooth cycles through crowns, fillings, bridges,
     root canals, implants and missing teeth, then settles.\"><line x1=\"16\" y1=\"83\"
     x2=\"552\" y2=\"83\" stroke=\"#d3deea\"/><text x=\"6\" y=\"87\" font-size=\"10\"
@@ -952,7 +1654,7 @@ data:
     \     <div class=\"fcol\">\n        <h5>Contact</h5>\n        <a href=\"mailto:hello@gompha.com\">hello@gompha.com</a>\n
     \       <a href=\"mailto:hello@gompha.com\">Book a walkthrough</a>\n      </div>\n
     \   </div>\n    <div class=\"base\">© 2026 Gompha · Your practice, anchored.</div>\n
-    \ </div>\n</footer>\n\n<script src=\"reveal.js?v=3\"></script>\n<script src=\"heroanim.js?v=4\"></script>\n</body>\n</html>\n"
+    \ </div>\n</footer>\n\n<script src=\"reveal.js?v=5\"></script>\n<script src=\"heroanim.js?v=5\"></script>\n</body>\n</html>\n"
   odontogram.svg: '<svg viewBox="0 0 568 172" xmlns="http://www.w3.org/2000/svg" role="img"
     aria-label="Two-layer tooth chart: crown colour is the restoration type, a red
     root is a root canal, the coloured dot is provenance — green done in-house, blue
@@ -1298,7 +2000,7 @@ data:
     PMS. An honest built-vs-planned roadmap, updated per release.\">\n<link rel=\"preconnect\"
     href=\"https://fonts.googleapis.com\">\n<link rel=\"preconnect\" href=\"https://fonts.gstatic.com\"
     crossorigin>\n<link href=\"https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800;900&family=Inter:wght@400;500;600;700&display=swap\"
-    rel=\"stylesheet\">\n<link rel=\"stylesheet\" href=\"style.css?v=3\">\n</head>\n<body>\n\n<nav>\n
+    rel=\"stylesheet\">\n<link rel=\"stylesheet\" href=\"style.css?v=5\">\n</head>\n<body>\n\n<nav>\n
     \ <div class=\"wrap nav-in\">\n    <div class=\"logo\"><a href=\"index.html\">G<span
     class=\"socket\"></span>mpha</a></div>\n    <div class=\"nav-links\">\n      <a
     href=\"index.html#capabilities\">Capabilities</a>\n      <a href=\"roadmap.html\"
@@ -1423,7 +2125,7 @@ data:
     \     <div class=\"fcol\">\n        <h5>Contact</h5>\n        <a href=\"mailto:hello@gompha.com\">hello@gompha.com</a>\n
     \       <a href=\"mailto:hello@gompha.com\">Book a walkthrough</a>\n      </div>\n
     \   </div>\n    <div class=\"base\">© 2026 Gompha · Your practice, anchored.</div>\n
-    \ </div>\n</footer>\n\n<script src=\"reveal.js?v=3\"></script>\n</body>\n</html>\n"
+    \ </div>\n</footer>\n\n<script src=\"reveal.js?v=5\"></script>\n</body>\n</html>\n"
   safety.html: "<!DOCTYPE html>\n<html lang=\"en\" class=\"no-js\">\n<head>\n<meta
     charset=\"UTF-8\">\n<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n<meta
     name=\"robots\" content=\"noindex\">\n<title>Data safety — Gompha</title>\n<meta
@@ -1431,7 +2133,7 @@ data:
     tenant isolation, encrypted backups, walled access by role, session control, and
     a no-hostage promise.\">\n<link rel=\"preconnect\" href=\"https://fonts.googleapis.com\">\n<link
     rel=\"preconnect\" href=\"https://fonts.gstatic.com\" crossorigin>\n<link href=\"https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800;900&family=Inter:wght@400;500;600;700&display=swap\"
-    rel=\"stylesheet\">\n<link rel=\"stylesheet\" href=\"style.css?v=3\">\n</head>\n<body>\n\n<nav>\n
+    rel=\"stylesheet\">\n<link rel=\"stylesheet\" href=\"style.css?v=5\">\n</head>\n<body>\n\n<nav>\n
     \ <div class=\"wrap nav-in\">\n    <div class=\"logo\"><a href=\"index.html\">G<span
     class=\"socket\"></span>mpha</a></div>\n    <div class=\"nav-links\">\n      <a
     href=\"index.html#capabilities\">Capabilities</a>\n      <a href=\"roadmap.html\">Roadmap</a>\n
@@ -1519,7 +2221,7 @@ data:
     \     <div class=\"fcol\">\n        <h5>Contact</h5>\n        <a href=\"mailto:hello@gompha.com\">hello@gompha.com</a>\n
     \       <a href=\"mailto:hello@gompha.com\">Book a walkthrough</a>\n      </div>\n
     \   </div>\n    <div class=\"base\">© 2026 Gompha · Your practice, anchored.</div>\n
-    \ </div>\n</footer>\n\n<script src=\"reveal.js?v=3\"></script>\n</body>\n</html>\n"
+    \ </div>\n</footer>\n\n<script src=\"reveal.js?v=5\"></script>\n</body>\n</html>\n"
   scale.html: "<!DOCTYPE html>\n<html lang=\"en\" class=\"no-js\">\n<head>\n<meta
     charset=\"UTF-8\">\n<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n<meta
     name=\"robots\" content=\"noindex\">\n<title>Scaling &amp; ownership — Gompha</title>\n<meta
@@ -1527,7 +2229,7 @@ data:
     take your data when you leave. How Gompha scales up and down — and why your records
     are never held hostage.\">\n<link rel=\"preconnect\" href=\"https://fonts.googleapis.com\">\n<link
     rel=\"preconnect\" href=\"https://fonts.gstatic.com\" crossorigin>\n<link href=\"https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800;900&family=Inter:wght@400;500;600;700&display=swap\"
-    rel=\"stylesheet\">\n<link rel=\"stylesheet\" href=\"style.css?v=3\">\n</head>\n<body>\n\n<nav>\n
+    rel=\"stylesheet\">\n<link rel=\"stylesheet\" href=\"style.css?v=5\">\n</head>\n<body>\n\n<nav>\n
     \ <div class=\"wrap nav-in\">\n    <div class=\"logo\"><a href=\"index.html\">G<span
     class=\"socket\"></span>mpha</a></div>\n    <div class=\"nav-links\">\n      <a
     href=\"index.html#capabilities\">Capabilities</a>\n      <a href=\"roadmap.html\">Roadmap</a>\n
@@ -1665,7 +2367,7 @@ data:
     \     <div class=\"fcol\">\n        <h5>Contact</h5>\n        <a href=\"mailto:hello@gompha.com\">hello@gompha.com</a>\n
     \       <a href=\"mailto:hello@gompha.com\">Book a walkthrough</a>\n      </div>\n
     \   </div>\n    <div class=\"base\">© 2026 Gompha · Your practice, anchored.</div>\n
-    \ </div>\n</footer>\n\n<script src=\"reveal.js?v=3\"></script>\n</body>\n</html>\n"
+    \ </div>\n</footer>\n\n<script src=\"reveal.js?v=5\"></script>\n</body>\n</html>\n"
   style.css: "/* Gompha marketing site — shared design system.\n   Extracted from
     the original single-file landing so every page (home, roadmap,\n   scale) reads
     as one system. Self-contained: fonts are the only external ask.\n   ponytail:
@@ -1678,7 +2380,15 @@ data:
     --ink-2:#dbe8ff; --navy:#8fb4ff;\n    --body:#c6d6ec; --teal-text:#3ee0d0;\n    --bg:#06142b;
     --bg-alt:#0b2038; --card:#0f2340; --line:#274a74;\n  }\n}\n:root[data-theme=\"dark\"]{\n
     \ --ink:#f2f7ff; --ink-2:#dbe8ff; --navy:#8fb4ff;\n  --body:#c6d6ec; --teal-text:#3ee0d0;\n
-    \ --bg:#06142b; --bg-alt:#0b2038; --card:#0f2340; --line:#274a74;\n}\n*{box-sizing:border-box;margin:0;padding:0}\nhtml{scroll-behavior:smooth}\nbody{font-family:var(--body-font);color:var(--body);background:var(--bg);line-height:1.65;-webkit-font-smoothing:antialiased;font-size:16.5px;overflow-x:hidden}\n/*
+    \ --bg:#06142b; --bg-alt:#0b2038; --card:#0f2340; --line:#274a74;\n}\n*{box-sizing:border-box;margin:0;padding:0}\nhtml{scroll-behavior:smooth}\n\n/*
+    ---- Arabic / RTL ---- */\nhtml[dir=\"rtl\"]{--heading-font:'Cairo',system-ui,-apple-system,'Segoe
+    UI',sans-serif;--body-font:'Cairo',system-ui,-apple-system,'Segoe UI',sans-serif}\n/*
+    letter-spacing disconnects Arabic letters — kill it everywhere in RTL */\n[dir=\"rtl\"]
+    *{letter-spacing:normal !important}\n[dir=\"rtl\"] h1,[dir=\"rtl\"] h2,[dir=\"rtl\"]
+    h3,[dir=\"rtl\"] h4{line-height:1.3}\n[dir=\"rtl\"] .eyebrow,[dir=\"rtl\"] .ship,[dir=\"rtl\"]
+    .badge,[dir=\"rtl\"] .kind,[dir=\"rtl\"] .pin,[dir=\"rtl\"] .moat,[dir=\"rtl\"]
+    .tag{text-transform:none}\n[dir=\"rtl\"] .appwin-url{direction:ltr}\n.langtoggle{font-family:var(--heading-font);font-weight:800;font-size:14px;color:var(--teal-text);border:1.5px
+    solid var(--line);border-radius:8px;padding:6px 11px}\n.langtoggle:hover{border-color:var(--teal)}\nbody{font-family:var(--body-font);color:var(--body);background:var(--bg);line-height:1.65;-webkit-font-smoothing:antialiased;font-size:16.5px;overflow-x:hidden}\n/*
     grid/flex blowout guard: let children shrink so nowrap text ellipsizes\n   instead
     of pushing the layout wider than the viewport */\n.hero-grid>*,.showcase>*,.mobwrap>*,.id-grid>*,.feat-grid>*,.demo-grid>*,.spot>*,.split>*,.price-grid>*{min-width:0}\nimg,svg{max-width:100%}\nh1,h2,h3,h4{font-family:var(--heading-font);color:var(--ink);line-height:1.12;letter-spacing:-.02em}\na{color:var(--teal-text);text-decoration:none;font-weight:600}\nem{color:inherit}\n.wrap{max-width:1140px;margin:0
     auto;padding:0 24px}\n.narrow{max-width:820px}\n.btn{display:inline-block;padding:15px
