@@ -127,61 +127,12 @@ data:
     across the top, the day down the side, every doctor colour-coded. Double-booking
     is blocked, arrivals light up, and running-late ripples to the front desk in real
     time.</p>\n    </div>\n    <div class=\"monitor reveal\">\n      <div class=\"bezel\">\n
-    \       <div class=\"screen\">\n          <div class=\"rc\">\n            <div
-    class=\"rc-bar\">\n              <span class=\"l\">G<span class=\"socket\"></span>mpha</span>\n
-    \             <span class=\"role\">Reception</span>\n              <span class=\"date\">Tue
-    · 7 Jul</span>\n              <span class=\"fx\">FX 1,500</span>\n              <div
-    class=\"rc-legend\">\n                <span><i style=\"background:#4363d8\"></i>Dr.
-    Ali</span>\n                <span><i style=\"background:#3cb44b\"></i>Dr. Zana</span>\n
-    \               <span><i style=\"background:#f58231\"></i>Dr. Nma</span>\n                <span><i
-    style=\"background:#e6194b\"></i>Dr. Sara</span>\n                <span><i style=\"background:#911eb4\"></i>Dr.
-    Hemn</span>\n              </div>\n            </div>\n            <div class=\"rc-grid\">\n
-    \             <div class=\"h\"></div>\n              <div class=\"h\"><span class=\"rdot\"
-    style=\"background:#4363d8\"></span>Room 1</div>\n              <div class=\"h\"><span
-    class=\"rdot\" style=\"background:#3cb44b\"></span>Room 2</div>\n              <div
-    class=\"h\"><span class=\"rdot\" style=\"background:#f58231\"></span>Room 3</div>\n
-    \             <div class=\"h\"><span class=\"rdot\" style=\"background:#e6194b\"></span>Room
-    4</div>\n              <div class=\"h\"><span class=\"rdot\" style=\"background:#911eb4\"></span>Room
-    5</div>\n\n              <div class=\"tc\">09:00</div>\n              <div class=\"cell\"><div
-    class=\"rc-appt\" style=\"background:#4363d8;height:82px\">Layla Hama<small>Crown
-    prep</small><span class=\"arr\">HERE</span></div></div>\n              <div class=\"cell\"><div
-    class=\"rc-appt\" style=\"background:#3cb44b;height:126px\">Sara Mahmoud<small>Implant
-    placement</small></div></div>\n              <div class=\"cell\"></div>\n              <div
-    class=\"cell\"><div class=\"rc-appt\" style=\"background:#e6194b;height:38px\">Omar
-    Khalid<small>Check-up</small></div></div>\n              <div class=\"cell\"></div>\n\n
-    \             <div class=\"tc\">09:30</div>\n              <div class=\"cell\"></div>\n
-    \             <div class=\"cell\"></div>\n              <div class=\"cell\"><div
-    class=\"rc-appt\" style=\"background:#f58231;height:82px\">Dana Tariq<small>Perio
-    review</small></div></div>\n              <div class=\"cell\"></div>\n              <div
-    class=\"cell\"></div>\n\n              <div class=\"tc\">10:00</div>\n              <div
-    class=\"cell\"></div>\n              <div class=\"cell\"></div>\n              <div
-    class=\"cell\"></div>\n              <div class=\"cell\"><div class=\"rc-appt\"
-    style=\"background:#e6194b;height:82px\">Zaid Ahmed<small>Filling · 2 surfaces</small></div></div>\n
-    \             <div class=\"cell\"><div class=\"rc-appt\" style=\"background:#911eb4;height:126px\">Bakr
-    Salih<small>Root canal</small></div></div>\n\n              <div class=\"tc\">10:30</div>\n
-    \             <div class=\"cell\"><div class=\"rc-appt\" style=\"background:#4363d8;height:38px\">Hiba
-    Salih<small>Whitening</small></div></div>\n              <div class=\"cell\"></div>\n
-    \             <div class=\"cell\"></div>\n              <div class=\"cell\"></div>\n
-    \             <div class=\"cell\"></div>\n\n              <div class=\"tc\">11:00</div>\n
-    \             <div class=\"cell\"></div>\n              <div class=\"cell\"><div
-    class=\"rc-appt\" style=\"background:#3cb44b;height:82px\">Yusuf Rekan<small>Extraction</small></div></div>\n
-    \             <div class=\"cell\"><div class=\"rc-appt\" style=\"background:#f58231;height:38px\">Karwan
-    Ali<small>Scaling</small><span class=\"arr\">HERE</span></div></div>\n              <div
-    class=\"cell\"></div>\n              <div class=\"cell\"></div>\n\n              <div
-    class=\"tc\">11:30</div>\n              <div class=\"cell\"><div class=\"rc-appt\"
-    style=\"background:#4363d8;height:38px\">Rawa Aziz<small>Consult</small></div></div>\n
-    \             <div class=\"cell\"></div>\n              <div class=\"cell\"></div>\n
-    \             <div class=\"cell\"></div>\n              <div class=\"cell\"></div>\n\n
-    \             <div class=\"tc\">12:00</div>\n              <div class=\"cell\"></div>\n
-    \             <div class=\"cell\"></div>\n              <div class=\"cell\"></div>\n
-    \             <div class=\"cell\"><div class=\"rc-appt\" style=\"background:#e6194b;height:38px\">Noor
-    Fadhil<small>Review</small></div></div>\n              <div class=\"cell\"><div
-    class=\"rc-appt\" style=\"background:#911eb4;height:38px\">Lava Miran<small>Braces
-    adjust</small></div></div>\n\n              <div class=\"tc\">12:30</div>\n              <div
-    class=\"cell\"></div>\n              <div class=\"cell\"></div>\n              <div
-    class=\"cell\"></div>\n              <div class=\"cell\"></div>\n              <div
-    class=\"cell\"></div>\n            </div>\n          </div>\n        </div>\n
-    \     </div>\n      <div class=\"neck\"></div>\n      <div class=\"base\"></div>\n
+    \       <div class=\"screen\">\n          <!-- Live reception schedule: auto-logs
+    in as reception (demo tenant)\n               and lands on /schedule via the goto
+    deep link (SPA v0.25.1). The\n               wide viewport makes the app render
+    its desktop room-grid. -->\n          <iframe class=\"rc-frame\" src=\"https://demo.gompha.com/?demo=reception&goto=/schedule\"
+    title=\"Gompha — live reception schedule, auto-signed in\" loading=\"lazy\"></iframe>\n
+    \       </div>\n      </div>\n      <div class=\"neck\"></div>\n      <div class=\"base\"></div>\n
     \   </div>\n  </div>\n</section>\n\n<!-- ANCHOR THESIS -->\n<section id=\"thesis\">\n
     \ <div class=\"wrap\">\n    <div class=\"sec-head reveal\">\n      <span class=\"eyebrow\">The
     name</span>\n      <h2>Gomphosis — the joint that anchors every tooth</h2>\n      <p>In
@@ -1129,32 +1080,18 @@ data:
     solid #0FA697;padding:8px 10px;border-radius:7px;font-size:12px;font-style:italic;color:#0b2647;margin-top:8px}\n.pv-bal{display:flex;justify-content:space-between;text-align:center;gap:6px}\n.pv-bal
     div{flex:1}\n.pv-bal .k{font-size:10px;color:#7a8aa0;text-transform:uppercase;letter-spacing:.04em;font-weight:700}\n.pv-bal
     .v{font-family:var(--heading-font);font-weight:900;font-size:16px;color:#0b2647;margin-top:2px}\n.pv-bal
-    .v.owe{color:#c0392b}\n\n/* ---- Wide desktop monitor — reception schedule ----
-    */\n.monitor{max-width:1060px;margin:0 auto}\n.monitor .bezel{background:#0b0e16;border-radius:16px;padding:12px;box-shadow:0
+    .v.owe{color:#c0392b}\n\n/* ---- Wide desktop monitor — live reception schedule
+    iframed inside ---- */\n.monitor{max-width:1080px;margin:0 auto}\n.monitor .bezel{background:#0b0e16;border-radius:16px;padding:12px;box-shadow:0
     44px 100px -34px rgba(0,10,30,.62),0 0 0 1px rgba(255,255,255,.05)}\n.monitor
-    .screen{border-radius:8px;overflow:hidden;background:#fff}\n.monitor .neck{width:40px;height:24px;background:linear-gradient(#161b29,#0b0e16);margin:0
+    .screen{position:relative;border-radius:8px;overflow:hidden;background:#fff;aspect-ratio:16/10}\n.monitor
+    .screen iframe.rc-frame{position:absolute;inset:0;width:100%;height:100%;border:0;background:#fff}\n.monitor
+    .neck{width:40px;height:24px;background:linear-gradient(#161b29,#0b0e16);margin:0
     auto}\n.monitor .base{width:200px;height:9px;background:#0b0e16;margin:0 auto;border-radius:0
-    0 9px 9px;box-shadow:0 8px 18px -8px rgba(0,0,0,.5)}\n.rc{font-family:var(--body-font);color:#17324f}\n.rc-bar{background:#002F6C;color:#fff;display:flex;align-items:center;gap:14px;padding:11px
-    16px;flex-wrap:wrap}\n.rc-bar .l{font-family:var(--heading-font);font-weight:900;font-size:16px;display:inline-flex;align-items:center}\n.rc-bar
-    .l .socket{width:.7em;height:.7em;border-color:#5fe6d6}.rc-bar .l .socket:after{background:#5fe6d6}\n.rc-bar
-    .role{font-weight:700;font-size:13px;opacity:.85}\n.rc-bar .date{font-weight:700;font-size:13.5px;margin-left:6px}\n.rc-bar
-    .fx{background:rgba(255,255,255,.14);border-radius:7px;padding:3px 9px;font-size:12px;font-weight:700}\n.rc-legend{display:flex;gap:13px;margin-left:auto;flex-wrap:wrap}\n.rc-legend
-    span{font-size:12px;font-weight:700;display:inline-flex;align-items:center;gap:5px;color:#cfe0ff}\n.rc-legend
-    i{width:10px;height:10px;border-radius:50%;display:inline-block}\n.rc-grid{display:grid;grid-template-columns:52px
-    repeat(5,1fr);background:#fff}\n.rc-grid .h{background:#f3f7fb;font-family:var(--heading-font);font-weight:800;font-size:12.5px;color:#0b2647;padding:9px
-    6px;text-align:center;border-bottom:1px solid #e3ebf3;border-right:1px solid #eef3f8}\n.rc-grid
-    .h .rdot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:5px;vertical-align:middle}\n.rc-grid
-    .tc{font-size:10.5px;color:#8494a8;font-weight:600;padding:4px 6px 0 0;text-align:right;border-right:1px
-    solid #e3ebf3;background:#fafcfe}\n.rc-grid .cell{border-right:1px solid #eef3f8;border-bottom:1px
-    solid #f2f6fa;height:42px;position:relative}\n.rc-appt{position:absolute;left:3px;right:3px;top:2px;border-radius:7px;padding:5px
-    8px;color:#fff;font-weight:700;font-size:11.5px;line-height:1.2;box-shadow:0 4px
-    10px -4px rgba(0,20,50,.45);overflow:hidden;z-index:1}\n.rc-appt small{display:block;font-weight:600;opacity:.93;font-size:10px;margin-top:1px}\n.rc-appt
-    .arr{position:absolute;top:5px;right:6px;font-size:8.5px;font-weight:800;background:rgba(255,255,255,.3);border-radius:4px;padding:1px
-    5px;letter-spacing:.03em}\n@media(max-width:720px){.rc-grid{font-size:10px}.rc-appt{font-size:10px;padding:4px
-    6px}.rc-appt small{display:none}.rc-legend{display:none}}\n\n/* SECTIONS */\nsection{padding:92px
-    0}\nsection.tight{padding:64px 0}\n.sec-head{text-align:center;max-width:760px;margin:0
-    auto 56px}\n.sec-head h2{font-size:clamp(29px,4vw,42px);font-weight:900;margin:12px
-    0}\n.sec-head p{font-size:18.5px;color:var(--body)}\n\n/* anchor / id cards */\n.id-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}\n@media(max-width:900px){.id-grid{grid-template-columns:repeat(2,1fr)}}\n@media(max-width:480px){.id-grid{grid-template-columns:1fr}}\n.id-card{background:var(--card);border:1px
+    0 9px 9px;box-shadow:0 8px 18px -8px rgba(0,0,0,.5)}\n@media(max-width:720px){.monitor
+    .screen{aspect-ratio:4/3}}\n\n/* SECTIONS */\nsection{padding:92px 0}\nsection.tight{padding:64px
+    0}\n.sec-head{text-align:center;max-width:760px;margin:0 auto 56px}\n.sec-head
+    h2{font-size:clamp(29px,4vw,42px);font-weight:900;margin:12px 0}\n.sec-head p{font-size:18.5px;color:var(--body)}\n\n/*
+    anchor / id cards */\n.id-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}\n@media(max-width:900px){.id-grid{grid-template-columns:repeat(2,1fr)}}\n@media(max-width:480px){.id-grid{grid-template-columns:1fr}}\n.id-card{background:var(--card);border:1px
     solid var(--line);border-radius:16px;padding:28px;position:relative;overflow:hidden;transition:transform
     .2s ease,box-shadow .2s ease,border-color .2s}\n.id-card:hover{transform:translateY(-4px);box-shadow:0
     20px 44px -22px rgba(3,32,58,.5);border-color:var(--teal)}\n.id-card .tag{font-family:var(--heading-font);font-weight:800;font-size:12px;letter-spacing:.05em;color:#022b26;background:var(--teal-bright);display:inline-block;padding:4px
