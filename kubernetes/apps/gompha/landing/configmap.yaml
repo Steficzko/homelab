@@ -42,30 +42,34 @@ data:
         <div class="founder-grid stagger">
           <div class="founder">
             <div class="avatar">S</div>
-            <span class="role">Founder · Builder</span>
+            <span class="role">Founder · Technical</span>
             <h3>Stefanos Kostikidis</h3>
-            <p>Builds and runs the whole platform — the app, the data model, the deploy and the infrastructure. Gompha is designed, coded and shipped end-to-end from a real clinic's needs, not a spec sheet.</p>
-            <p><em>Short bio / experience — placeholder.</em></p>
+            <p>Designed, built and operates Gompha end-to-end — the FastAPI/Postgres backend, the React app, and the Kubernetes platform it runs on (a 5-node HA cluster with drilled cross-country disaster recovery). Self-taught infrastructure and product engineer with a two-decade operator's career and formal grounding in cybernetics and applied informatics.</p>
+            <p>Every architecture decision is recorded in public — verifiable engineering over hype.</p>
             <div class="links">
-              <!-- placeholder: point at the real CV/LinkedIn when ready -->
-              <a href="#">View CV →</a>
-              <a href="mailto:hello@gompha.com">Email</a>
+              <a href="https://github.com/Steficzko/homelab">Portfolio (public GitOps) →</a>
+              <a href="https://kostikidis.net">kostikidis.net</a>
+              <a href="mailto:kostikidis.network@gmail.com">Email</a>
             </div>
           </div>
           <div class="founder">
             <div class="avatar">A</div>
             <span class="role">Co-founder · Clinical</span>
-            <h3>Dr. Ali <em style="font-weight:600;color:var(--body)">— placeholder</em></h3>
-            <p>The dentist Gompha is built around. Runs a real practice in Erbil and shapes every clinical decision — the odontogram, the deal ledger, how the chair actually works day to day.</p>
-            <p><em>Short bio / credentials — placeholder.</em></p>
+            <h3>Dr. Ali Adnan</h3>
+            <p>The oral surgeon Gompha is built around. He runs a real practice in Erbil and shapes every clinical decision in the app — the odontogram, the perio chart, the deal ledger and how the chair actually works day to day.</p>
+            <ul style="list-style:none;margin:0 0 4px;color:var(--body);font-size:14.5px">
+              <li>▪️ MSc in Oral Surgery — UIC Barcelona</li>
+              <li>▪️ EAO-certified in implant dentistry</li>
+            </ul>
             <div class="links">
-              <a href="#">Profile →</a>
+              <a href="https://www.linkedin.com/in/ali-adnan-49469774">LinkedIn →</a>
+              <a href="mailto:aliadnan@uic.es">aliadnan@uic.es</a>
             </div>
           </div>
         </div>
 
         <p style="text-align:center;max-width:640px;margin:44px auto 0;color:var(--body);font-size:16px">
-          <strong>Who built it:</strong> Gompha is designed and developed by Stefanos Kostikidis, in close partnership with Dr.&nbsp;Ali, whose practice is its first home.
+          <strong>Who built it:</strong> Gompha is designed and developed by Stefanos Kostikidis, in close partnership with Dr.&nbsp;Ali Adnan, whose practice is its first home.
         </p>
       </div>
     </section>
@@ -94,30 +98,42 @@ data:
     safety</a>\n      <a href=\"index.html#demos\">Live demos</a>\n      <a href=\"index.html#contact\"
     class=\"btn btn-primary\" style=\"padding:10px 20px\">Join the waitlist</a>\n
     \   </div>\n  </div>\n</nav>\n\n<!-- HERO -->\n<header class=\"hero\">\n  <div
-    class=\"glow g1\"></div><div class=\"glow g2\"></div>\n  <div class=\"wrap\">\n
-    \   <span class=\"pill anim d1\">\U0001F9B7 <span><b>Live v0.22.3</b> — running
-    in a real Erbil clinic</span></span>\n    <h1 class=\"anim d2\">Your practice,
-    anchored.</h1>\n    <p class=\"tagline anim d3\">Gompha holds your tooth chart,
-    your schedule, every case and every negotiated deal in one record — and remembers
-    who approved the price and why. Nothing floats loose. Nothing gets forgotten.</p>\n
-    \   <div class=\"cta-row anim d4\">\n      <a href=\"index.html#demos\" class=\"btn
-    btn-primary\">Try a live demo</a>\n      <a href=\"roadmap.html\" class=\"btn
-    btn-ghost\">See the roadmap →</a>\n    </div>\n    <p class=\"trust anim d4\">Built
-    for cash &amp; bargaining markets — where the price is a conversation, not a list.</p>\n
-    \ </div>\n</header>\n\n<!-- ANCHOR THESIS -->\n<section id=\"thesis\">\n  <div
-    class=\"wrap\">\n    <div class=\"sec-head reveal\">\n      <span class=\"eyebrow\">The
-    name</span>\n      <h2>Gomphosis — the joint that anchors every tooth</h2>\n      <p>In
-    anatomy, <em>gomphosis</em> is the peg-in-socket bond that locks each tooth solidly
-    into the jaw — the reason a healthy tooth doesn't move. Gompha does the same for
-    your practice: it anchors the four things that usually float loose into one record.</p>\n
-    \   </div>\n    <div class=\"id-grid stagger\">\n      <div class=\"id-card\"><span
-    class=\"tag\">Tooth</span><h3>Two-layer odontogram</h3><p>Crown, root and state
-    per tooth, tracked over time with per-doctor provenance colors.</p></div>\n      <div
-    class=\"id-card\"><span class=\"tag\">Patient</span><h3>The full timeline</h3><p>History,
-    perio trends, charges, debt and contact — one continuous, anchored record.</p></div>\n
-    \     <div class=\"id-card\"><span class=\"tag\">Case</span><h3>Procedures &amp;
-    sessions</h3><p>Every case assembled from procedure line-items that book, schedule
-    and follow the patient through.</p></div>\n      <div class=\"id-card\"><span
+    class=\"glow g1\"></div><div class=\"glow g2\"></div>\n  <div class=\"wrap hero-grid\">\n
+    \   <div class=\"hero-copy\">\n      <span class=\"pill anim d1\">\U0001F9B7 <span><b>Live
+    v0.22.3</b> — running in a real Erbil clinic</span></span>\n      <h1 class=\"anim
+    d2\">Your practice, anchored.</h1>\n      <p class=\"tagline anim d3\">Gompha
+    holds your tooth chart, your schedule, every case and every negotiated deal in
+    one record — and remembers who approved the price and why. Nothing floats loose.
+    Nothing gets forgotten.</p>\n      <div class=\"cta-row anim d4\">\n        <a
+    href=\"index.html#demos\" class=\"btn btn-primary\">Try a live demo</a>\n        <a
+    href=\"roadmap.html\" class=\"btn btn-ghost\">See the roadmap →</a>\n      </div>\n
+    \     <p class=\"trust anim d4\">Built for cash &amp; bargaining markets — where
+    the price is a conversation, not a list.</p>\n    </div>\n    <div class=\"appwin
+    anim d3\">\n      <div class=\"appwin-bar\"><span class=\"td r\"></span><span
+    class=\"td y\"></span><span class=\"td g\"></span><span class=\"appwin-url\">blanca.gompha.com
+    › patient · tooth chart</span></div>\n      <div class=\"appwin-body\">\n        <div
+    class=\"appwin-cap\">Two-layer odontogram <span class=\"pin\">live screen</span></div>\n
+    \       <img src=\"odontogram.svg\" alt=\"Gompha two-layer tooth chart — crowns,
+    root canals, an implant, a bridge and a missing tooth, each with a provenance
+    dot\" width=\"568\" height=\"172\" loading=\"lazy\">\n        <div class=\"od-key\">\n
+    \         <span><i style=\"background:#2b6cb0\"></i>crown</span>\n          <span><i
+    style=\"background:#d9534f\"></i>root canal</span>\n          <span><i style=\"background:#5b7185\"></i>implant</span>\n
+    \         <span><i style=\"background:#1a7f37\"></i>in-house</span>\n          <span><i
+    style=\"background:#2563eb\"></i>external</span>\n          <span><i style=\"background:#9aa0a6\"></i>planned</span>\n
+    \       </div>\n      </div>\n    </div>\n  </div>\n</header>\n\n<!-- ANCHOR THESIS
+    -->\n<section id=\"thesis\">\n  <div class=\"wrap\">\n    <div class=\"sec-head
+    reveal\">\n      <span class=\"eyebrow\">The name</span>\n      <h2>Gomphosis
+    — the joint that anchors every tooth</h2>\n      <p>In anatomy, <em>gomphosis</em>
+    is the peg-in-socket bond that locks each tooth solidly into the jaw — the reason
+    a healthy tooth doesn't move. Gompha does the same for your practice: it anchors
+    the four things that usually float loose into one record.</p>\n    </div>\n    <div
+    class=\"id-grid stagger\">\n      <div class=\"id-card\"><span class=\"tag\">Tooth</span><h3>Two-layer
+    odontogram</h3><p>Crown, root and state per tooth, tracked over time with per-doctor
+    provenance colors.</p></div>\n      <div class=\"id-card\"><span class=\"tag\">Patient</span><h3>The
+    full timeline</h3><p>History, perio trends, charges, debt and contact — one continuous,
+    anchored record.</p></div>\n      <div class=\"id-card\"><span class=\"tag\">Case</span><h3>Procedures
+    &amp; sessions</h3><p>Every case assembled from procedure line-items that book,
+    schedule and follow the patient through.</p></div>\n      <div class=\"id-card\"><span
     class=\"tag\">Deal</span><h3>The negotiated price</h3><p>Agreed vs standard price,
     who approved it, and the human reason — held, not forgotten.</p></div>\n    </div>\n
     \ </div>\n</section>\n\n<!-- CAPABILITIES -->\n<section id=\"capabilities\" style=\"background:var(--bg-alt)\">\n
@@ -164,16 +180,58 @@ data:
     from anywhere.</p></div>\n      <div class=\"feat\"><span class=\"ico\">\U0001F5E3️</span><h3>Voice
     → deal note <span class=\"ship soon\">Planned</span></h3><p>Dictate a chair-side
     note → structured encounter and deal, hands on the patient. The moat feature —
-    spec'd, not yet built.</p></div>\n    </div>\n  </div>\n</section>\n\n<!-- DEAL
-    LEDGER SPOTLIGHT -->\n<section id=\"ledger\">\n  <div class=\"wrap\">\n    <div
-    class=\"spot reveal\">\n      <div>\n        <span class=\"moat\">The moat</span>\n
-    \       <h2>No other PMS remembers the deal</h2>\n        <p>Dentrix and Open
-    Dental assume a fixed price list. But in the real world, the price is negotiated
-    — a discount for a cousin, a free cleaning, a cash rate. Gompha anchors that:
-    what was agreed, who approved it, and why.</p>\n        <p>Next time that patient
-    walks in, the whole clinic knows the story — not just the doctor who made the
-    deal.</p>\n        <a href=\"index.html#demos\" class=\"btn btn-gold\">See it
-    in the live demo</a>\n      </div>\n      <div class=\"sheet\">\n        <div
+    spec'd, not yet built.</p></div>\n    </div>\n  </div>\n</section>\n\n<!-- PRODUCT
+    SHOWCASE -->\n<section id=\"screens\">\n  <div class=\"wrap\">\n    <div class=\"sec-head
+    reveal\">\n      <span class=\"eyebrow\">See the real screens</span>\n      <h2>Not
+    a spreadsheet with a logo</h2>\n      <p>Actual Gompha screens — the periodontal
+    chart trends the mouth over time, and reception drives the day on a room-by-room
+    grid.</p>\n    </div>\n    <div class=\"showcase stagger\">\n      <div class=\"appwin\">\n
+    \       <div class=\"appwin-bar\"><span class=\"td r\"></span><span class=\"td
+    y\"></span><span class=\"td g\"></span><span class=\"appwin-url\">blanca.gompha.com
+    › patient · perio chart</span></div>\n        <div class=\"appwin-body\">\n          <div
+    class=\"appwin-cap\">Periodontal line chart <span class=\"pin\">upper · buccal</span></div>\n
+    \         <img src=\"perio.svg\" alt=\"Periodontal line chart — gingival margin
+    and pocket-depth lines over each tooth, with two deep pockets and bleeding sites
+    flagged red\" width=\"568\" height=\"150\" loading=\"lazy\">\n          <div class=\"od-key\">\n
+    \           <span><i style=\"background:#d97706\"></i>gingival margin</span>\n
+    \           <span><i style=\"background:#2b6cb0\"></i>pocket bottom</span>\n            <span><i
+    style=\"background:#d9534f\"></i>deep pocket / bleeding</span>\n          </div>\n
+    \       </div>\n      </div>\n      <div class=\"appwin\">\n        <div class=\"appwin-bar\"><span
+    class=\"td r\"></span><span class=\"td y\"></span><span class=\"td g\"></span><span
+    class=\"appwin-url\">blanca.gompha.com › reception · schedule</span></div>\n        <div
+    class=\"appwin-body\">\n          <div class=\"appwin-cap\">Room-grid schedule
+    <span class=\"pin\">rooms as columns</span></div>\n          <div class=\"sched\">\n
+    \           <div class=\"sh\"></div>\n            <div class=\"sh\"><span class=\"rdot\"
+    style=\"background:#4363d8\"></span>Room 1</div>\n            <div class=\"sh\"><span
+    class=\"rdot\" style=\"background:#e6194b\"></span>Room 2</div>\n            <div
+    class=\"sh\"><span class=\"rdot\" style=\"background:#3cb44b\"></span>Room 3</div>\n\n
+    \           <div class=\"tcol t\">09:00</div>\n            <div class=\"cell\"><div
+    class=\"appt\" style=\"background:#4363d8;top:2px;height:64px\">Layla H.<small>Crown
+    prep · Dr. Ali</small></div></div>\n            <div class=\"cell\"><div class=\"appt\"
+    style=\"background:#e6194b;top:2px;height:30px\">Omar K.<small>Check-up</small></div></div>\n
+    \           <div class=\"cell\"><div class=\"appt\" style=\"background:#3cb44b;top:2px;height:98px\">Sara
+    M.<small>Implant · Dr. Zana</small></div></div>\n\n            <div class=\"tcol
+    t\">09:30</div>\n            <div class=\"cell\"></div>\n            <div class=\"cell\"><div
+    class=\"appt\" style=\"background:#f58231;top:2px;height:64px\">Dana T.<small>Perio
+    · Dr. Nma</small></div></div>\n            <div class=\"cell\"></div>\n\n            <div
+    class=\"tcol t\">10:00</div>\n            <div class=\"cell\"><div class=\"appt\"
+    style=\"background:#e6194b;top:2px;height:30px\">Zaid A.<small>Filling</small></div></div>\n
+    \           <div class=\"cell\"></div>\n            <div class=\"cell\"><div class=\"appt\"
+    style=\"background:#4363d8;top:2px;height:64px\">Hiba S.<small>Whitening · Dr.
+    Ali</small></div></div>\n\n            <div class=\"tcol t\">10:30</div>\n            <div
+    class=\"cell\"><div class=\"appt\" style=\"background:#3cb44b;top:2px;height:64px\">Yusuf
+    R.<small>Extraction · Dr. Zana</small></div></div>\n            <div class=\"cell\"><div
+    class=\"appt\" style=\"background:#f58231;top:2px;height:30px\">Nour F.<small>Review</small></div></div>\n
+    \           <div class=\"cell\"></div>\n          </div>\n        </div>\n      </div>\n
+    \   </div>\n  </div>\n</section>\n\n<!-- DEAL LEDGER SPOTLIGHT -->\n<section id=\"ledger\">\n
+    \ <div class=\"wrap\">\n    <div class=\"spot reveal\">\n      <div>\n        <span
+    class=\"moat\">The moat</span>\n        <h2>No other PMS remembers the deal</h2>\n
+    \       <p>Dentrix and Open Dental assume a fixed price list. But in the real
+    world, the price is negotiated — a discount for a cousin, a free cleaning, a cash
+    rate. Gompha anchors that: what was agreed, who approved it, and why.</p>\n        <p>Next
+    time that patient walks in, the whole clinic knows the story — not just the doctor
+    who made the deal.</p>\n        <a href=\"index.html#demos\" class=\"btn btn-gold\">See
+    it in the live demo</a>\n      </div>\n      <div class=\"sheet\">\n        <div
     class=\"row\"><span class=\"k\">Procedure</span><span class=\"v\">Zirconia crown
     · tooth 11</span></div>\n        <div class=\"row\"><span class=\"k\">Standard
     price</span><span class=\"strike\">$450</span></div>\n        <div class=\"row\"><span
@@ -285,6 +343,333 @@ data:
     \       <a href=\"index.html#contact\">Book a walkthrough</a>\n      </div>\n
     \   </div>\n    <div class=\"base\">© 2026 Gompha · Your practice, anchored.</div>\n
     \ </div>\n</footer>\n\n<script src=\"reveal.js\"></script>\n</body>\n</html>\n"
+  odontogram.svg: '<svg viewBox="0 0 568 172" xmlns="http://www.w3.org/2000/svg" role="img"
+    aria-label="Two-layer tooth chart: crown colour is the restoration type, a red
+    root is a root canal, the coloured dot is provenance — green done in-house, blue
+    done elsewhere, grey planned."><line x1="16" y1="83" x2="552" y2="83" stroke="#d3deea"/><text
+    x="6" y="87" font-size="10" font-weight="700" fill="#7d8b93" font-family="Inter,sans-serif">R</text><text
+    x="562" y="87" font-size="10" font-weight="700" fill="#7d8b93" text-anchor="end"
+    font-family="Inter,sans-serif">L</text><g transform="translate(33.5 70) scale(0.75
+    -0.75) translate(-20 0)"><path d="M17 30 Q16 50 20 55 Q24 50 23 30 Z" fill="#ffffff"
+    stroke="#7d8b93" stroke-width="1.3"/><path d="M9 30 Q7 56 11 63 Q15 56 15 30 Z"
+    fill="#ffffff" stroke="#7d8b93" stroke-width="1.3"/><path d="M25 30 Q25 56 29
+    63 Q33 56 31 30 Z" fill="#ffffff" stroke="#7d8b93" stroke-width="1.3"/><path d="M6
+    30 L6 16 Q6 11 11 11 L15 14 L20 11 L25 14 L29 11 Q34 11 34 16 L34 30 Z" fill="#ffffff"
+    stroke="#7d8b93" stroke-width="1.3"/></g><text x="33.5" y="10" font-size="10"
+    font-weight="600" fill="#7d8b93" text-anchor="middle" font-family="Inter,sans-serif">18</text><g
+    transform="translate(66.5 70) scale(0.75 -0.75) translate(-20 0)"><path d="M17
+    30 Q16 50 20 55 Q24 50 23 30 Z" fill="#ffffff" stroke="#7d8b93" stroke-width="1.3"/><path
+    d="M9 30 Q7 56 11 63 Q15 56 15 30 Z" fill="#ffffff" stroke="#7d8b93" stroke-width="1.3"/><path
+    d="M25 30 Q25 56 29 63 Q33 56 31 30 Z" fill="#ffffff" stroke="#7d8b93" stroke-width="1.3"/><path
+    d="M6 30 L6 16 Q6 11 11 11 L15 14 L20 11 L25 14 L29 11 Q34 11 34 16 L34 30 Z"
+    fill="#ffffff" stroke="#7d8b93" stroke-width="1.3"/></g><text x="66.5" y="10"
+    font-size="10" font-weight="600" fill="#7d8b93" text-anchor="middle" font-family="Inter,sans-serif">17</text><g
+    transform="translate(99.5 70) scale(0.75 -0.75) translate(-20 0)"><path d="M17
+    30 Q16 50 20 55 Q24 50 23 30 Z" fill="#d9534f" stroke="#7d8b93" stroke-width="1.3"/><path
+    d="M9 30 Q7 56 11 63 Q15 56 15 30 Z" fill="#d9534f" stroke="#7d8b93" stroke-width="1.3"/><path
+    d="M25 30 Q25 56 29 63 Q33 56 31 30 Z" fill="#d9534f" stroke="#7d8b93" stroke-width="1.3"/><path
+    d="M6 30 L6 16 Q6 11 11 11 L15 14 L20 11 L25 14 L29 11 Q34 11 34 16 L34 30 Z"
+    fill="#2b6cb0" stroke="#7d8b93" stroke-width="1.3"/><path d="M9 12 Q20 8 31 12"
+    fill="none" stroke="rgba(255,255,255,.55)" stroke-width="1"/></g><circle cx="99.5"
+    cy="56.5" r="3.6" fill="#1a7f37" stroke="#fff" stroke-width="1"/><text x="99.5"
+    y="10" font-size="10" font-weight="600" fill="#7d8b93" text-anchor="middle" font-family="Inter,sans-serif">16</text><g
+    transform="translate(132.5 70) scale(0.75 -0.75) translate(-20 0)"><path d="M13
+    30 Q14 58 20 64 Q26 58 27 30 Z" fill="#ffffff" stroke="#7d8b93" stroke-width="1.3"/><path
+    d="M10 30 L10 15 Q10 10 15 11 L20 14 L25 11 Q30 10 30 15 L30 30 Z" fill="#ffffff"
+    stroke="#7d8b93" stroke-width="1.3"/></g><text x="132.5" y="10" font-size="10"
+    font-weight="600" fill="#7d8b93" text-anchor="middle" font-family="Inter,sans-serif">15</text><g
+    transform="translate(165.5 70) scale(0.75 -0.75) translate(-20 0)"><path d="M13
+    30 Q14 58 20 64 Q26 58 27 30 Z" fill="#ffffff" stroke="#7d8b93" stroke-width="1.3"/><path
+    d="M10 30 L10 15 Q10 10 15 11 L20 14 L25 11 Q30 10 30 15 L30 30 Z" fill="#e0a13c"
+    stroke="#7d8b93" stroke-width="1.3"/><path d="M9 12 Q20 8 31 12" fill="none" stroke="rgba(255,255,255,.55)"
+    stroke-width="1"/></g><circle cx="165.5" cy="56.5" r="3.6" fill="#1a7f37" stroke="#fff"
+    stroke-width="1"/><text x="165.5" y="10" font-size="10" font-weight="600" fill="#7d8b93"
+    text-anchor="middle" font-family="Inter,sans-serif">14</text><g transform="translate(198.5
+    70) scale(0.75 -0.75) translate(-20 0)"><path d="M13 30 Q15 61 20 68 Q25 61 27
+    30 Z" fill="#ffffff" stroke="#7d8b93" stroke-width="1.3"/><path d="M11 30 L11
+    15 L20 6 L29 15 L29 30 Z" fill="#ffffff" stroke="#7d8b93" stroke-width="1.3"/></g><text
+    x="198.5" y="10" font-size="10" font-weight="600" fill="#7d8b93" text-anchor="middle"
+    font-family="Inter,sans-serif">13</text><g transform="translate(231.5 70) scale(0.75
+    -0.75) translate(-20 0)"><path d="M13 30 Q15 60 20 66 Q25 60 27 30 Z" fill="#ffffff"
+    stroke="#7d8b93" stroke-width="1.3"/><path d="M9 30 L9 14 Q9 7 20 6 Q31 7 31 14
+    L31 30 Z" fill="#ffffff" stroke="#7d8b93" stroke-width="1.3"/></g><text x="231.5"
+    y="10" font-size="10" font-weight="600" fill="#7d8b93" text-anchor="middle" font-family="Inter,sans-serif">12</text><g
+    transform="translate(264.5 70) scale(0.75 -0.75) translate(-20 0)"><path d="M13
+    30 Q15 60 20 66 Q25 60 27 30 Z" fill="#ffffff" stroke="#7d8b93" stroke-width="1.3"/><path
+    d="M9 30 L9 14 Q9 7 20 6 Q31 7 31 14 L31 30 Z" fill="#2b6cb0" stroke="#7d8b93"
+    stroke-width="1.3"/><path d="M9 12 Q20 8 31 12" fill="none" stroke="rgba(255,255,255,.55)"
+    stroke-width="1"/></g><circle cx="264.5" cy="56.5" r="3.6" fill="#2563eb" stroke="#fff"
+    stroke-width="1"/><text x="264.5" y="10" font-size="10" font-weight="600" fill="#7d8b93"
+    text-anchor="middle" font-family="Inter,sans-serif">11</text><g transform="translate(311.5
+    70) scale(0.75 -0.75) translate(-20 0)"><path d="M13 30 Q15 60 20 66 Q25 60 27
+    30 Z" fill="#ffffff" stroke="#7d8b93" stroke-width="1.3"/><path d="M9 30 L9 14
+    Q9 7 20 6 Q31 7 31 14 L31 30 Z" fill="#2b6cb0" stroke="#7d8b93" stroke-width="1.3"/><path
+    d="M9 12 Q20 8 31 12" fill="none" stroke="rgba(255,255,255,.55)" stroke-width="1"/></g><circle
+    cx="311.5" cy="56.5" r="3.6" fill="#9aa0a6" stroke="#fff" stroke-width="1"/><text
+    x="311.5" y="10" font-size="10" font-weight="600" fill="#7d8b93" text-anchor="middle"
+    font-family="Inter,sans-serif">21</text><g transform="translate(344.5 70) scale(0.75
+    -0.75) translate(-20 0)"><path d="M13 30 Q15 60 20 66 Q25 60 27 30 Z" fill="#ffffff"
+    stroke="#7d8b93" stroke-width="1.3"/><path d="M9 30 L9 14 Q9 7 20 6 Q31 7 31 14
+    L31 30 Z" fill="#ffffff" stroke="#7d8b93" stroke-width="1.3"/></g><text x="344.5"
+    y="10" font-size="10" font-weight="600" fill="#7d8b93" text-anchor="middle" font-family="Inter,sans-serif">22</text><g
+    transform="translate(377.5 70) scale(0.75 -0.75) translate(-20 0)"><path d="M13
+    30 Q15 61 20 68 Q25 61 27 30 Z" fill="#ffffff" stroke="#7d8b93" stroke-width="1.3"/><path
+    d="M11 30 L11 15 L20 6 L29 15 L29 30 Z" fill="#ffffff" stroke="#7d8b93" stroke-width="1.3"/></g><text
+    x="377.5" y="10" font-size="10" font-weight="600" fill="#7d8b93" text-anchor="middle"
+    font-family="Inter,sans-serif">23</text><g transform="translate(410.5 70) scale(0.75
+    -0.75) translate(-20 0)"><path d="M10 30 L10 15 Q10 10 15 11 L20 14 L25 11 Q30
+    10 30 15 L30 30 Z" fill="none" stroke="#9aa6ad" stroke-width="1.1" opacity=".45"/><path
+    d="M13 30 Q14 58 20 64 Q26 58 27 30 Z" fill="none" stroke="#9aa6ad" stroke-width="1.1"
+    opacity=".28"/><path d="M7 8 L33 60 M33 8 L7 60" fill="none" stroke="#9aa6ad"
+    stroke-width="2" stroke-linecap="round" opacity=".8"/></g><text x="410.5" y="10"
+    font-size="10" font-weight="600" fill="#7d8b93" text-anchor="middle" font-family="Inter,sans-serif">24</text><g
+    transform="translate(443.5 70) scale(0.75 -0.75) translate(-20 0)"><path d="M13
+    30 Q14 58 20 64 Q26 58 27 30 Z" fill="#ffffff" stroke="#7d8b93" stroke-width="1.3"/><path
+    d="M10 30 L10 15 Q10 10 15 11 L20 14 L25 11 Q30 10 30 15 L30 30 Z" fill="#ffffff"
+    stroke="#7d8b93" stroke-width="1.3"/></g><text x="443.5" y="10" font-size="10"
+    font-weight="600" fill="#7d8b93" text-anchor="middle" font-family="Inter,sans-serif">25</text><g
+    transform="translate(476.5 70) scale(0.75 -0.75) translate(-20 0)"><path d="M15
+    30 h10 v24 l-5 8 l-5 -8 Z" fill="#5b7185"/><path d="M15 35 h10 M15 40 h10 M15
+    45 h10 M15 50 h10" fill="none" stroke="#fff" stroke-width="1.4"/><path d="M6 30
+    L6 16 Q6 11 11 11 L15 14 L20 11 L25 14 L29 11 Q34 11 34 16 L34 30 Z" fill="#12a3ba"
+    stroke="#7d8b93" stroke-width="1.3"/><path d="M9 12 Q20 8 31 12" fill="none" stroke="rgba(255,255,255,.55)"
+    stroke-width="1"/></g><circle cx="476.5" cy="56.5" r="3.6" fill="#1a7f37" stroke="#fff"
+    stroke-width="1"/><text x="476.5" y="10" font-size="10" font-weight="600" fill="#7d8b93"
+    text-anchor="middle" font-family="Inter,sans-serif">26</text><g transform="translate(509.5
+    70) scale(0.75 -0.75) translate(-20 0)"><path d="M17 30 Q16 50 20 55 Q24 50 23
+    30 Z" fill="#ffffff" stroke="#7d8b93" stroke-width="1.3"/><path d="M9 30 Q7 56
+    11 63 Q15 56 15 30 Z" fill="#ffffff" stroke="#7d8b93" stroke-width="1.3"/><path
+    d="M25 30 Q25 56 29 63 Q33 56 31 30 Z" fill="#ffffff" stroke="#7d8b93" stroke-width="1.3"/><path
+    d="M6 30 L6 16 Q6 11 11 11 L15 14 L20 11 L25 14 L29 11 Q34 11 34 16 L34 30 Z"
+    fill="#ffffff" stroke="#7d8b93" stroke-width="1.3"/></g><text x="509.5" y="10"
+    font-size="10" font-weight="600" fill="#7d8b93" text-anchor="middle" font-family="Inter,sans-serif">27</text><g
+    transform="translate(542.5 70) scale(0.75 -0.75) translate(-20 0)"><path d="M17
+    30 Q16 50 20 55 Q24 50 23 30 Z" fill="#ffffff" stroke="#7d8b93" stroke-width="1.3"/><path
+    d="M9 30 Q7 56 11 63 Q15 56 15 30 Z" fill="#ffffff" stroke="#7d8b93" stroke-width="1.3"/><path
+    d="M25 30 Q25 56 29 63 Q33 56 31 30 Z" fill="#ffffff" stroke="#7d8b93" stroke-width="1.3"/><path
+    d="M6 30 L6 16 Q6 11 11 11 L15 14 L20 11 L25 14 L29 11 Q34 11 34 16 L34 30 Z"
+    fill="#ffffff" stroke="#7d8b93" stroke-width="1.3"/></g><text x="542.5" y="10"
+    font-size="10" font-weight="600" fill="#7d8b93" text-anchor="middle" font-family="Inter,sans-serif">28</text><g
+    transform="translate(33.5 96) scale(0.75) translate(-20 0)"><path d="M9 30 Q7
+    56 11 63 Q15 56 15 30 Z" fill="#ffffff" stroke="#7d8b93" stroke-width="1.3"/><path
+    d="M25 30 Q25 56 29 63 Q33 56 31 30 Z" fill="#ffffff" stroke="#7d8b93" stroke-width="1.3"/><path
+    d="M6 30 L6 16 Q6 11 11 11 L15 14 L20 11 L25 14 L29 11 Q34 11 34 16 L34 30 Z"
+    fill="#ffffff" stroke="#7d8b93" stroke-width="1.3"/></g><text x="33.5" y="163"
+    font-size="10" font-weight="600" fill="#7d8b93" text-anchor="middle" font-family="Inter,sans-serif">48</text><g
+    transform="translate(66.5 96) scale(0.75) translate(-20 0)"><path d="M9 30 Q7
+    56 11 63 Q15 56 15 30 Z" fill="#d9534f" stroke="#7d8b93" stroke-width="1.3"/><path
+    d="M25 30 Q25 56 29 63 Q33 56 31 30 Z" fill="#d9534f" stroke="#7d8b93" stroke-width="1.3"/><path
+    d="M6 30 L6 16 Q6 11 11 11 L15 14 L20 11 L25 14 L29 11 Q34 11 34 16 L34 30 Z"
+    fill="#ffffff" stroke="#7d8b93" stroke-width="1.3"/></g><circle cx="66.5" cy="109.5"
+    r="3.6" fill="#1a7f37" stroke="#fff" stroke-width="1"/><text x="66.5" y="163"
+    font-size="10" font-weight="600" fill="#7d8b93" text-anchor="middle" font-family="Inter,sans-serif">47</text><g
+    transform="translate(99.5 96) scale(0.75) translate(-20 0)"><path d="M9 30 Q7
+    56 11 63 Q15 56 15 30 Z" fill="#ffffff" stroke="#7d8b93" stroke-width="1.3"/><path
+    d="M25 30 Q25 56 29 63 Q33 56 31 30 Z" fill="#ffffff" stroke="#7d8b93" stroke-width="1.3"/><path
+    d="M6 30 L6 16 Q6 11 11 11 L15 14 L20 11 L25 14 L29 11 Q34 11 34 16 L34 30 Z"
+    fill="#e0a13c" stroke="#7d8b93" stroke-width="1.3"/><path d="M9 12 Q20 8 31 12"
+    fill="none" stroke="rgba(255,255,255,.55)" stroke-width="1"/></g><circle cx="99.5"
+    cy="109.5" r="3.6" fill="#2563eb" stroke="#fff" stroke-width="1"/><text x="99.5"
+    y="163" font-size="10" font-weight="600" fill="#7d8b93" text-anchor="middle" font-family="Inter,sans-serif">46</text><g
+    transform="translate(132.5 96) scale(0.75) translate(-20 0)"><path d="M13 30 Q14
+    58 20 64 Q26 58 27 30 Z" fill="#ffffff" stroke="#7d8b93" stroke-width="1.3"/><path
+    d="M10 30 L10 15 Q10 10 15 11 L20 14 L25 11 Q30 10 30 15 L30 30 Z" fill="#ffffff"
+    stroke="#7d8b93" stroke-width="1.3"/></g><text x="132.5" y="163" font-size="10"
+    font-weight="600" fill="#7d8b93" text-anchor="middle" font-family="Inter,sans-serif">45</text><g
+    transform="translate(165.5 96) scale(0.75) translate(-20 0)"><path d="M13 30 Q14
+    58 20 64 Q26 58 27 30 Z" fill="#ffffff" stroke="#7d8b93" stroke-width="1.3"/><path
+    d="M10 30 L10 15 Q10 10 15 11 L20 14 L25 11 Q30 10 30 15 L30 30 Z" fill="#ffffff"
+    stroke="#7d8b93" stroke-width="1.3"/></g><text x="165.5" y="163" font-size="10"
+    font-weight="600" fill="#7d8b93" text-anchor="middle" font-family="Inter,sans-serif">44</text><g
+    transform="translate(198.5 96) scale(0.75) translate(-20 0)"><path d="M13 30 Q15
+    61 20 68 Q25 61 27 30 Z" fill="#ffffff" stroke="#7d8b93" stroke-width="1.3"/><path
+    d="M11 30 L11 15 L20 6 L29 15 L29 30 Z" fill="#ffffff" stroke="#7d8b93" stroke-width="1.3"/></g><text
+    x="198.5" y="163" font-size="10" font-weight="600" fill="#7d8b93" text-anchor="middle"
+    font-family="Inter,sans-serif">43</text><g transform="translate(231.5 96) scale(0.75)
+    translate(-20 0)"><path d="M13 30 Q15 60 20 66 Q25 60 27 30 Z" fill="#ffffff"
+    stroke="#7d8b93" stroke-width="1.3"/><path d="M9 30 L9 14 Q9 7 20 6 Q31 7 31 14
+    L31 30 Z" fill="#ffffff" stroke="#7d8b93" stroke-width="1.3"/></g><text x="231.5"
+    y="163" font-size="10" font-weight="600" fill="#7d8b93" text-anchor="middle" font-family="Inter,sans-serif">42</text><g
+    transform="translate(264.5 96) scale(0.75) translate(-20 0)"><path d="M13 30 Q15
+    60 20 66 Q25 60 27 30 Z" fill="#ffffff" stroke="#7d8b93" stroke-width="1.3"/><path
+    d="M9 30 L9 14 Q9 7 20 6 Q31 7 31 14 L31 30 Z" fill="#ffffff" stroke="#7d8b93"
+    stroke-width="1.3"/></g><text x="264.5" y="163" font-size="10" font-weight="600"
+    fill="#7d8b93" text-anchor="middle" font-family="Inter,sans-serif">41</text><g
+    transform="translate(311.5 96) scale(0.75) translate(-20 0)"><path d="M13 30 Q15
+    60 20 66 Q25 60 27 30 Z" fill="#ffffff" stroke="#7d8b93" stroke-width="1.3"/><path
+    d="M9 30 L9 14 Q9 7 20 6 Q31 7 31 14 L31 30 Z" fill="#2b6cb0" stroke="#7d8b93"
+    stroke-width="1.3"/><path d="M9 12 Q20 8 31 12" fill="none" stroke="rgba(255,255,255,.55)"
+    stroke-width="1"/></g><circle cx="311.5" cy="109.5" r="3.6" fill="#2563eb" stroke="#fff"
+    stroke-width="1"/><text x="311.5" y="163" font-size="10" font-weight="600" fill="#7d8b93"
+    text-anchor="middle" font-family="Inter,sans-serif">31</text><g transform="translate(344.5
+    96) scale(0.75) translate(-20 0)"><path d="M13 30 Q15 60 20 66 Q25 60 27 30 Z"
+    fill="#ffffff" stroke="#7d8b93" stroke-width="1.3"/><path d="M9 30 L9 14 Q9 7
+    20 6 Q31 7 31 14 L31 30 Z" fill="#ffffff" stroke="#7d8b93" stroke-width="1.3"/></g><text
+    x="344.5" y="163" font-size="10" font-weight="600" fill="#7d8b93" text-anchor="middle"
+    font-family="Inter,sans-serif">32</text><g transform="translate(377.5 96) scale(0.75)
+    translate(-20 0)"><path d="M13 30 Q15 61 20 68 Q25 61 27 30 Z" fill="#ffffff"
+    stroke="#7d8b93" stroke-width="1.3"/><path d="M11 30 L11 15 L20 6 L29 15 L29 30
+    Z" fill="#ffffff" stroke="#7d8b93" stroke-width="1.3"/></g><text x="377.5" y="163"
+    font-size="10" font-weight="600" fill="#7d8b93" text-anchor="middle" font-family="Inter,sans-serif">33</text><g
+    transform="translate(410.5 96) scale(0.75) translate(-20 0)"><path d="M13 30 Q14
+    58 20 64 Q26 58 27 30 Z" fill="#ffffff" stroke="#7d8b93" stroke-width="1.3"/><path
+    d="M10 30 L10 15 Q10 10 15 11 L20 14 L25 11 Q30 10 30 15 L30 30 Z" fill="#2f9e5f"
+    stroke="#7d8b93" stroke-width="1.3"/><path d="M9 12 Q20 8 31 12" fill="none" stroke="rgba(255,255,255,.55)"
+    stroke-width="1"/></g><circle cx="410.5" cy="109.5" r="3.6" fill="#1a7f37" stroke="#fff"
+    stroke-width="1"/><text x="410.5" y="163" font-size="10" font-weight="600" fill="#7d8b93"
+    text-anchor="middle" font-family="Inter,sans-serif">34</text><g transform="translate(443.5
+    96) scale(0.75) translate(-20 0)"><path d="M13 30 Q14 58 20 64 Q26 58 27 30 Z"
+    fill="#ffffff" stroke="#7d8b93" stroke-width="1.3"/><path d="M10 30 L10 15 Q10
+    10 15 11 L20 14 L25 11 Q30 10 30 15 L30 30 Z" fill="#2f9e5f" stroke="#7d8b93"
+    stroke-width="1.3"/><path d="M9 12 Q20 8 31 12" fill="none" stroke="rgba(255,255,255,.55)"
+    stroke-width="1"/></g><circle cx="443.5" cy="109.5" r="3.6" fill="#1a7f37" stroke="#fff"
+    stroke-width="1"/><text x="443.5" y="163" font-size="10" font-weight="600" fill="#7d8b93"
+    text-anchor="middle" font-family="Inter,sans-serif">35</text><g transform="translate(476.5
+    96) scale(0.75) translate(-20 0)"><path d="M9 30 Q7 56 11 63 Q15 56 15 30 Z" fill="#ffffff"
+    stroke="#7d8b93" stroke-width="1.3"/><path d="M25 30 Q25 56 29 63 Q33 56 31 30
+    Z" fill="#ffffff" stroke="#7d8b93" stroke-width="1.3"/><path d="M6 30 L6 16 Q6
+    11 11 11 L15 14 L20 11 L25 14 L29 11 Q34 11 34 16 L34 30 Z" fill="#7b6cc9" stroke="#7d8b93"
+    stroke-width="1.3"/><path d="M9 12 Q20 8 31 12" fill="none" stroke="rgba(255,255,255,.55)"
+    stroke-width="1"/></g><circle cx="476.5" cy="109.5" r="3.6" fill="#1a7f37" stroke="#fff"
+    stroke-width="1"/><text x="476.5" y="163" font-size="10" font-weight="600" fill="#7d8b93"
+    text-anchor="middle" font-family="Inter,sans-serif">36</text><g transform="translate(509.5
+    96) scale(0.75) translate(-20 0)"><path d="M9 30 Q7 56 11 63 Q15 56 15 30 Z" fill="#ffffff"
+    stroke="#7d8b93" stroke-width="1.3"/><path d="M25 30 Q25 56 29 63 Q33 56 31 30
+    Z" fill="#ffffff" stroke="#7d8b93" stroke-width="1.3"/><path d="M6 30 L6 16 Q6
+    11 11 11 L15 14 L20 11 L25 14 L29 11 Q34 11 34 16 L34 30 Z" fill="#ffffff" stroke="#7d8b93"
+    stroke-width="1.3"/></g><text x="509.5" y="163" font-size="10" font-weight="600"
+    fill="#7d8b93" text-anchor="middle" font-family="Inter,sans-serif">37</text><g
+    transform="translate(542.5 96) scale(0.75) translate(-20 0)"><path d="M9 30 Q7
+    56 11 63 Q15 56 15 30 Z" fill="#ffffff" stroke="#7d8b93" stroke-width="1.3"/><path
+    d="M25 30 Q25 56 29 63 Q33 56 31 30 Z" fill="#ffffff" stroke="#7d8b93" stroke-width="1.3"/><path
+    d="M6 30 L6 16 Q6 11 11 11 L15 14 L20 11 L25 14 L29 11 Q34 11 34 16 L34 30 Z"
+    fill="#ffffff" stroke="#7d8b93" stroke-width="1.3"/></g><text x="542.5" y="163"
+    font-size="10" font-weight="600" fill="#7d8b93" text-anchor="middle" font-family="Inter,sans-serif">38</text><rect
+    x="410.5" y="107.5" width="33" height="4" rx="2" fill="#2f9e5f"/></svg>'
+  perio.svg: '<svg viewBox="0 0 568 150" xmlns="http://www.w3.org/2000/svg" role="img"
+    aria-label="Periodontal line chart, upper arch buccal: gingival-margin line and
+    pocket-bottom line over each tooth; the gap between them is the pocket depth.
+    Two deep pockets and bleeding sites flagged red."><g transform="translate(33.5
+    58) scale(0.75 -0.75) translate(-20 0)" opacity=".33"><path d="M17 30 Q16 50 20
+    55 Q24 50 23 30 Z" fill="#ffffff" stroke="#7d8b93" stroke-width="1.3"/><path d="M9
+    30 Q7 56 11 63 Q15 56 15 30 Z" fill="#ffffff" stroke="#7d8b93" stroke-width="1.3"/><path
+    d="M25 30 Q25 56 29 63 Q33 56 31 30 Z" fill="#ffffff" stroke="#7d8b93" stroke-width="1.3"/><path
+    d="M6 30 L6 16 Q6 11 11 11 L15 14 L20 11 L25 14 L29 11 Q34 11 34 16 L34 30 Z"
+    fill="#ffffff" stroke="#7d8b93" stroke-width="1.3"/></g><g transform="translate(66.5
+    58) scale(0.75 -0.75) translate(-20 0)" opacity=".33"><path d="M17 30 Q16 50 20
+    55 Q24 50 23 30 Z" fill="#ffffff" stroke="#7d8b93" stroke-width="1.3"/><path d="M9
+    30 Q7 56 11 63 Q15 56 15 30 Z" fill="#ffffff" stroke="#7d8b93" stroke-width="1.3"/><path
+    d="M25 30 Q25 56 29 63 Q33 56 31 30 Z" fill="#ffffff" stroke="#7d8b93" stroke-width="1.3"/><path
+    d="M6 30 L6 16 Q6 11 11 11 L15 14 L20 11 L25 14 L29 11 Q34 11 34 16 L34 30 Z"
+    fill="#ffffff" stroke="#7d8b93" stroke-width="1.3"/></g><g transform="translate(99.5
+    58) scale(0.75 -0.75) translate(-20 0)" opacity=".33"><path d="M17 30 Q16 50 20
+    55 Q24 50 23 30 Z" fill="#ffffff" stroke="#7d8b93" stroke-width="1.3"/><path d="M9
+    30 Q7 56 11 63 Q15 56 15 30 Z" fill="#ffffff" stroke="#7d8b93" stroke-width="1.3"/><path
+    d="M25 30 Q25 56 29 63 Q33 56 31 30 Z" fill="#ffffff" stroke="#7d8b93" stroke-width="1.3"/><path
+    d="M6 30 L6 16 Q6 11 11 11 L15 14 L20 11 L25 14 L29 11 Q34 11 34 16 L34 30 Z"
+    fill="#ffffff" stroke="#7d8b93" stroke-width="1.3"/></g><g transform="translate(132.5
+    58) scale(0.75 -0.75) translate(-20 0)" opacity=".33"><path d="M13 30 Q14 58 20
+    64 Q26 58 27 30 Z" fill="#ffffff" stroke="#7d8b93" stroke-width="1.3"/><path d="M10
+    30 L10 15 Q10 10 15 11 L20 14 L25 11 Q30 10 30 15 L30 30 Z" fill="#ffffff" stroke="#7d8b93"
+    stroke-width="1.3"/></g><g transform="translate(165.5 58) scale(0.75 -0.75) translate(-20
+    0)" opacity=".33"><path d="M13 30 Q14 58 20 64 Q26 58 27 30 Z" fill="#ffffff"
+    stroke="#7d8b93" stroke-width="1.3"/><path d="M10 30 L10 15 Q10 10 15 11 L20 14
+    L25 11 Q30 10 30 15 L30 30 Z" fill="#ffffff" stroke="#7d8b93" stroke-width="1.3"/></g><g
+    transform="translate(198.5 58) scale(0.75 -0.75) translate(-20 0)" opacity=".33"><path
+    d="M13 30 Q15 61 20 68 Q25 61 27 30 Z" fill="#ffffff" stroke="#7d8b93" stroke-width="1.3"/><path
+    d="M11 30 L11 15 L20 6 L29 15 L29 30 Z" fill="#ffffff" stroke="#7d8b93" stroke-width="1.3"/></g><g
+    transform="translate(231.5 58) scale(0.75 -0.75) translate(-20 0)" opacity=".33"><path
+    d="M13 30 Q15 60 20 66 Q25 60 27 30 Z" fill="#ffffff" stroke="#7d8b93" stroke-width="1.3"/><path
+    d="M9 30 L9 14 Q9 7 20 6 Q31 7 31 14 L31 30 Z" fill="#ffffff" stroke="#7d8b93"
+    stroke-width="1.3"/></g><g transform="translate(264.5 58) scale(0.75 -0.75) translate(-20
+    0)" opacity=".33"><path d="M13 30 Q15 60 20 66 Q25 60 27 30 Z" fill="#ffffff"
+    stroke="#7d8b93" stroke-width="1.3"/><path d="M9 30 L9 14 Q9 7 20 6 Q31 7 31 14
+    L31 30 Z" fill="#ffffff" stroke="#7d8b93" stroke-width="1.3"/></g><g transform="translate(311.5
+    58) scale(0.75 -0.75) translate(-20 0)" opacity=".33"><path d="M13 30 Q15 60 20
+    66 Q25 60 27 30 Z" fill="#ffffff" stroke="#7d8b93" stroke-width="1.3"/><path d="M9
+    30 L9 14 Q9 7 20 6 Q31 7 31 14 L31 30 Z" fill="#ffffff" stroke="#7d8b93" stroke-width="1.3"/></g><g
+    transform="translate(344.5 58) scale(0.75 -0.75) translate(-20 0)" opacity=".33"><path
+    d="M13 30 Q15 60 20 66 Q25 60 27 30 Z" fill="#ffffff" stroke="#7d8b93" stroke-width="1.3"/><path
+    d="M9 30 L9 14 Q9 7 20 6 Q31 7 31 14 L31 30 Z" fill="#ffffff" stroke="#7d8b93"
+    stroke-width="1.3"/></g><g transform="translate(377.5 58) scale(0.75 -0.75) translate(-20
+    0)" opacity=".33"><path d="M13 30 Q15 61 20 68 Q25 61 27 30 Z" fill="#ffffff"
+    stroke="#7d8b93" stroke-width="1.3"/><path d="M11 30 L11 15 L20 6 L29 15 L29 30
+    Z" fill="#ffffff" stroke="#7d8b93" stroke-width="1.3"/></g><g transform="translate(410.5
+    58) scale(0.75 -0.75) translate(-20 0)" opacity=".33"><path d="M13 30 Q14 58 20
+    64 Q26 58 27 30 Z" fill="#ffffff" stroke="#7d8b93" stroke-width="1.3"/><path d="M10
+    30 L10 15 Q10 10 15 11 L20 14 L25 11 Q30 10 30 15 L30 30 Z" fill="#ffffff" stroke="#7d8b93"
+    stroke-width="1.3"/></g><g transform="translate(443.5 58) scale(0.75 -0.75) translate(-20
+    0)" opacity=".33"><path d="M13 30 Q14 58 20 64 Q26 58 27 30 Z" fill="#ffffff"
+    stroke="#7d8b93" stroke-width="1.3"/><path d="M10 30 L10 15 Q10 10 15 11 L20 14
+    L25 11 Q30 10 30 15 L30 30 Z" fill="#ffffff" stroke="#7d8b93" stroke-width="1.3"/></g><g
+    transform="translate(476.5 58) scale(0.75 -0.75) translate(-20 0)" opacity=".33"><path
+    d="M17 30 Q16 50 20 55 Q24 50 23 30 Z" fill="#ffffff" stroke="#7d8b93" stroke-width="1.3"/><path
+    d="M9 30 Q7 56 11 63 Q15 56 15 30 Z" fill="#ffffff" stroke="#7d8b93" stroke-width="1.3"/><path
+    d="M25 30 Q25 56 29 63 Q33 56 31 30 Z" fill="#ffffff" stroke="#7d8b93" stroke-width="1.3"/><path
+    d="M6 30 L6 16 Q6 11 11 11 L15 14 L20 11 L25 14 L29 11 Q34 11 34 16 L34 30 Z"
+    fill="#ffffff" stroke="#7d8b93" stroke-width="1.3"/></g><g transform="translate(509.5
+    58) scale(0.75 -0.75) translate(-20 0)" opacity=".33"><path d="M17 30 Q16 50 20
+    55 Q24 50 23 30 Z" fill="#ffffff" stroke="#7d8b93" stroke-width="1.3"/><path d="M9
+    30 Q7 56 11 63 Q15 56 15 30 Z" fill="#ffffff" stroke="#7d8b93" stroke-width="1.3"/><path
+    d="M25 30 Q25 56 29 63 Q33 56 31 30 Z" fill="#ffffff" stroke="#7d8b93" stroke-width="1.3"/><path
+    d="M6 30 L6 16 Q6 11 11 11 L15 14 L20 11 L25 14 L29 11 Q34 11 34 16 L34 30 Z"
+    fill="#ffffff" stroke="#7d8b93" stroke-width="1.3"/></g><g transform="translate(542.5
+    58) scale(0.75 -0.75) translate(-20 0)" opacity=".33"><path d="M17 30 Q16 50 20
+    55 Q24 50 23 30 Z" fill="#ffffff" stroke="#7d8b93" stroke-width="1.3"/><path d="M9
+    30 Q7 56 11 63 Q15 56 15 30 Z" fill="#ffffff" stroke="#7d8b93" stroke-width="1.3"/><path
+    d="M25 30 Q25 56 29 63 Q33 56 31 30 Z" fill="#ffffff" stroke="#7d8b93" stroke-width="1.3"/><path
+    d="M6 30 L6 16 Q6 11 11 11 L15 14 L20 11 L25 14 L29 11 Q34 11 34 16 L34 30 Z"
+    fill="#ffffff" stroke="#7d8b93" stroke-width="1.3"/></g><line x1="17" y1="110"
+    x2="559" y2="110" stroke="#d3deea" stroke-width=".7"/><line x1="17" y1="128" x2="559"
+    y2="128" stroke="#d3deea" stroke-width=".7"/><line x1="17" y1="146" x2="559" y2="146"
+    stroke="#d3deea" stroke-width=".7"/><line x1="17" y1="92" x2="559" y2="92" stroke="#7d8b93"
+    stroke-width=".9" stroke-dasharray="3 3" opacity=".65"/><text x="13" y="90" font-size="8"
+    font-weight="700" fill="#7d8b93" font-family="Inter,sans-serif">CEJ</text><polygon
+    points="33.5,98 66.5,92 99.5,92 132.5,98 165.5,98 198.5,92 231.5,92 264.5,92 311.5,92
+    344.5,92 377.5,98 410.5,98 443.5,98 476.5,104 509.5,104 542.5,98 542.5,122 509.5,140
+    476.5,134 443.5,116 410.5,110 377.5,110 344.5,110 311.5,104 264.5,104 231.5,110
+    198.5,104 165.5,110 132.5,116 99.5,104 66.5,104 33.5,116" fill="#2b6cb0" opacity=".12"/><polyline
+    points="33.5,98 66.5,92 99.5,92 132.5,98 165.5,98 198.5,92 231.5,92 264.5,92 311.5,92
+    344.5,92 377.5,98 410.5,98 443.5,98 476.5,104 509.5,104 542.5,98" fill="none"
+    stroke="#d97706" stroke-width="1.6" stroke-linejoin="round"/><polyline points="33.5,116
+    66.5,104 99.5,104 132.5,116 165.5,110 198.5,104 231.5,110 264.5,104 311.5,104
+    344.5,110 377.5,110 410.5,110 443.5,116 476.5,134 509.5,140 542.5,122" fill="none"
+    stroke="#2b6cb0" stroke-width="1.8" stroke-linejoin="round"/><circle cx="33.5"
+    cy="116" r="1.8" fill="#2b6cb0"/><circle cx="66.5" cy="104" r="1.8" fill="#2b6cb0"/><circle
+    cx="99.5" cy="104" r="1.8" fill="#2b6cb0"/><circle cx="132.5" cy="116" r="1.8"
+    fill="#2b6cb0"/><circle cx="165.5" cy="110" r="1.8" fill="#2b6cb0"/><circle cx="198.5"
+    cy="104" r="1.8" fill="#2b6cb0"/><circle cx="231.5" cy="110" r="1.8" fill="#2b6cb0"/><circle
+    cx="264.5" cy="104" r="1.8" fill="#2b6cb0"/><circle cx="311.5" cy="104" r="1.8"
+    fill="#2b6cb0"/><circle cx="344.5" cy="110" r="1.8" fill="#2b6cb0"/><circle cx="377.5"
+    cy="110" r="1.8" fill="#2b6cb0"/><circle cx="410.5" cy="110" r="1.8" fill="#2b6cb0"/><circle
+    cx="443.5" cy="116" r="1.8" fill="#2b6cb0"/><circle cx="476.5" cy="134" r="3"
+    fill="#d9534f"/><circle cx="476.5" cy="82" r="2.2" fill="#d9534f"/><circle cx="509.5"
+    cy="140" r="3" fill="#d9534f"/><circle cx="509.5" cy="82" r="2.2" fill="#d9534f"/><circle
+    cx="542.5" cy="122" r="1.8" fill="#2b6cb0"/><circle cx="542.5" cy="82" r="2.2"
+    fill="#d9534f"/><text x="33.5" y="145" font-size="9" font-weight="600" fill="#7d8b93"
+    text-anchor="middle" font-family="Inter,sans-serif">18</text><text x="66.5" y="145"
+    font-size="9" font-weight="600" fill="#7d8b93" text-anchor="middle" font-family="Inter,sans-serif">17</text><text
+    x="99.5" y="145" font-size="9" font-weight="600" fill="#7d8b93" text-anchor="middle"
+    font-family="Inter,sans-serif">16</text><text x="132.5" y="145" font-size="9"
+    font-weight="600" fill="#7d8b93" text-anchor="middle" font-family="Inter,sans-serif">15</text><text
+    x="165.5" y="145" font-size="9" font-weight="600" fill="#7d8b93" text-anchor="middle"
+    font-family="Inter,sans-serif">14</text><text x="198.5" y="145" font-size="9"
+    font-weight="600" fill="#7d8b93" text-anchor="middle" font-family="Inter,sans-serif">13</text><text
+    x="231.5" y="145" font-size="9" font-weight="600" fill="#7d8b93" text-anchor="middle"
+    font-family="Inter,sans-serif">12</text><text x="264.5" y="145" font-size="9"
+    font-weight="600" fill="#7d8b93" text-anchor="middle" font-family="Inter,sans-serif">11</text><text
+    x="311.5" y="145" font-size="9" font-weight="600" fill="#7d8b93" text-anchor="middle"
+    font-family="Inter,sans-serif">21</text><text x="344.5" y="145" font-size="9"
+    font-weight="600" fill="#7d8b93" text-anchor="middle" font-family="Inter,sans-serif">22</text><text
+    x="377.5" y="145" font-size="9" font-weight="600" fill="#7d8b93" text-anchor="middle"
+    font-family="Inter,sans-serif">23</text><text x="410.5" y="145" font-size="9"
+    font-weight="600" fill="#7d8b93" text-anchor="middle" font-family="Inter,sans-serif">24</text><text
+    x="443.5" y="145" font-size="9" font-weight="600" fill="#7d8b93" text-anchor="middle"
+    font-family="Inter,sans-serif">25</text><text x="476.5" y="145" font-size="9"
+    font-weight="600" fill="#7d8b93" text-anchor="middle" font-family="Inter,sans-serif">26</text><text
+    x="509.5" y="145" font-size="9" font-weight="600" fill="#7d8b93" text-anchor="middle"
+    font-family="Inter,sans-serif">27</text><text x="542.5" y="145" font-size="9"
+    font-weight="600" fill="#7d8b93" text-anchor="middle" font-family="Inter,sans-serif">28</text></svg>'
   reveal.js: |
     // Progressive scroll-reveal, shared by every page. No deps.
     document.documentElement.classList.add('js');
@@ -742,6 +1127,39 @@ data:
     .hero .pill{display:inline-flex;align-items:center;gap:8px;background:rgba(45,212,196,.16);border:1px solid rgba(45,212,196,.5);color:#c7fff6;padding:8px 16px;border-radius:999px;font-size:13px;font-weight:700;margin-bottom:28px}
     .hero .pill b{color:#fff}
     .hero .trust{margin-top:44px;color:#bcd2ef;font-size:14.5px;font-weight:500}
+
+    /* App-window "screenshot" frame — used for the product shots */
+    .appwin{background:#fff;border-radius:14px;overflow:hidden;box-shadow:0 40px 90px -34px rgba(0,10,30,.65),0 0 0 1px rgba(255,255,255,.06);border:1px solid #dfe7f0}
+    .appwin-bar{display:flex;align-items:center;gap:7px;background:#eef3f8;border-bottom:1px solid #dfe7f0;padding:9px 14px}
+    .appwin-bar .td{width:11px;height:11px;border-radius:50%;flex:none}
+    .appwin-bar .td.r{background:#ff5f57}.appwin-bar .td.y{background:#febc2e}.appwin-bar .td.g{background:#28c840}
+    .appwin-url{margin-left:10px;font-family:var(--body-font);font-size:12.5px;color:#5a6b82;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .appwin-body{padding:20px 20px 16px;background:#fff}
+    .appwin-body img{display:block;width:100%;height:auto}
+    .appwin-cap{font-family:var(--heading-font);font-weight:800;font-size:13px;color:#0b2647;margin:0 0 12px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+    .appwin-cap .pin{background:var(--teal-bright);color:#022b26;font-size:10.5px;letter-spacing:.05em;text-transform:uppercase;padding:2px 8px;border-radius:5px}
+    .od-key{display:flex;gap:14px;flex-wrap:wrap;margin-top:12px;font-family:var(--body-font);font-size:12.5px;color:#40506a;font-weight:600}
+    .od-key span{display:inline-flex;align-items:center;gap:6px}
+    .od-key i{width:11px;height:11px;border-radius:50%;display:inline-block}
+
+    /* Two-column hero (copy + product shot) */
+    .hero-grid{display:grid;grid-template-columns:1.02fr .98fr;gap:52px;align-items:center;position:relative;z-index:2}
+    @media(max-width:940px){.hero-grid{grid-template-columns:1fr;gap:40px}}
+    .hero-copy{min-width:0}
+
+    /* Product showcase */
+    .showcase{display:grid;grid-template-columns:1fr 1fr;gap:28px}
+    @media(max-width:860px){.showcase{grid-template-columns:1fr}}
+
+    /* Schedule room-grid mock */
+    .sched{display:grid;grid-template-columns:44px repeat(3,1fr);gap:0;font-family:var(--body-font);border:1px solid #e3ebf3;border-radius:10px;overflow:hidden;background:#fff}
+    .sched .sh{background:#f3f7fb;font-family:var(--heading-font);font-weight:800;font-size:12px;color:#0b2647;padding:9px 8px;text-align:center;border-bottom:1px solid #e3ebf3}
+    .sched .sh .rdot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:5px;vertical-align:middle}
+    .sched .tcol{background:#fafcfe;border-right:1px solid #e3ebf3}
+    .sched .t{font-size:10.5px;color:#8494a8;font-weight:600;height:34px;display:flex;align-items:flex-start;justify-content:flex-end;padding:3px 6px 0 0}
+    .sched .cell{border-right:1px solid #eef3f8;border-bottom:1px solid #f0f5f9;height:34px;position:relative}
+    .sched .appt{position:absolute;left:3px;right:3px;border-radius:6px;padding:4px 7px;color:#fff;font-size:11px;font-weight:700;line-height:1.25;box-shadow:0 3px 8px -3px rgba(0,20,50,.4);overflow:hidden}
+    .sched .appt small{display:block;font-weight:600;opacity:.9;font-size:10px}
 
     /* SECTIONS */
     section{padding:92px 0}
