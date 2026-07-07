@@ -42,10 +42,10 @@ data:
         <div class="founder-grid stagger">
           <div class="founder">
             <div class="avatar">S</div>
-            <span class="role">Founder · Technical</span>
+            <span class="role">Founder · Builds the product</span>
             <h3>Stefanos Kostikidis</h3>
-            <p>Designed, built and operates Gompha end-to-end — the FastAPI/Postgres backend, the React app, and the Kubernetes platform it runs on (a 5-node HA cluster with drilled cross-country disaster recovery). Self-taught infrastructure and product engineer with a two-decade operator's career and formal grounding in cybernetics and applied informatics.</p>
-            <p>Every architecture decision is recorded in public — verifiable engineering over hype.</p>
+            <p>Stefanos built the whole of Gompha — the app doctors and reception use every day, and the servers it runs on — and keeps it running. A self-taught engineer with a two-decade background running real, on-the-ground operations, he builds software for real clinics, not a spec sheet.</p>
+            <p>His way of working is simple: keep it honest, keep it reliable, and fix the real problem — not the first one that looks easy.</p>
             <div class="links">
               <a href="https://github.com/Steficzko/homelab">Portfolio (public GitOps) →</a>
               <a href="https://kostikidis.net">kostikidis.net</a>
@@ -56,7 +56,7 @@ data:
             <div class="avatar">A</div>
             <span class="role">Co-founder · Clinical</span>
             <h3>Dr. Ali Adnan</h3>
-            <p>The oral surgeon Gompha is built around. He runs a real practice in Erbil and shapes every clinical decision in the app — the odontogram, the perio chart, the deal ledger and how the chair actually works day to day.</p>
+            <p>Oral surgeon and co-owner of <strong>Blanca Dental Care</strong> in Erbil — Gompha's pilot clinic. He shapes every clinical decision in the app — the tooth chart, the perio chart, the deal ledger and how the chair actually works day to day.</p>
             <ul style="list-style:none;margin:0 0 4px;color:var(--body);font-size:14.5px">
               <li>▪️ MSc in Oral Surgery — UIC Barcelona</li>
               <li>▪️ EAO-certified in implant dentistry</li>
@@ -1124,7 +1124,9 @@ data:
     --ink-2:#dbe8ff; --navy:#8fb4ff;\n    --body:#c6d6ec; --teal-text:#3ee0d0;\n    --bg:#06142b;
     --bg-alt:#0b2038; --card:#0f2340; --line:#274a74;\n  }\n}\n:root[data-theme=\"dark\"]{\n
     \ --ink:#f2f7ff; --ink-2:#dbe8ff; --navy:#8fb4ff;\n  --body:#c6d6ec; --teal-text:#3ee0d0;\n
-    \ --bg:#06142b; --bg-alt:#0b2038; --card:#0f2340; --line:#274a74;\n}\n*{box-sizing:border-box;margin:0;padding:0}\nhtml{scroll-behavior:smooth}\nbody{font-family:var(--body-font);color:var(--body);background:var(--bg);line-height:1.65;-webkit-font-smoothing:antialiased;font-size:16.5px}\nh1,h2,h3,h4{font-family:var(--heading-font);color:var(--ink);line-height:1.12;letter-spacing:-.02em}\na{color:var(--teal-text);text-decoration:none;font-weight:600}\nem{color:inherit}\n.wrap{max-width:1140px;margin:0
+    \ --bg:#06142b; --bg-alt:#0b2038; --card:#0f2340; --line:#274a74;\n}\n*{box-sizing:border-box;margin:0;padding:0}\nhtml{scroll-behavior:smooth}\nbody{font-family:var(--body-font);color:var(--body);background:var(--bg);line-height:1.65;-webkit-font-smoothing:antialiased;font-size:16.5px;overflow-x:hidden}\n/*
+    grid/flex blowout guard: let children shrink so nowrap text ellipsizes\n   instead
+    of pushing the layout wider than the viewport */\n.hero-grid>*,.showcase>*,.mobwrap>*,.id-grid>*,.feat-grid>*,.demo-grid>*,.spot>*,.split>*,.price-grid>*{min-width:0}\nimg,svg{max-width:100%}\nh1,h2,h3,h4{font-family:var(--heading-font);color:var(--ink);line-height:1.12;letter-spacing:-.02em}\na{color:var(--teal-text);text-decoration:none;font-weight:600}\nem{color:inherit}\n.wrap{max-width:1140px;margin:0
     auto;padding:0 24px}\n.narrow{max-width:820px}\n.btn{display:inline-block;padding:15px
     28px;border-radius:12px;font-family:var(--heading-font);font-weight:800;font-size:15px;cursor:pointer;border:none;transition:transform
     .16s ease,box-shadow .16s ease,background .16s ease}\n.btn:hover{transform:translateY(-3px)}\n.btn-primary{background:var(--teal);color:#022b26;box-shadow:0
@@ -1153,7 +1155,7 @@ data:
     40px 90px -34px rgba(0,10,30,.65),0 0 0 1px rgba(255,255,255,.06);border:1px solid
     #dfe7f0}\n.appwin-bar{display:flex;align-items:center;gap:7px;background:#eef3f8;border-bottom:1px
     solid #dfe7f0;padding:9px 14px}\n.appwin-bar .td{width:11px;height:11px;border-radius:50%;flex:none}\n.appwin-bar
-    .td.r{background:#ff5f57}.appwin-bar .td.y{background:#febc2e}.appwin-bar .td.g{background:#28c840}\n.appwin-url{margin-left:10px;font-family:var(--body-font);font-size:12.5px;color:#5a6b82;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}\n.appwin-body{padding:20px
+    .td.r{background:#ff5f57}.appwin-bar .td.y{background:#febc2e}.appwin-bar .td.g{background:#28c840}\n.appwin-url{margin-left:10px;min-width:0;flex:1;font-family:var(--body-font);font-size:12.5px;color:#5a6b82;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}\n.appwin-body{padding:20px
     20px 16px;background:#fff}\n.appwin-body img{display:block;width:100%;height:auto}\n.appwin-cap{font-family:var(--heading-font);font-weight:800;font-size:13px;color:#0b2647;margin:0
     0 12px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}\n.appwin-cap .pin{background:var(--teal-bright);color:#022b26;font-size:10.5px;letter-spacing:.05em;text-transform:uppercase;padding:2px
     8px;border-radius:5px}\n.od-key{display:flex;gap:14px;flex-wrap:wrap;margin-top:12px;font-family:var(--body-font);font-size:12.5px;color:#40506a;font-weight:600}\n.od-key
