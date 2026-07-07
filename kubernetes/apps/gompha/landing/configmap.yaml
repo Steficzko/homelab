@@ -239,55 +239,22 @@ data:
     signal</b> — tell the front desk +15 / +30 without leaving the chair.</li>\n        </ul>\n
     \     </div>\n      <div class=\"reveal\" style=\"justify-self:center\">\n        <div
     class=\"phone\">\n          <div class=\"island\"></div>\n          <div class=\"phone-screen\">\n
-    \           <div class=\"da\">\n              <div class=\"da-head\">\n                <div
-    class=\"top\">\n                  <span class=\"l\">G<span class=\"socket\"></span>mpha</span>\n
-    \                 <span class=\"who\"><span class=\"av\">A</span> Dr. Ali</span>\n
-    \               </div>\n                <div class=\"da-tabs\"><span class=\"on\">Today</span><span>Patients</span></div>\n
-    \             </div>\n              <div class=\"da-body\">\n                <div
-    class=\"da-card now\">\n                  <h3>In the chair <span class=\"da-pill
-    late\">running late 6m</span></h3>\n                  <div class=\"da-nm\">Layla
-    Hama</div>\n                  <div class=\"da-sub\">09:00–09:45 · Zirconia crown
-    · tooth 11</div>\n                  <div class=\"da-timer over\">51:12</div>\n
-    \                 <div class=\"da-slack warn\">Next patient waiting 4 min — time
-    to wrap up.</div>\n                  <a href=\"#mobile\" class=\"da-btn\" onclick=\"return
-    false\">Resume focus</a>\n                  <div class=\"da-chips\"><span>Tell
-    reception</span><span class=\"da-chip\">+15m</span><span class=\"da-chip\">+30m</span></div>\n
-    \               </div>\n                <div class=\"da-card\">\n                  <h3>Next
-    patient</h3>\n                  <div class=\"da-nm\">Omar Khalid <span class=\"da-pill
-    wait\">waiting 6 min</span></div>\n                  <div class=\"da-sub\">09:45
-    · Check-up &amp; scale</div>\n                  <div class=\"da-timer\">08:32</div>\n
-    \                 <a href=\"#mobile\" class=\"da-btn dark\" onclick=\"return false\">Start
-    meeting</a>\n                </div>\n                <div class=\"da-card\">\n
-    \                 <h3>Waiting outside</h3>\n                  <div class=\"da-row\"><span><span
-    class=\"rn\">Omar Khalid</span><br><span class=\"rs\">in waiting 6 min · since
-    09:39</span></span></div>\n                  <div class=\"da-row\"><span><span
-    class=\"rn\">Sara Mahmoud</span><br><span class=\"rs\">in waiting 2 min · 10:15
-    appt</span></span></div>\n                </div>\n                <div class=\"da-card\">\n
-    \                 <h3>Today</h3>\n                  <div class=\"da-row\"><span><span
-    class=\"rn\">Sara Mahmoud</span><br><span class=\"rs\">10:15–11:00 · Implant ·
-    Room 3</span></span><span class=\"chev\">›</span></div>\n                  <div
-    class=\"da-row\"><span><span class=\"rn\">Hiba Salih</span><br><span class=\"rs\">11:15
-    · Whitening</span></span><span class=\"chev\">›</span></div>\n                  <div
-    class=\"da-row\"><span><span class=\"rn\">Zaid Ahmed</span><br><span class=\"rs\">11:45
-    · Filling · approx 15m late</span></span><span class=\"chev\">›</span></div>\n
-    \                 <div class=\"da-row done\"><span><span class=\"rn\">Dana Tariq</span><br><span
-    class=\"rs\">08:30 · done · Perio review</span></span><span class=\"chev\">›</span></div>\n
-    \               </div>\n                <div class=\"da-card\">\n                  <h3>My
-    blocked time</h3>\n                  <div class=\"da-row\"><span><span class=\"rn\">Today
-    13:00–14:00</span><br><span class=\"rs\">Lunch</span></span></div>\n                  <a
-    href=\"#mobile\" class=\"da-btn\" onclick=\"return false\" style=\"background:transparent;color:#002F6C;border:1.5px
-    solid #cdd8e6\">Block time</a>\n                </div>\n              </div>\n
-    \           </div>\n          </div>\n        </div>\n        <p class=\"phone-cap\">The
-    reception view is its own phone-tuned screen too.</p>\n      </div>\n    </div>\n
-    \ </div>\n</section>\n\n<!-- DEAL LEDGER SPOTLIGHT -->\n<section id=\"ledger\">\n
-    \ <div class=\"wrap\">\n    <div class=\"spot reveal\">\n      <div>\n        <span
-    class=\"moat\">The moat</span>\n        <h2>No other PMS remembers the deal</h2>\n
-    \       <p>Dentrix and Open Dental assume a fixed price list. But in the real
-    world, the price is negotiated — a discount for a cousin, a free cleaning, a cash
-    rate. Gompha anchors that: what was agreed, who approved it, and why.</p>\n        <p>Next
-    time that patient walks in, the whole clinic knows the story — not just the doctor
-    who made the deal.</p>\n        <a href=\"index.html#demos\" class=\"btn btn-gold\">See
-    it in the live demo</a>\n      </div>\n      <div class=\"sheet\">\n        <div
+    \           <!-- Live demo, auto-logged as a doctor via the ?demo=doctor deep
+    link\n                 (SPA v0.24.0). Scrolls inside the phone; real app, real
+    data. -->\n            <iframe class=\"da-frame\" src=\"https://demo.gompha.com/?demo=doctor\"
+    title=\"Gompha — live doctor demo, pre-logged\" loading=\"lazy\"></iframe>\n          </div>\n
+    \       </div>\n        <p class=\"phone-cap\">Live app — auto-signed in as a
+    doctor. <a href=\"https://demo.gompha.com/?demo=doctor\" target=\"_blank\" rel=\"noopener\">Open
+    it full-size →</a></p>\n      </div>\n    </div>\n  </div>\n</section>\n\n<!--
+    DEAL LEDGER SPOTLIGHT -->\n<section id=\"ledger\">\n  <div class=\"wrap\">\n    <div
+    class=\"spot reveal\">\n      <div>\n        <span class=\"moat\">The moat</span>\n
+    \       <h2>No other PMS remembers the deal</h2>\n        <p>Dentrix and Open
+    Dental assume a fixed price list. But in the real world, the price is negotiated
+    — a discount for a cousin, a free cleaning, a cash rate. Gompha anchors that:
+    what was agreed, who approved it, and why.</p>\n        <p>Next time that patient
+    walks in, the whole clinic knows the story — not just the doctor who made the
+    deal.</p>\n        <a href=\"index.html#demos\" class=\"btn btn-gold\">See it
+    in the live demo</a>\n      </div>\n      <div class=\"sheet\">\n        <div
     class=\"row\"><span class=\"k\">Procedure</span><span class=\"v\">Zirconia crown
     · tooth 11</span></div>\n        <div class=\"row\"><span class=\"k\">Standard
     price</span><span class=\"strike\">$450</span></div>\n        <div class=\"row\"><span
@@ -1170,7 +1137,8 @@ data:
     li:before{content:\"\U0001F4F1\";position:absolute;left:0}\n.mob-list li b{color:var(--ink);font-family:var(--heading-font)}\n.phone{position:relative;width:330px;max-width:84vw;background:#0b0e16;border:13px
     solid #0b0e16;border-radius:46px;box-shadow:0 0 0 2px #2a3350,0 34px 80px -22px
     rgba(0,0,0,.62)}\n.phone .island{position:absolute;top:20px;left:50%;transform:translateX(-50%);width:92px;height:24px;background:#000;border-radius:16px;z-index:6}\n.phone:before,.phone:after{content:\"\";position:absolute;width:3px;background:#1b2238;border-radius:3px}\n.phone:before{height:50px;left:-16px;top:112px}\n.phone:after{height:32px;right:-16px;top:108px;box-shadow:0
-    46px 0 #1b2238}\n.phone-screen{position:relative;border-radius:34px;overflow:hidden;overflow-y:auto;background:#eef2f7;aspect-ratio:9/19.3;-webkit-overflow-scrolling:touch}\n.phone-screen::-webkit-scrollbar{width:5px}\n.phone-screen::-webkit-scrollbar-thumb{background:rgba(0,47,108,.25);border-radius:5px}\n.phone-cap{text-align:center;color:var(--body);font-size:13px;margin-top:14px}\n/*
+    46px 0 #1b2238}\n.phone-screen{position:relative;border-radius:34px;overflow:hidden;overflow-y:auto;background:#eef2f7;aspect-ratio:9/19.3;-webkit-overflow-scrolling:touch}\n.phone-screen
+    iframe.da-frame{position:absolute;inset:0;width:100%;height:100%;border:0;background:#eef2f7}\n.phone-screen::-webkit-scrollbar{width:5px}\n.phone-screen::-webkit-scrollbar-thumb{background:rgba(0,47,108,.25);border-radius:5px}\n.phone-cap{text-align:center;color:var(--body);font-size:13px;margin-top:14px}\n/*
     doctor app UI (light, mirrors the real app) */\n.da{font-family:var(--body-font);color:#17324f;background:#eef2f7;min-height:100%}\n.da-head{position:sticky;top:0;z-index:3;background:#002F6C;color:#fff;padding:30px
     15px 10px}\n.da-head .top{display:flex;align-items:center;justify-content:space-between}\n.da-head
     .l{font-family:var(--heading-font);font-weight:900;font-size:17px;display:inline-flex;align-items:center}\n.da-head
