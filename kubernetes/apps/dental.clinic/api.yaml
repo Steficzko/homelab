@@ -19,7 +19,7 @@ spec:
       imagePullSecrets: [{name: ghcr-pull}]
       containers:
         - name: api
-          image: ghcr.io/steficzko/dental-api:v0.23.0   # registry placeholder
+          image: ghcr.io/steficzko/dental-api:v0.24.0   # registry placeholder
           ports: [{containerPort: 8000, name: http}]
           env:
             - {name: BASE_DOMAIN, value: "gompha.com,kostikidis.net"}  # rebrand = this one value
