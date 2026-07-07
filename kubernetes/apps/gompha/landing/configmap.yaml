@@ -148,13 +148,22 @@ data:
         bridges.forEach(function (b) { b.style.display = 'none'; });
       }
 
-      if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-        settleAll();
-        return;
-      }
-
+      var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
       var timers = [];
       function later(fn, ms) { timers.push(setTimeout(fn, ms)); }
+
+      // Reduced motion: one calm left-to-right settle (no flicker, no loop).
+      function calmBuild() {
+        blankAll();
+        for (var c = 0; c < 16; c++) {
+          (function (col) {
+            later(function () {
+              (byCol[col] || []).forEach(function (g) { apply(g, FINAL[g.dataset.fdi]); });
+              if (col === 15) bridges.forEach(function (b) { b.style.display = ''; });
+            }, col * 110);
+          })(c);
+        }
+      }
 
       // Flicker one tooth through combinations, then settle to its final state.
       function flick(g, fin) {
@@ -181,13 +190,20 @@ data:
         later(sweep, done + REST); // loop
       }
 
-      // Start when the hero is on screen (and pause work off-screen isn't critical here).
+      var started = false;
+      function start() {
+        if (started) return; started = true;
+        if (reduce) calmBuild(); else sweep();
+      }
+      // Start when the hero scrolls in — but the hero is at the top, so also start
+      // shortly after load as a guaranteed fallback if the observer never fires.
       if ('IntersectionObserver' in window) {
         var io = new IntersectionObserver(function (ents) {
-          ents.forEach(function (e) { if (e.isIntersecting) { io.disconnect(); sweep(); } });
-        }, { threshold: 0.25 });
+          ents.forEach(function (e) { if (e.isIntersecting) { io.disconnect(); start(); } });
+        }, { threshold: 0.1 });
         io.observe(svg);
-      } else { sweep(); }
+      }
+      setTimeout(start, 800);
     })();
   index.html: "<!DOCTYPE html>\n<html lang=\"en\" class=\"no-js\">\n<head>\n<meta
     charset=\"UTF-8\">\n<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n<meta
@@ -1799,7 +1815,7 @@ data:
     .stagger.in>*:nth-child(8){transition-delay:.49s}\n.js .stagger.in>*:nth-child(9){transition-delay:.56s}\n@media
     (prefers-reduced-motion: reduce){\n  *{animation:none!important;transition:none!important}\n
     \ .js .reveal,.js .stagger>*,.hero .anim{opacity:1!important;transform:none!important}\n
-    \ html{scroll-behavior:auto}\n}\n\n.appwin-body svg#hero-odo{display:block;width:100%;height:auto}\n"
+    \ html{scroll-behavior:auto}\n}\n\n.appwin-body svg#hero-odo{display:block;width:100%;height:auto;aspect-ratio:568/172}\n"
 kind: ConfigMap
 metadata:
   name: landing-html
