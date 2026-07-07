@@ -2567,5 +2567,7 @@ data:
     \ html{scroll-behavior:auto}\n}\n\n.appwin-body svg#hero-odo{display:block;width:100%;height:auto;aspect-ratio:568/172}\n"
 kind: ConfigMap
 metadata:
+  annotations:
+    argocd.argoproj.io/sync-options: ServerSideApply=true
   name: landing-html
   namespace: gompha
