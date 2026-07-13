@@ -72,7 +72,7 @@ spec:
             fsGroup: 1001
           initContainers:
             - name: copy-mc
-              image: minio/mc:latest          # TODO: pin to a digest
+              image: minio/mc@sha256:a7fe349ef4bd8521fb8497f55c6042871b2ae640607cf99d9bede5e9bdf11727
               securityContext:
                 runAsUser: 0                  # mc is 0711 root-owned; need root to read+copy it
               command: ["/bin/sh", "-c", "cp /usr/bin/mc /tools/mc && chmod 0755 /tools/mc"]
