@@ -33,7 +33,10 @@ spec:
               mountPath: /data
       containers:
         - name: postgres
-          image: tensorchord/pgvecto-rs:pg16-v0.3.0
+          # migration image: carries vchord (new) + vectors (old) so Immich can auto-migrate
+          # embeddings pgvecto.rs -> VectorChord; swap to a vectorchord-only tag after all
+          # instances are on vchord and 'DROP EXTENSION vectors' has run per DB
+          image: ghcr.io/immich-app/postgres:16-vectorchord0.4.3-pgvector0.8.1-pgvectors0.3.0@sha256:0851d187e1f512300b3fcf7911641aa94075a3bfe457f2600ec8637ca1cb9139
           env:
             - name: PGDATA
               value: /var/lib/postgresql/data/pgdata
@@ -49,7 +52,7 @@ spec:
           args:
             - postgres
             - -c
-            - shared_preload_libraries=vectors.so
+            - shared_preload_libraries=vchord.so,vectors.so
             - -c
             - search_path="$user", public, vectors
             - -c
