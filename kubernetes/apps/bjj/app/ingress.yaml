@@ -4,9 +4,14 @@ metadata:
   name: bjj-app
   namespace: bjj
   annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
     nginx.ingress.kubernetes.io/ssl-redirect: "false"
 spec:
   ingressClassName: nginx
+  tls:
+    - hosts:
+        - app.teamelwany.com
+      secretName: app-teamelwany-com-tls
   rules:
     - host: app.teamelwany.com
       http:
