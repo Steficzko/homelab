@@ -1,0 +1,9 @@
+oauth:
+  clientId: ""      # pre-created via secret.sops.yaml — do not set here
+  clientSecret: ""
+
+operatorConfig:
+  hostname: k3s-homelab-operator
+  logging: info
+  defaultTags:
+    - "tag:k8s"
