@@ -1,0 +1,37 @@
+# Exact host takes precedence over the dental-clinic *.kostikidis.net wildcard
+# catch-all (ingress-nginx exact-host priority), so padle.kostikidis.net lands here.
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: padle
+  namespace: padle
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+spec:
+  ingressClassName: nginx
+  tls:
+    - hosts: ["*.kostikidis.net"]
+      secretName: padle-wildcard-tls
+  rules:
+    - host: padle.kostikidis.net
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service: {name: padle, port: {number: 8000}}
+---
+# Cert secrets are namespaced — padle needs its own copy of the wildcard
+# (same DNS-01 ClusterIssuer as dental.clinic's blanka-wildcard).
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: padle-wildcard
+  namespace: padle
+spec:
+  secretName: padle-wildcard-tls
+  issuerRef: {name: letsencrypt-prod, kind: ClusterIssuer}
+  dnsNames:
+    - "*.kostikidis.net"
+    - "kostikidis.net"

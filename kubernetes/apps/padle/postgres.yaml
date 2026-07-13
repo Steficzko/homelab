@@ -1,0 +1,58 @@
+# Mirrors kubernetes/apps/dental.clinic/postgres.yaml pattern.
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: padle-postgres-data
+  namespace: padle
+  labels:
+    recurring-job.longhorn.io/daily-backup: "enabled"
+spec:
+  accessModes: [ReadWriteOnce]
+  storageClassName: longhorn
+  resources:
+    requests: {storage: 2Gi}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: padle-postgres
+  namespace: padle
+  labels: {app: padle-postgres}
+spec:
+  replicas: 1
+  strategy: {type: Recreate}   # RWO volume
+  selector:
+    matchLabels: {app: padle-postgres}
+  template:
+    metadata:
+      labels: {app: padle-postgres}
+    spec:
+      containers:
+        - name: postgres
+          image: postgres:17-alpine
+          envFrom:
+            - secretRef: {name: padle-secret}   # POSTGRES_USER / POSTGRES_PASSWORD / POSTGRES_DB
+          env:
+            - name: PGDATA
+              value: /var/lib/postgresql/data/pgdata
+          ports:
+            - containerPort: 5432
+          volumeMounts:
+            - name: data
+              mountPath: /var/lib/postgresql/data
+          resources:
+            requests: {cpu: 50m, memory: 128Mi}
+            limits: {memory: 512Mi}
+      volumes:
+        - name: data
+          persistentVolumeClaim: {claimName: padle-postgres-data}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: padle-postgres
+  namespace: padle
+spec:
+  selector: {app: padle-postgres}
+  ports:
+    - port: 5432

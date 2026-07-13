@@ -1,0 +1,7 @@
+# Deployed via ArgoCD (bootstrap: padle.yaml). Source of truth: github.com/Steficzko/padle
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: padle
+  labels:
+    app.kubernetes.io/part-of: padle

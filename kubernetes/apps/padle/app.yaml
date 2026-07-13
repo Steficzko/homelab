@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: padle
+  namespace: padle
+  labels: {app: padle}
+spec:
+  replicas: 1
+  selector:
+    matchLabels: {app: padle}
+  template:
+    metadata:
+      labels: {app: padle}
+    spec:
+      containers:
+        - name: app
+          image: ghcr.io/steficzko/padle:v0.1.0
+          ports:
+            - containerPort: 8000
+              name: http
+          env:
+            - name: DEMO_MODE
+              value: "1"        # seeds Erbil venues + demo logins; set "0" for real launch
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef: {name: padle-secret, key: DATABASE_URL}
+            - name: SECRET_KEY
+              valueFrom:
+                secretKeyRef: {name: padle-secret, key: SECRET_KEY}
+            - name: ADMIN_PASSWORD
+              valueFrom:
+                secretKeyRef: {name: padle-secret, key: ADMIN_PASSWORD}
+            - name: N8N_WEBHOOK_URL
+              valueFrom:
+                secretKeyRef: {name: padle-secret, key: N8N_WEBHOOK_URL, optional: true}
+          readinessProbe:
+            httpGet: {path: /healthz, port: 8000}
+          resources:
+            requests: {cpu: 50m, memory: 128Mi}
+            limits: {memory: 256Mi}
+      imagePullSecrets:
+        - name: ghcr-pull
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: padle
+  namespace: padle
+spec:
+  selector: {app: padle}
+  ports:
+    - port: 8000
