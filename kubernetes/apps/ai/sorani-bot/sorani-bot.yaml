@@ -1,0 +1,89 @@
+# Sorani voice bot — standalone Telegram bot (LONG-POLLING, so no inbound / no CF / no
+# public URL). Every voice note is treated as Sorani: it downloads the audio, sends it to
+# LiteLLM's whisper-ckb (the rzgar Sorani model, language hard-pinned to Persian), and
+# replies the transcript to the sender. This is also the accuracy test loop.
+# Cleanup/extraction (an LLM prompt) is a later add — one extra call in transcribe-and-reply.
+# Token + LiteLLM key live in sorani-bot-secret.sops.yaml (SOPS, out-of-band).
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: sorani-bot-code
+  namespace: ai
+data:
+  bot.py: |
+    import os, time, requests
+    TOKEN = os.environ["TELEGRAM_TOKEN"]
+    API   = f"https://api.telegram.org/bot{TOKEN}"
+    FILE  = f"https://api.telegram.org/file/bot{TOKEN}"
+    LLM   = os.environ.get("LITELLM_URL", "http://litellm.ai.svc.cluster.local:4000/v1")
+    KEY   = os.environ.get("LITELLM_KEY", "")
+    MODEL = os.environ.get("WHISPER_MODEL", "whisper-ckb")
+
+    def transcribe(audio, fname):
+        r = requests.post(f"{LLM}/audio/transcriptions",
+                          headers={"Authorization": f"Bearer {KEY}"},
+                          files={"file": (fname, audio, "application/octet-stream")},
+                          data={"model": MODEL}, timeout=300)
+        r.raise_for_status()
+        return (r.json().get("text") or "").strip()
+
+    def main():
+        print(f"sorani-bot up; model={MODEL} llm={LLM}", flush=True)
+        offset = 0
+        while True:
+            try:
+                upd = requests.get(f"{API}/getUpdates",
+                                   params={"offset": offset, "timeout": 50}, timeout=60).json()
+                for u in upd.get("result", []):
+                    offset = u["update_id"] + 1
+                    msg  = u.get("message") or {}
+                    chat = (msg.get("chat") or {}).get("id")
+                    media = msg.get("voice") or msg.get("audio")
+                    if not (chat and media):
+                        continue
+                    requests.post(f"{API}/sendChatAction", data={"chat_id": chat, "action": "typing"})
+                    try:
+                        fp = requests.get(f"{API}/getFile",
+                                          params={"file_id": media["file_id"]}).json()["result"]["file_path"]
+                        audio = requests.get(f"{FILE}/{fp}", timeout=60).content
+                        reply = transcribe(audio, os.path.basename(fp)) or "(empty transcription)"
+                    except Exception as e:
+                        reply = f"⚠️ transcription failed: {e}"
+                    requests.post(f"{API}/sendMessage", data={"chat_id": chat, "text": reply})
+            except Exception as e:
+                print("loop error:", e, flush=True); time.sleep(5)
+
+    if __name__ == "__main__":
+        main()
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sorani-bot
+  namespace: ai
+spec:
+  replicas: 1
+  selector:
+    matchLabels: { app: sorani-bot }
+  template:
+    metadata:
+      labels: { app: sorani-bot }
+    spec:
+      containers:
+        - name: bot
+          image: python:3.11-slim
+          command: ["/bin/sh", "-ec"]
+          args: ["pip install --no-cache-dir -q requests && exec python /app/bot.py"]
+          envFrom:
+            - secretRef: { name: sorani-bot-secret }   # TELEGRAM_TOKEN + LITELLM_KEY
+          env:
+            - { name: WHISPER_MODEL, value: "/models/ckb" }   # faster-whisper serves the CT2 model by its path
+            - { name: LITELLM_URL, value: "http://whisper-ckb.ai.svc.cluster.local:8000/v1" }   # direct to whisper-ckb (LiteLLM STT path is ADR-028 "unstable")
+          volumeMounts:
+            - { name: code, mountPath: /app }
+          resources:
+            requests: { memory: 64Mi, cpu: 10m }
+            limits:   { memory: 256Mi, cpu: 250m }
+      volumes:
+        - name: code
+          configMap: { name: sorani-bot-code }
