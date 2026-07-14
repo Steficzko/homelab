@@ -1,0 +1,42 @@
+# Penpot MCP (penpotapp/mcp) — stable endpoint for the Claude Code design-to-code
+# link. The MCP speaks streamable-HTTP on :4401 at path /mcp (root 404s).
+#
+# ⚠ REACHABILITY: *.kostikidis.net is behind Cloudflare Access. A programmatic
+# MCP client (Claude Code) cannot pass a CF-Access browser login, so ONE of:
+#   (a) EXEMPT designmcp.kostikidis.net from the CF Access policy — then it's
+#       reachable, protected only by the Penpot access token the MCP client sends
+#       (Penpot-side auth); OR
+#   (b) keep CF Access on and pass a CF Access SERVICE TOKEN as headers
+#       (CF-Access-Client-Id / CF-Access-Client-Secret) in the `claude mcp add`
+#       --header flags; OR
+#   (c) reach it over Tailscale/LAN at the ingress LB-IP by SNI (bypasses CF); OR
+#   (d) skip this ingress entirely and use `kubectl port-forward` to localhost.
+# Recommendation: (a) exempt + rely on the Penpot token, simplest for a headless
+# client. SSE-friendly annotations below (no buffering, long read timeout).
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: penpot-mcp
+  namespace: penpot
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    nginx.ingress.kubernetes.io/proxy-buffering: "off"        # streamable-HTTP / SSE
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
+spec:
+  ingressClassName: nginx
+  tls:
+    - hosts: ["*.kostikidis.net"]
+      secretName: blanka-wildcard-tls
+  rules:
+    - host: designmcp.kostikidis.net
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: penpot-mcp
+                port:
+                  number: 4401
