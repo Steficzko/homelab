@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: penpot-assets-pvc
+  namespace: penpot
+spec:
+  accessModes: [ReadWriteMany]
+  storageClassName: ""
+  volumeName: penpot-assets-pv
+  resources:
+    requests:
+      storage: 50Gi
