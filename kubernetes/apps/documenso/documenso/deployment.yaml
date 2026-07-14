@@ -1,0 +1,58 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: documenso
+  namespace: documenso
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: documenso
+  template:
+    metadata:
+      labels:
+        app: documenso
+    spec:
+      containers:
+        - name: documenso
+          image: documenso/documenso:v2.14.0@sha256:f1043654ffd88edffa6ba5b2bbda2897723fc5e9ae06f56c1fe514ee2b567f05
+          envFrom:
+            - secretRef:
+                name: documenso-secret
+          env:
+            - { name: PORT, value: "3000" }
+            - { name: NEXT_PUBLIC_WEBAPP_URL, value: "https://sign.kostikidis.net" }
+            - { name: NEXT_PRIVATE_SIGNING_LOCAL_FILE_PATH, value: "/opt/documenso/cert.p12" }
+            - { name: NEXT_PRIVATE_SIGNING_PASSPHRASE, value: "" }
+            - { name: NEXT_PRIVATE_SMTP_TRANSPORT, value: "smtp-auth" }
+            - { name: NEXT_PRIVATE_SMTP_HOST, value: "smtp.gmail.com" }
+            - { name: NEXT_PRIVATE_SMTP_PORT, value: "587" }
+            - { name: NEXT_PRIVATE_SMTP_USERNAME, value: "kostikidis.network@gmail.com" }
+            - { name: NEXT_PRIVATE_SMTP_FROM_ADDRESS, value: "kostikidis.network@gmail.com" }
+            - { name: NEXT_PRIVATE_SMTP_FROM_NAME, value: "Documenso" }
+          ports:
+            - containerPort: 3000
+          readinessProbe:
+            httpGet: { path: /api/health, port: 3000 }
+            initialDelaySeconds: 30
+            periodSeconds: 15
+            failureThreshold: 6
+          livenessProbe:
+            httpGet: { path: /api/health, port: 3000 }
+            initialDelaySeconds: 90
+            periodSeconds: 30
+            failureThreshold: 5
+          resources:
+            requests: { memory: 512Mi, cpu: "100m" }
+            limits: { memory: 1Gi }
+          volumeMounts:
+            - name: signing-cert
+              mountPath: /opt/documenso/cert.p12
+              subPath: cert.p12
+              readOnly: true
+      volumes:
+        - name: signing-cert
+          secret:
+            secretName: documenso-signing-cert
