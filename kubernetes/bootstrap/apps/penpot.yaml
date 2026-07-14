@@ -21,8 +21,9 @@ spec:
         valuesObject:
           config:
             publicUri: "https://design.kostikidis.net"
-            # locked down: password login only, no self-registration, no email verification
-            flags: "enable-login-with-password disable-registration disable-email-verification"
+            # locked down: password login only, no self-registration, no email verification.
+            # prepl-server = admin CLI (create-profile); mcp = AI design access (read designs directly)
+            flags: "enable-login-with-password disable-registration disable-email-verification enable-prepl-server enable-mcp"
             telemetryEnabled: false
             existingSecret: penpot-secret
             secretKeys:
