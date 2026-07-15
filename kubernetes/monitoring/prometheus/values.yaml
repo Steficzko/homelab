@@ -53,6 +53,9 @@ prometheus:
 
 alertmanager:
   alertmanagerSpec:
+    # mounts at /etc/alertmanager/secrets/alertmanager-telegram/bottoken
+    secrets:
+      - alertmanager-telegram
     topologySpreadConstraints:
       - maxSkew: 1
         topologyKey: kubernetes.io/hostname
@@ -60,3 +63,33 @@ alertmanager:
         labelSelector:
           matchLabels:
             app.kubernetes.io/name: alertmanager
+  config:
+    global:
+      resolve_timeout: 5m
+    route:
+      group_by: ['namespace', 'alertname']
+      group_wait: 30s
+      group_interval: 5m
+      repeat_interval: 4h
+      receiver: telegram
+      routes:
+        - matchers:
+            - alertname = "Watchdog"
+          receiver: "null"
+    receivers:
+      - name: "null"
+      - name: telegram
+        telegram_configs:
+          - bot_token_file: /etc/alertmanager/secrets/alertmanager-telegram/bottoken
+            chat_id: 692889944
+            send_resolved: true
+            parse_mode: ""
+            message: |-
+              {{ if eq .Status "firing" }}🔴 FIRING{{ else }}✅ RESOLVED{{ end }} [{{ .CommonLabels.severity }}]
+              {{ range .Alerts }}{{ .Labels.alertname }} — {{ .Labels.namespace }}/{{ .Labels.pod }}{{ .Labels.instance }}
+              {{ .Annotations.summary }}{{ .Annotations.description }}
+              {{ end }}
+    inhibit_rules:
+      - source_matchers: ['severity = "critical"']
+        target_matchers: ['severity =~ "warning|info"']
+        equal: ['namespace', 'alertname']
