@@ -7,6 +7,19 @@
 # Access: kubectl port-forward -n monitoring svc/kube-prometheus-stack-grafana 3000:80
 # Default Grafana credentials: admin / prom-operator (change after first login)
 
+# K3s bundles controller-manager/scheduler/proxy/etcd into one process and does not
+# expose them as separate scrape targets, so kube-prometheus-stack's default
+# ServiceMonitors always report them "down" (KubeControllerManagerDown etc.) —
+# false positives. Disabling drops both the scrape target and the bogus *Down rules.
+kubeControllerManager:
+  enabled: false
+kubeScheduler:
+  enabled: false
+kubeProxy:
+  enabled: false
+kubeEtcd:
+  enabled: false
+
 grafana:
   deploymentStrategy:
     type: Recreate
@@ -73,8 +86,10 @@ alertmanager:
       repeat_interval: 4h
       receiver: telegram
       routes:
+        # Watchdog = always-firing heartbeat; InfoInhibitor = suppression helper.
+        # Neither is a real alert — both go to the black hole, not Telegram.
         - matchers:
-            - alertname = "Watchdog"
+            - alertname =~ "Watchdog|InfoInhibitor"
           receiver: "null"
     receivers:
       - name: "null"

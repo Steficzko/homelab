@@ -6,37 +6,42 @@ metadata:
 spec:
   project: default
   # Headlamp — web "glances for the cluster": live view of every workload + state.
-  # Read-only (bound to built-in `view` ClusterRole, no secrets). Seamless auth via
-  # the pod service account (unsafeUseServiceAccountToken) — safe because the only
-  # gate that matters is Cloudflare Access on the *.kostikidis.net wildcard in front.
-  source:
-    repoURL: https://kubernetes-sigs.github.io/headlamp/
-    chart: headlamp
-    targetRevision: 0.43.0
-    helm:
-      releaseName: headlamp
-      valuesObject:
-        config:
-          unsafeUseServiceAccountToken: true
-        serviceAccount:
-          create: true
-        clusterRoleBinding:
-          create: true
-          clusterRoleName: view
-        ingress:
-          enabled: true
-          ingressClassName: nginx
-          annotations:
-            cert-manager.io/cluster-issuer: letsencrypt-prod
-            nginx.ingress.kubernetes.io/ssl-redirect: "false"
-          hosts:
-            - host: k8s.kostikidis.net
-              paths:
-                - path: /
-                  type: Prefix
-          tls:
-            - hosts: [k8s.kostikidis.net]
-              secretName: headlamp-tls
+  # Read-only: chart binds the SA to built-in `view` (namespaced, no secrets); a
+  # supplemental ClusterRole (kubernetes/apps/headlamp) adds cluster-scoped reads
+  # (nodes/metrics/PVs/CRDs). Seamless auth via the pod SA — safe because Cloudflare
+  # Access on the *.kostikidis.net wildcard is the gate in front.
+  sources:
+    # supplemental read-only cluster-scoped RBAC (nodes/metrics/PVs/CRDs, no secrets)
+    - repoURL: https://github.com/Steficzko/homelab.git
+      targetRevision: HEAD
+      path: kubernetes/apps/headlamp
+    - repoURL: https://kubernetes-sigs.github.io/headlamp/
+      chart: headlamp
+      targetRevision: 0.43.0
+      helm:
+        releaseName: headlamp
+        valuesObject:
+          config:
+            unsafeUseServiceAccountToken: true
+          serviceAccount:
+            create: true
+          clusterRoleBinding:
+            create: true
+            clusterRoleName: view
+          ingress:
+            enabled: true
+            ingressClassName: nginx
+            annotations:
+              cert-manager.io/cluster-issuer: letsencrypt-prod
+              nginx.ingress.kubernetes.io/ssl-redirect: "false"
+            hosts:
+              - host: k8s.kostikidis.net
+                paths:
+                  - path: /
+                    type: Prefix
+            tls:
+              - hosts: [k8s.kostikidis.net]
+                secretName: headlamp-tls
   destination:
     server: https://kubernetes.default.svc
     namespace: headlamp
