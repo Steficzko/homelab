@@ -1,0 +1,48 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: headlamp
+  namespace: argocd
+spec:
+  project: default
+  # Headlamp — web "glances for the cluster": live view of every workload + state.
+  # Read-only (bound to built-in `view` ClusterRole, no secrets). Seamless auth via
+  # the pod service account (unsafeUseServiceAccountToken) — safe because the only
+  # gate that matters is Cloudflare Access on the *.kostikidis.net wildcard in front.
+  source:
+    repoURL: https://kubernetes-sigs.github.io/headlamp/
+    chart: headlamp
+    targetRevision: 0.43.0
+    helm:
+      releaseName: headlamp
+      valuesObject:
+        config:
+          unsafeUseServiceAccountToken: true
+        serviceAccount:
+          create: true
+        clusterRoleBinding:
+          create: true
+          clusterRoleName: view
+        ingress:
+          enabled: true
+          ingressClassName: nginx
+          annotations:
+            cert-manager.io/cluster-issuer: letsencrypt-prod
+            nginx.ingress.kubernetes.io/ssl-redirect: "false"
+          hosts:
+            - host: k8s.kostikidis.net
+              paths:
+                - path: /
+                  type: Prefix
+          tls:
+            - hosts: [k8s.kostikidis.net]
+              secretName: headlamp-tls
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: headlamp
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
