@@ -191,6 +191,10 @@ data:
           icon: sh-grocy
           href: https://grocy.kostikidis.net
           description: Household management
+      - Vikunja:
+          icon: sh-vikunja
+          href: https://todo.kostikidis.net
+          description: To-do &amp; tasks
 
     - More Apps:
       - Mealie:
