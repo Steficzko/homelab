@@ -1,0 +1,25 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: vikunja
+  namespace: vikunja
+spec:
+  podSelector:
+    matchLabels:
+      app: vikunja
+  policyTypes: [Ingress, Egress]
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: ingress-nginx
+      ports:
+        - port: 3456
+  egress:
+    # DNS
+    - ports:
+        - { port: 53, protocol: UDP }
+        - { port: 53, protocol: TCP }
+    # outbound HTTPS (avatars / update check)
+    - ports:
+        - { port: 443, protocol: TCP }

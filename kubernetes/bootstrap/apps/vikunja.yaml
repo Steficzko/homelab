@@ -1,0 +1,28 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: vikunja
+  namespace: argocd
+spec:
+  project: default
+  # Vikunja — self-hosted to-do / task manager at todo.kostikidis.net.
+  # Single unified image, SQLite on one Longhorn PVC (Vaultwarden-style, no
+  # separate Postgres). Behind the *.kostikidis.net Cloudflare Access wildcard.
+  # NOTE: the native Android app auths via API — CF Access browser-login blocks
+  # it; use a CF Access service token on the API path if/when you rely on mobile.
+  source:
+    repoURL: https://github.com/Steficzko/homelab.git
+    targetRevision: HEAD
+    path: kubernetes/apps/vikunja
+    directory:
+      recurse: true
+      exclude: '*.sops.yaml'
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: vikunja
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
