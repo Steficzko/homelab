@@ -1,0 +1,25 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: actualbudget
+  namespace: argocd
+spec:
+  project: default
+  # Actual Budget — personal budgeting app at budget.kostikidis.net.
+  # Single container, SQLite on one Longhorn PVC, no separate DB or secret
+  # (server password is set in the UI). Behind the *.kostikidis.net CF Access wildcard.
+  source:
+    repoURL: https://github.com/Steficzko/homelab.git
+    targetRevision: HEAD
+    path: kubernetes/apps/actualbudget
+    directory:
+      recurse: true
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: actualbudget
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
