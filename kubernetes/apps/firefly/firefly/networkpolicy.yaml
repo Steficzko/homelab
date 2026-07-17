@@ -1,0 +1,32 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: firefly
+  namespace: firefly
+spec:
+  podSelector:
+    matchLabels:
+      app: firefly
+  policyTypes: [Ingress, Egress]
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: ingress-nginx
+      ports:
+        - port: 8080
+  egress:
+    # postgres
+    - ports:
+        - port: 5432
+      to:
+        - podSelector:
+            matchLabels:
+              app: postgres
+    # DNS
+    - ports:
+        - { port: 53, protocol: UDP }
+        - { port: 53, protocol: TCP }
+    # outbound HTTPS (exchange rates / update check)
+    - ports:
+        - { port: 443, protocol: TCP }
