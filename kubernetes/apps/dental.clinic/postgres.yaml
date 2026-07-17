@@ -106,6 +106,7 @@ spec:
   failedJobsHistoryLimit: 3
   jobTemplate:
     spec:
+      ttlSecondsAfterFinished: 10800   # auto-clean finished jobs (stops one-off failures re-alerting forever)
       template:
         metadata:
           labels:
