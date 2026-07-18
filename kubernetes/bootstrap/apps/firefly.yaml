@@ -1,0 +1,20 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: firefly
+  namespace: argocd
+spec:
+  project: default
+  # Firefly III — full multi-currency (IQD + CZK) finance manager at money.kostikidis.net.
+  # App (fireflyiii/core 6.6.6) + dedicated Postgres. SMTP (Gmail) wired; upload dir
+  # perms fixed via initContainer; netpol allows SMTP egress. Behind *.kostikidis.net
+  # Cloudflare Access wildcard. Secrets in SOPS, applied out-of-band.
+  source:
+    repoURL: https://github.com/Steficzko/homelab.git
+    targetRevision: HEAD
+    path: kubernetes/apps/firefly
+    directory: { recurse: true, exclude: '*.sops.yaml' }
+  destination: { server: https://kubernetes.default.svc, namespace: firefly }
+  syncPolicy:
+    automated: { prune: true, selfHeal: true }
+    syncOptions: [CreateNamespace=true]

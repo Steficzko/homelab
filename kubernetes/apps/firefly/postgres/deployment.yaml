@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata: { name: postgres, namespace: firefly }
+spec:
+  replicas: 1
+  strategy: { type: Recreate }
+  selector: { matchLabels: { app: postgres } }
+  template:
+    metadata: { labels: { app: postgres } }
+    spec:
+      containers:
+        - name: postgres
+          image: postgres:16-alpine@sha256:e013e867e712fec275706a6c51c966f0bb0c93cfa8f51000f85a15f9865a28cb
+          envFrom: [{ secretRef: { name: postgres-secret } }]
+          readinessProbe: { tcpSocket: { port: 5432 }, initialDelaySeconds: 15, periodSeconds: 10 }
+          livenessProbe: { tcpSocket: { port: 5432 }, initialDelaySeconds: 30, periodSeconds: 30, failureThreshold: 5 }
+          resources: { requests: { memory: 256Mi, cpu: "100m" }, limits: { memory: 512Mi } }
+          volumeMounts: [{ name: data, mountPath: /var/lib/postgresql/data, subPath: pgdata }]
+      volumes: [{ name: data, persistentVolumeClaim: { claimName: postgres-pvc } }]
