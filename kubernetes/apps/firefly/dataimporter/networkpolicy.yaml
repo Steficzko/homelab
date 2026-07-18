@@ -1,0 +1,14 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata: { name: dataimporter, namespace: firefly }
+spec:
+  podSelector: { matchLabels: { app: dataimporter } }
+  policyTypes: [Ingress, Egress]
+  ingress:
+    - from: [{ namespaceSelector: { matchLabels: { kubernetes.io/metadata.name: ingress-nginx } } }]
+      ports: [{ port: 8080 }]
+  egress:
+    - ports: [{ port: 8080 }]
+      to: [{ podSelector: { matchLabels: { app: firefly } } }]   # Firefly API (internal)
+    - ports: [{ port: 53, protocol: UDP }, { port: 53, protocol: TCP }]  # DNS
+    - ports: [{ port: 443, protocol: TCP }]  # GoCardless API + bank OAuth

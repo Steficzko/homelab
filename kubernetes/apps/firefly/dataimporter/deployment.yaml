@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dataimporter
+  namespace: firefly
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: dataimporter
+  template:
+    metadata:
+      labels:
+        app: dataimporter
+    spec:
+      containers:
+        - name: dataimporter
+          image: fireflyiii/data-importer:version-2.3.4
+          envFrom:
+            - secretRef:
+                name: dataimporter-secret   # FIREFLY_III_ACCESS_TOKEN (+ NORDIGEN_* later)
+          env:
+            # talk to Firefly over the internal network — bypasses Cloudflare Access
+            - { name: FIREFLY_III_URL, value: "http://firefly.firefly.svc.cluster.local:8080" }
+            - { name: APP_URL, value: "https://import.kostikidis.net" }
+            - { name: VANITY_URL, value: "https://money.kostikidis.net" }
+            - { name: TRUSTED_PROXIES, value: "**" }
+            - { name: TZ, value: "Europe/Prague" }
+          ports:
+            - containerPort: 8080
+          readinessProbe:
+            tcpSocket: { port: 8080 }
+            initialDelaySeconds: 15
+            periodSeconds: 15
+            failureThreshold: 8
+          livenessProbe:
+            tcpSocket: { port: 8080 }
+            initialDelaySeconds: 60
+            periodSeconds: 30
+            failureThreshold: 5
+          resources:
+            requests: { memory: 128Mi, cpu: "50m" }
+            limits: { memory: 512Mi }
+          volumeMounts:
+            - name: storage
+              mountPath: /var/www/html/storage/upload
+      volumes:
+        - name: storage
+          emptyDir: {}

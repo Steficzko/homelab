@@ -5,7 +5,9 @@ spec:
   podSelector: { matchLabels: { app: firefly } }
   policyTypes: [Ingress, Egress]
   ingress:
-    - from: [{ namespaceSelector: { matchLabels: { kubernetes.io/metadata.name: ingress-nginx } } }]
+    - from:
+        - namespaceSelector: { matchLabels: { kubernetes.io/metadata.name: ingress-nginx } }
+        - podSelector: { matchLabels: { app: dataimporter } }
       ports: [{ port: 8080 }]
   egress:
     - ports: [{ port: 5432 }]
