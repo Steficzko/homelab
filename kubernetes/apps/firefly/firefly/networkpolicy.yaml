@@ -30,3 +30,7 @@ spec:
     # outbound HTTPS (exchange rates / update check)
     - ports:
         - { port: 443, protocol: TCP }
+    # SMTP (Gmail) — password reset + notifications
+    - ports:
+        - { port: 587, protocol: TCP }
+        - { port: 465, protocol: TCP }
