@@ -1,0 +1,103 @@
+# immich-reaper: auto-heals pods stuck by stale NFS handles after an Unraid reboot.
+# A stale NFS mount cannot be cleared by a container/liveness restart (the pod reuses
+# the same node mount) — only recreating the POD forces a fresh mount. This CronJob
+# finds immich pods stuck in CreateContainerError (the stale-NFS-mount signature) and
+# deletes them so the Deployment recreates them cleanly. Scoped narrowly to that reason
+# so it never touches pods crash-looping for unrelated (e.g. config) reasons.
+# RBAC is namespace-scoped to deleting pods only.
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: immich-reaper
+  namespace: immich
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: immich-reaper
+  namespace: immich
+rules:
+  - apiGroups: [""]
+    resources: ["pods"]
+    verbs: ["get", "list", "delete"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: immich-reaper
+  namespace: immich
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: immich-reaper
+subjects:
+  - kind: ServiceAccount
+    name: immich-reaper
+    namespace: immich
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: immich-reaper
+  namespace: immich
+spec:
+  schedule: "*/5 * * * *"
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      backoffLimit: 1
+      activeDeadlineSeconds: 120
+      template:
+        spec:
+          serviceAccountName: immich-reaper
+          restartPolicy: Never
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 65534
+            seccompProfile:
+              type: RuntimeDefault
+          containers:
+            - name: reaper
+              image: rancher/kubectl:v1.35.6
+              env:
+                - name: KUBECACHEDIR
+                  value: /tmp/.kube
+              securityContext:
+                allowPrivilegeEscalation: false
+                readOnlyRootFilesystem: true
+                capabilities:
+                  drop: ["ALL"]
+              command:
+                - /bin/sh
+                - -c
+                - |
+                  set -eu
+                  echo "immich-reaper: scanning immich namespace for stuck pods..."
+                  stuck=$(kubectl get pods -n immich \
+                    -o jsonpath='{range .items[*]}{.metadata.name}{" "}{range .status.containerStatuses[*]}{.state.waiting.reason}{" "}{end}{"\n"}{end}' \
+                    | grep 'CreateContainerError' \
+                    | awk '{print $1}' \
+                    | grep -v '^immich-reaper' || true)
+                  if [ -z "$stuck" ]; then
+                    echo "no stuck pods — nothing to do"
+                    exit 0
+                  fi
+                  echo "$stuck" | while read p; do
+                    [ -n "$p" ] || continue
+                    echo "reaping stuck pod (stale-mount recovery): $p"
+                    kubectl delete pod -n immich "$p" --wait=false
+                  done
+              resources:
+                requests:
+                  cpu: 10m
+                  memory: 32Mi
+                limits:
+                  memory: 64Mi
+              volumeMounts:
+                - name: tmp
+                  mountPath: /tmp
+          volumes:
+            - name: tmp
+              emptyDir: {}
