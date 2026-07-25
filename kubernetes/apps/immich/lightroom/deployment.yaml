@@ -66,11 +66,11 @@ spec:
             periodSeconds: 15
             failureThreshold: 5
           livenessProbe:
-            httpGet:
-              path: /api/server/ping
-              port: 2283
+            exec:
+              command: ['sh', '-c', 'ls /usr/src/app/upload > /dev/null 2>&1 && ls /IMPORT > /dev/null 2>&1 && curl -sf -m 5 http://localhost:2283/api/server/ping > /dev/null']
             initialDelaySeconds: 90
             periodSeconds: 30
+            timeoutSeconds: 10
             failureThreshold: 5
           volumeMounts:
             - name: media
