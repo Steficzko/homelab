@@ -33,6 +33,7 @@ spec:
             - name: WORDPRESS_CONFIG_EXTRA
               value: |
                 define('DISABLE_WP_CRON', true); /* real cron via wp-cron CronJob */
+                ini_set('memory_limit', '256M'); define('WP_MEMORY_LIMIT', '256M'); /* Yoast blows the 128M default */
                 /* TLS terminates at Cloudflare; origin hop is plain HTTP and nginx
                    doesn't forward the visitor scheme -> without this WP redirect-loops */
                 $_SERVER['HTTPS'] = 'on';
