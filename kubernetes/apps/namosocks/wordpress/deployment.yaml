@@ -1,0 +1,70 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: wordpress
+  namespace: namosocks
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate          # RWO wp-content PVC — no rolling overlap possible
+  selector:
+    matchLabels:
+      app: wordpress
+  template:
+    metadata:
+      labels:
+        app: wordpress
+    spec:
+      securityContext:
+        fsGroup: 33          # www-data — so the longhorn PVC is writable for uploads/plugins
+      containers:
+        - name: wordpress
+          image: wordpress:php8.3-apache
+          env:
+            - name: WORDPRESS_DB_HOST
+              value: mariadb
+            - name: WORDPRESS_DB_NAME
+              value: wordpress
+            - name: WORDPRESS_DB_USER
+              value: wordpress
+            - name: WORDPRESS_DB_PASSWORD
+              valueFrom:
+                secretKeyRef: { name: namosocks-secret, key: MARIADB_PASSWORD }
+            - name: WORDPRESS_CONFIG_EXTRA
+              value: |
+                define('DISABLE_WP_CRON', true); /* real cron via wp-cron CronJob */
+                if (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https') { $_SERVER['HTTPS'] = 'on'; }
+          envFrom:
+            - secretRef:
+                name: namosocks-secret   # WORDPRESS_AUTH_KEY … salts
+          ports:
+            - containerPort: 80
+          resources:
+            requests:
+              memory: 256Mi
+              cpu: 100m
+            limits:
+              memory: 768Mi
+              cpu: 1000m
+          readinessProbe:
+            httpGet:
+              path: /wp-login.php
+              port: 80
+              httpHeaders:
+                - name: Host
+                  value: namosocks.kostikidis.net
+            initialDelaySeconds: 15
+            periodSeconds: 10
+          livenessProbe:
+            tcpSocket:
+              port: 80
+            initialDelaySeconds: 60
+            periodSeconds: 20
+            failureThreshold: 5
+          volumeMounts:
+            - name: wp-content
+              mountPath: /var/www/html/wp-content
+      volumes:
+        - name: wp-content
+          persistentVolumeClaim:
+            claimName: wp-content-pvc

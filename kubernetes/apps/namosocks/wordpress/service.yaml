@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: wordpress
+  namespace: namosocks
+spec:
+  selector:
+    app: wordpress
+  ports:
+    - port: 80
+      targetPort: 80

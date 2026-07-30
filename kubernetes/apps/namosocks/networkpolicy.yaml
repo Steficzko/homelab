@@ -1,0 +1,38 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: mariadb
+  namespace: namosocks
+spec:
+  podSelector:
+    matchLabels:
+      app: mariadb
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - podSelector: {}          # wordpress + backup job, same namespace
+      ports:
+        - port: 3306
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: wordpress
+  namespace: namosocks
+spec:
+  podSelector:
+    matchLabels:
+      app: wordpress
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: ingress-nginx
+        - podSelector:
+            matchLabels:
+              app: wp-cron
+      ports:
+        - port: 80
