@@ -4,7 +4,10 @@ metadata:
   name: bjj-app
   namespace: bjj
 spec:
-  replicas: 1
+  # TEMPORARILY OFFLINE 2026-07-30: scaled to 0 while the unauthenticated n8n
+  # webhook API (BFLA/IDOR — leaked member PII + gym finances) is remediated.
+  # Restore to 1 to bring app.teamelwany.com back.
+  replicas: 0
   selector:
     matchLabels:
       app: bjj-app
