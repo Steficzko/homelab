@@ -40,7 +40,7 @@ spec:
                 - { name: DST_ENDPOINT,   value: "http://100.85.129.88:9100" }
                 - { name: BUCKET,         value: "app-backups" }   # our logical dumps: accumulate + cap
                 - { name: RETENTION,      value: "30d" }
-                - { name: EXTRA_BUCKETS,  value: "velerok3s longhornk3s clinic-backups" }   # faithful mirrors (clinic-backups = dental DB dumps; retention capped by MinIO ILM 30d)
+                - { name: EXTRA_BUCKETS,  value: "velerok3s longhornk3s clinic-backups namosocks-backups" }   # faithful mirrors (clinic-backups = dental DB dumps, namosocks-backups = WP staging; retention capped by MinIO ILM 30d)
                 - { name: HOME,           value: "/tmp" }
               command:
                 - /bin/sh
