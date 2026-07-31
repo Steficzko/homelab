@@ -1,7 +1,12 @@
 # Ingress rules for the namosocks.com tunnel (ca867f1b), run in locally-managed mode.
 # We hold the client's tunnel token but not dashboard access to their Zero Trust account,
 # so hostname->service routing is defined here rather than remotely.
-# Add hostnames here (namosocks.com, www) at launch.
+#
+# WILDCARD MODEL: *.namosocks.com is routed into this cluster's ingress-nginx. To publish a new
+# app, just create a k8s Ingress with host <app>.namosocks.com — no Cloudflare change needed.
+# The k8s Ingress is the allow-list: a hostname with no Ingress gets nginx's 404, never an origin.
+# The apex namosocks.com is deliberately NOT routed here — the live WordPress stays on the old
+# Plesk host until launch day.
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -15,5 +20,7 @@ data:
       connectTimeout: 30s
     ingress:
       - hostname: staging.namosocks.com
+        service: http://ingress-nginx-controller.ingress-nginx.svc.cluster.local:80
+      - hostname: "*.namosocks.com"
         service: http://ingress-nginx-controller.ingress-nginx.svc.cluster.local:80
       - service: http_status:404
