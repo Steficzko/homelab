@@ -27,7 +27,8 @@ spec:
               command:
                 - /bin/sh
                 - -c
-                - curl -fsS -m 110 -H "Host: namosocks.kostikidis.net" "http://wordpress/wp-cron.php?doing_wp_cron" > /dev/null
+                # the Host: colon must sit inside a quoted scalar or YAML parses this line as a map
+                - 'curl -fsS -m 110 -H "Host: namosocks.kostikidis.net" "http://wordpress/wp-cron.php?doing_wp_cron" > /dev/null'
               resources:
                 requests: { memory: 16Mi, cpu: 10m }
                 limits: { memory: 64Mi, cpu: 100m }
