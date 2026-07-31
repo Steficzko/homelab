@@ -1,0 +1,19 @@
+# Ingress rules for the namosocks.com tunnel (ca867f1b), run in locally-managed mode.
+# We hold the client's tunnel token but not dashboard access to their Zero Trust account,
+# so hostname->service routing is defined here rather than remotely.
+# Add hostnames here (namosocks.com, www) at launch.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cloudflared-namosocks-config
+  namespace: cloudflare-tunnel
+data:
+  config.yaml: |
+    tunnel: ca867f1b-213c-40ba-be0d-af0f8a11d5fa
+    credentials-file: /etc/cloudflared/creds/credentials.json
+    originRequest:
+      connectTimeout: 30s
+    ingress:
+      - hostname: staging.namosocks.com
+        service: http://ingress-nginx-controller.ingress-nginx.svc.cluster.local:80
+      - service: http_status:404

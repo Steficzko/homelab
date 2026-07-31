@@ -23,18 +23,19 @@ spec:
       containers:
         - name: cloudflared
           image: cloudflare/cloudflared:2026.6.1
+          # Locally-managed config: we hold the tunnel token but NOT dashboard access to the
+          # client's Zero Trust account, so ingress rules live in the ConfigMap instead of remotely.
           args:
             - tunnel
             - --no-autoupdate
+            - --config
+            - /etc/cloudflared/config.yaml
             - run
-            - --token
-            - $(TUNNEL_TOKEN)
-          env:
-            - name: TUNNEL_TOKEN
-              valueFrom:
-                secretKeyRef:
-                  name: cloudflare-tunnel-token-namosocks   # namosocks.com tunnel ca867f1b; CLIENT's CF account e46015da (owner: Samrand Hassan); see secret-namosocks.example.yaml
-                  key: token
+          volumeMounts:
+            - name: config
+              mountPath: /etc/cloudflared
+            - name: creds
+              mountPath: /etc/cloudflared/creds
           resources:
             requests:
               memory: 64Mi
@@ -42,3 +43,10 @@ spec:
             limits:
               memory: 128Mi
               cpu: 200m
+      volumes:
+        - name: config
+          configMap:
+            name: cloudflared-namosocks-config   # ingress rules (staging.namosocks.com -> ingress-nginx)
+        - name: creds
+          secret:
+            secretName: cloudflared-namosocks-creds   # derived from the tunnel token; applied out-of-band
