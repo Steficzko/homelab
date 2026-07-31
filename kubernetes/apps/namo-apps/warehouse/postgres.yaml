@@ -107,9 +107,11 @@ spec:
                 - |
                   set -eu
                   TS=$(date +%Y%m%d-%H%M%S)
-                  pg_dump -h warehouse-postgres -U warehouse warehouse | gzip -6 > "/work/warehouse-${TS}.sql.gz"
                   /tools/mc alias set s3 "$AWS_ENDPOINTS" "$AWS_ACCESS_KEY_ID" "$AWS_SECRET_ACCESS_KEY"
-                  /tools/mc cp "/work/warehouse-${TS}.sql.gz" "s3/${BUCKET}/warehouse/warehouse-${TS}.sql.gz"
+                  for DB in warehouse warehouse_eu; do
+                    pg_dump -h warehouse-postgres -U warehouse "$DB" | gzip -6 > "/work/${DB}-${TS}.sql.gz"
+                    /tools/mc cp "/work/${DB}-${TS}.sql.gz" "s3/${BUCKET}/warehouse/${DB}-${TS}.sql.gz"
+                  done
               volumeMounts:
                 - { name: tools, mountPath: /tools }
                 - { name: work, mountPath: /work }

@@ -24,8 +24,22 @@ data:
     server {
       listen 80;
       root /usr/share/nginx/html;
-      location /api/ {
+      # Auth lives HERE (not the ingress) so we know WHO logged in: namo sees both regions,
+      # bawan only the EU one. /api/me/* is the Middle East DB, /api/eu/* the EU DB.
+      auth_basic "Namo warehouse";
+      auth_basic_user_file /etc/nginx/htpasswd/auth;
+      location = /api/whoami {
+        default_type application/json;
+        return 200 '{"user":"$remote_user"}';
+      }
+      location /api/me/ {
+        if ($remote_user != "namo") { return 403; }
         proxy_pass http://n8n.namo-apps.svc.cluster.local/webhook/;
+        proxy_set_header X-WH-Key "${WH_KEY}";
+        proxy_set_header Host $host;
+      }
+      location /api/eu/ {
+        proxy_pass http://n8n.namo-apps.svc.cluster.local/webhook/eu-;
         proxy_set_header X-WH-Key "${WH_KEY}";
         proxy_set_header Host $host;
       }
@@ -61,23 +75,23 @@ spec:
           volumeMounts:
             - { name: html, mountPath: /usr/share/nginx/html }
             - { name: nginx-conf, mountPath: /etc/nginx/templates }
+            - { name: htpasswd, mountPath: /etc/nginx/htpasswd, readOnly: true }
       volumes:
         - name: html
           configMap: { name: warehouse-ui-html }
         - name: nginx-conf
           configMap: { name: warehouse-ui-nginx }
+        - name: htpasswd
+          secret: { secretName: warehouse-ui-basicauth }
 ---
-# Basic auth is the stopgap until 'Account -> Access: Apps and Policies: Edit' exists on the
-# client's Cloudflare account (same story as links.namosocks.com — ADR-003).
+# Basic auth moved INTO the pod nginx (per-user region gating needs $remote_user) — the ingress
+# only does TLS. Still a stopgap until Cloudflare Access (ADR-003/015).
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: warehouse-ui
   namespace: namo-apps
   annotations:
-    nginx.ingress.kubernetes.io/auth-type: basic
-    nginx.ingress.kubernetes.io/auth-secret: warehouse-ui-basicauth
-    nginx.ingress.kubernetes.io/auth-realm: "Namo warehouse"
     cert-manager.io/issuer: letsencrypt-http01   # NOT the ClusterIssuer — see issuer.yaml
 spec:
   ingressClassName: nginx

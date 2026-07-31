@@ -43,12 +43,15 @@ data:
     20px;font-size:.9rem}\n#toasts{position:fixed;top:72px;right:20px;z-index:80;display:flex;flex-direction:column;gap:10px}\n.toast{background:var(--card);border:1px
     solid var(--border);border-left:4px solid var(--green);border-radius:8px;padding:12px
     16px;max-width:340px;font-size:.84rem;box-shadow:0 8px 24px #0006}\n.toast.err{border-left-color:var(--red)}\n.formgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;align-items:end}\n</style>\n</head>\n<body>\n\n<div
-    id=\"app\">\n  <div class=\"topbar\">\n    <div class=\"brand\">NAMO <span>WAREHOUSE</span></div>\n
-    \   <div class=\"tag\">namosocks.com</div>\n    <div class=\"right\">\n      <button
-    class=\"stog on\" id=\"ccy-usd\" onclick=\"setCcy('USD')\">$</button>\n      <button
-    class=\"stog\" id=\"ccy-iqd\" onclick=\"setCcy('IQD')\">IQD</button>\n    </div>\n
-    \ </div>\n\n  <div class=\"layout\">\n    <nav class=\"sidebar\">\n      <div
-    class=\"navitem on\" data-nav=\"dashboard\" onclick=\"nav('dashboard',this)\"><span
+    id=\"app\">\n  <div class=\"topbar\">\n    <div class=\"brand\"><span id=\"region-label\"
+    style=\"color:var(--copper)\">IRAQ</span>&nbsp; NAMO SOCKS</div>\n    <div class=\"tag\">warehouse</div>\n
+    \   <div class=\"right\">\n      <span id=\"region-switch\" class=\"hidden\">\n
+    \       <button class=\"stog on\" id=\"rg-me\" onclick=\"setRegion('me')\">IRAQ</button>\n
+    \       <button class=\"stog\" id=\"rg-eu\" onclick=\"setRegion('eu')\">DENMARK</button>\n
+    \     </span>\n      <button class=\"stog on\" id=\"ccy-usd\" onclick=\"setCcy('USD')\">$</button>\n
+    \     <button class=\"stog\" id=\"ccy-iqd\" onclick=\"setCcy('IQD')\">IQD</button>\n
+    \   </div>\n  </div>\n\n  <div class=\"layout\">\n    <nav class=\"sidebar\">\n
+    \     <div class=\"navitem on\" data-nav=\"dashboard\" onclick=\"nav('dashboard',this)\"><span
     class=\"ic\">\U0001F4CA</span>Dashboard<span class=\"badge hidden\" id=\"confirm-badge\">0</span></div>\n
     \     <div class=\"navitem\" data-nav=\"orders\" onclick=\"nav('orders',this)\"><span
     class=\"ic\">\U0001F4E6</span>Orders</div>\n      <div class=\"navitem\" data-nav=\"stock\"
@@ -57,13 +60,24 @@ data:
     class=\"ic\">⚙️</span>Settings</div>\n      <div style=\"padding:18px 14px 6px;font-size:.7rem;color:#555\">built
     by steficzko</div>\n    </nav>\n    <main class=\"content\" id=\"content\"></main>\n
     \ </div>\n</div>\n\n<div class=\"drawer-bg\" id=\"drawer-bg\" onclick=\"closeDrawer()\"></div>\n<div
-    class=\"drawer\" id=\"drawer\"></div>\n<div id=\"toasts\"></div>\n\n<script>\nconst
-    API = '/api';   // nginx proxies to n8n /webhook/ and injects X-WH-Key server-side\nlet
-    D = null, ORD = [], STK = null, FXH = [];\nlet ccy = 'USD', fxRate = null;   //
-    fx from DB (fx_rates), presentation-only conversion\n\nasync function call(method,
-    path, body){\n  const opts = {method, headers:{'Content-Type':'application/json'}};\n
-    \ if (body) opts.body = JSON.stringify(body);\n  const r = await fetch(API + path,
-    opts);\n  if (!r.ok) throw new Error('HTTP ' + r.status);\n  return r.json();\n}\nfunction
+    class=\"drawer\" id=\"drawer\"></div>\n<div id=\"toasts\"></div>\n\n<script>\n//
+    nginx proxies /api/<region>/ to n8n and injects X-WH-Key server-side.\n// Two
+    INDEPENDENT databases: me = Middle East (IRAQ), eu = EU (DENMARK).\n// namo may
+    switch between them; bawan is locked to eu (nginx also enforces it server-side).\nlet
+    USER = null, REGION = 'me';\nconst API = () => '/api/' + REGION;\nconst REGION_NAME
+    = {me: 'IRAQ', eu: 'DENMARK'};\nlet D = null, ORD = [], STK = null, FXH = [];\nlet
+    ccy = 'USD', fxRate = null;   // fx from DB (fx_rates), presentation-only conversion\n\nasync
+    function call(method, path, body){\n  const opts = {method, headers:{'Content-Type':'application/json'}};\n
+    \ if (body) opts.body = JSON.stringify(body);\n  const r = await fetch(API() +
+    path, opts);\n  if (!r.ok) throw new Error('HTTP ' + r.status);\n  return r.json();\n}\nfunction
+    setRegion(rg){\n  REGION = rg;\n  localStorage.setItem('wh_region', rg);\n  document.getElementById('region-label').textContent
+    = REGION_NAME[rg];\n  document.getElementById('rg-me').classList.toggle('on',
+    rg==='me');\n  document.getElementById('rg-eu').classList.toggle('on', rg==='eu');\n
+    \ D = null; ORD = []; STK = null; FXH = [];\n  rerender();\n}\nasync function
+    boot(){\n  try { USER = (await (await fetch('/api/whoami')).json()).user; } catch(e){
+    USER = 'namo'; }\n  if (USER === 'namo'){\n    document.getElementById('region-switch').classList.remove('hidden');\n
+    \   setRegion(localStorage.getItem('wh_region') || 'me');\n  } else {\n    setRegion('eu');
+    \  // bawan and anyone else: EU only (nginx enforces it too)\n  }\n}\nfunction
     toast(msg, err){\n  const t = document.createElement('div');\n  t.className =
     'toast' + (err ? ' err' : '');\n  t.textContent = msg;\n  document.getElementById('toasts').appendChild(t);\n
     \ setTimeout(()=>t.remove(), 4000);\n}\nfunction esc(s){ return String(s==null?'':s).replace(/[&<>\"']/g,
@@ -253,7 +267,7 @@ data:
     \ if (!rate || rate < 100) return toast('Rate looks wrong', true);\n  try { await
     call('POST','/wh-fx-set', {rate}); fxRate = rate; toast('Rate saved — takes effect
     today'); render.settings(); }\n  catch(e){ toast('Failed: '+e.message, true);
-    }\n}\n\nrender.dashboard();\n</script>\n</body>\n</html>\n"
+    }\n}\n\nboot();\n</script>\n</body>\n</html>\n"
 kind: ConfigMap
 metadata:
   name: warehouse-ui-html
