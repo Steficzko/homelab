@@ -1,0 +1,24 @@
+# The UI ships the API key to the browser, so it must not be public. Cloudflare Access would be
+# the right gate but needs account-level permission we do not have (ADR-003); basic auth until then.
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: shlink-ui
+  namespace: namo-apps
+  annotations:
+    nginx.ingress.kubernetes.io/auth-type: basic
+    nginx.ingress.kubernetes.io/auth-secret: shlink-ui-basicauth
+    nginx.ingress.kubernetes.io/auth-realm: "Namo links"
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: links.namosocks.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: shlink-ui
+                port:
+                  number: 80

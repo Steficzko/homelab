@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: Secret
+metadata:
+    name: shlink-ui-basicauth
+    namespace: namo-apps
+type: Opaque
+stringData:
+    auth: ENC[AES256_GCM,data:txUPEtAYYUos5+MyCid3GrQzk++EzWxRrNncDSxl+wxMCVTlyed2hKwe,iv:0JpOnciMwxTStu50VpjcGZS4ghFwqRrhOVsE+6AexB4=,tag:D+SQ3DaCXYLlWe2Qzro0bg==,type:str]
+sops:
+    age:
+        - enc: |
+            -----BEGIN AGE ENCRYPTED FILE-----
+            YWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IFgyNTUxOSBEdHl6SVl2dGdvU1FxMlFL
+            RmlYdVNOL0Q2K3pCNU9oSmoxMHZnQVhaUjIwCmFPSkVncHpVOEFDdHhyUDRHaVBx
+            cTl3ai96K0dCRmZTREpyL1RQbm1zU1EKLS0tIEFzSzZTdXJPc3BIdmpKSnZsZUxO
+            QnZqR0R5RzBCRm15NVhLa3V0RGpKbTQKs5LGWajJYi7o9qQHrrTaoJpjVYYLS5yu
+            s5Nns/9xJT8ga/X2f0XheVi5UKzIgnQVPHz4M68g79TIg5N7MQsssQ==
+            -----END AGE ENCRYPTED FILE-----
+          recipient: age1v9pqv93dtdg7zuk2uc423rdtapu9p0fqucd2s9p6curt2c0y2vuq4yzw9n
+    encrypted_regex: ^(data|stringData)$
+    lastmodified: "2026-07-31T16:54:23Z"
+    mac: ENC[AES256_GCM,data:Bar8XTZTjwi3Xdy7mIKHl+XNH6/gWdg1M0f22VJn0bEaBC44INolLUGGZbH35HiwxWUPFzMIXBMTv4EVO6x80MNuaPmRRBu8r1G6rYjZ2lBhMulBc+hb3m/+ptX/dZhr9WZr7p/6PX+bguws1xQqXYYr+yW8d2CeF+0jp50K+P4=,iv:fCCOfaAdNhIGKSCjf2cvTl66S/q6IsL6623W+bHQCg8=,tag:rWtAk7yRl7wUaedRwTUUDA==,type:str]
+    version: 3.13.1
