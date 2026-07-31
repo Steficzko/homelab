@@ -117,7 +117,7 @@ data:
     NEXT = {   // lifecycle transitions offered per current status (ops-app-design
     §5)\n  to_confirm: ['confirmed','cancelled'],\n  confirmed: ['out_for_delivery','cancelled'],\n
     \ out_for_delivery: ['delivered_cod_pending','refused'],\n  delivered_cod_pending:
-    ['settled'],\n};\nconst COURIERS = ['Talabat','Lezoo','Namo (Erbil)','Pickup'];\n\nconst
+    ['settled'],\n};\nconst COURIERS = ['HyperPost','Namo (Erbil)','Pickup'];\n\nconst
     render = {\n\nasync dashboard(){\n  C().innerHTML = '<div class=\"empty\">Loading…</div>';\n
     \ try { D = await call('GET','/wh-dashboard'); } catch(e){ C().innerHTML = '<div
     class=\"empty\">Failed to load: '+esc(e.message)+'</div>'; return; }\n  fxRate
@@ -252,16 +252,20 @@ data:
     \     <td style=\"max-width:380px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--muted)\">${esc(u.longUrl)}</td>\n
     \     <td style=\"font-weight:700\">${(u.visitsSummary&&u.visitsSummary.total)??u.visitsCount??0}</td>\n
     \     <td>${dt(u.dateCreated)}</td></tr>`).join('') || '<tr><td colspan=\"4\"
-    class=\"empty\">No links yet</td></tr>'}\n  </tbody></table></div>`;\n},\n};\n\nfunction
-    e164(p){\n  if (!p) return null;\n  let d = String(p).replace(/[^\\d+]/g,'');\n
-    \ if (d.startsWith('+')) return d;\n  if (d.startsWith('00')) return '+' + d.slice(2);\n
-    \ if (d.startsWith('964')) return '+' + d;\n  if (d.startsWith('0')) return '+964'
-    + d.slice(1);   // Iraqi local format\n  return '+' + d;\n}\nfunction audienceCsv(){\n
-    \ const rows = window._audRows || [];\n  const csv = 'phone,fn,ct,country\\n'
-    + rows.map(r=>{\n    const fn = (r.name.split(' ')[0]||'').toLowerCase();\n    return
-    `${r.phone},${fn},${(r.city||'').toLowerCase()},iq`;\n  }).join('\\n');\n  const
-    a = document.createElement('a');\n  a.href = URL.createObjectURL(new Blob([csv],
-    {type:'text/csv'}));\n  a.download = 'namo-meta-audience.csv';\n  a.click();\n}\nasync
+    class=\"empty\">No links yet</td></tr>'}\n  </tbody></table></div>`;\n},\n};\n\n//
+    ponytail: two-region phone heuristics; add per-country rules when a third region
+    exists\nconst REGION_PHONE = {me: {cc:'iq', dial:'964'}, eu: {cc:'dk', dial:'45'}};\nfunction
+    e164(p){\n  if (!p) return null;\n  const rp = REGION_PHONE[REGION];\n  let d
+    = String(p).replace(/[^\\d+]/g,'');\n  if (d.startsWith('+')) return d;\n  if
+    (d.startsWith('00')) return '+' + d.slice(2);\n  if (d.startsWith(rp.dial)) return
+    '+' + d;\n  if (REGION === 'me' && d.startsWith('0')) return '+964' + d.slice(1);
+    \ // Iraqi trunk 0\n  if (REGION === 'eu' && d.length === 8) return '+45' + d;
+    \              // bare Danish number\n  return '+' + rp.dial + d.replace(/^0/,'');\n}\nfunction
+    audienceCsv(){\n  const rows = window._audRows || [];\n  const cc = REGION_PHONE[REGION].cc;\n
+    \ const csv = 'phone,fn,ct,country\\n' + rows.map(r=>{\n    const fn = (r.name.split('
+    ')[0]||'').toLowerCase();\n    return `${r.phone},${fn},${(r.city||'').toLowerCase()},${cc}`;\n
+    \ }).join('\\n');\n  const a = document.createElement('a');\n  a.href = URL.createObjectURL(new
+    Blob([csv], {type:'text/csv'}));\n  a.download = 'namo-meta-audience.csv';\n  a.click();\n}\nasync
     function makeLink(){\n  const longUrl = document.getElementById('sl-url').value.trim();\n
     \ const slug = document.getElementById('sl-slug').value.trim();\n  if (!longUrl)
     return toast('URL required', true);\n  const body = {longUrl}; if (slug) body.customSlug
@@ -303,20 +307,24 @@ data:
     class=\"k\">Placed</span><span class=\"v\">${dt(o.placed_at)}</span></div>\n      <div
     class=\"kv\"><span class=\"k\">Confirmed</span><span class=\"v\">${dt(o.confirmed_at)}</span></div>\n
     \     <div class=\"kv\"><span class=\"k\">Dispatched</span><span class=\"v\">${dt(o.dispatched_at)}
-    ${esc(o.courier?('· '+o.courier):'')}</span></div>\n      <div class=\"kv\"><span
-    class=\"k\">Delivered</span><span class=\"v\">${dt(o.delivered_at)}</span></div>\n
+    ${esc(o.courier?('· '+o.courier):'')}</span></div>\n      ${o.tracking ? `<div
+    class=\"kv\"><span class=\"k\">Tracking</span><span class=\"v\">${esc(o.tracking)}</span></div>`
+    : ''}\n      <div class=\"kv\"><span class=\"k\">Delivered</span><span class=\"v\">${dt(o.delivered_at)}</span></div>\n
     \     <div class=\"kv\"><span class=\"k\">Cash settled</span><span class=\"v\">${dt(o.settled_at)}</span></div></div>\n
     \   ${next.length ? `<div class=\"fieldset\"><div class=\"ftitle\">Actions</div>\n
     \     ${next.includes('out_for_delivery') ? `<div class=\"editrow\"><label>Courier</label><select
     id=\"act-courier\">${COURIERS.map(c=>`<option ${((o.shipping_method||'').includes(c.split('
-    ')[0]))?'selected':''}>${c}</option>`).join('')}</select></div>` : ''}\n      <div
-    class=\"acts\">${next.map(s=>`<button class=\"btn ${s==='cancelled'||s==='refused'?'btn-red':'btn-green'}\"
-    onclick=\"doStatus(${o.woo_order_id}, '${s}')\">${STATUS_LABEL[s]}</button>`).join('')}</div></div>`
-    : ''}\n  </div>`);\n}\n\nasync function doStatus(wooId, status){\n  const o =
-    ORD.find(x=>x.woo_order_id===wooId);\n  const body = {id: o.id, status};\n  const
-    sel = document.getElementById('act-courier');\n  if (status==='out_for_delivery'
-    && sel) body.courier = sel.value;\n  try {\n    await call('POST','/wh-order-status',
-    body);\n    toast('Order #'+wooId+' → '+(STATUS_LABEL[status]||status));\n    closeDrawer();
+    ')[0]))?'selected':''}>${c}</option>`).join('')}</select></div>\n      <div class=\"editrow\"><label>Tracking
+    / parcel code (optional)</label><input id=\"act-tracking\" placeholder=\"HyperPost
+    parcel number\"></div>` : ''}\n      <div class=\"acts\">${next.map(s=>`<button
+    class=\"btn ${s==='cancelled'||s==='refused'?'btn-red':'btn-green'}\" onclick=\"doStatus(${o.woo_order_id},
+    '${s}')\">${STATUS_LABEL[s]}</button>`).join('')}</div></div>` : ''}\n  </div>`);\n}\n\nasync
+    function doStatus(wooId, status){\n  const o = ORD.find(x=>x.woo_order_id===wooId);\n
+    \ const body = {id: o.id, status};\n  const sel = document.getElementById('act-courier');\n
+    \ if (status==='out_for_delivery' && sel) body.courier = sel.value;\n  const trk
+    = document.getElementById('act-tracking');\n  if (trk && trk.value.trim()) body.tracking
+    = trk.value.trim();\n  try {\n    await call('POST','/wh-order-status', body);\n
+    \   toast('Order #'+wooId+' → '+(STATUS_LABEL[status]||status));\n    closeDrawer();
     ORD = []; rerender();\n  } catch(e){ toast('Failed: '+e.message, true); }\n}\nasync
     function quickStatus(wooId, status){\n  const o = D.to_confirm.find(x=>x.woo_order_id===wooId);\n
     \ try {\n    await call('POST','/wh-order-status', {id: o.id, status});\n    toast('Order
