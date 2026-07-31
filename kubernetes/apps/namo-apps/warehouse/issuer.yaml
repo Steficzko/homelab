@@ -1,0 +1,19 @@
+# HTTP-01 issuer for *.namosocks.com hosts: the letsencrypt-prod ClusterIssuer solves DNS-01
+# against the kostikidis.net Cloudflare account, which cannot see the client's zone. HTTP-01
+# rides the normal request path (Cloudflare edge -> tunnel -> ingress) and never expires with
+# a token, unlike DNS-01 with the client's zone token (expires 2026-09-30).
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: letsencrypt-http01
+  namespace: namo-apps
+spec:
+  acme:
+    server: https://acme-v02.api.letsencrypt.org/directory
+    email: kostikidis.network@gmail.com
+    privateKeySecretRef:
+      name: letsencrypt-http01-account
+    solvers:
+      - http01:
+          ingress:
+            ingressClassName: nginx

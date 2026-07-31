@@ -78,7 +78,7 @@ metadata:
     nginx.ingress.kubernetes.io/auth-type: basic
     nginx.ingress.kubernetes.io/auth-secret: warehouse-ui-basicauth
     nginx.ingress.kubernetes.io/auth-realm: "Namo warehouse"
-    cert-manager.io/cluster-issuer: letsencrypt-prod
+    cert-manager.io/issuer: letsencrypt-http01   # NOT the ClusterIssuer — see issuer.yaml
 spec:
   ingressClassName: nginx
   tls:
