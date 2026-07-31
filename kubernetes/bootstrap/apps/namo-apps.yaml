@@ -1,0 +1,23 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: namo-apps
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/Steficzko/homelab.git
+    targetRevision: HEAD
+    path: kubernetes/apps/namo-apps
+    directory:
+      recurse: true
+      exclude: '{*.sops.yaml,*.example.yaml}'
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: namo-apps
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true

@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: shlink
+  namespace: namo-apps
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: shlink
+  template:
+    metadata:
+      labels:
+        app: shlink
+    spec:
+      containers:
+        - name: shlink
+          image: shlinkio/shlink:4.4.6
+          envFrom:
+            - secretRef:
+                name: namo-shlink-secret     # INITIAL_API_KEY
+          env:
+            - name: DEFAULT_DOMAIN
+              value: go.namosocks.com
+            - name: IS_HTTPS_ENABLED
+              value: "true"                  # links must be minted as https:// (TLS ends at Cloudflare)
+            - name: DB_DRIVER
+              value: sqlite                  # ponytail: SQLite is plenty for a brand's short links
+            - name: TIMEZONE
+              value: Asia/Baghdad
+            - name: DEFAULT_QR_CODE_FORMAT
+              value: png
+            - name: TRUSTED_PROXIES
+              value: "0.0.0.0/0"             # real visitor IP arrives via cloudflared -> ingress
+          ports:
+            - containerPort: 8080
+          resources:
+            requests: { memory: 128Mi, cpu: 50m }
+            limits:   { memory: 512Mi, cpu: 500m }
+          readinessProbe:
+            httpGet: { path: /rest/health, port: 8080 }
+            initialDelaySeconds: 20
+            periodSeconds: 10
+          volumeMounts:
+            - name: data
+              mountPath: /etc/shlink/data
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: shlink-data-pvc

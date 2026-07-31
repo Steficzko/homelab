@@ -1,0 +1,22 @@
+# No TLS block: TLS terminates at Cloudflare, cloudflared reaches this over plain HTTP in-cluster.
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: n8n
+  namespace: namo-apps
+  annotations:
+    nginx.ingress.kubernetes.io/proxy-body-size: "32m"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"    # long-running workflow editors
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: automation.namosocks.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: n8n
+                port:
+                  number: 80

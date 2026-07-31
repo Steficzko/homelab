@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: shlink
+  namespace: namo-apps
+spec:
+  selector:
+    app: shlink
+  ports:
+    - port: 80
+      targetPort: 8080
