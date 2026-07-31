@@ -237,12 +237,32 @@ data:
     links(){\n  C().innerHTML = '<div class=\"empty\">Loading short links…</div>';\n
     \ let data;\n  try { data = await (await fetch('/api/shlink/v3/short-urls?itemsPerPage=100&orderBy=visits-DESC')).json();
     }\n  catch(e){ C().innerHTML = '<div class=\"empty\">Shlink unreachable</div>';
-    return; }\n  const urls = (data.shortUrls && data.shortUrls.data) || [];\n  C().innerHTML
+    return; }\n  // UTM lists are brand-wide, stored once in the ME db's app_settings
+    (namo-only tab anyway)\n  try { UTM = (await (await fetch('/api/me/wh-settings')).json()).settings.utm_lists
+    || UTM; } catch(e){}\n  const urls = (data.shortUrls && data.shortUrls.data) ||
+    [];\n  const opts = a => a.map(x=>`<option>${esc(x)}</option>`).join('');\n  C().innerHTML
     = `\n  <div class=\"page-head\"><div><h2>Short Links</h2><div class=\"desc\">go.namosocks.com
     — ${urls.length} links</div></div>\n    <div class=\"actions\"><button class=\"btn\"
-    onclick=\"render.links()\">↻ Refresh</button></div></div>\n  <div class=\"panel\"><h3>➕
-    New short link</h3>\n    <div class=\"formgrid\">\n      <div class=\"editrow\"
-    style=\"grid-column:span 2\"><label>Long URL</label><input id=\"sl-url\" placeholder=\"https://namosocks.com/…\"></div>\n
+    onclick=\"toggleUtmEdit()\">⚙ Edit lists</button>\n    <button class=\"btn\" onclick=\"render.links()\">↻
+    Refresh</button></div></div>\n  <div class=\"panel\"><h3>\U0001F4E3 Campaign link
+    (UTM)</h3>\n    <div class=\"h-sub\">Pick campaign / channel / medium — the tagged
+    link + short URL are created in one go.</div>\n    <div class=\"formgrid\">\n
+    \     <div class=\"editrow\"><label>Campaign</label><select id=\"utm-c\">${opts(UTM.campaigns)}</select></div>\n
+    \     <div class=\"editrow\"><label>Source (channel)</label><select id=\"utm-s\">${opts(UTM.sources)}</select></div>\n
+    \     <div class=\"editrow\"><label>Medium</label><select id=\"utm-m\">${opts(UTM.mediums)}</select></div>\n
+    \     <div class=\"editrow\" style=\"grid-column:span 2\"><label>Destination</label><input
+    id=\"utm-url\" value=\"https://namosocks.com/\"></div>\n      <div class=\"editrow\"><button
+    class=\"btn btn-main\" style=\"width:100%\" onclick=\"makeUtmLink()\">Create UTM
+    link</button></div>\n    </div>\n    <div id=\"utm-edit\" class=\"hidden\" style=\"margin-top:14px;border-top:1px
+    solid var(--border);padding-top:14px\">\n      ${['campaigns','sources','mediums'].map(k=>`\n
+    \     <div class=\"editrow\"><label>${k} — click to remove</label>\n        <div
+    id=\"chips-${k}\" style=\"display:flex;flex-wrap:wrap;gap:6px;margin:4px 0\">\n
+    \         ${UTM[k].map(v=>`<span class=\"stog\" onclick=\"utmRemove('${k}','${esc(v)}')\">${esc(v)}
+    ✕</span>`).join('')}\n        </div>\n        <input placeholder=\"add to ${k}
+    + Enter\" onkeydown=\"if(event.key==='Enter'){utmAdd('${k}',this.value);this.value=''}\">\n
+    \     </div>`).join('')}\n    </div>\n  </div>\n  <div class=\"panel\"><h3>➕ New
+    short link</h3>\n    <div class=\"formgrid\">\n      <div class=\"editrow\" style=\"grid-column:span
+    2\"><label>Long URL</label><input id=\"sl-url\" placeholder=\"https://namosocks.com/…\"></div>\n
     \     <div class=\"editrow\"><label>Custom slug (optional)</label><input id=\"sl-slug\"
     placeholder=\"summer-drop\"></div>\n      <div class=\"editrow\"><button class=\"btn
     btn-main\" style=\"width:100%\" onclick=\"makeLink()\">Shorten</button></div>\n
@@ -265,8 +285,25 @@ data:
     \ const csv = 'phone,fn,ct,country\\n' + rows.map(r=>{\n    const fn = (r.name.split('
     ')[0]||'').toLowerCase();\n    return `${r.phone},${fn},${(r.city||'').toLowerCase()},${cc}`;\n
     \ }).join('\\n');\n  const a = document.createElement('a');\n  a.href = URL.createObjectURL(new
-    Blob([csv], {type:'text/csv'}));\n  a.download = 'namo-meta-audience.csv';\n  a.click();\n}\nasync
-    function makeLink(){\n  const longUrl = document.getElementById('sl-url').value.trim();\n
+    Blob([csv], {type:'text/csv'}));\n  a.download = 'namo-meta-audience.csv';\n  a.click();\n}\nlet
+    UTM = {campaigns:['newroz','clearance'], sources:['instagram','facebook'], mediums:['social']};\nfunction
+    toggleUtmEdit(){ document.getElementById('utm-edit').classList.toggle('hidden');
+    }\nasync function saveUtm(){\n  try { await fetch('/api/me/wh-settings-set', {method:'POST',
+    headers:{'Content-Type':'application/json'},\n    body: JSON.stringify({key:'utm_lists',
+    value: UTM})}); render.links(); }\n  catch(e){ toast('Save failed', true); }\n}\nfunction
+    utmAdd(k, v){\n  v = v.trim().toLowerCase().replace(/\\s+/g,'-');\n  if (!v ||
+    UTM[k].includes(v)) return;\n  UTM[k].push(v); saveUtm();\n}\nfunction utmRemove(k,
+    v){ UTM[k] = UTM[k].filter(x=>x!==v); saveUtm(); }\nasync function makeUtmLink(){\n
+    \ const c = document.getElementById('utm-c').value, s = document.getElementById('utm-s').value,\n
+    \       m = document.getElementById('utm-m').value;\n  let base = document.getElementById('utm-url').value.trim();\n
+    \ if (!base) return toast('Destination required', true);\n  const url = base +
+    (base.includes('?') ? '&' : '?') +\n    `utm_source=${encodeURIComponent(s)}&utm_medium=${encodeURIComponent(m)}&utm_campaign=${encodeURIComponent(c)}`;\n
+    \ try {\n    const r = await fetch('/api/shlink/v3/short-urls', {method:'POST',
+    headers:{'Content-Type':'application/json'},\n      body: JSON.stringify({longUrl:
+    url, customSlug: `${c}-${s}${m==='social'?'':'-'+m}`, findIfExists: true})});\n
+    \   if (!r.ok) throw new Error('HTTP '+r.status);\n    const d = await r.json();\n
+    \   toast('Created: ' + d.shortUrl); render.links();\n  } catch(e){ toast('Failed:
+    '+e.message, true); }\n}\nasync function makeLink(){\n  const longUrl = document.getElementById('sl-url').value.trim();\n
     \ const slug = document.getElementById('sl-slug').value.trim();\n  if (!longUrl)
     return toast('URL required', true);\n  const body = {longUrl}; if (slug) body.customSlug
     = slug;\n  try {\n    const r = await fetch('/api/shlink/v3/short-urls', {method:'POST',
