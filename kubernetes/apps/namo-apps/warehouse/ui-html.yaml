@@ -1,0 +1,260 @@
+# GENERATED from NAMO/warehouse/webadmin/index.html by deploy_ui.sh — do not edit here.
+apiVersion: v1
+data:
+  index.html: "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n<meta charset=\"UTF-8\">\n<meta
+    name=\"viewport\" content=\"width=device-width,initial-scale=1\">\n<meta name=\"theme-color\"
+    content=\"#12100e\">\n<title>Namo Socks — Warehouse</title>\n<style>\n*{box-sizing:border-box;margin:0;padding:0}\n:root{\n
+    \ --copper:#c9702e;--bg:#12100e;--panel:#1b1815;--card:#242019;--border:#37302a;\n
+    \ --text:#f2ede6;--muted:#9c9284;--green:#22c55e;--red:#ef4444;--blue:#4f7fe0;\n
+    \ --radius:12px;--font:'Segoe UI',system-ui,sans-serif;\n}\nbody{background:var(--bg);color:var(--text);font-family:var(--font);min-height:100vh}\n.hidden{display:none!important}\nbutton{font-family:var(--font)}\n\n.topbar{height:60px;background:var(--panel);border-bottom:1px
+    solid var(--border);display:flex;align-items:center;padding:0 22px;gap:14px;position:sticky;top:0;z-index:30}\n.topbar
+    .brand{font-weight:800;font-size:1.05rem;letter-spacing:.02em}\n.topbar .brand
+    span{color:var(--copper)}\n.topbar .tag{font-size:.7rem;color:var(--muted);background:var(--card);border:1px
+    solid var(--border);padding:3px 8px;border-radius:20px}\n.topbar .right{margin-left:auto;display:flex;align-items:center;gap:10px}\n.stog{padding:6px
+    14px;border-radius:20px;border:1px solid var(--border);background:var(--card);color:var(--muted);cursor:pointer;font-size:.82rem;font-weight:700}\n.stog.on{border-color:var(--copper);background:rgba(201,112,46,.14);color:var(--copper)}\n\n.layout{display:flex;min-height:calc(100vh
+    - 60px)}\n.sidebar{width:210px;background:var(--panel);border-right:1px solid
+    var(--border);padding:16px 12px;flex-shrink:0}\n.navitem{display:flex;align-items:center;gap:12px;padding:11px
+    14px;border-radius:10px;color:var(--muted);cursor:pointer;font-size:.92rem;font-weight:600;margin-bottom:4px;user-select:none}\n.navitem:hover{background:var(--card);color:var(--text)}\n.navitem.on{background:rgba(201,112,46,.14);color:var(--copper)}\n.navitem
+    .ic{font-size:1.1rem;width:22px;text-align:center}\n.navitem .badge{margin-left:auto;background:var(--red);color:#fff;font-size:.7rem;font-weight:700;padding:1px
+    7px;border-radius:20px}\n\n.content{flex:1;padding:28px 34px;max-width:1400px;overflow-x:hidden}\n.page-head{display:flex;align-items:center;margin-bottom:22px;gap:14px}\n.page-head
+    h2{font-size:1.5rem;font-weight:800}\n.page-head .desc{color:var(--muted);font-size:.85rem;margin-top:3px}\n.page-head
+    .actions{margin-left:auto;display:flex;gap:10px}\n.btn{background:var(--card);border:1px
+    solid var(--border);color:var(--text);padding:9px 16px;border-radius:8px;cursor:pointer;font-size:.85rem;font-weight:600}\n.btn:hover{border-color:var(--copper)}\n.btn-main{background:var(--copper);color:#fff;border-color:var(--copper)}\n.btn-green{background:var(--green);color:#fff;border-color:var(--green)}\n.btn-red{border-color:var(--red);color:var(--red);background:var(--card)}\n\n.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:16px;margin-bottom:26px}\n.stat{background:var(--panel);border:1px
+    solid var(--border);border-radius:var(--radius);padding:18px 20px}\n.stat .n{font-size:1.9rem;font-weight:800}\n.stat
+    .l{font-size:.8rem;color:var(--muted);margin-top:2px}\n.panel{background:var(--panel);border:1px
+    solid var(--border);border-radius:var(--radius);padding:22px;margin-bottom:20px}\n.panel
+    h3{font-size:1rem;font-weight:700;margin-bottom:4px}\n.panel .h-sub{font-size:.78rem;color:var(--muted);margin-bottom:18px}\n\n.tbl-wrap{background:var(--panel);border:1px
+    solid var(--border);border-radius:var(--radius);overflow:auto}\ntable{width:100%;border-collapse:collapse;font-size:.86rem}\nthead
+    th{background:var(--card);text-align:left;padding:12px 14px;font-size:.72rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:700;position:sticky;top:0;z-index:1}\ntbody
+    td{padding:11px 14px;border-top:1px solid var(--border)}\ntbody tr{cursor:pointer}\ntbody
+    tr:hover{background:var(--card)}\n.pill{font-size:.7rem;font-weight:700;padding:2px
+    8px;border-radius:20px;display:inline-block;white-space:nowrap}\n.pill.to_confirm{background:#c9702e22;color:var(--copper)}\n.pill.confirmed{background:#4f7fe022;color:var(--blue)}\n.pill.out_for_delivery{background:#eab30822;color:#eab308}\n.pill.delivered_cod_pending{background:#a855f722;color:#a855f7}\n.pill.settled{background:#22c55e22;color:var(--green)}\n.pill.cancelled,.pill.refused{background:#ef444422;color:var(--red)}\n.pill.onhold{background:#8b8fa822;color:var(--muted)}\n.searchbar{width:100%;max-width:340px;background:var(--card);border:1px
+    solid var(--border);border-radius:8px;color:var(--text);padding:9px 13px;font-size:.88rem}\n.searchbar:focus{outline:none;border-color:var(--copper)}\n.filters{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;align-items:center}\n\n.drawer-bg{position:fixed;inset:0;background:#000a;z-index:50;display:none}\n.drawer{position:fixed;top:0;right:0;height:100vh;width:480px;max-width:92vw;background:var(--panel);border-left:1px
+    solid var(--border);z-index:51;transform:translateX(100%);transition:transform
+    .25s;overflow-y:auto;display:none}\n.drawer.open{transform:translateX(0)}\n.drawer-head{padding:22px;border-bottom:1px
+    solid var(--border);position:sticky;top:0;background:var(--panel)}\n.drawer-head
+    .x{position:absolute;top:18px;right:18px;background:none;border:none;color:var(--muted);font-size:1.5rem;cursor:pointer}\n.drawer-body{padding:22px}\n.fieldset{margin-bottom:22px}\n.fieldset
+    .ftitle{font-size:.72rem;text-transform:uppercase;letter-spacing:.08em;color:var(--copper);margin-bottom:10px;font-weight:700}\n.kv{display:flex;justify-content:space-between;gap:14px;padding:7px
+    0;border-bottom:1px solid var(--border);font-size:.86rem}\n.kv .k{color:var(--muted)}\n.kv
+    .v{text-align:right;font-weight:600;word-break:break-word}\n.editrow{margin-bottom:12px}\n.editrow
+    label{display:block;font-size:.75rem;color:var(--muted);margin-bottom:4px}\n.editrow
+    select,.editrow input{width:100%;background:var(--card);border:1px solid var(--border);border-radius:8px;color:var(--text);padding:9px
+    11px;font-size:.9rem}\n.acts{display:flex;gap:10px;flex-wrap:wrap;margin-top:8px}\n\n.empty{text-align:center;color:var(--muted);padding:50px
+    20px;font-size:.9rem}\n#toasts{position:fixed;top:72px;right:20px;z-index:80;display:flex;flex-direction:column;gap:10px}\n.toast{background:var(--card);border:1px
+    solid var(--border);border-left:4px solid var(--green);border-radius:8px;padding:12px
+    16px;max-width:340px;font-size:.84rem;box-shadow:0 8px 24px #0006}\n.toast.err{border-left-color:var(--red)}\n.formgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;align-items:end}\n</style>\n</head>\n<body>\n\n<div
+    id=\"app\">\n  <div class=\"topbar\">\n    <div class=\"brand\">NAMO <span>WAREHOUSE</span></div>\n
+    \   <div class=\"tag\">namosocks.com</div>\n    <div class=\"right\">\n      <button
+    class=\"stog on\" id=\"ccy-usd\" onclick=\"setCcy('USD')\">$</button>\n      <button
+    class=\"stog\" id=\"ccy-iqd\" onclick=\"setCcy('IQD')\">IQD</button>\n    </div>\n
+    \ </div>\n\n  <div class=\"layout\">\n    <nav class=\"sidebar\">\n      <div
+    class=\"navitem on\" data-nav=\"dashboard\" onclick=\"nav('dashboard',this)\"><span
+    class=\"ic\">\U0001F4CA</span>Dashboard<span class=\"badge hidden\" id=\"confirm-badge\">0</span></div>\n
+    \     <div class=\"navitem\" data-nav=\"orders\" onclick=\"nav('orders',this)\"><span
+    class=\"ic\">\U0001F4E6</span>Orders</div>\n      <div class=\"navitem\" data-nav=\"stock\"
+    onclick=\"nav('stock',this)\"><span class=\"ic\">\U0001F9E6</span>Stock</div>\n
+    \     <div class=\"navitem\" data-nav=\"settings\" onclick=\"nav('settings',this)\"><span
+    class=\"ic\">⚙️</span>Settings</div>\n      <div style=\"padding:18px 14px 6px;font-size:.7rem;color:#555\">built
+    by steficzko</div>\n    </nav>\n    <main class=\"content\" id=\"content\"></main>\n
+    \ </div>\n</div>\n\n<div class=\"drawer-bg\" id=\"drawer-bg\" onclick=\"closeDrawer()\"></div>\n<div
+    class=\"drawer\" id=\"drawer\"></div>\n<div id=\"toasts\"></div>\n\n<script>\nconst
+    API = '/api';   // nginx proxies to n8n /webhook/ and injects X-WH-Key server-side\nlet
+    D = null, ORD = [], STK = null, FXH = [];\nlet ccy = 'USD', fxRate = null;   //
+    fx from DB (fx_rates), presentation-only conversion\n\nasync function call(method,
+    path, body){\n  const opts = {method, headers:{'Content-Type':'application/json'}};\n
+    \ if (body) opts.body = JSON.stringify(body);\n  const r = await fetch(API + path,
+    opts);\n  if (!r.ok) throw new Error('HTTP ' + r.status);\n  return r.json();\n}\nfunction
+    toast(msg, err){\n  const t = document.createElement('div');\n  t.className =
+    'toast' + (err ? ' err' : '');\n  t.textContent = msg;\n  document.getElementById('toasts').appendChild(t);\n
+    \ setTimeout(()=>t.remove(), 4000);\n}\nfunction esc(s){ return String(s==null?'':s).replace(/[&<>\"']/g,
+    c=>({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;',\"'\":'&#39;'}[c])); }\nfunction
+    money(v, cur){\n  if (v==null) return '—';\n  cur = cur || 'USD';\n  if (ccy==='IQD'
+    && cur==='USD' && fxRate) return Math.round(v*fxRate).toLocaleString() + ' IQD*';\n
+    \ return (cur==='USD'?'$':'') + Number(v).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2})
+    + (cur!=='USD'?' '+cur:'');\n}\nfunction dt(s){ return s ? new Date(s).toLocaleString('en-GB',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'})
+    : '—'; }\nfunction setCcy(c){\n  ccy = c;\n  document.getElementById('ccy-usd').classList.toggle('on',
+    c==='USD');\n  document.getElementById('ccy-iqd').classList.toggle('on', c==='IQD');\n
+    \ rerender();\n}\nlet CUR = 'dashboard';\nfunction nav(sec, el){\n  CUR = sec;\n
+    \ document.querySelectorAll('.navitem').forEach(n=>n.classList.remove('on'));\n
+    \ if (el) el.classList.add('on');\n  render[sec]();\n}\nfunction rerender(){ render[CUR]();
+    }\nfunction closeDrawer(){\n  document.getElementById('drawer').classList.remove('open');\n
+    \ setTimeout(()=>{ document.getElementById('drawer').style.display='none'; document.getElementById('drawer-bg').style.display='none';
+    }, 250);\n}\nfunction openDrawer(html){\n  const d = document.getElementById('drawer'),
+    bg = document.getElementById('drawer-bg');\n  d.innerHTML = html; d.style.display='block';
+    bg.style.display='block';\n  requestAnimationFrame(()=>d.classList.add('open'));\n}\nconst
+    C = () => document.getElementById('content');\n\nconst STATUS_LABEL = {to_confirm:'To
+    confirm', confirmed:'Confirmed', out_for_delivery:'Out for delivery',\n  delivered_cod_pending:'Delivered
+    — cash at courier', settled:'Settled', cancelled:'Cancelled', refused:'Refused'};\nconst
+    NEXT = {   // lifecycle transitions offered per current status (ops-app-design
+    §5)\n  to_confirm: ['confirmed','cancelled'],\n  confirmed: ['out_for_delivery','cancelled'],\n
+    \ out_for_delivery: ['delivered_cod_pending','refused'],\n  delivered_cod_pending:
+    ['settled'],\n};\nconst COURIERS = ['Talabat','Lezoo','Namo (Erbil)','Pickup'];\n\nconst
+    render = {\n\nasync dashboard(){\n  C().innerHTML = '<div class=\"empty\">Loading…</div>';\n
+    \ try { D = await call('GET','/wh-dashboard'); } catch(e){ C().innerHTML = '<div
+    class=\"empty\">Failed to load: '+esc(e.message)+'</div>'; return; }\n  fxRate
+    = D.fx ? +D.fx.rate : null;\n  const badge = document.getElementById('confirm-badge');\n
+    \ badge.textContent = D.to_confirm.length;\n  badge.classList.toggle('hidden',
+    !D.to_confirm.length);\n  const cash = D.cash_at_couriers.reduce((a,r)=>a + +r.amount,
+    0);\n  const ms = D.month_sales.map(r=>money(+r.amount, r.currency)+' ('+r.n+')').join('
+    · ') || '—';\n  C().innerHTML = `\n  <div class=\"page-head\"><div><h2>Dashboard</h2><div
+    class=\"desc\">Orders to confirm, cash in the field, stock warnings</div></div>\n
+    \   <div class=\"actions\"><button class=\"btn\" onclick=\"render.dashboard()\">↻
+    Refresh</button></div></div>\n  <div class=\"cards\">\n    <div class=\"stat\"><div
+    class=\"n\">${D.to_confirm.length}</div><div class=\"l\">Orders to confirm</div></div>\n
+    \   <div class=\"stat\"><div class=\"n\">${D.awaiting_fib}</div><div class=\"l\">Awaiting
+    FIB payment</div></div>\n    <div class=\"stat\"><div class=\"n\">${money(cash)}</div><div
+    class=\"l\">Cash at couriers</div></div>\n    <div class=\"stat\"><div class=\"n\"
+    style=\"font-size:1.2rem;padding-top:8px\">${ms}</div><div class=\"l\">Sales this
+    month</div></div>\n  </div>\n  <div class=\"panel\"><h3>\U0001F553 To confirm
+    — call/WhatsApp before dispatch</h3>\n    <div class=\"h-sub\">Confirming before
+    dispatch is what cuts COD refusals.</div>\n    ${D.to_confirm.length ? `<div class=\"tbl-wrap\"><table><thead><tr><th>#</th><th>Customer</th><th>City</th><th>Phone</th><th>Total</th><th>Payment</th><th>Placed</th><th></th></tr></thead><tbody>\n
+    \     ${D.to_confirm.map(o=>`<tr onclick=\"orderDrawerById(${o.woo_order_id})\"><td>#${o.woo_order_id}</td><td>${esc(o.customer_name)}</td><td>${esc(o.city)}</td><td>${esc(o.phone)}</td><td>${money(+o.total,o.currency)}</td><td>${o.payment_method==='bacs'?'FIB':'COD'}</td><td>${dt(o.placed_at)}</td>\n
+    \       <td onclick=\"event.stopPropagation()\"><button class=\"btn btn-green\"
+    onclick=\"quickStatus(${o.woo_order_id},'confirmed')\">✅ Confirm</button>\n        <button
+    class=\"btn btn-red\" onclick=\"quickStatus(${o.woo_order_id},'cancelled')\">✕</button></td></tr>`).join('')}\n
+    \   </tbody></table></div>` : '<div class=\"empty\">Nothing waiting \U0001F389</div>'}\n
+    \ </div>\n  <div class=\"panel\"><h3>\U0001F4B5 Cash at couriers</h3><div class=\"h-sub\">Delivered
+    COD orders whose cash has not been remitted yet.</div>\n    ${D.cash_at_couriers.length
+    ? D.cash_at_couriers.map(r=>`<div class=\"kv\"><span class=\"k\">${esc(r.courier)}
+    (${r.n} orders)</span><span class=\"v\">${money(+r.amount, r.currency)}</span></div>`).join('')
+    : '<div class=\"empty\">No cash outstanding</div>'}\n  </div>\n  <div class=\"panel\"><h3>⚠
+    Low stock (&lt; 5 on hand)</h3>\n    ${D.low_stock.length ? D.low_stock.map(r=>`<div
+    class=\"kv\"><span class=\"k\">${esc(r.sku)} — ${esc(r.name)}</span><span class=\"v\">${r.on_hand}</span></div>`).join('')
+    : '<div class=\"empty\">All good</div>'}\n  </div>`;\n},\n\nasync orders(){\n
+    \ C().innerHTML = '<div class=\"empty\">Loading…</div>';\n  try { ORD = (await
+    call('GET','/wh-orders')).orders; } catch(e){ C().innerHTML = '<div class=\"empty\">Failed:
+    '+esc(e.message)+'</div>'; return; }\n  const statuses = [...new Set(ORD.map(o=>o.status))];\n
+    \ C().innerHTML = `\n  <div class=\"page-head\"><div><h2>Orders</h2><div class=\"desc\">${ORD.length}
+    orders mirrored from the shop</div></div>\n    <div class=\"actions\"><button
+    class=\"btn\" onclick=\"render.orders()\">↻ Refresh</button></div></div>\n  <div
+    class=\"filters\">\n    <input class=\"searchbar\" id=\"osearch\" placeholder=\"Search
+    name / phone / city / #…\" oninput=\"drawOrders()\">\n    ${statuses.map(s=>`<button
+    class=\"stog\" data-st=\"${s}\" onclick=\"this.classList.toggle('on');drawOrders()\">${STATUS_LABEL[s]||s}</button>`).join('')}\n
+    \ </div>\n  <div id=\"olist\"></div>`;\n  drawOrders();\n},\n\nasync stock(){\n
+    \ C().innerHTML = '<div class=\"empty\">Loading…</div>';\n  try { STK = await
+    call('GET','/wh-stock'); } catch(e){ C().innerHTML = '<div class=\"empty\">Failed:
+    '+esc(e.message)+'</div>'; return; }\n  C().innerHTML = `\n  <div class=\"page-head\"><div><h2>Stock</h2><div
+    class=\"desc\">On hand = sum of the movement ledger. Nothing is ever overwritten.</div></div>\n
+    \   <div class=\"actions\"><button class=\"btn\" onclick=\"render.stock()\">↻
+    Refresh</button></div></div>\n  <div class=\"panel\"><h3>➕ Record a movement</h3><div
+    class=\"h-sub\">Receive new stock, correct a count, log a manual sale.</div>\n
+    \   <div class=\"formgrid\">\n      <div class=\"editrow\"><label>Product</label><select
+    id=\"mv-sku\">${STK.products.map(p=>`<option value=\"${esc(p.sku)}\">${esc(p.sku)}
+    — ${esc(p.name)}</option>`).join('')}</select></div>\n      <div class=\"editrow\"><label>Location</label><select
+    id=\"mv-loc\">${STK.locations.map(l=>`<option value=\"${l.id}\">${esc(l.name)}</option>`).join('')}</select></div>\n
+    \     <div class=\"editrow\"><label>Qty (+/−)</label><input id=\"mv-qty\" type=\"number\"
+    value=\"1\"></div>\n      <div class=\"editrow\"><label>Reason</label><select
+    id=\"mv-reason\"><option>receive</option><option>adjustment</option><option>sale</option><option>return</option><option>transfer</option></select></div>\n
+    \     <div class=\"editrow\"><label>Unit cost (USD)</label><input id=\"mv-cost\"
+    type=\"number\" step=\"0.01\" placeholder=\"optional\"></div>\n      <div class=\"editrow\"><label>Note</label><input
+    id=\"mv-note\" placeholder=\"optional\"></div>\n      <div class=\"editrow\"><button
+    class=\"btn btn-main\" style=\"width:100%\" onclick=\"submitMove()\">Save movement</button></div>\n
+    \   </div>\n  </div>\n  <div class=\"tbl-wrap\"><table><thead><tr><th>SKU</th><th>Product</th><th>On
+    hand</th><th>By location</th><th>Cost</th><th>Fiber</th></tr></thead><tbody>\n
+    \   ${STK.products.map(p=>`<tr onclick='productDrawer(${JSON.stringify(p.sku)})'><td>${esc(p.sku)}</td><td>${esc(p.name)}</td>\n
+    \     <td style=\"font-weight:700;${+p.on_hand<5?'color:var(--red)':''}\">${p.on_hand}</td>\n
+    \     <td style=\"font-size:.78rem;color:var(--muted)\">${Object.entries(p.by_location||{}).map(([k,v])=>esc(k)+':
+    '+v).join(' · ')||'—'}</td>\n      <td>${p.cost_usd?money(+p.cost_usd):'—'}</td><td>${esc(p.fiber||'—')}</td></tr>`).join('')}\n
+    \ </tbody></table></div>\n  <div class=\"panel\" style=\"margin-top:20px\"><h3>Recent
+    movements</h3>\n    <div class=\"tbl-wrap\" style=\"border:none\"><table><thead><tr><th>When</th><th>SKU</th><th>Location</th><th>Qty</th><th>Reason</th><th>Ref</th><th>Note</th></tr></thead><tbody>\n
+    \   ${STK.recent_moves.map(m=>`<tr style=\"cursor:default\"><td>${dt(m.at)}</td><td>${esc(m.sku)}</td><td>${esc(m.location)}</td><td
+    style=\"color:${m.qty<0?'var(--red)':'var(--green)'};font-weight:700\">${m.qty>0?'+':''}${m.qty}</td><td>${esc(m.reason)}</td><td>${esc(m.ref||'')}</td><td>${esc(m.note||'')}</td></tr>`).join('')
+    || '<tr><td colspan=\"7\" class=\"empty\">No movements yet</td></tr>'}\n    </tbody></table></div>\n
+    \ </div>`;\n},\n\nasync settings(){\n  C().innerHTML = '<div class=\"empty\">Loading…</div>';\n
+    \ try { FXH = (await call('GET','/wh-fx')).rates; } catch(e){ C().innerHTML =
+    '<div class=\"empty\">Failed: '+esc(e.message)+'</div>'; return; }\n  const cur
+    = FXH[0];\n  C().innerHTML = `\n  <div class=\"page-head\"><div><h2>Settings</h2><div
+    class=\"desc\">Exchange rate for the $ ⇄ IQD display toggle</div></div></div>\n
+    \ <div class=\"panel\"><h3>USD → IQD rate</h3>\n    <div class=\"h-sub\">Used
+    only for display — stored amounts are never converted. Converted figures show
+    a * and are estimates at your rate.</div>\n    <div class=\"formgrid\">\n      <div
+    class=\"editrow\"><label>Current rate</label><input id=\"fx-rate\" type=\"number\"
+    step=\"0.01\" value=\"${cur ? +cur.rate : 1310}\"></div>\n      <div class=\"editrow\"><button
+    class=\"btn btn-main\" style=\"width:100%\" onclick=\"saveFx()\">Save new rate</button></div>\n
+    \   </div>\n  </div>\n  <div class=\"panel\"><h3>Rate history</h3>\n    ${FXH.map(r=>`<div
+    class=\"kv\"><span class=\"k\">${r.effective_from} — ${esc(r.set_by||'')}</span><span
+    class=\"v\">1 USD = ${(+r.rate).toLocaleString()} IQD</span></div>`).join('')
+    || '<div class=\"empty\">No rates yet</div>'}\n  </div>`;\n},\n};\n\nfunction
+    drawOrders(){\n  const q = (document.getElementById('osearch').value||'').toLowerCase();\n
+    \ const on = [...document.querySelectorAll('.stog[data-st].on')].map(b=>b.dataset.st);\n
+    \ const rows = ORD.filter(o=>{\n    if (on.length && !on.includes(o.status)) return
+    false;\n    if (!q) return true;\n    return ('#'+o.woo_order_id+' '+(o.customer_name||'')+'
+    '+(o.phone||'')+' '+(o.city||'')).toLowerCase().includes(q);\n  });\n  document.getElementById('olist').innerHTML
+    = rows.length ? `<div class=\"tbl-wrap\"><table>\n    <thead><tr><th>#</th><th>Status</th><th>Customer</th><th>City</th><th>Total</th><th>Payment</th><th>Delivery</th><th>Placed</th></tr></thead><tbody>\n
+    \   ${rows.map(o=>`<tr onclick=\"orderDrawerById(${o.woo_order_id})\"><td>#${o.woo_order_id}</td>\n
+    \     <td><span class=\"pill ${o.status}\">${STATUS_LABEL[o.status]||o.status}</span>${o.payment_method==='bacs'&&o.woo_status==='on-hold'?'
+    <span class=\"pill onhold\">FIB unpaid</span>':''}</td>\n      <td>${esc(o.customer_name)}</td><td>${esc(o.city)}</td><td>${money(+o.total,o.currency)}</td>\n
+    \     <td>${o.payment_method==='bacs'?'FIB':'COD'}</td><td>${esc(o.courier||o.shipping_method||'—')}</td><td>${dt(o.placed_at)}</td></tr>`).join('')}\n
+    \   </tbody></table></div>` : '<div class=\"empty\">No orders match</div>';\n}\n\nasync
+    function orderDrawerById(wooId){\n  if (!ORD.length){ try { ORD = (await call('GET','/wh-orders')).orders;
+    } catch(e){ return toast('Load failed', true); } }\n  const o = ORD.find(x=>x.woo_order_id===wooId);\n
+    \ if (!o) return;\n  const next = NEXT[o.status]||[];\n  openDrawer(`\n  <div
+    class=\"drawer-head\"><button class=\"x\" onclick=\"closeDrawer()\">×</button>\n
+    \   <h3>Order #${o.woo_order_id}</h3>\n    <div style=\"margin-top:6px\"><span
+    class=\"pill ${o.status}\">${STATUS_LABEL[o.status]||o.status}</span></div></div>\n
+    \ <div class=\"drawer-body\">\n    <div class=\"fieldset\"><div class=\"ftitle\">Customer</div>\n
+    \     <div class=\"kv\"><span class=\"k\">Name</span><span class=\"v\">${esc(o.customer_name)}</span></div>\n
+    \     <div class=\"kv\"><span class=\"k\">Phone</span><span class=\"v\">${esc(o.phone)}</span></div>\n
+    \     <div class=\"kv\"><span class=\"k\">City</span><span class=\"v\">${esc(o.city)}</span></div>\n
+    \     <div class=\"kv\"><span class=\"k\">Address</span><span class=\"v\">${esc(o.address)}</span></div></div>\n
+    \   <div class=\"fieldset\"><div class=\"ftitle\">Order</div>\n      ${(o.lines||[]).map(l=>`<div
+    class=\"kv\"><span class=\"k\">${l.qty} × ${esc(l.name)} ${l.sku?('('+esc(l.sku)+')'):''}</span><span
+    class=\"v\">${money(l.qty*l.unit_price, o.currency)}</span></div>`).join('')}\n
+    \     <div class=\"kv\"><span class=\"k\">Delivery (${esc(o.shipping_method||'—')})</span><span
+    class=\"v\">${money(+o.shipping_fee, o.currency)}</span></div>\n      <div class=\"kv\"><span
+    class=\"k\"><b>Total</b></span><span class=\"v\"><b>${money(+o.total, o.currency)}</b></span></div>\n
+    \     <div class=\"kv\"><span class=\"k\">Payment</span><span class=\"v\">${o.payment_method==='bacs'?'FIB
+    transfer':'Cash on delivery'} (shop: ${esc(o.woo_status)})</span></div></div>\n
+    \   <div class=\"fieldset\"><div class=\"ftitle\">Timeline</div>\n      <div class=\"kv\"><span
+    class=\"k\">Placed</span><span class=\"v\">${dt(o.placed_at)}</span></div>\n      <div
+    class=\"kv\"><span class=\"k\">Confirmed</span><span class=\"v\">${dt(o.confirmed_at)}</span></div>\n
+    \     <div class=\"kv\"><span class=\"k\">Dispatched</span><span class=\"v\">${dt(o.dispatched_at)}
+    ${esc(o.courier?('· '+o.courier):'')}</span></div>\n      <div class=\"kv\"><span
+    class=\"k\">Delivered</span><span class=\"v\">${dt(o.delivered_at)}</span></div>\n
+    \     <div class=\"kv\"><span class=\"k\">Cash settled</span><span class=\"v\">${dt(o.settled_at)}</span></div></div>\n
+    \   ${next.length ? `<div class=\"fieldset\"><div class=\"ftitle\">Actions</div>\n
+    \     ${next.includes('out_for_delivery') ? `<div class=\"editrow\"><label>Courier</label><select
+    id=\"act-courier\">${COURIERS.map(c=>`<option ${((o.shipping_method||'').includes(c.split('
+    ')[0]))?'selected':''}>${c}</option>`).join('')}</select></div>` : ''}\n      <div
+    class=\"acts\">${next.map(s=>`<button class=\"btn ${s==='cancelled'||s==='refused'?'btn-red':'btn-green'}\"
+    onclick=\"doStatus(${o.woo_order_id}, '${s}')\">${STATUS_LABEL[s]}</button>`).join('')}</div></div>`
+    : ''}\n  </div>`);\n}\n\nasync function doStatus(wooId, status){\n  const o =
+    ORD.find(x=>x.woo_order_id===wooId);\n  const body = {id: o.id, status};\n  const
+    sel = document.getElementById('act-courier');\n  if (status==='out_for_delivery'
+    && sel) body.courier = sel.value;\n  try {\n    await call('POST','/wh-order-status',
+    body);\n    toast('Order #'+wooId+' → '+(STATUS_LABEL[status]||status));\n    closeDrawer();
+    ORD = []; rerender();\n  } catch(e){ toast('Failed: '+e.message, true); }\n}\nasync
+    function quickStatus(wooId, status){\n  const o = D.to_confirm.find(x=>x.woo_order_id===wooId);\n
+    \ try {\n    await call('POST','/wh-order-status', {id: o.id, status});\n    toast('Order
+    #'+wooId+' '+(status==='confirmed'?'confirmed ✅':'cancelled'));\n    render.dashboard();\n
+    \ } catch(e){ toast('Failed: '+e.message, true); }\n}\nasync function submitMove(){\n
+    \ const body = {\n    sku: document.getElementById('mv-sku').value,\n    location_id:
+    +document.getElementById('mv-loc').value,\n    qty: +document.getElementById('mv-qty').value,\n
+    \   reason: document.getElementById('mv-reason').value,\n    unit_cost: document.getElementById('mv-cost').value
+    || '',\n    note: document.getElementById('mv-note').value || '',\n  };\n  if
+    (!body.qty) return toast('Qty required', true);\n  try { await call('POST','/wh-stock-move',
+    body); toast('Movement saved'); render.stock(); }\n  catch(e){ toast('Failed:
+    '+e.message, true); }\n}\nfunction productDrawer(sku){\n  const p = STK.products.find(x=>x.sku===sku);\n
+    \ openDrawer(`\n  <div class=\"drawer-head\"><button class=\"x\" onclick=\"closeDrawer()\">×</button><h3>${esc(p.sku)}</h3>\n
+    \   <div class=\"desc\" style=\"color:var(--muted);font-size:.85rem;margin-top:4px\">${esc(p.name)}</div></div>\n
+    \ <div class=\"drawer-body\">\n    <div class=\"fieldset\"><div class=\"ftitle\">Stock</div>\n
+    \     <div class=\"kv\"><span class=\"k\">On hand</span><span class=\"v\">${p.on_hand}</span></div>\n
+    \     ${Object.entries(p.by_location||{}).map(([k,v])=>`<div class=\"kv\"><span
+    class=\"k\">${esc(k)}</span><span class=\"v\">${v}</span></div>`).join('')}</div>\n
+    \   <div class=\"fieldset\"><div class=\"ftitle\">Edit</div>\n      <div class=\"editrow\"><label>Unit
+    cost (USD)</label><input id=\"pe-cost\" type=\"number\" step=\"0.01\" value=\"${p.cost_usd||''}\"></div>\n
+    \     <div class=\"editrow\"><label>Fiber composition (EU label — e.g. 80% cotton,
+    17% polyamide, 3% elastane)</label><input id=\"pe-fiber\" value=\"${esc(p.fiber||'')}\"></div>\n
+    \     <button class=\"btn btn-main\" style=\"width:100%;margin-top:6px\" onclick=\"saveProduct('${esc(p.sku)}')\">Save</button></div>\n
+    \ </div>`);\n}\nasync function saveProduct(sku){\n  try {\n    await call('POST','/wh-product-update',
+    {sku, cost_usd: document.getElementById('pe-cost').value||'', fiber: document.getElementById('pe-fiber').value||''});\n
+    \   toast('Saved'); closeDrawer(); render.stock();\n  } catch(e){ toast('Failed:
+    '+e.message, true); }\n}\nasync function saveFx(){\n  const rate = +document.getElementById('fx-rate').value;\n
+    \ if (!rate || rate < 100) return toast('Rate looks wrong', true);\n  try { await
+    call('POST','/wh-fx-set', {rate}); fxRate = rate; toast('Rate saved — takes effect
+    today'); render.settings(); }\n  catch(e){ toast('Failed: '+e.message, true);
+    }\n}\n\nrender.dashboard();\n</script>\n</body>\n</html>\n"
+kind: ConfigMap
+metadata:
+  name: warehouse-ui-html
+  namespace: namo-apps

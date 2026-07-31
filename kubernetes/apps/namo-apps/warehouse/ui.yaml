@@ -1,0 +1,93 @@
+# Warehouse admin UI — one static index.html (built in NAMO/warehouse/webadmin/, synced into the
+# ConfigMap by NAMO/warehouse/scripts/deploy_ui.sh) + nginx proxying /api/ -> n8n /webhook/.
+# The X-WH-Key header is injected HERE, server-side, so the browser and the HTML never see it —
+# direct calls to the n8n webhooks on automation.namosocks.com without the key get 403.
+apiVersion: v1
+kind: Service
+metadata:
+  name: warehouse-ui
+  namespace: namo-apps
+spec:
+  selector:
+    app: warehouse-ui
+  ports:
+    - port: 80
+      targetPort: 80
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: warehouse-ui-nginx
+  namespace: namo-apps
+data:
+  default.conf.template: |
+    server {
+      listen 80;
+      root /usr/share/nginx/html;
+      location /api/ {
+        proxy_pass http://n8n.namo-apps.svc.cluster.local/webhook/;
+        proxy_set_header X-WH-Key "${WH_KEY}";
+        proxy_set_header Host $host;
+      }
+    }
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: warehouse-ui
+  namespace: namo-apps
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: warehouse-ui
+  template:
+    metadata:
+      labels:
+        app: warehouse-ui
+    spec:
+      containers:
+        - name: nginx
+          image: nginx:1.27-alpine
+          env:
+            - name: WH_KEY
+              valueFrom:
+                secretKeyRef: { name: warehouse-ui-secret, key: WH_KEY }
+          ports:
+            - containerPort: 80
+          resources:
+            requests: { memory: 16Mi, cpu: 10m }
+            limits:   { memory: 64Mi, cpu: 200m }
+          volumeMounts:
+            - { name: html, mountPath: /usr/share/nginx/html }
+            - { name: nginx-conf, mountPath: /etc/nginx/templates }
+      volumes:
+        - name: html
+          configMap: { name: warehouse-ui-html }
+        - name: nginx-conf
+          configMap: { name: warehouse-ui-nginx }
+---
+# Basic auth is the stopgap until 'Account -> Access: Apps and Policies: Edit' exists on the
+# client's Cloudflare account (same story as links.namosocks.com — ADR-003).
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: warehouse-ui
+  namespace: namo-apps
+  annotations:
+    nginx.ingress.kubernetes.io/auth-type: basic
+    nginx.ingress.kubernetes.io/auth-secret: warehouse-ui-basicauth
+    nginx.ingress.kubernetes.io/auth-realm: "Namo warehouse"
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: warehouse.namosocks.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: warehouse-ui
+                port:
+                  number: 80
