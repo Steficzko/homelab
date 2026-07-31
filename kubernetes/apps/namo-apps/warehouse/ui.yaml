@@ -43,6 +43,12 @@ data:
         proxy_set_header X-WH-Key "${WH_KEY}";
         proxy_set_header Host $host;
       }
+      # Marketing: Shlink admin API (go.namosocks.com) — key injected here, namo only.
+      location /api/shlink/ {
+        if ($remote_user != "namo") { return 403; }
+        proxy_pass http://shlink.namo-apps.svc.cluster.local/rest/;
+        proxy_set_header X-Api-Key "${SHLINK_KEY}";
+      }
     }
 ---
 apiVersion: apps/v1
@@ -67,6 +73,9 @@ spec:
             - name: WH_KEY
               valueFrom:
                 secretKeyRef: { name: warehouse-ui-secret, key: WH_KEY }
+            - name: SHLINK_KEY
+              valueFrom:
+                secretKeyRef: { name: namo-shlink-secret, key: INITIAL_API_KEY }
           ports:
             - containerPort: 80
           resources:
