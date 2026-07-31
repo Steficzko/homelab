@@ -12,6 +12,17 @@ spec:
     - port: 5432
       targetPort: 5432
 ---
+# Runs only on a FRESH data volume — this is what recreates the EU database after a PVC loss,
+# so the warehouse_eu dump has somewhere to restore into (ADR-018 risk).
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: warehouse-postgres-init
+  namespace: namo-apps
+data:
+  01-warehouse-eu.sql: |
+    CREATE DATABASE warehouse_eu OWNER warehouse;
+---
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
@@ -50,6 +61,10 @@ spec:
             limits:   { memory: 512Mi, cpu: "1" }
           volumeMounts:
             - { name: data, mountPath: /var/lib/postgresql/data }
+            - { name: initdb, mountPath: /docker-entrypoint-initdb.d, readOnly: true }
+      volumes:
+        - name: initdb
+          configMap: { name: warehouse-postgres-init }
   volumeClaimTemplates:
     - metadata:
         name: data
