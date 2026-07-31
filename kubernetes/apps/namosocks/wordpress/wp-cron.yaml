@@ -28,7 +28,10 @@ spec:
                 - /bin/sh
                 - -c
                 # the Host: colon must sit inside a quoted scalar or YAML parses this line as a map
-                - 'curl -fsS -m 110 -H "Host: staging.namosocks.com" "http://wordpress/wp-cron.php?doing_wp_cron" > /dev/null'
+                # via the INGRESS, not the wordpress svc: pod-to-pod got CNI-rejected after a pod
+                # roll (2026-08-01) despite a correct netpol allow; the ingress path is what real
+                # traffic uses and is always exercised. Host colon must stay inside quotes.
+                - 'curl -fsS -m 110 -H "Host: staging.namosocks.com" "http://ingress-nginx-controller.ingress-nginx.svc.cluster.local/wp-cron.php?doing_wp_cron" > /dev/null'
               resources:
                 requests: { memory: 16Mi, cpu: 10m }
                 limits: { memory: 64Mi, cpu: 100m }
