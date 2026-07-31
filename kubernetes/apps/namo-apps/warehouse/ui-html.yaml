@@ -6,7 +6,10 @@ data:
     content=\"#12100e\">\n<title>Namo Socks — Warehouse</title>\n<style>\n*{box-sizing:border-box;margin:0;padding:0}\n:root{\n
     \ --copper:#c9702e;--bg:#12100e;--panel:#1b1815;--card:#242019;--border:#37302a;\n
     \ --text:#f2ede6;--muted:#9c9284;--green:#22c55e;--red:#ef4444;--blue:#4f7fe0;\n
-    \ --radius:12px;--font:'Segoe UI',system-ui,sans-serif;\n}\nbody{background:var(--bg);color:var(--text);font-family:var(--font);min-height:100vh}\n.hidden{display:none!important}\nbutton{font-family:var(--font)}\n\n.topbar{height:60px;background:var(--panel);border-bottom:1px
+    \ --radius:12px;--font:'Segoe UI',system-ui,sans-serif;\n}\nbody{background:var(--bg);color:var(--text);font-family:var(--font);min-height:100vh}\n/*
+    DENMARK (eu) theme: nordic blue, complementary to the terracotta — set via data-region
+    on <html> */\n:root[data-region=eu]{--copper:#4a90c4}\n:root[data-region=eu] .navitem.on{background:rgba(74,144,196,.14)}\n:root[data-region=eu]
+    .stog.on{background:rgba(74,144,196,.14)}\n.hidden{display:none!important}\nbutton{font-family:var(--font)}\n\n.topbar{height:60px;background:var(--panel);border-bottom:1px
     solid var(--border);display:flex;align-items:center;padding:0 22px;gap:14px;position:sticky;top:0;z-index:30}\n.topbar
     .brand{font-weight:800;font-size:1.05rem;letter-spacing:.02em}\n.topbar .brand
     span{color:var(--copper)}\n.topbar .tag{font-size:.7rem;color:var(--muted);background:var(--card);border:1px
@@ -70,7 +73,8 @@ data:
     function call(method, path, body){\n  const opts = {method, headers:{'Content-Type':'application/json'}};\n
     \ if (body) opts.body = JSON.stringify(body);\n  const r = await fetch(API() +
     path, opts);\n  if (!r.ok) throw new Error('HTTP ' + r.status);\n  return r.json();\n}\nfunction
-    setRegion(rg){\n  REGION = rg;\n  localStorage.setItem('wh_region', rg);\n  document.getElementById('region-label').textContent
+    setRegion(rg){\n  REGION = rg;\n  document.documentElement.dataset.region = rg;\n
+    \ localStorage.setItem('wh_region', rg);\n  document.getElementById('region-label').textContent
     = REGION_NAME[rg];\n  document.getElementById('rg-me').classList.toggle('on',
     rg==='me');\n  document.getElementById('rg-eu').classList.toggle('on', rg==='eu');\n
     \ D = null; ORD = []; STK = null; FXH = [];\n  rerender();\n}\nasync function
