@@ -287,15 +287,24 @@ data:
     \ if (d.startsWith(rp.dial)) return '+' + d;\n  if (REGION === 'me' && d.startsWith('0'))
     return '+964' + d.slice(1);  // Iraqi trunk 0\n  if (REGION === 'eu' && d.length
     === 8) return '+45' + d;               // bare Danish number\n  return '+' + rp.dial
-    + d.replace(/^0/,'');\n}\nfunction audienceCsv(){\n  const rows = window._audRows
-    || [];\n  const cc = REGION_PHONE[REGION].cc;\n  const csv = 'phone,fn,ct,country\\n'
-    + rows.map(r=>{\n    const fn = (r.name.split(' ')[0]||'').toLowerCase();\n    return
-    `${r.phone},${fn},${(r.city||'').toLowerCase()},${cc}`;\n  }).join('\\n');\n  const
-    a = document.createElement('a');\n  a.href = URL.createObjectURL(new Blob([csv],
-    {type:'text/csv'}));\n  a.download = 'namo-meta-audience.csv';\n  a.click();\n}\nlet
-    UTM = {campaigns:['newroz','clearance'], sources:['instagram','facebook'], mediums:['social']};\nlet
-    UTMSEL = {c:null, s:null, m:'social'};\nlet UTMEDIT = false;\nfunction utmSel(el){\n
-    \ const g = el.dataset.g;\n  UTMSEL[g] = el.dataset.v;\n  el.parentElement.querySelectorAll('.stog').forEach(p=>p.classList.toggle('on',
+    + d.replace(/^0/,'');\n}\nasync function sha256(s){\n  const h = await crypto.subtle.digest('SHA-256',
+    new TextEncoder().encode(s));\n  return [...new Uint8Array(h)].map(b=>b.toString(16).padStart(2,'0')).join('');\n}\n//
+    Meta Custom Audience format: all identifiers SHA-256 hashed, normalized first\n//
+    (phone digits-only w/ country code, names/cities lowercase trimmed). Privacy policy\n//
+    promises hashed-only audience data — plaintext must never leave this page.\n//
+    ponytail: consent gate (match against confirmed MailPoet subscribers) pending
+    — ledger P21.\nasync function audienceCsv(){\n  const rows = window._audRows ||
+    [];\n  const cc = REGION_PHONE[REGION].cc;\n  const lines = await Promise.all(rows.map(async
+    r=>{\n    const phone = await sha256(r.phone.replace(/\\D/g,''));\n    const fn
+    = await sha256((r.name.split(' ')[0]||'').toLowerCase().trim());\n    const ct
+    = await sha256((r.city||'').toLowerCase().replace(/\\s/g,''));\n    const country
+    = await sha256(cc);\n    return `${phone},${fn},${ct},${country}`;\n  }));\n  const
+    csv = 'phone,fn,ct,country\\n' + lines.join('\\n');\n  const a = document.createElement('a');\n
+    \ a.href = URL.createObjectURL(new Blob([csv], {type:'text/csv'}));\n  a.download
+    = 'namo-meta-audience-hashed.csv';\n  a.click();\n}\nlet UTM = {campaigns:['newroz','clearance'],
+    sources:['instagram','facebook'], mediums:['social']};\nlet UTMSEL = {c:null,
+    s:null, m:'social'};\nlet UTMEDIT = false;\nfunction utmSel(el){\n  const g =
+    el.dataset.g;\n  UTMSEL[g] = el.dataset.v;\n  el.parentElement.querySelectorAll('.stog').forEach(p=>p.classList.toggle('on',
     p===el));\n  utmPreview();\n}\nfunction toggleUtmEdit(){ UTMEDIT = !UTMEDIT; render.links();
     }\nfunction buildUtm(){\n  const {c, s, m} = UTMSEL;\n  const content = (document.getElementById('utm-content')?.value
     || '').trim().toLowerCase().replace(/\\s+/g,'-');\n  const base = (document.getElementById('utm-url')?.value
