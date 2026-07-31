@@ -2,11 +2,15 @@
 # We hold the client's tunnel token but not dashboard access to their Zero Trust account,
 # so hostname->service routing is defined here rather than remotely.
 #
-# WILDCARD MODEL: *.namosocks.com is routed into this cluster's ingress-nginx. To publish a new
-# app, just create a k8s Ingress with host <app>.namosocks.com — no Cloudflare change needed.
-# The k8s Ingress is the allow-list: a hostname with no Ingress gets nginx's 404, never an origin.
-# The apex namosocks.com is deliberately NOT routed here — the live WordPress stays on the old
-# Plesk host until launch day.
+# PUBLISH MODEL (decided 2026-07-31): DNS is NOT changed wholesale — the live site and the
+# wildcard A record keep pointing at the original host. Only what we deliberately publish moves
+# here, per hostname:
+#   1. create a k8s Ingress with host <app>.namosocks.com
+#   2. add ONE Cloudflare CNAME <app> -> ca867f1b-….cfargotunnel.com (proxied)
+# The wildcard rule below is tunnel-side only; it routes nothing by itself, because traffic only
+# reaches the tunnel for hostnames whose DNS points at it. Two independent allow-lists (DNS
+# record + k8s Ingress) must agree before anything is served — a hostname missing either gets a
+# 404, never an accidental origin.
 apiVersion: v1
 kind: ConfigMap
 metadata:
