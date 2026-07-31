@@ -15,6 +15,10 @@ spec:
       labels:
         app: shlink
     spec:
+      securityContext:
+        runAsUser: 1001      # the image's own uid; without fsGroup the fresh longhorn volume
+        runAsGroup: 0        # mounts root-owned and shlink cannot create data/cache
+        fsGroup: 1001
       containers:
         - name: shlink
           image: shlinkio/shlink:4.4.6
