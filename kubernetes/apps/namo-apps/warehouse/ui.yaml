@@ -78,8 +78,12 @@ metadata:
     nginx.ingress.kubernetes.io/auth-type: basic
     nginx.ingress.kubernetes.io/auth-secret: warehouse-ui-basicauth
     nginx.ingress.kubernetes.io/auth-realm: "Namo warehouse"
+    cert-manager.io/cluster-issuer: letsencrypt-prod
 spec:
   ingressClassName: nginx
+  tls:
+    - hosts: [warehouse.namosocks.com]
+      secretName: warehouse-ui-tls
   rules:
     - host: warehouse.namosocks.com
       http:
