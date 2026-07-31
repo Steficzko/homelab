@@ -4,28 +4,14 @@ metadata:
   name: wordpress
   namespace: namosocks
   annotations:
-    cert-manager.io/cluster-issuer: letsencrypt-prod
     nginx.ingress.kubernetes.io/ssl-redirect: "false"
     nginx.ingress.kubernetes.io/proxy-body-size: "64m"
 spec:
   ingressClassName: nginx
-  tls:
-    - hosts:
-        - namosocks.kostikidis.net
-      secretName: namosocks-kostikidis-net-tls
   rules:
-    - host: namosocks.kostikidis.net
-      http:
-        paths:
-          - path: /
-            pathType: Prefix
-            backend:
-              service:
-                name: wordpress
-                port:
-                  number: 80
-    # Client's own domain, reached through the client's Cloudflare tunnel (cloudflared ->
-    # ingress over plain HTTP in-cluster), so no cert is needed here — TLS ends at Cloudflare.
+    # kostikidis.net build host removed 2026-08-01 ("as if it never existed") — the client's
+    # domain via the client's tunnel is the only door. TLS ends at Cloudflare; at launch add
+    # namosocks.com + www rules here.
     - host: staging.namosocks.com
       http:
         paths:
