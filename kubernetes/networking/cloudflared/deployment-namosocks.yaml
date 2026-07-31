@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cloudflared-namosocks
+  namespace: cloudflare-tunnel
+spec:
+  replicas: 2   # HA — both connect the namosocks tunnel; Cloudflare load-balances
+  selector:
+    matchLabels:
+      app: cloudflared-namosocks
+  template:
+    metadata:
+      labels:
+        app: cloudflared-namosocks
+    spec:
+      topologySpreadConstraints:
+        - maxSkew: 1
+          topologyKey: kubernetes.io/hostname
+          whenUnsatisfiable: DoNotSchedule
+          labelSelector:
+            matchLabels:
+              app: cloudflared-namosocks
+      containers:
+        - name: cloudflared
+          image: cloudflare/cloudflared:2026.6.1
+          args:
+            - tunnel
+            - --no-autoupdate
+            - run
+            - --token
+            - $(TUNNEL_TOKEN)
+          env:
+            - name: TUNNEL_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: cloudflare-tunnel-token-namosocks   # namosocks.com tunnel ca867f1b; CLIENT's CF account e46015da (owner: Samrand Hassan); see secret-namosocks.example.yaml
+                  key: token
+          resources:
+            requests:
+              memory: 64Mi
+              cpu: 10m
+            limits:
+              memory: 128Mi
+              cpu: 200m
