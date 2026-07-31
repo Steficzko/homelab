@@ -38,6 +38,16 @@ spec:
               value: png
             - name: TRUSTED_PROXIES
               value: "0.0.0.0/0"             # real visitor IP arrives via cloudflared -> ingress
+            # Visit geolocation. Shlink can only geolocate with MaxMind's GeoLite2 db, which needs
+            # a free MaxMind licence key; without it every visit logs
+            # "Tried to geolocate IP address, but a GeoLite2 db was not found".
+            # optional:true so the pod still starts before the key exists.
+            - name: GEOLITE_LICENSE_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: namo-shlink-secret
+                  key: GEOLITE_LICENSE_KEY
+                  optional: true
           ports:
             - containerPort: 8080
           resources:
