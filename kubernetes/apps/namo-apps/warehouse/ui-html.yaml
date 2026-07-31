@@ -7,8 +7,10 @@ data:
     \ --copper:#c9702e;--bg:#12100e;--panel:#1b1815;--card:#242019;--border:#37302a;\n
     \ --text:#f2ede6;--muted:#9c9284;--green:#22c55e;--red:#ef4444;--blue:#4f7fe0;\n
     \ --radius:12px;--font:'Segoe UI',system-ui,sans-serif;\n}\nbody{background:var(--bg);color:var(--text);font-family:var(--font);min-height:100vh}\n/*
-    DENMARK (eu) theme: nordic blue, complementary to the terracotta — set via data-region
-    on <html> */\n:root[data-region=eu]{--copper:#4a90c4}\n:root[data-region=eu] .navitem.on{background:rgba(74,144,196,.14)}\n:root[data-region=eu]
+    DENMARK (eu) theme: the whole ground shifts cool — blue-slate at the same lightness
+    as the\n   warm browns of IRAQ — plus a nordic-blue accent complementary to the
+    terracotta. */\n:root[data-region=eu]{\n  --copper:#4a90c4;\n  --bg:#0e1116;--panel:#151a21;--card:#1b222c;--border:#2a3441;\n
+    \ --text:#e9eef4;--muted:#8b96a5;\n}\n:root[data-region=eu] .navitem.on{background:rgba(74,144,196,.14)}\n:root[data-region=eu]
     .stog.on{background:rgba(74,144,196,.14)}\n.hidden{display:none!important}\nbutton{font-family:var(--font)}\n\n.topbar{height:60px;background:var(--panel);border-bottom:1px
     solid var(--border);display:flex;align-items:center;padding:0 22px;gap:14px;position:sticky;top:0;z-index:30}\n.topbar
     .brand{font-weight:800;font-size:1.05rem;letter-spacing:.02em}\n.topbar .brand
