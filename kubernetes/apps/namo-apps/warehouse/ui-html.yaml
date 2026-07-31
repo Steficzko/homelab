@@ -240,17 +240,21 @@ data:
     return; }\n  // UTM lists are brand-wide, stored once in the ME db's app_settings
     (namo-only tab anyway)\n  try { UTM = (await (await fetch('/api/me/wh-settings')).json()).settings.utm_lists
     || UTM; } catch(e){}\n  const urls = (data.shortUrls && data.shortUrls.data) ||
-    [];\n  const opts = a => a.map(x=>`<option>${esc(x)}</option>`).join('');\n  C().innerHTML
-    = `\n  <div class=\"page-head\"><div><h2>Short Links</h2><div class=\"desc\">go.namosocks.com
-    — ${urls.length} links</div></div>\n    <div class=\"actions\"><button class=\"btn\"
-    onclick=\"toggleUtmEdit()\">⚙ Edit lists</button>\n    <button class=\"btn\" onclick=\"render.links()\">↻
-    Refresh</button></div></div>\n  <div class=\"panel\"><h3>\U0001F4E3 Campaign link
-    (UTM)</h3>\n    <div class=\"h-sub\">Pick campaign / channel / medium — the tagged
-    link + short URL are created in one go.</div>\n    <div class=\"formgrid\">\n
-    \     <div class=\"editrow\"><label>Campaign</label><select id=\"utm-c\">${opts(UTM.campaigns)}</select></div>\n
-    \     <div class=\"editrow\"><label>Source (channel)</label><select id=\"utm-s\">${opts(UTM.sources)}</select></div>\n
-    \     <div class=\"editrow\"><label>Medium</label><select id=\"utm-m\">${opts(UTM.mediums)}</select></div>\n
-    \     <div class=\"editrow\" style=\"grid-column:span 2\"><label>Destination</label><input
+    [];\n  const pills = (g, a) => `<div style=\"display:flex;flex-wrap:wrap;gap:6px;margin-top:4px\">`
+    +\n    a.map(v=>`<span class=\"stog ${UTMSEL[g]===v?'on':''}\" data-g=\"${g}\"
+    data-v=\"${esc(v)}\" onclick=\"utmSel(this)\">${esc(v)}</span>`).join('') + `</div>`;\n
+    \ C().innerHTML = `\n  <div class=\"page-head\"><div><h2>Short Links</h2><div
+    class=\"desc\">go.namosocks.com — ${urls.length} links · click a row for stats
+    + QR</div></div>\n    <div class=\"actions\"><button class=\"btn\" onclick=\"toggleUtmEdit()\">⚙
+    Edit lists</button>\n    <button class=\"btn\" onclick=\"render.links()\">↻ Refresh</button></div></div>\n
+    \ <div class=\"panel\"><h3>\U0001F4E3 Campaign link (UTM)</h3>\n    <div class=\"h-sub\">Tap
+    campaign / channel / medium, name the creative — tagged link + short URL in one
+    go.</div>\n    <div class=\"editrow\"><label>Campaign</label>${pills('c', UTM.campaigns)}</div>\n
+    \   <div class=\"editrow\"><label>Source (channel)</label>${pills('s', UTM.sources)}</div>\n
+    \   <div class=\"editrow\"><label>Medium</label>${pills('m', UTM.mediums)}</div>\n
+    \   <div class=\"formgrid\" style=\"margin-top:10px\">\n      <div class=\"editrow\"><label>Creative
+    / content (optional — e.g. reel-1, story-blue)</label><input id=\"utm-content\"
+    placeholder=\"utm_content\"></div>\n      <div class=\"editrow\"><label>Destination</label><input
     id=\"utm-url\" value=\"https://namosocks.com/\"></div>\n      <div class=\"editrow\"><button
     class=\"btn btn-main\" style=\"width:100%\" onclick=\"makeUtmLink()\">Create UTM
     link</button></div>\n    </div>\n    <div id=\"utm-edit\" class=\"hidden\" style=\"margin-top:14px;border-top:1px
@@ -266,44 +270,71 @@ data:
     \     <div class=\"editrow\"><label>Custom slug (optional)</label><input id=\"sl-slug\"
     placeholder=\"summer-drop\"></div>\n      <div class=\"editrow\"><button class=\"btn
     btn-main\" style=\"width:100%\" onclick=\"makeLink()\">Shorten</button></div>\n
-    \   </div></div>\n  <div class=\"tbl-wrap\"><table><thead><tr><th>Short</th><th>Destination</th><th>Visits</th><th>Created</th></tr></thead><tbody>\n
-    \   ${urls.map(u=>`<tr style=\"cursor:default\"><td><a href=\"${esc(u.shortUrl)}\"
-    target=\"_blank\" style=\"color:var(--copper)\">${esc(u.shortUrl.replace('https://',''))}</a></td>\n
-    \     <td style=\"max-width:380px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--muted)\">${esc(u.longUrl)}</td>\n
+    \   </div></div>\n  <div class=\"tbl-wrap\"><table><thead><tr><th>Short</th><th>Destination</th><th>Visits</th><th>Created</th><th></th></tr></thead><tbody>\n
+    \   ${urls.map(u=>`<tr onclick='linkDrawer(${JSON.stringify(u.shortCode)})'><td><a
+    href=\"${esc(u.shortUrl)}\" target=\"_blank\" onclick=\"event.stopPropagation()\"
+    style=\"color:var(--copper)\">${esc(u.shortUrl.replace('https://',''))}</a></td>\n
+    \     <td style=\"max-width:340px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--muted)\">${esc(u.longUrl)}</td>\n
     \     <td style=\"font-weight:700\">${(u.visitsSummary&&u.visitsSummary.total)??u.visitsCount??0}</td>\n
-    \     <td>${dt(u.dateCreated)}</td></tr>`).join('') || '<tr><td colspan=\"4\"
-    class=\"empty\">No links yet</td></tr>'}\n  </tbody></table></div>`;\n},\n};\n\n//
-    ponytail: two-region phone heuristics; add per-country rules when a third region
-    exists\nconst REGION_PHONE = {me: {cc:'iq', dial:'964'}, eu: {cc:'dk', dial:'45'}};\nfunction
-    e164(p){\n  if (!p) return null;\n  const rp = REGION_PHONE[REGION];\n  let d
-    = String(p).replace(/[^\\d+]/g,'');\n  if (d.startsWith('+')) return d;\n  if
-    (d.startsWith('00')) return '+' + d.slice(2);\n  if (d.startsWith(rp.dial)) return
-    '+' + d;\n  if (REGION === 'me' && d.startsWith('0')) return '+964' + d.slice(1);
-    \ // Iraqi trunk 0\n  if (REGION === 'eu' && d.length === 8) return '+45' + d;
-    \              // bare Danish number\n  return '+' + rp.dial + d.replace(/^0/,'');\n}\nfunction
-    audienceCsv(){\n  const rows = window._audRows || [];\n  const cc = REGION_PHONE[REGION].cc;\n
-    \ const csv = 'phone,fn,ct,country\\n' + rows.map(r=>{\n    const fn = (r.name.split('
-    ')[0]||'').toLowerCase();\n    return `${r.phone},${fn},${(r.city||'').toLowerCase()},${cc}`;\n
-    \ }).join('\\n');\n  const a = document.createElement('a');\n  a.href = URL.createObjectURL(new
-    Blob([csv], {type:'text/csv'}));\n  a.download = 'namo-meta-audience.csv';\n  a.click();\n}\nlet
-    UTM = {campaigns:['newroz','clearance'], sources:['instagram','facebook'], mediums:['social']};\nfunction
-    toggleUtmEdit(){ document.getElementById('utm-edit').classList.toggle('hidden');
-    }\nasync function saveUtm(){\n  try { await fetch('/api/me/wh-settings-set', {method:'POST',
-    headers:{'Content-Type':'application/json'},\n    body: JSON.stringify({key:'utm_lists',
+    \     <td>${dt(u.dateCreated)}</td>\n      <td style=\"color:var(--muted);font-size:.78rem\">\U0001F4CA
+    QR</td></tr>`).join('') || '<tr><td colspan=\"5\" class=\"empty\">No links yet</td></tr>'}\n
+    \ </tbody></table></div>`;\n},\n};\n\n// ponytail: two-region phone heuristics;
+    add per-country rules when a third region exists\nconst REGION_PHONE = {me: {cc:'iq',
+    dial:'964'}, eu: {cc:'dk', dial:'45'}};\nfunction e164(p){\n  if (!p) return null;\n
+    \ const rp = REGION_PHONE[REGION];\n  let d = String(p).replace(/[^\\d+]/g,'');\n
+    \ if (d.startsWith('+')) return d;\n  if (d.startsWith('00')) return '+' + d.slice(2);\n
+    \ if (d.startsWith(rp.dial)) return '+' + d;\n  if (REGION === 'me' && d.startsWith('0'))
+    return '+964' + d.slice(1);  // Iraqi trunk 0\n  if (REGION === 'eu' && d.length
+    === 8) return '+45' + d;               // bare Danish number\n  return '+' + rp.dial
+    + d.replace(/^0/,'');\n}\nfunction audienceCsv(){\n  const rows = window._audRows
+    || [];\n  const cc = REGION_PHONE[REGION].cc;\n  const csv = 'phone,fn,ct,country\\n'
+    + rows.map(r=>{\n    const fn = (r.name.split(' ')[0]||'').toLowerCase();\n    return
+    `${r.phone},${fn},${(r.city||'').toLowerCase()},${cc}`;\n  }).join('\\n');\n  const
+    a = document.createElement('a');\n  a.href = URL.createObjectURL(new Blob([csv],
+    {type:'text/csv'}));\n  a.download = 'namo-meta-audience.csv';\n  a.click();\n}\nlet
+    UTM = {campaigns:['newroz','clearance'], sources:['instagram','facebook'], mediums:['social']};\nlet
+    UTMSEL = {c:null, s:null, m:'social'};\nfunction utmSel(el){\n  const g = el.dataset.g;\n
+    \ UTMSEL[g] = el.dataset.v;\n  el.parentElement.querySelectorAll('.stog').forEach(p=>p.classList.toggle('on',
+    p===el));\n}\nfunction toggleUtmEdit(){ document.getElementById('utm-edit').classList.toggle('hidden');
+    }\nasync function linkDrawer(code){\n  openDrawer('<div class=\"drawer-body\"><div
+    class=\"empty\">Loading stats…</div></div>');\n  let v = [];\n  try { v = ((await
+    (await fetch(`/api/shlink/v3/short-urls/${encodeURIComponent(code)}/visits?itemsPerPage=200`)).json()).visits||{}).data
+    || []; } catch(e){}\n  const byCountry = {};\n  v.forEach(x=>{ const c = (x.visitLocation&&x.visitLocation.countryName)||'Unknown';
+    byCountry[c]=(byCountry[c]||0)+1; });\n  const short = `https://go.namosocks.com/${code}`;\n
+    \ openDrawer(`\n  <div class=\"drawer-head\"><button class=\"x\" onclick=\"closeDrawer()\">×</button>\n
+    \   <h3>go.namosocks.com/${esc(code)}</h3>\n    <div style=\"margin-top:6px\"><button
+    class=\"btn\" onclick=\"navigator.clipboard.writeText('${esc(short)}');toast('Copied')\">\U0001F4CB
+    Copy link</button></div></div>\n  <div class=\"drawer-body\">\n    <div class=\"fieldset\"><div
+    class=\"ftitle\">QR code — print it, sticker it, story it</div>\n      <div style=\"text-align:center;background:#fff;border-radius:12px;padding:14px\">\n
+    \       <img src=\"${esc(short)}/qr-code?size=240&format=png\" width=\"240\" height=\"240\"
+    alt=\"QR\"></div>\n      <div style=\"text-align:center;margin-top:8px\"><a class=\"btn\"
+    href=\"${esc(short)}/qr-code?size=1000&format=png\" target=\"_blank\">⬇ Big QR
+    (print)</a></div></div>\n    <div class=\"fieldset\"><div class=\"ftitle\">Stats
+    — ${v.length} visit${v.length===1?'':'s'}${v.length===200?'+':''}</div>\n      ${Object.entries(byCountry).sort((a,b)=>b[1]-a[1]).map(([c,n])=>`<div
+    class=\"kv\"><span class=\"k\">${esc(c)}</span><span class=\"v\">${n}</span></div>`).join('')
+    || '<div class=\"empty\">No visits yet</div>'}</div>\n    ${v.length ? `<div class=\"fieldset\"><div
+    class=\"ftitle\">Recent visits</div>\n      ${v.slice(0,20).map(x=>`<div class=\"kv\"><span
+    class=\"k\">${dt(x.date)} · ${esc((x.visitLocation&&(x.visitLocation.cityName||x.visitLocation.countryName))||'?')}</span>\n
+    \       <span class=\"v\" style=\"font-weight:400;color:var(--muted)\">${esc((x.referer||'direct').replace(/^https?:\\/\\//,'').slice(0,32))}</span></div>`).join('')}</div>`
+    : ''}\n  </div>`);\n}\nasync function saveUtm(){\n  try { await fetch('/api/me/wh-settings-set',
+    {method:'POST', headers:{'Content-Type':'application/json'},\n    body: JSON.stringify({key:'utm_lists',
     value: UTM})}); render.links(); }\n  catch(e){ toast('Save failed', true); }\n}\nfunction
     utmAdd(k, v){\n  v = v.trim().toLowerCase().replace(/\\s+/g,'-');\n  if (!v ||
     UTM[k].includes(v)) return;\n  UTM[k].push(v); saveUtm();\n}\nfunction utmRemove(k,
     v){ UTM[k] = UTM[k].filter(x=>x!==v); saveUtm(); }\nasync function makeUtmLink(){\n
-    \ const c = document.getElementById('utm-c').value, s = document.getElementById('utm-s').value,\n
-    \       m = document.getElementById('utm-m').value;\n  let base = document.getElementById('utm-url').value.trim();\n
-    \ if (!base) return toast('Destination required', true);\n  const url = base +
-    (base.includes('?') ? '&' : '?') +\n    `utm_source=${encodeURIComponent(s)}&utm_medium=${encodeURIComponent(m)}&utm_campaign=${encodeURIComponent(c)}`;\n
+    \ const {c, s, m} = UTMSEL;\n  if (!c || !s) return toast('Pick a campaign and
+    a source', true);\n  const content = document.getElementById('utm-content').value.trim().toLowerCase().replace(/\\s+/g,'-');\n
+    \ let base = document.getElementById('utm-url').value.trim();\n  if (!base) return
+    toast('Destination required', true);\n  let url = base + (base.includes('?') ?
+    '&' : '?') +\n    `utm_source=${encodeURIComponent(s)}&utm_medium=${encodeURIComponent(m||'social')}&utm_campaign=${encodeURIComponent(c)}`;\n
+    \ if (content) url += `&utm_content=${encodeURIComponent(content)}`;\n  const
+    slug = [c, s, (m&&m!=='social')?m:null, content||null].filter(Boolean).join('-');\n
     \ try {\n    const r = await fetch('/api/shlink/v3/short-urls', {method:'POST',
     headers:{'Content-Type':'application/json'},\n      body: JSON.stringify({longUrl:
-    url, customSlug: `${c}-${s}${m==='social'?'':'-'+m}`, findIfExists: true})});\n
-    \   if (!r.ok) throw new Error('HTTP '+r.status);\n    const d = await r.json();\n
-    \   toast('Created: ' + d.shortUrl); render.links();\n  } catch(e){ toast('Failed:
-    '+e.message, true); }\n}\nasync function makeLink(){\n  const longUrl = document.getElementById('sl-url').value.trim();\n
+    url, customSlug: slug, findIfExists: true})});\n    if (!r.ok) throw new Error('HTTP
+    '+r.status);\n    const d = await r.json();\n    toast('Created: ' + d.shortUrl);
+    render.links();\n  } catch(e){ toast('Failed: '+e.message, true); }\n}\nasync
+    function makeLink(){\n  const longUrl = document.getElementById('sl-url').value.trim();\n
     \ const slug = document.getElementById('sl-slug').value.trim();\n  if (!longUrl)
     return toast('URL required', true);\n  const body = {longUrl}; if (slug) body.customSlug
     = slug;\n  try {\n    const r = await fetch('/api/shlink/v3/short-urls', {method:'POST',
