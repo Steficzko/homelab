@@ -24,3 +24,15 @@ spec:
                 name: wordpress
                 port:
                   number: 80
+    # Client's own domain, reached through the client's Cloudflare tunnel (cloudflared ->
+    # ingress over plain HTTP in-cluster), so no cert is needed here — TLS ends at Cloudflare.
+    - host: staging.namosocks.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: wordpress
+                port:
+                  number: 80

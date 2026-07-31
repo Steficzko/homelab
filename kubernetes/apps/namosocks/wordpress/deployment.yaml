@@ -37,6 +37,14 @@ spec:
                 /* TLS terminates at Cloudflare; origin hop is plain HTTP and nginx
                    doesn't forward the visitor scheme -> without this WP redirect-loops */
                 $_SERVER['HTTPS'] = 'on';
+                /* Multi-host: the same site answers on kostikidis.net (Stefanos's zone, behind
+                   CF Access) AND staging.namosocks.com (client's zone, via the client's tunnel)
+                   so Namo can view it on his own domain. Without a dynamic siteurl WP
+                   canonical-redirects every request back to one hard-coded host. */
+                $namo_hosts = ['namosocks.kostikidis.net', 'staging.namosocks.com'];
+                $namo_h = isset($_SERVER['HTTP_HOST']) ? strtolower($_SERVER['HTTP_HOST']) : '';
+                if (!in_array($namo_h, $namo_hosts, true)) { $namo_h = 'namosocks.kostikidis.net'; }
+                define('WP_HOME', 'https://' . $namo_h); define('WP_SITEURL', 'https://' . $namo_h);
           envFrom:
             - secretRef:
                 name: namosocks-secret   # WORDPRESS_AUTH_KEY … salts
