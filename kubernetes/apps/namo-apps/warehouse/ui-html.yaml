@@ -240,37 +240,38 @@ data:
     return; }\n  // UTM lists are brand-wide, stored once in the ME db's app_settings
     (namo-only tab anyway)\n  try { UTM = (await (await fetch('/api/me/wh-settings')).json()).settings.utm_lists
     || UTM; } catch(e){}\n  const urls = (data.shortUrls && data.shortUrls.data) ||
-    [];\n  const pills = (g, a) => `<div style=\"display:flex;flex-wrap:wrap;gap:6px;margin-top:4px\">`
-    +\n    a.map(v=>`<span class=\"stog ${UTMSEL[g]===v?'on':''}\" data-g=\"${g}\"
-    data-v=\"${esc(v)}\" onclick=\"utmSel(this)\">${esc(v)}</span>`).join('') + `</div>`;\n
-    \ C().innerHTML = `\n  <div class=\"page-head\"><div><h2>Short Links</h2><div
+    [];\n  const KEY = {c:'campaigns', s:'sources', m:'mediums'};\n  const pills =
+    (g, a) => `<div style=\"display:flex;flex-wrap:wrap;gap:6px;margin-top:4px;align-items:center\">`
+    +\n    a.map(v=>`<span class=\"stog ${UTMSEL[g]===v?'on':''} ${UTMEDIT?'edit':''}\"
+    data-g=\"${g}\" data-v=\"${esc(v)}\"\n      onclick=\"${UTMEDIT?`utmRemove('${KEY[g]}','${esc(v)}')`:'utmSel(this)'}\"\n
+    \     ${UTMEDIT?'style=\"border-color:var(--red)\"':''}>${esc(v)}${UTMEDIT?' ✕':''}</span>`).join('')
+    +\n    (UTMEDIT?`<input placeholder=\"+ add\" style=\"width:110px;background:var(--card);border:1px
+    dashed var(--border);border-radius:20px;color:var(--text);padding:6px 12px;font-size:.82rem\"\n
+    \     onkeydown=\"if(event.key==='Enter'){utmAdd('${KEY[g]}',this.value);this.value=''}\">`:'')
+    + `</div>`;\n  C().innerHTML = `\n  <div class=\"page-head\"><div><h2>Short Links</h2><div
     class=\"desc\">go.namosocks.com — ${urls.length} links · click a row for stats
     + QR</div></div>\n    <div class=\"actions\"><button class=\"btn\" onclick=\"toggleUtmEdit()\">⚙
     Edit lists</button>\n    <button class=\"btn\" onclick=\"render.links()\">↻ Refresh</button></div></div>\n
-    \ <div class=\"panel\"><h3>\U0001F4E3 Campaign link (UTM)</h3>\n    <div class=\"h-sub\">Tap
+    \ <div class=\"panel\"><h3>\U0001F4E3 Campaign link (UTM)</h3>\n    <div class=\"h-sub\">${UTMEDIT
+    ? 'EDIT MODE — click a pill to remove it, type in a box + Enter to add.' : 'Tap
     campaign / channel / medium, name the creative — tagged link + short URL in one
-    go.</div>\n    <div class=\"editrow\"><label>Campaign</label>${pills('c', UTM.campaigns)}</div>\n
+    go.'}</div>\n    <div class=\"editrow\"><label>Campaign</label>${pills('c', UTM.campaigns)}</div>\n
     \   <div class=\"editrow\"><label>Source (channel)</label>${pills('s', UTM.sources)}</div>\n
     \   <div class=\"editrow\"><label>Medium</label>${pills('m', UTM.mediums)}</div>\n
     \   <div class=\"formgrid\" style=\"margin-top:10px\">\n      <div class=\"editrow\"><label>Creative
     / content (optional — e.g. reel-1, story-blue)</label><input id=\"utm-content\"
-    placeholder=\"utm_content\"></div>\n      <div class=\"editrow\"><label>Destination</label><input
-    id=\"utm-url\" value=\"https://namosocks.com/\"></div>\n      <div class=\"editrow\"><button
-    class=\"btn btn-main\" style=\"width:100%\" onclick=\"makeUtmLink()\">Create UTM
-    link</button></div>\n    </div>\n    <div id=\"utm-edit\" class=\"hidden\" style=\"margin-top:14px;border-top:1px
-    solid var(--border);padding-top:14px\">\n      ${['campaigns','sources','mediums'].map(k=>`\n
-    \     <div class=\"editrow\"><label>${k} — click to remove</label>\n        <div
-    id=\"chips-${k}\" style=\"display:flex;flex-wrap:wrap;gap:6px;margin:4px 0\">\n
-    \         ${UTM[k].map(v=>`<span class=\"stog\" onclick=\"utmRemove('${k}','${esc(v)}')\">${esc(v)}
-    ✕</span>`).join('')}\n        </div>\n        <input placeholder=\"add to ${k}
-    + Enter\" onkeydown=\"if(event.key==='Enter'){utmAdd('${k}',this.value);this.value=''}\">\n
-    \     </div>`).join('')}\n    </div>\n  </div>\n  <div class=\"panel\"><h3>➕ New
-    short link</h3>\n    <div class=\"formgrid\">\n      <div class=\"editrow\" style=\"grid-column:span
-    2\"><label>Long URL</label><input id=\"sl-url\" placeholder=\"https://namosocks.com/…\"></div>\n
-    \     <div class=\"editrow\"><label>Custom slug (optional)</label><input id=\"sl-slug\"
-    placeholder=\"summer-drop\"></div>\n      <div class=\"editrow\"><button class=\"btn
-    btn-main\" style=\"width:100%\" onclick=\"makeLink()\">Shorten</button></div>\n
-    \   </div></div>\n  <div class=\"tbl-wrap\"><table><thead><tr><th>Short</th><th>Destination</th><th>Visits</th><th>Created</th><th></th></tr></thead><tbody>\n
+    placeholder=\"utm_content\" oninput=\"utmPreview()\"></div>\n      <div class=\"editrow\"><label>Destination</label><input
+    id=\"utm-url\" value=\"https://namosocks.com/\" oninput=\"utmPreview()\"></div>\n
+    \     <div class=\"editrow\"><button class=\"btn btn-main\" style=\"width:100%\"
+    onclick=\"makeUtmLink()\">Create UTM link</button></div>\n    </div>\n    <div
+    id=\"utm-preview\" style=\"margin-top:10px;padding:12px 14px;background:var(--card);border:1px
+    solid var(--border);border-radius:8px;font-size:.82rem;font-family:monospace;word-break:break-all;color:var(--muted)\"></div>\n
+    \ </div>\n  <div class=\"panel\"><h3>➕ New short link</h3>\n    <div class=\"formgrid\">\n
+    \     <div class=\"editrow\" style=\"grid-column:span 2\"><label>Long URL</label><input
+    id=\"sl-url\" placeholder=\"https://namosocks.com/…\"></div>\n      <div class=\"editrow\"><label>Custom
+    slug (optional)</label><input id=\"sl-slug\" placeholder=\"summer-drop\"></div>\n
+    \     <div class=\"editrow\"><button class=\"btn btn-main\" style=\"width:100%\"
+    onclick=\"makeLink()\">Shorten</button></div>\n    </div></div>\n  <div class=\"tbl-wrap\"><table><thead><tr><th>Short</th><th>Destination</th><th>Visits</th><th>Created</th><th></th></tr></thead><tbody>\n
     \   ${urls.map(u=>`<tr onclick='linkDrawer(${JSON.stringify(u.shortCode)})'><td><a
     href=\"${esc(u.shortUrl)}\" target=\"_blank\" onclick=\"event.stopPropagation()\"
     style=\"color:var(--copper)\">${esc(u.shortUrl.replace('https://',''))}</a></td>\n
@@ -278,10 +279,10 @@ data:
     \     <td style=\"font-weight:700\">${(u.visitsSummary&&u.visitsSummary.total)??u.visitsCount??0}</td>\n
     \     <td>${dt(u.dateCreated)}</td>\n      <td style=\"color:var(--muted);font-size:.78rem\">\U0001F4CA
     QR</td></tr>`).join('') || '<tr><td colspan=\"5\" class=\"empty\">No links yet</td></tr>'}\n
-    \ </tbody></table></div>`;\n},\n};\n\n// ponytail: two-region phone heuristics;
-    add per-country rules when a third region exists\nconst REGION_PHONE = {me: {cc:'iq',
-    dial:'964'}, eu: {cc:'dk', dial:'45'}};\nfunction e164(p){\n  if (!p) return null;\n
-    \ const rp = REGION_PHONE[REGION];\n  let d = String(p).replace(/[^\\d+]/g,'');\n
+    \ </tbody></table></div>`;\n  utmPreview();\n},\n};\n\n// ponytail: two-region
+    phone heuristics; add per-country rules when a third region exists\nconst REGION_PHONE
+    = {me: {cc:'iq', dial:'964'}, eu: {cc:'dk', dial:'45'}};\nfunction e164(p){\n
+    \ if (!p) return null;\n  const rp = REGION_PHONE[REGION];\n  let d = String(p).replace(/[^\\d+]/g,'');\n
     \ if (d.startsWith('+')) return d;\n  if (d.startsWith('00')) return '+' + d.slice(2);\n
     \ if (d.startsWith(rp.dial)) return '+' + d;\n  if (REGION === 'me' && d.startsWith('0'))
     return '+964' + d.slice(1);  // Iraqi trunk 0\n  if (REGION === 'eu' && d.length
@@ -293,10 +294,18 @@ data:
     a = document.createElement('a');\n  a.href = URL.createObjectURL(new Blob([csv],
     {type:'text/csv'}));\n  a.download = 'namo-meta-audience.csv';\n  a.click();\n}\nlet
     UTM = {campaigns:['newroz','clearance'], sources:['instagram','facebook'], mediums:['social']};\nlet
-    UTMSEL = {c:null, s:null, m:'social'};\nfunction utmSel(el){\n  const g = el.dataset.g;\n
-    \ UTMSEL[g] = el.dataset.v;\n  el.parentElement.querySelectorAll('.stog').forEach(p=>p.classList.toggle('on',
-    p===el));\n}\nfunction toggleUtmEdit(){ document.getElementById('utm-edit').classList.toggle('hidden');
-    }\nasync function linkDrawer(code){\n  openDrawer('<div class=\"drawer-body\"><div
+    UTMSEL = {c:null, s:null, m:'social'};\nlet UTMEDIT = false;\nfunction utmSel(el){\n
+    \ const g = el.dataset.g;\n  UTMSEL[g] = el.dataset.v;\n  el.parentElement.querySelectorAll('.stog').forEach(p=>p.classList.toggle('on',
+    p===el));\n  utmPreview();\n}\nfunction toggleUtmEdit(){ UTMEDIT = !UTMEDIT; render.links();
+    }\nfunction buildUtm(){\n  const {c, s, m} = UTMSEL;\n  const content = (document.getElementById('utm-content')?.value
+    || '').trim().toLowerCase().replace(/\\s+/g,'-');\n  const base = (document.getElementById('utm-url')?.value
+    || '').trim();\n  let url = base + (base.includes('?') ? '&' : '?') +\n    `utm_source=${encodeURIComponent(s||'…')}&utm_medium=${encodeURIComponent(m||'social')}&utm_campaign=${encodeURIComponent(c||'…')}`;\n
+    \ if (content) url += `&utm_content=${encodeURIComponent(content)}`;\n  const
+    slug = [c||'…', s||'…', (m&&m!=='social')?m:null, content||null].filter(Boolean).join('-');\n
+    \ return {c, s, m, content, base, url, slug};\n}\nfunction utmPreview(){\n  const
+    el = document.getElementById('utm-preview');\n  if (!el) return;\n  const b =
+    buildUtm();\n  el.innerHTML = `<span style=\"color:var(--copper)\">go.namosocks.com/${esc(b.slug)}</span><br>→
+    ${esc(b.url)}`;\n}\nasync function linkDrawer(code){\n  openDrawer('<div class=\"drawer-body\"><div
     class=\"empty\">Loading stats…</div></div>');\n  let v = [];\n  try { v = ((await
     (await fetch(`/api/shlink/v3/short-urls/${encodeURIComponent(code)}/visits?itemsPerPage=200`)).json()).visits||{}).data
     || []; } catch(e){}\n  const byCountry = {};\n  v.forEach(x=>{ const c = (x.visitLocation&&x.visitLocation.countryName)||'Unknown';
@@ -322,16 +331,11 @@ data:
     utmAdd(k, v){\n  v = v.trim().toLowerCase().replace(/\\s+/g,'-');\n  if (!v ||
     UTM[k].includes(v)) return;\n  UTM[k].push(v); saveUtm();\n}\nfunction utmRemove(k,
     v){ UTM[k] = UTM[k].filter(x=>x!==v); saveUtm(); }\nasync function makeUtmLink(){\n
-    \ const {c, s, m} = UTMSEL;\n  if (!c || !s) return toast('Pick a campaign and
-    a source', true);\n  const content = document.getElementById('utm-content').value.trim().toLowerCase().replace(/\\s+/g,'-');\n
-    \ let base = document.getElementById('utm-url').value.trim();\n  if (!base) return
-    toast('Destination required', true);\n  let url = base + (base.includes('?') ?
-    '&' : '?') +\n    `utm_source=${encodeURIComponent(s)}&utm_medium=${encodeURIComponent(m||'social')}&utm_campaign=${encodeURIComponent(c)}`;\n
-    \ if (content) url += `&utm_content=${encodeURIComponent(content)}`;\n  const
-    slug = [c, s, (m&&m!=='social')?m:null, content||null].filter(Boolean).join('-');\n
+    \ const b = buildUtm();\n  if (!b.c || !b.s) return toast('Pick a campaign and
+    a source', true);\n  if (!b.base) return toast('Destination required', true);\n
     \ try {\n    const r = await fetch('/api/shlink/v3/short-urls', {method:'POST',
     headers:{'Content-Type':'application/json'},\n      body: JSON.stringify({longUrl:
-    url, customSlug: slug, findIfExists: true})});\n    if (!r.ok) throw new Error('HTTP
+    b.url, customSlug: b.slug, findIfExists: true})});\n    if (!r.ok) throw new Error('HTTP
     '+r.status);\n    const d = await r.json();\n    toast('Created: ' + d.shortUrl);
     render.links();\n  } catch(e){ toast('Failed: '+e.message, true); }\n}\nasync
     function makeLink(){\n  const longUrl = document.getElementById('sl-url').value.trim();\n
