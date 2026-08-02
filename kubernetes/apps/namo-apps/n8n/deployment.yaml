@@ -40,15 +40,18 @@ spec:
               value: "true"                # behind cloudflared -> ingress-nginx
             - name: N8N_DIAGNOSTICS_ENABLED
               value: "false"
-            # Nothing was being recorded at all: /api/v1/executions returned 0 across
-            # every workflow while the warehouse API was in daily use, so a failed
-            # order ingest left no trace beyond the Telegram alert. Errors are kept,
-            # successes are not — this volume is 5Gi and success runs are noise.
+            # Execution history. These were previously unset and running on n8n's
+            # defaults, which already saved both successes and errors — stating
+            # them explicitly so the retention is visible in the manifest rather
+            # than inherited.
             - name: EXECUTIONS_DATA_SAVE_ON_ERROR
               value: all
             - name: EXECUTIONS_DATA_SAVE_ON_SUCCESS
-              value: none
-            # keep the history from growing without bound
+              value: all                    # keep: a Woo webhook that SUCCEEDED
+                                            # but wrote the wrong thing is only
+                                            # diagnosable from its success run
+            # the one real gap: nothing pruned this before, and the PVC has no
+            # backup CronJob, so the history is neither bounded nor durable
             - name: EXECUTIONS_DATA_PRUNE
               value: "true"
             - name: EXECUTIONS_DATA_MAX_AGE
