@@ -1,0 +1,134 @@
+# Logical backup of the NAMO n8n state (workflows + credentials) -> MinIO.
+#
+# Why this exists: warehouse-backup covers the two Postgres databases, and
+# namosocks-backup covers WordPress. Nothing covered n8n, whose 5Gi Longhorn PVC
+# holds every workflow AND every credential — the Telegram bot token, the Woo
+# REST key, the Postgres password. Losing that volume would mean rebuilding the
+# workflows from warehouse/scripts/*.py (possible) and re-issuing every
+# credential by hand (not in git, and some of them are the client's).
+#
+# n8n keeps everything in SQLite on an RWO volume, so a second pod cannot mount
+# it while n8n runs. This Job execs into the live pod, runs the n8n CLI export,
+# copies the tarball out and uploads it. Same approach as kubernetes/apps/n8n.
+#
+# Credentials export ENCRYPTED and are only restorable together with
+# N8N_ENCRYPTION_KEY (namo-apps secrets.sops.yaml). A backup without that key is
+# useless — keep the SOPS age key safe.
+#
+# Restore onto a fresh n8n with the same encryption key:
+#   n8n import:workflow --separate --input=workflows/
+#   n8n import:credentials --input=credentials.json
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: n8n-backup
+  namespace: namo-apps
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: n8n-backup
+  namespace: namo-apps
+rules:
+  - apiGroups: [""]
+    resources: ["pods"]
+    verbs: ["get", "list"]
+  - apiGroups: [""]
+    resources: ["pods/exec"]
+    verbs: ["create"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: n8n-backup
+  namespace: namo-apps
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: n8n-backup
+subjects:
+  - kind: ServiceAccount
+    name: n8n-backup
+    namespace: namo-apps
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: n8n-backup
+  namespace: namo-apps
+spec:
+  # 03:45, after warehouse-backup at 03:30 and namosocks-backup at 03:00, so the
+  # three do not contend for the same MinIO endpoint at once.
+  schedule: "45 3 * * *"
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      ttlSecondsAfterFinished: 10800
+      backoffLimit: 2
+      activeDeadlineSeconds: 1800
+      template:
+        spec:
+          serviceAccountName: n8n-backup
+          restartPolicy: Never
+          affinity:                       # co-locate with n8n (cross-node net is unreliable)
+            podAffinity:
+              requiredDuringSchedulingIgnoredDuringExecution:
+                - labelSelector:
+                    matchLabels:
+                      app: n8n
+                  topologyKey: kubernetes.io/hostname
+          securityContext:
+            runAsUser: 1001
+            runAsGroup: 1001
+            fsGroup: 1001
+          initContainers:
+            - name: copy-mc
+              image: minio/mc@sha256:a7fe349ef4bd8521fb8497f55c6042871b2ae640607cf99d9bede5e9bdf11727
+              securityContext:
+                runAsUser: 0                  # mc is 0711 root-owned; need root to read+copy it
+              command: ["/bin/sh", "-c", "cp /usr/bin/mc /tools/mc && chmod 0755 /tools/mc"]
+              volumeMounts:
+                - { name: tools, mountPath: /tools }
+          containers:
+            - name: export
+              image: bitnamilegacy/kubectl:1.33
+              envFrom:
+                - secretRef: { name: backup-s3-secret }   # AWS_ACCESS_KEY_ID / AWS_SECRET_ACCESS_KEY / AWS_ENDPOINTS
+              env:
+                - { name: HOME,      value: /work }
+                - { name: BUCKET,    value: namosocks-backups }   # same bucket as the rest of NAMO
+                - { name: PREFIX,    value: n8n }
+                - { name: RETENTION, value: "30d" }
+              command:
+                - /bin/sh
+                - -c
+                - |
+                  set -eu
+                  POD=$(kubectl get pod -n namo-apps -l app=n8n -o jsonpath='{.items[0].metadata.name}')
+                  TS=$(date +%Y%m%d-%H%M%S)
+                  echo "==> Exporting workflows + credentials from ${POD} ..."
+                  kubectl exec -n namo-apps "$POD" -- sh -c '
+                    set -e
+                    rm -rf /tmp/n8n-backup && mkdir -p /tmp/n8n-backup/workflows
+                    n8n export:workflow --all --separate --output=/tmp/n8n-backup/workflows >/dev/null
+                    n8n export:credentials --all --output=/tmp/n8n-backup/credentials.json >/dev/null
+                    tar czf /tmp/n8n-backup.tgz -C /tmp/n8n-backup .
+                  '
+                  kubectl cp -n namo-apps "$POD:/tmp/n8n-backup.tgz" "/work/n8n-${TS}.tgz"
+                  kubectl exec -n namo-apps "$POD" -- rm -rf /tmp/n8n-backup /tmp/n8n-backup.tgz || true
+                  echo "==> Uploading n8n-${TS}.tgz ..."
+                  /tools/mc alias set s3 "$AWS_ENDPOINTS" "$AWS_ACCESS_KEY_ID" "$AWS_SECRET_ACCESS_KEY"
+                  /tools/mc mb --ignore-existing "s3/${BUCKET}"
+                  /tools/mc cp "/work/n8n-${TS}.tgz" "s3/${BUCKET}/${PREFIX}/n8n-${TS}.tgz"
+                  echo "==> Pruning > ${RETENTION} old ..."
+                  /tools/mc rm --recursive --force --older-than "$RETENTION" "s3/${BUCKET}/${PREFIX}/" || true
+                  echo "==> Done: s3://${BUCKET}/${PREFIX}/n8n-${TS}.tgz"
+              volumeMounts:
+                - { name: tools, mountPath: /tools }
+                - { name: work,  mountPath: /work }
+          volumes:
+            - { name: tools, emptyDir: {} }
+            - { name: work,  emptyDir: {} }
