@@ -40,6 +40,19 @@ spec:
               value: "true"                # behind cloudflared -> ingress-nginx
             - name: N8N_DIAGNOSTICS_ENABLED
               value: "false"
+            # Nothing was being recorded at all: /api/v1/executions returned 0 across
+            # every workflow while the warehouse API was in daily use, so a failed
+            # order ingest left no trace beyond the Telegram alert. Errors are kept,
+            # successes are not — this volume is 5Gi and success runs are noise.
+            - name: EXECUTIONS_DATA_SAVE_ON_ERROR
+              value: all
+            - name: EXECUTIONS_DATA_SAVE_ON_SUCCESS
+              value: none
+            # keep the history from growing without bound
+            - name: EXECUTIONS_DATA_PRUNE
+              value: "true"
+            - name: EXECUTIONS_DATA_MAX_AGE
+              value: "336"                  # hours = 14 days
           resources:
             requests: { memory: 256Mi, cpu: 100m }
             limits:   { memory: 1Gi,   cpu: 500m }
