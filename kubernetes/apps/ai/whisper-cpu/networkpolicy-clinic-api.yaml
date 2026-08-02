@@ -16,4 +16,11 @@ spec:
             matchLabels: {kubernetes.io/metadata.name: dental-clinic}
           podSelector:
             matchLabels: {app: clinic-api}
+        # staging tier (2026-08-02): kostikidis.net runs clinic-api-staging and
+        # must reach the SAME on-prem targets, or voice silently fails exactly
+        # where it is supposed to be tested first.
+        - namespaceSelector:
+            matchLabels: {kubernetes.io/metadata.name: dental-clinic}
+          podSelector:
+            matchLabels: {app: clinic-api-staging}
       ports: [{port: 8000}]

@@ -1,0 +1,210 @@
+# =============================================================================
+# STAGING TIER — *.kostikidis.net
+#
+# Added 2026-08-02. Standing rule (Stefanos): kostikidis.net is STAGING;
+# every change ships here FIRST and only reaches gompha.com once confirmed.
+# Until this file existed that rule was unenforceable — ONE Deployment served
+# both wildcards, so bumping the image tag hit Dr. Ali's live clinic in the
+# same rollout as staging.
+#
+# WHAT IS SPLIT: the app tier only. clinic-api/clinic-spa (api.yaml, spa.yaml)
+# stay PRODUCTION and serve *.gompha.com; the -staging pair below serves
+# *.kostikidis.net and carries the newer tag. ingress.yaml routes by host.
+#
+# WHAT IS SHARED: one Postgres, one set of secrets. Tenants were always rows in
+# one database (blanca, blankadental, demodental, demo, demosolo) and splitting
+# that means a second DB, second backup chain and a tenant move — not worth it
+# for a 1-patient production. The consequence, stated plainly:
+#
+#   THE SCHEMA IS SHARED. The migrate Job (postgres.yaml) runs at the STAGING
+#   tag, so the database is always at staging's schema while production runs an
+#   older image against it. That is safe ONLY because migrations here are
+#   additive and forward-only (house rule, build/release-and-updates.md):
+#   check_schema verifies required relations EXIST, so extra tables/columns are
+#   invisible to the older image. A migration that DROPS or RETYPES anything
+#   breaks production the moment it is applied. If one is ever needed, split
+#   the database first.
+# =============================================================================
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: clinic-api-staging
+  namespace: dental-clinic
+  labels: {app: clinic-api-staging, tier: staging}
+spec:
+  replicas: 1   # same single-replica rate-limiting assumption as production
+  selector:
+    matchLabels: {app: clinic-api-staging}
+  template:
+    metadata:
+      labels:
+        app: clinic-api-staging
+        tier: staging
+        clinic-db-access: "true"   # NetworkPolicy selector for Postgres ingress (REQ-16)
+    spec:
+      imagePullSecrets: [{name: ghcr-pull}]
+      containers:
+        - name: api
+          image: ghcr.io/steficzko/dental-api:v0.31.0   # STAGING TAG — leads production
+          ports: [{containerPort: 8000, name: http}]
+          env:
+            # Staging answers on kostikidis.net only; leaving gompha.com out
+            # means a gompha host that somehow reached this pod fails tenant
+            # resolution (404) instead of serving a production clinic.
+            - {name: BASE_DOMAIN, value: "kostikidis.net"}
+            - {name: SMTP_HOST, value: "smtp.gmail.com"}
+            - {name: SMTP_PORT, value: "587"}
+            - {name: SMTP_USERNAME, value: "kostikidis.network@gmail.com"}
+            - {name: SMTP_FROM, value: "kostikidis.network@gmail.com"}
+            - name: SMTP_PASSWORD
+              valueFrom: {secretKeyRef: {name: clinic-api-secret, key: SMTP_PASSWORD}}
+            - name: DATABASE_URL
+              valueFrom: {secretKeyRef: {name: clinic-api-secret, key: DATABASE_URL}}
+            - name: N8N_SHARED_SECRET
+              valueFrom: {secretKeyRef: {name: clinic-api-secret, key: N8N_SHARED_SECRET}}
+            - {name: VOICE_WHISPER_URL, value: "http://whisper.ai.svc:8000"}
+            - {name: VOICE_LLM_URL, value: "http://ollama.ai.svc:11434"}
+            - {name: VOICE_KEEP_AUDIO, value: "true"}
+            - {name: MINIO_ENDPOINT, value: "192.168.1.100:9100"}
+            - {name: MINIO_BUCKET, value: "clinic-voice"}
+            - {name: MINIO_SECURE, value: "false"}
+            - name: MINIO_ACCESS_KEY
+              valueFrom: {secretKeyRef: {name: clinic-api-secret, key: MINIO_ACCESS_KEY, optional: true}}
+            - name: MINIO_SECRET_KEY
+              valueFrom: {secretKeyRef: {name: clinic-api-secret, key: MINIO_SECRET_KEY, optional: true}}
+          resources:
+            requests: {cpu: 50m, memory: 128Mi}
+            limits: {memory: 512Mi}
+          readinessProbe:
+            httpGet: {path: /api/healthz, port: 8000}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: clinic-api-staging
+  namespace: dental-clinic
+spec:
+  selector: {app: clinic-api-staging}
+  ports: [{name: http, port: 8000, targetPort: 8000}]
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: clinic-spa-staging
+  namespace: dental-clinic
+  labels: {app: clinic-spa-staging, tier: staging}
+spec:
+  replicas: 1
+  selector:
+    matchLabels: {app: clinic-spa-staging}
+  template:
+    metadata:
+      labels: {app: clinic-spa-staging, tier: staging}
+    spec:
+      imagePullSecrets: [{name: ghcr-pull}]
+      containers:
+        - name: nginx
+          image: ghcr.io/steficzko/dental-spa:v0.31.0   # STAGING TAG
+          ports: [{containerPort: 8080, name: http}]
+          volumeMounts:
+            - {name: nginx-conf, mountPath: /etc/nginx/conf.d}
+          resources:
+            requests: {cpu: 10m, memory: 32Mi}
+            limits: {memory: 128Mi}
+          readinessProbe:
+            httpGet: {path: /, port: 8080}
+      volumes:
+        - name: nginx-conf
+          configMap: {name: clinic-nginx-conf-staging}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: clinic-spa-staging
+  namespace: dental-clinic
+spec:
+  selector: {app: clinic-spa-staging}
+  ports: [{name: http, port: 80, targetPort: 8080}]
+---
+# Identical to clinic-nginx-conf except proxy_pass -> clinic-api-staging. A
+# staging SPA talking to the production API would defeat the whole split.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: clinic-nginx-conf-staging
+  namespace: dental-clinic
+data:
+  default.conf: |
+    server {
+      listen 8080;
+      server_name _;
+      root /usr/share/nginx/html;
+
+      location /api/ {
+        proxy_pass http://clinic-api-staging:8000/api/;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        client_max_body_size 25m;
+        proxy_read_timeout 60s;
+      }
+
+      location /internal/ { return 404; }
+
+      location / { try_files $uri $uri/ /index.html; }
+    }
+---
+# NetworkPolicies — the staging pods carry different labels, so the production
+# policies do not select them. Without these the staging API is unreachable and
+# cannot reach Postgres (default-deny for a selected pod).
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: clinic-spa-staging
+  namespace: dental-clinic
+spec:
+  podSelector:
+    matchLabels: {app: clinic-spa-staging}
+  policyTypes: [Ingress, Egress]
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels: {kubernetes.io/metadata.name: ingress-nginx}
+  egress:
+    - to:
+        - podSelector: {matchLabels: {app: clinic-api-staging}}
+      ports: [{port: 8000}]
+    - to: []   # kube-dns
+      ports: [{port: 53, protocol: UDP}, {port: 53, protocol: TCP}]
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: clinic-api-staging
+  namespace: dental-clinic
+spec:
+  podSelector:
+    matchLabels: {app: clinic-api-staging}
+  policyTypes: [Ingress, Egress]
+  ingress:
+    - from:
+        - podSelector: {matchLabels: {app: clinic-spa-staging}}
+      ports: [{port: 8000}]
+  egress:
+    - to:
+        - podSelector: {matchLabels: {app: clinic-postgres}}
+      ports: [{port: 5432}]
+    # Voice, on-prem ONLY — same two AI targets as production, never litellm.
+    # "patient speech never leaves the homelab" applies to staging too.
+    - to:
+        - namespaceSelector: {matchLabels: {kubernetes.io/metadata.name: ai}}
+          podSelector: {matchLabels: {app: whisper}}
+      ports: [{port: 8000}]
+    - to:
+        - namespaceSelector: {matchLabels: {kubernetes.io/metadata.name: ai}}
+          podSelector: {matchLabels: {app: ollama}}
+      ports: [{port: 11434}]
+    - to: []   # kube-dns + SMTP + MinIO (LAN) — same shape as production
+      ports: [{port: 53, protocol: UDP}, {port: 53, protocol: TCP},
+              {port: 587}, {port: 9100}]
