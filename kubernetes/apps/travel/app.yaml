@@ -27,7 +27,7 @@ spec:
     spec:
       containers:
         - name: site
-          image: ghcr.io/steficzko/travel:v0.1.1
+          image: ghcr.io/steficzko/travel:v0.1.2
           ports:
             - containerPort: 80
               name: http
