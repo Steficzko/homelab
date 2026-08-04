@@ -13,7 +13,12 @@ metadata:
   namespace: travel
   labels: {app: travel}
 spec:
-  replicas: 1
+  # HELD AT 0 2026-08-04: ghcr.io/steficzko/travel:v0.1.1 cannot be pulled
+  # (403 from ghcr.io — either the image was never built or the ghcr-pull
+  # credential has no access to this package). A pod that cannot start just
+  # fires KubeDeploymentReplicasMismatch every 15 minutes.
+  # Restore to 1 once `docker pull ghcr.io/steficzko/travel:v0.1.1` works.
+  replicas: 0
   selector:
     matchLabels: {app: travel}
   template:
