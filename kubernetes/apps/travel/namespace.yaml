@@ -1,0 +1,7 @@
+# Deployed via ArgoCD (bootstrap: travel.yaml). Source of truth: /mnt/devdata/MICE
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: travel
+  labels:
+    app.kubernetes.io/part-of: travel

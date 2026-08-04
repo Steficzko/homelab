@@ -1,0 +1,38 @@
+# Exact host takes precedence over the dental-clinic *.kostikidis.net wildcard
+# catch-all (ingress-nginx exact-host priority), so travel.kostikidis.net lands here.
+# No DNS record needed — the zone's wildcard CNAME already points at the tunnel.
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: travel
+  namespace: travel
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+spec:
+  ingressClassName: nginx
+  tls:
+    - hosts: ["*.kostikidis.net"]
+      secretName: travel-wildcard-tls
+  rules:
+    - host: travel.kostikidis.net
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service: {name: travel, port: {number: 80}}
+---
+# Cert secrets are namespaced — travel needs its own copy of the wildcard
+# (same DNS-01 ClusterIssuer as padle's and dental.clinic's).
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: travel-wildcard
+  namespace: travel
+spec:
+  secretName: travel-wildcard-tls
+  issuerRef: {name: letsencrypt-prod, kind: ClusterIssuer}
+  dnsNames:
+    - "*.kostikidis.net"
+    - "kostikidis.net"
