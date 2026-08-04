@@ -10,6 +10,11 @@ rules:
   - apiGroups: [""]
     resources: ["nodes", "nodes/metrics", "nodes/stats", "persistentvolumes", "namespaces", "events", "componentstatuses"]
     verbs: ["get", "list", "watch"]
+  # secrets: explicitly granted at user request — exposes decoded secret values
+  # in the dashboard to anyone past Cloudflare Access. Read-only.
+  - apiGroups: [""]
+    resources: ["secrets"]
+    verbs: ["get", "list", "watch"]
   - apiGroups: ["metrics.k8s.io"]
     resources: ["nodes", "pods"]
     verbs: ["get", "list", "watch"]
