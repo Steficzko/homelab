@@ -13,12 +13,12 @@ metadata:
   namespace: travel
   labels: {app: travel}
 spec:
-  # HELD AT 0 2026-08-04: ghcr.io/steficzko/travel:v0.1.1 cannot be pulled
-  # (403 from ghcr.io — either the image was never built or the ghcr-pull
-  # credential has no access to this package). A pod that cannot start just
-  # fires KubeDeploymentReplicasMismatch every 15 minutes.
-  # Restore to 1 once `docker pull ghcr.io/steficzko/travel:v0.1.1` works.
-  replicas: 0
+  # TEMPORARY CREDENTIAL 2026-08-04: the shared ghcr-pull PAT is scoped to
+  # older repos and gets 403 on this package, so ghcr-pull here holds a
+  # personal gh CLI OAuth token instead. It carries repo+workflow scope, which
+  # is far more than a pull needs, and it dies whenever `gh auth login` is run
+  # again. Replace with a read:packages-only PAT, or make the package public.
+  replicas: 1
   selector:
     matchLabels: {app: travel}
   template:
