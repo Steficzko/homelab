@@ -81,7 +81,7 @@ spec:
       imagePullSecrets: [{name: ghcr-pull}]
       containers:
         - name: migrate
-          image: ghcr.io/steficzko/dental-api:v0.37.1   # STAGING tag — the schema leads
+          image: ghcr.io/steficzko/dental-api:v0.38.0   # STAGING tag — the schema leads
           # production, which runs an older image against it. Safe ONLY while
           # migrations stay additive/forward-only (see staging.yaml header).
           command: ["python", "-m", "app.migrate"]  # idempotent /migrations/*.sql + clinic_app password
