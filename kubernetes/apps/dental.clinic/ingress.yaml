@@ -22,6 +22,17 @@ spec:
     - hosts: ["*.kostikidis.net"]
       secretName: blanka-wildcard-tls
   rules:
+    # PRODUCTION EXACT HOST (2026-08-05): blankadental holds the REAL clinic
+    # data and rides the production deployments now. Exact host beats the
+    # wildcard below, so every OTHER kostikidis.net subdomain still lands on
+    # the staging pair (which owns the separate staging DB since the split).
+    - host: "blankadental.kostikidis.net"
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service: {name: clinic-spa, port: {number: 80}}
     # STAGING (2026-08-02): kostikidis.net hosts hit the -staging pair, which
     # carries the newer image tag. Production gompha.com stays on clinic-spa.
     - host: "*.kostikidis.net"

@@ -11,19 +11,14 @@
 # stay PRODUCTION and serve *.gompha.com; the -staging pair below serves
 # *.kostikidis.net and carries the newer tag. ingress.yaml routes by host.
 #
-# WHAT IS SHARED: one Postgres, one set of secrets. Tenants were always rows in
-# one database (blanca, blankadental, demodental, demo, demosolo) and splitting
-# that means a second DB, second backup chain and a tenant move — not worth it
-# for a 1-patient production. The consequence, stated plainly:
-#
-#   THE SCHEMA IS SHARED. The migrate Job (postgres.yaml) runs at the STAGING
-#   tag, so the database is always at staging's schema while production runs an
-#   older image against it. That is safe ONLY because migrations here are
-#   additive and forward-only (house rule, build/release-and-updates.md):
-#   check_schema verifies required relations EXIST, so extra tables/columns are
-#   invisible to the older image. A migration that DROPS or RETYPES anything
-#   breaks production the moment it is applied. If one is ever needed, split
-#   the database first.
+# WHAT IS SHARED: nothing, since 2026-08-05. Staging has its OWN Postgres
+# (postgres-staging.yaml), own secrets (clinic-*-staging-secret) and own
+# migrate Job. The shared-schema era (2026-08-02..05, when the one migrate Job
+# ran the staging tag against the database production also used) is over:
+# migrations rehearse on the staging DB first, and the production DB is only
+# migrated by its own Job at promotion time. The staging API's egress policy
+# below allows 5432 to clinic-postgres-staging ONLY — it cannot reach the
+# production database even if misconfigured.
 # =============================================================================
 apiVersion: apps/v1
 kind: Deployment
@@ -40,7 +35,7 @@ spec:
       labels:
         app: clinic-api-staging
         tier: staging
-        clinic-db-access: "true"   # NetworkPolicy selector for Postgres ingress (REQ-16)
+        clinic-db: staging   # admits to the STAGING Postgres only (postgres-staging.yaml policy)
     spec:
       imagePullSecrets: [{name: ghcr-pull}]
       containers:
@@ -58,8 +53,8 @@ spec:
             - {name: SMTP_FROM, value: "kostikidis.network@gmail.com"}
             - name: SMTP_PASSWORD
               valueFrom: {secretKeyRef: {name: clinic-api-secret, key: SMTP_PASSWORD}}
-            - name: DATABASE_URL
-              valueFrom: {secretKeyRef: {name: clinic-api-secret, key: DATABASE_URL}}
+            - name: DATABASE_URL   # STAGING DB (2026-08-05 split) — never the production secret
+              valueFrom: {secretKeyRef: {name: clinic-api-staging-secret, key: DATABASE_URL}}
             - name: N8N_SHARED_SECRET
               valueFrom: {secretKeyRef: {name: clinic-api-secret, key: N8N_SHARED_SECRET}}
             - {name: VOICE_WHISPER_URL, value: "http://whisper.ai.svc:8000"}
@@ -193,7 +188,10 @@ spec:
       ports: [{port: 8000}]
   egress:
     - to:
-        - podSelector: {matchLabels: {app: clinic-postgres}}
+        # STAGING DB only (2026-08-05 split). Deliberately NOT clinic-postgres:
+        # even a misconfigured DATABASE_URL cannot open a TCP path to the
+        # production database from this pod.
+        - podSelector: {matchLabels: {app: clinic-postgres-staging}}
       ports: [{port: 5432}]
     # Voice, on-prem ONLY — same two AI targets as production, never litellm.
     # "patient speech never leaves the homelab" applies to staging too.
