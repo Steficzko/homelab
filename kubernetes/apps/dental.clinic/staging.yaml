@@ -40,7 +40,7 @@ spec:
       imagePullSecrets: [{name: ghcr-pull}]
       containers:
         - name: api
-          image: ghcr.io/steficzko/dental-api:v0.39.0   # STAGING TAG — leads production
+          image: ghcr.io/steficzko/dental-api:v0.39.1   # STAGING TAG — leads production
           ports: [{containerPort: 8000, name: http}]
           env:
             # Staging answers on kostikidis.net only; leaving gompha.com out
@@ -99,7 +99,7 @@ spec:
       imagePullSecrets: [{name: ghcr-pull}]
       containers:
         - name: nginx
-          image: ghcr.io/steficzko/dental-spa:v0.39.0   # STAGING TAG
+          image: ghcr.io/steficzko/dental-spa:v0.39.1   # STAGING TAG
           ports: [{containerPort: 8080, name: http}]
           volumeMounts:
             - {name: nginx-conf, mountPath: /etc/nginx/conf.d}
