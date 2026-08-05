@@ -1,0 +1,98 @@
+# =============================================================================
+# STAGING POSTGRES — added 2026-08-05. Ends the shared-schema era documented in
+# staging.yaml's header: migrations rehearse HERE first; the production DB
+# (postgres.yaml) is only ever migrated by its own Job at promotion time.
+#
+# SAFEGUARDS (Stefanos's "no accidents" contract):
+#   * Own secrets (clinic-postgres-staging-secret / clinic-api-staging-secret,
+#     SOPS + manual apply) — freshly generated passwords; production credentials
+#     appear nowhere in the staging wiring, so a copy-paste cannot cross.
+#   * NetworkPolicy below admits ONLY pods labeled clinic-db: staging — the
+#     production API/jobs don't carry that label and cannot connect.
+#   * The staging API's own egress policy (staging.yaml) points at THIS service,
+#     so the staging API cannot reach the production Postgres either.
+#   * deploy_env marker row: this DB carries 'staging', production carries
+#     'production'; the dangerous scripts in saas.dental/scripts refuse to run
+#     against the wrong one.
+#
+# DISPOSABLE by design: no Longhorn backup label, no dump CronJob. If it is
+# wrecked, delete the PVC and let the migrate Job + seed rebuild it.
+# =============================================================================
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: clinic-postgres-staging-data
+  namespace: dental-clinic
+spec:
+  accessModes: [ReadWriteOnce]
+  storageClassName: longhorn
+  resources:
+    requests: {storage: 5Gi}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: clinic-postgres-staging
+  namespace: dental-clinic
+  labels: {app: clinic-postgres-staging, tier: staging}
+spec:
+  replicas: 1
+  strategy: {type: Recreate}   # RWO volume
+  selector:
+    matchLabels: {app: clinic-postgres-staging}
+  template:
+    metadata:
+      labels: {app: clinic-postgres-staging, tier: staging}
+    spec:
+      containers:
+        - name: postgres
+          # same pinned digest as production — staging must rehearse on the
+          # exact server version it is vouching for
+          image: postgres:16-alpine@sha256:16bc17c64a573ef34162af9298258d1aec548232985b33ed7b1eac33ba35c229
+          ports: [{containerPort: 5432}]
+          env:
+            - {name: POSTGRES_DB, value: clinic}
+            - name: POSTGRES_USER
+              valueFrom: {secretKeyRef: {name: clinic-postgres-staging-secret, key: POSTGRES_USER}}
+            - name: POSTGRES_PASSWORD   # superuser — NEVER used by the app (REQ-2)
+              valueFrom: {secretKeyRef: {name: clinic-postgres-staging-secret, key: POSTGRES_PASSWORD}}
+            - {name: PGDATA, value: /var/lib/postgresql/data/pgdata}
+          volumeMounts:
+            - {name: data, mountPath: /var/lib/postgresql/data, subPath: pgdata}
+          resources:
+            requests: {cpu: 50m, memory: 128Mi}
+            limits: {memory: 512Mi}
+          readinessProbe:
+            exec: {command: ["pg_isready", "-U", "postgres", "-d", "clinic"]}
+      volumes:
+        - name: data
+          persistentVolumeClaim: {claimName: clinic-postgres-staging-data}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: clinic-postgres-staging
+  namespace: dental-clinic
+spec:
+  selector: {app: clinic-postgres-staging}
+  ports: [{port: 5432, targetPort: 5432}]   # ClusterIP — never NodePort/LoadBalancer (REQ-16)
+---
+# ONLY pods labeled clinic-db: staging may connect (staging api + staging
+# migrate). Production pods carry no such label — that asymmetry, not
+# discipline, is what makes a cross-tier connection impossible.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: clinic-postgres-staging
+  namespace: dental-clinic
+spec:
+  podSelector:
+    matchLabels: {app: clinic-postgres-staging}
+  policyTypes: [Ingress, Egress]
+  ingress:
+    - from:
+        - podSelector: {matchLabels: {clinic-db: staging}}
+      ports: [{port: 5432}]
+  egress:
+    - to: []   # kube-dns only
+      ports: [{port: 53, protocol: UDP}, {port: 53, protocol: TCP}]
