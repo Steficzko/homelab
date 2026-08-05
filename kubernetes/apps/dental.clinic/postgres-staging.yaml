@@ -77,6 +77,38 @@ spec:
   selector: {app: clinic-postgres-staging}
   ports: [{port: 5432, targetPort: 5432}]   # ClusterIP — never NodePort/LoadBalancer (REQ-16)
 ---
+# Staging migrate Job — same PreSync pattern as production's (postgres.yaml),
+# but pointed at THIS DB with the staging secret. Runs the STAGING tag: this is
+# where a new migration meets a real schema for the first time. 0001_init
+# creates the clinic_app role idempotently, so a fresh PVC self-initializes.
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: clinic-migrate-staging
+  namespace: dental-clinic
+  annotations:
+    argocd.argoproj.io/hook: PreSync
+    argocd.argoproj.io/hook-delete-policy: BeforeHookCreation
+spec:
+  backoffLimit: 1
+  template:
+    metadata:
+      labels:
+        app: clinic-migrate-staging
+        clinic-db: staging   # admission label for the staging Postgres policy
+    spec:
+      restartPolicy: Never
+      imagePullSecrets: [{name: ghcr-pull}]
+      containers:
+        - name: migrate
+          image: ghcr.io/steficzko/dental-api:v0.38.0   # STAGING TAG — bump with staging.yaml, every time
+          command: ["python", "-m", "app.migrate"]
+          env:
+            - name: DATABASE_URL_SUPERUSER
+              valueFrom: {secretKeyRef: {name: clinic-postgres-staging-secret, key: DATABASE_URL_SUPERUSER}}
+            - name: CLINIC_APP_DB_PASSWORD
+              valueFrom: {secretKeyRef: {name: clinic-postgres-staging-secret, key: CLINIC_APP_DB_PASSWORD}}
+---
 # ONLY pods labeled clinic-db: staging may connect (staging api + staging
 # migrate). Production pods carry no such label — that asymmetry, not
 # discipline, is what makes a cross-tier connection impossible.
