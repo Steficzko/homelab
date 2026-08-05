@@ -101,7 +101,7 @@ spec:
       imagePullSecrets: [{name: ghcr-pull}]
       containers:
         - name: migrate
-          image: ghcr.io/steficzko/dental-api:v0.38.0   # STAGING TAG — bump with staging.yaml, every time
+          image: ghcr.io/steficzko/dental-api:v0.39.0   # STAGING TAG — bump with staging.yaml, every time
           command: ["python", "-m", "app.migrate"]
           env:
             - name: DATABASE_URL_SUPERUSER
