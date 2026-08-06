@@ -1,0 +1,37 @@
+# WP's fake cron is disabled (DISABLE_WP_CRON) — scheduled tasks need cron
+# that actually fires.
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: wp-cron
+  namespace: blanca-dental-care
+spec:
+  schedule: "*/5 * * * *"
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      ttlSecondsAfterFinished: 3600
+      backoffLimit: 1
+      activeDeadlineSeconds: 240
+      template:
+        metadata:
+          labels:
+            app: wp-cron
+        spec:
+          restartPolicy: Never
+          containers:
+            - name: curl
+              image: curlimages/curl:8.14.1
+              command:
+                - /bin/sh
+                - -c
+                # via the INGRESS, not the wordpress svc — pod-to-pod got CNI-rejected
+                # after a pod roll on namosocks (2026-08-01) despite a correct netpol
+                # allow; the ingress path is what real traffic uses and is always
+                # exercised. Host colon must stay inside quotes.
+                - 'curl -fsS -m 110 -H "Host: blancadentacare.kostikidis.net" "http://ingress-nginx-controller.ingress-nginx.svc.cluster.local/wp-cron.php?doing_wp_cron" > /dev/null'
+              resources:
+                requests: { memory: 16Mi, cpu: 10m }
+                limits: { memory: 64Mi, cpu: 100m }
