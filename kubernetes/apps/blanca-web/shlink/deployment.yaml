@@ -1,0 +1,64 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: shlink
+  namespace: blanca-dental-care
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: shlink
+  template:
+    metadata:
+      labels:
+        app: shlink
+    spec:
+      # Shlink runs non-root; the Longhorn PVC mounts root-owned. fsGroup makes
+      # /etc/shlink/data group-writable (same as shlink-elwany).
+      securityContext:
+        fsGroup: 1000
+      containers:
+        - name: shlink
+          image: shlinkio/shlink:5.1.5
+          env:
+            - name: DEFAULT_DOMAIN
+              value: go.blancadentalcare.com
+            - name: IS_HTTPS_ENABLED
+              value: "true"
+            - name: TIMEZONE
+              value: Asia/Baghdad
+            # SQLite driver (default), data on the Longhorn PVC below.
+            # No INITIAL_API_KEY: generate post-deploy via
+            #   kubectl -n blanca-dental-care exec deploy/shlink -- shlink api-key:generate
+            # No GeoLite key — visit geolocation off until wanted.
+          ports:
+            - containerPort: 8080
+          resources:
+            requests:
+              memory: 128Mi
+              cpu: 50m
+            limits:
+              memory: 512Mi
+              cpu: 500m
+          readinessProbe:
+            httpGet:
+              path: /rest/health
+              port: 8080
+            initialDelaySeconds: 20
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /rest/health
+              port: 8080
+            initialDelaySeconds: 40
+            periodSeconds: 20
+            failureThreshold: 5
+          volumeMounts:
+            - name: data
+              mountPath: /etc/shlink/data
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: shlink-data-pvc

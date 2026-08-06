@@ -1,0 +1,21 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: shlink
+  namespace: blanca-dental-care
+  annotations:
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+spec:
+  ingressClassName: nginx
+  rules:
+    # Via the BlancaDentalClinic tunnel — TLS terminates at Cloudflare.
+    - host: go.blancadentalcare.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: shlink
+                port:
+                  number: 8080
