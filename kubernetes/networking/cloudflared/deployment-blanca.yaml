@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cloudflared-blanca
+  namespace: cloudflare-tunnel
+spec:
+  replicas: 2   # HA — both connect the BlancaDentalClinic tunnel; Cloudflare load-balances
+  selector:
+    matchLabels:
+      app: cloudflared-blanca
+  template:
+    metadata:
+      labels:
+        app: cloudflared-blanca
+    spec:
+      topologySpreadConstraints:
+        - maxSkew: 1
+          topologyKey: kubernetes.io/hostname
+          whenUnsatisfiable: DoNotSchedule
+          labelSelector:
+            matchLabels:
+              app: cloudflared-blanca
+      containers:
+        - name: cloudflared
+          image: cloudflare/cloudflared:2026.6.1
+          args:
+            - tunnel
+            - --no-autoupdate
+            - run
+            - --token
+            - $(TUNNEL_TOKEN)
+          env:
+            - name: TUNNEL_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: cloudflare-tunnel-token-blanca   # BlancaDentalClinic tunnel 0552c71b; see secret-blanca.example.yaml
+                  key: token
+          resources:
+            requests:
+              memory: 64Mi
+              cpu: 10m
+            limits:
+              memory: 128Mi
+              cpu: 200m
