@@ -241,6 +241,11 @@ data:
           icon: si-wordpress
           href: https://studioconcreteluka.com
           description: Photography studio
+      - Blanca Dental Care:
+          icon: si-wordpress
+          href: https://blancadentalcare.com
+          description: Dr. Ali clinic website
+          siteMonitor: https://blancadentalcare.com
 
   bookmarks.yaml: |
     []
