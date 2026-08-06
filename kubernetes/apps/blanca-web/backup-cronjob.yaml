@@ -54,11 +54,25 @@ spec:
                 - |
                   set -eu
                   TS=$(date +%Y%m%d-%H%M%S)
+                  # K3s netpol admits fresh job pods ~30-45s late -> first connects get
+                  # refused/time out (this silently produced a 20B empty dump on the
+                  # first run). Wait for a real connection before dumping.
+                  echo "==> Waiting for DB ..."
+                  for i in $(seq 1 30); do
+                    mariadb -h mariadb -u wordpress -p"$MARIADB_PASSWORD" -e 'SELECT 1' >/dev/null 2>&1 && break
+                    [ "$i" = 30 ] && { echo "DB unreachable after 150s"; exit 1; }
+                    sleep 5
+                  done
                   echo "==> Dumping wordpress DB ..."
+                  # dump to file, not a pipeline — a piped dump exits with gzip's status
+                  # and masks connection failures
                   mariadb-dump -h mariadb -u wordpress -p"$MARIADB_PASSWORD" \
-                    --single-transaction --quick wordpress | gzip -6 > "/work/db-${TS}.sql.gz"
+                    --single-transaction --quick wordpress > "/work/db-${TS}.sql"
+                  [ -s "/work/db-${TS}.sql" ] || { echo "empty dump"; exit 1; }
+                  gzip -6 "/work/db-${TS}.sql"
                   echo "==> Archiving wp-content ..."
-                  tar -C /wp-content -czf "/work/wp-content-${TS}.tar.gz" .
+                  # live site -> tar exit 1 ("file changed as we read it") is expected; >=2 is real
+                  tar -C /wp-content -czf "/work/wp-content-${TS}.tar.gz" . || [ $? -eq 1 ]
                   echo "==> Uploading ..."
                   /tools/mc alias set s3 "$AWS_ENDPOINTS" "$AWS_ACCESS_KEY_ID" "$AWS_SECRET_ACCESS_KEY"
                   /tools/mc cp "/work/db-${TS}.sql.gz" "s3/${BUCKET}/db/db-${TS}.sql.gz"
