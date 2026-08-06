@@ -1,0 +1,76 @@
+# Nightly logical backup: mariadb-dump + wp-content tar -> MinIO (blanca-web-backups).
+# Bucket has 30-day ILM + hourly replication to Greece — no client-side pruning needed.
+# Restore: mariadb -h mariadb -u wordpress -p wordpress < dump.sql ; untar into the PVC.
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: blanca-web-backup
+  namespace: blanca-dental-care
+spec:
+  schedule: "30 3 * * *"
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      ttlSecondsAfterFinished: 10800
+      backoffLimit: 2
+      activeDeadlineSeconds: 1800
+      template:
+        metadata:
+          labels:
+            app: blanca-web-backup
+        spec:
+          restartPolicy: Never
+          affinity:                       # wp-content PVC is RWO longhorn — must share the node with wordpress
+            podAffinity:
+              requiredDuringSchedulingIgnoredDuringExecution:
+                - labelSelector:
+                    matchLabels:
+                      app: wordpress
+                  topologyKey: kubernetes.io/hostname
+          initContainers:
+            - name: copy-mc
+              image: minio/mc@sha256:a7fe349ef4bd8521fb8497f55c6042871b2ae640607cf99d9bede5e9bdf11727
+              securityContext:
+                runAsUser: 0
+              command: ["/bin/sh", "-c", "cp /usr/bin/mc /tools/mc && chmod 0755 /tools/mc"]
+              volumeMounts:
+                - { name: tools, mountPath: /tools }
+          containers:
+            - name: dump
+              image: mariadb:11.4
+              envFrom:
+                - secretRef: { name: backup-s3-secret }   # AWS_ACCESS_KEY_ID / AWS_SECRET_ACCESS_KEY / AWS_ENDPOINTS
+              env:
+                - { name: HOME,   value: /work }
+                - { name: BUCKET, value: blanca-web-backups }
+                - name: MARIADB_PASSWORD
+                  valueFrom:
+                    secretKeyRef: { name: blanca-web-secret, key: MARIADB_PASSWORD }
+              command:
+                - /bin/sh
+                - -c
+                - |
+                  set -eu
+                  TS=$(date +%Y%m%d-%H%M%S)
+                  echo "==> Dumping wordpress DB ..."
+                  mariadb-dump -h mariadb -u wordpress -p"$MARIADB_PASSWORD" \
+                    --single-transaction --quick wordpress | gzip -6 > "/work/db-${TS}.sql.gz"
+                  echo "==> Archiving wp-content ..."
+                  tar -C /wp-content -czf "/work/wp-content-${TS}.tar.gz" .
+                  echo "==> Uploading ..."
+                  /tools/mc alias set s3 "$AWS_ENDPOINTS" "$AWS_ACCESS_KEY_ID" "$AWS_SECRET_ACCESS_KEY"
+                  /tools/mc cp "/work/db-${TS}.sql.gz" "s3/${BUCKET}/db/db-${TS}.sql.gz"
+                  /tools/mc cp "/work/wp-content-${TS}.tar.gz" "s3/${BUCKET}/wp-content/wp-content-${TS}.tar.gz"
+                  echo "==> Done (ILM prunes >30d server-side)"
+              volumeMounts:
+                - { name: tools, mountPath: /tools }
+                - { name: work, mountPath: /work }
+                - { name: wp-content, mountPath: /wp-content, readOnly: true }
+          volumes:
+            - { name: tools, emptyDir: {} }
+            - { name: work, emptyDir: {} }
+            - name: wp-content
+              persistentVolumeClaim:
+                claimName: wp-content-pvc
