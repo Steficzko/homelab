@@ -39,7 +39,7 @@ spec:
                 /* Multi-host whitelist — the client's own Cloudflare domain gets added
                    here (plus in the ingress) when it exists. Without a dynamic siteurl
                    WP canonical-redirects every request back to one host. */
-                $blanca_hosts = ['blancadentalclinic.com', 'www.blancadentalclinic.com', 'blancadentacare.kostikidis.net'];
+                $blanca_hosts = ['blancadentalcare.com', 'www.blancadentalcare.com', 'blancadentacare.kostikidis.net'];
                 $blanca_h = isset($_SERVER['HTTP_HOST']) ? strtolower($_SERVER['HTTP_HOST']) : '';
                 if (!in_array($blanca_h, $blanca_hosts, true)) { $blanca_h = 'blancadentacare.kostikidis.net'; }
                 define('WP_HOME', 'https://' . $blanca_h); define('WP_SITEURL', 'https://' . $blanca_h);

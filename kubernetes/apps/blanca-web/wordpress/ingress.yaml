@@ -28,7 +28,7 @@ spec:
                   number: 80
     # Client domain via the BlancaDentalClinic tunnel (0552c71b) — TLS terminates
     # at Cloudflare, plain http origin hop, so no cert-manager TLS for these hosts.
-    - host: blancadentalclinic.com
+    - host: blancadentalcare.com
       http:
         paths:
           - path: /
@@ -38,7 +38,7 @@ spec:
                 name: wordpress
                 port:
                   number: 80
-    - host: www.blancadentalclinic.com
+    - host: www.blancadentalcare.com
       http:
         paths:
           - path: /
