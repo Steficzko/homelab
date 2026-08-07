@@ -31,7 +31,10 @@ spec:
                 # after a pod roll on namosocks (2026-08-01) despite a correct netpol
                 # allow; the ingress path is what real traffic uses and is always
                 # exercised. Host colon must stay inside quotes.
-                - 'curl -fsS -m 110 -H "Host: blancadentacare.kostikidis.net" "http://ingress-nginx-controller.ingress-nginx.svc.cluster.local/wp-cron.php?doing_wp_cron" > /dev/null'
+                # Host is the client domain: WP_HOME is derived per request, so cron
+                # jobs that write URLs (Yoast indexables, sitemaps) must not run under
+                # the staging host. The ingress already has a rule for this host.
+                - 'curl -fsS -m 110 -H "Host: blancadentalcare.com" "http://ingress-nginx-controller.ingress-nginx.svc.cluster.local/wp-cron.php?doing_wp_cron" > /dev/null'
               resources:
                 requests: { memory: 16Mi, cpu: 10m }
                 limits: { memory: 64Mi, cpu: 100m }

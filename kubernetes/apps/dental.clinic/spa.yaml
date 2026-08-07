@@ -18,7 +18,7 @@ spec:
       imagePullSecrets: [{name: ghcr-pull}]
       containers:
         - name: nginx
-          image: ghcr.io/steficzko/dental-spa:v0.38.0   # PRODUCTION TAG - promoted 2026-08-05; semver, never :latest
+          image: ghcr.io/steficzko/dental-spa:v0.40.0   # PRODUCTION TAG - promoted 2026-08-07; semver, never :latest
           ports: [{containerPort: 8080, name: http}]
           volumeMounts:
             - {name: nginx-conf, mountPath: /etc/nginx/conf.d}
