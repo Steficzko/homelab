@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: web-client
-          image: shlinkio/shlink-web-client:4.7.1
+          image: shlinkio/shlink-web-client:4.8.1
           # Static SPA (rootless nginx on :8080). It talks to the Shlink API from
           # the BROWSER, so no in-cluster link to shlink-server is needed. On first
           # login (behind Cloudflare Access) add the server manually:

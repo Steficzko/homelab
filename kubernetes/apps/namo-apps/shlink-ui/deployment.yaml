@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: shlink-web-client
-          image: shlinkio/shlink-web-client:4.4.0
+          image: shlinkio/shlink-web-client:4.8.1
           env:
             # Pre-wire the server so Namo never has to paste a URL or an API key.
             - name: SHLINK_SERVER_URL
