@@ -13,7 +13,15 @@ metadata:
   name: dental-clinic
   namespace: dental-clinic
   annotations:
-    cert-manager.io/cluster-issuer: letsencrypt-prod
+    # NO cert-manager.io/cluster-issuer HERE — deliberate. The blanka-wildcard
+    # Certificate below already manages secret blanka-wildcard-tls. With this
+    # annotation present, cert-manager's ingress-shim ALSO auto-creates a
+    # Certificate named after the secret (blanka-wildcard-tls), so two objects
+    # fight over one secret: the explicit one wins and the shim's copy sits
+    # Ready=False forever ("Secret was issued for blanka-wildcard ... you might
+    # have two conflicting Certificates pointing to the same secret").
+    # The explicit Certificate is the one to keep — it also covers the apex,
+    # which the shim's copy does not. Re-adding this annotation re-creates the clash.
     nginx.ingress.kubernetes.io/ssl-redirect: "false"
     nginx.ingress.kubernetes.io/proxy-body-size: "25m"
 spec:
