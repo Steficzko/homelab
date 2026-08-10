@@ -11,6 +11,12 @@ metadata:
   annotations:
     cert-manager.io/cluster-issuer: letsencrypt-prod
     nginx.ingress.kubernetes.io/proxy-body-size: "25m"
+    # REQUIRED, not optional. cloudflared reaches ingress-nginx over PLAIN HTTP.
+    # With a tls: block present, ingress-nginx 308-redirects http->https, which
+    # goes back out to Cloudflare and re-enters the tunnel over http again ->
+    # ERR_TOO_MANY_REDIRECTS. TLS terminates at the Cloudflare edge; the origin
+    # hop is http by design. Every tunnel-fronted ingress in this repo sets this.
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
 spec:
   ingressClassName: nginx
   tls:
