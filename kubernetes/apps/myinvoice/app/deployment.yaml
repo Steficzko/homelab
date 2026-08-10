@@ -1,0 +1,95 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: myinvoice
+  namespace: myinvoice
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate          # RWO /data PVC — no rolling overlap possible
+  selector:
+    matchLabels:
+      app: myinvoice
+  template:
+    metadata:
+      labels:
+        app: myinvoice
+    spec:
+      containers:
+        - name: myinvoice
+          # Digest-pinned. Upstream's own compose says to pin a version in
+          # production; :latest would silently roll an invoicing app.
+          image: ghcr.io/radekhulan/myinvoice:4.53.2@sha256:769192a4b4625e96afab75f51fcc81b1fab862d0c2bd5067e94006f581910a25
+          env:
+            - name: TZ
+              value: Europe/Prague
+            - name: MYINVOICE_DATA_DIR
+              value: /data
+            - name: MYINVOICE_APP_ENV
+              value: production
+            - name: MYINVOICE_APP_URL
+              value: https://faktury.kostikidis.net
+            # Built-in cron lives in the app container. Stays 1 while replicas=1;
+            # if this is ever scaled, exactly ONE replica may keep it enabled or
+            # scheduled jobs run multiple times.
+            - name: MYINVOICE_ENABLE_CRON
+              value: "1"
+            - name: MYINVOICE_DB_HOST
+              value: mariadb
+            - name: MYINVOICE_DB_PORT
+              value: "3306"
+            - name: MYINVOICE_DB_NAME
+              value: myinvoice
+            - name: MYINVOICE_DB_USER
+              value: myinvoice
+            - name: MYINVOICE_DB_PASS
+              valueFrom:
+                secretKeyRef: { name: myinvoice-secret, key: MARIADB_PASSWORD }
+            # PEPPER salts every password hash; SECRET_KEY encrypts TOTP secrets.
+            # CHANGING OR LOSING EITHER PERMANENTLY BREAKS ALL LOGINS AND 2FA —
+            # there is no recovery path. Both live in secret.sops.yaml and are
+            # mirrored into Vaultwarden (a SOPS-only copy plus a lost Age key
+            # would be a total lockout).
+            - name: MYINVOICE_PEPPER
+              valueFrom:
+                secretKeyRef: { name: myinvoice-secret, key: MYINVOICE_PEPPER }
+            - name: MYINVOICE_SECRET_KEY
+              valueFrom:
+                secretKeyRef: { name: myinvoice-secret, key: MYINVOICE_SECRET_KEY }
+            # TLS terminates at Cloudflare/ingress. __Host- prefix requires
+            # Secure + path=/ + no Domain attribute, which this satisfies.
+            - name: MYINVOICE_SESSION_COOKIE_SECURE
+              value: "true"
+            - name: MYINVOICE_SESSION_COOKIE_NAME
+              value: __Host-myinvoice_session
+            - name: MYINVOICE_AUTH_REQUIRE_MFA
+              value: "true"
+          ports:
+            - containerPort: 80
+          resources:
+            requests:
+              memory: 256Mi
+              cpu: 50m
+            limits:
+              memory: 1Gi
+              cpu: 1000m
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 15
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 60
+            periodSeconds: 20
+            failureThreshold: 5
+          volumeMounts:
+            - name: data
+              mountPath: /data
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: myinvoice-data

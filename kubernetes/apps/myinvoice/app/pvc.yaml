@@ -1,0 +1,14 @@
+# Single-volume layout (upstream >= 3.6.0): /data holds EVERYTHING stateful —
+# log/, storage/{invoices,uploads,backup,sessions,cache}, private/dkim/ and the
+# cfg.local.php written by the setup wizard. Losing this loses the invoices.
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: myinvoice-data
+  namespace: myinvoice
+spec:
+  accessModes: [ReadWriteOnce]
+  storageClassName: longhorn
+  resources:
+    requests:
+      storage: 5Gi

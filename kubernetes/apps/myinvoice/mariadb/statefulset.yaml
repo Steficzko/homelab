@@ -1,0 +1,71 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: mariadb
+  namespace: myinvoice
+spec:
+  serviceName: mariadb
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mariadb
+  template:
+    metadata:
+      labels:
+        app: mariadb
+    spec:
+      containers:
+        - name: mariadb
+          image: mariadb:11.4
+          # Upstream compose tuning: performance_schema off saves ~100-200Mi RSS,
+          # smaller redo log saves ~50Mi on disk. MariaDB re-sizes the redo log
+          # safely on a clean shutdown, so this is not a one-way door.
+          args:
+            - --performance-schema=OFF
+            - --innodb-buffer-pool-size=128M
+            - --innodb-log-file-size=48M
+          env:
+            - name: MARIADB_DATABASE
+              value: myinvoice
+            - name: MARIADB_USER
+              value: myinvoice
+            - name: MARIADB_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef: { name: myinvoice-secret, key: MARIADB_ROOT_PASSWORD }
+            - name: MARIADB_PASSWORD
+              valueFrom:
+                secretKeyRef: { name: myinvoice-secret, key: MARIADB_PASSWORD }
+            - name: TZ
+              value: Europe/Prague
+          ports:
+            - containerPort: 3306
+          resources:
+            requests:
+              memory: 256Mi
+              cpu: 50m
+            limits:
+              memory: 512Mi
+              cpu: 500m
+          readinessProbe:
+            exec:
+              command: ["healthcheck.sh", "--connect", "--innodb_initialized"]
+            initialDelaySeconds: 15
+            periodSeconds: 10
+          livenessProbe:
+            exec:
+              command: ["healthcheck.sh", "--connect", "--innodb_initialized"]
+            initialDelaySeconds: 60
+            periodSeconds: 20
+            failureThreshold: 5
+          volumeMounts:
+            - name: data
+              mountPath: /var/lib/mysql
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        accessModes: [ReadWriteOnce]
+        storageClassName: longhorn
+        resources:
+          requests:
+            storage: 5Gi

@@ -1,0 +1,29 @@
+# Exposed via the kostikidis wildcard Cloudflare tunnel.
+# STAYS BEHIND THE *.kostikidis.net CLOUDFLARE ACCESS WILDCARD — do NOT add a
+# bypass policy. This is invoicing data, and the app ships a browser setup
+# wizard that is publicly claimable until it has been completed (same trap the
+# blanca-web WordPress installer hit on 2026-08-06).
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: myinvoice
+  namespace: myinvoice
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    nginx.ingress.kubernetes.io/proxy-body-size: "25m"
+spec:
+  ingressClassName: nginx
+  tls:
+    - hosts: [faktury.kostikidis.net]
+      secretName: faktury-kostikidis-net-tls
+  rules:
+    - host: faktury.kostikidis.net
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: myinvoice
+                port:
+                  number: 80
