@@ -1,0 +1,134 @@
+# Nightly logical backup: mariadb-dump + /data tar -> MinIO (myinvoice-backups).
+# Hourly replication to Greece. No client-side pruning — MinIO ILM does it.
+#
+# GFS ROTATION (grandfather-father-son), 5-year recoverability without 5 years
+# of nightlies. Each cadence writes to its OWN PREFIX and each prefix carries its
+# own ILM expiry:
+#
+#   daily/    every night          expire   30d
+#   weekly/   Sundays  (date +%u = 7)  expire  365d
+#   monthly/  the 1st  (date +%d = 01) expire 1825d  (5 years)
+#
+# WHY PREFIXES AND NOT AN "ILM TRANSITION RULE": S3/MinIO lifecycle can only
+# EXPIRE by age/prefix/tag. `transition` moves objects to a different storage
+# TIER (needs `mc ilm tier add` + a remote target) — it does not thin copies.
+# There is no "keep one per week" lifecycle primitive; separate prefixes are how
+# GFS is expressed. Retention is statutory (CZ tax documents), hence 5 years on
+# the monthly set rather than the 30d the other apps use.
+#
+# The weekly/monthly copies are SERVER-SIDE `mc cp` within the same bucket —
+# the artifact is uploaded once and copied inside MinIO, never re-uploaded.
+#
+# RESTORE: newest is in daily/. Older than 30d -> weekly/, older than a year ->
+# monthly/. Look in all three, newest wins.
+#
+# /data holds invoices, uploads, DKIM keys AND cfg.local.php — restoring the DB
+# alone is not enough, both halves are needed.
+#
+# Restore: mariadb -h mariadb -u myinvoice -p myinvoice < db.sql ; untar into the PVC.
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: myinvoice-backup
+  namespace: myinvoice
+spec:
+  schedule: "45 3 * * *"          # 03:45 — after blanca (03:30), avoids MinIO contention
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      ttlSecondsAfterFinished: 10800
+      backoffLimit: 2
+      activeDeadlineSeconds: 1800
+      template:
+        metadata:
+          labels:
+            app: myinvoice-backup
+        spec:
+          restartPolicy: Never
+          affinity:                       # /data PVC is RWO longhorn — must share the node with the app
+            podAffinity:
+              requiredDuringSchedulingIgnoredDuringExecution:
+                - labelSelector:
+                    matchLabels:
+                      app: myinvoice
+                  topologyKey: kubernetes.io/hostname
+          initContainers:
+            - name: copy-mc
+              image: minio/mc@sha256:a7fe349ef4bd8521fb8497f55c6042871b2ae640607cf99d9bede5e9bdf11727
+              securityContext:
+                runAsUser: 0
+              command: ["/bin/sh", "-c", "cp /usr/bin/mc /tools/mc && chmod 0755 /tools/mc"]
+              volumeMounts:
+                - { name: tools, mountPath: /tools }
+          containers:
+            - name: dump
+              image: mariadb:11.4
+              envFrom:
+                - secretRef: { name: backup-s3-secret }   # AWS_ACCESS_KEY_ID / AWS_SECRET_ACCESS_KEY / AWS_ENDPOINTS
+              env:
+                - { name: HOME,   value: /work }
+                - { name: BUCKET, value: myinvoice-backups }
+                - name: MARIADB_PASSWORD
+                  valueFrom:
+                    secretKeyRef: { name: myinvoice-secret, key: MARIADB_PASSWORD }
+              command:
+                - /bin/sh
+                - -c
+                - |
+                  set -eu
+                  TS=$(date +%Y%m%d-%H%M%S)
+                  # K3s netpol admits fresh job pods ~30-45s late -> first connects get
+                  # refused/time out, which silently produced a 20B empty dump on
+                  # blanca-web's first run. Wait for a real connection before dumping.
+                  echo "==> Waiting for DB ..."
+                  for i in $(seq 1 30); do
+                    mariadb -h mariadb -u myinvoice -p"$MARIADB_PASSWORD" -e 'SELECT 1' >/dev/null 2>&1 && break
+                    [ "$i" = 30 ] && { echo "DB unreachable after 150s"; exit 1; }
+                    sleep 5
+                  done
+                  echo "==> Dumping myinvoice DB ..."
+                  # dump to file, not a pipeline — a piped dump exits with gzip's status
+                  # and masks connection failures
+                  mariadb-dump -h mariadb -u myinvoice -p"$MARIADB_PASSWORD" \
+                    --single-transaction --quick myinvoice > "/work/db-${TS}.sql"
+                  [ -s "/work/db-${TS}.sql" ] || { echo "empty dump"; exit 1; }
+                  gzip -6 "/work/db-${TS}.sql"
+                  echo "==> Archiving /data ..."
+                  # live app -> tar exit 1 ("file changed as we read it") is expected; >=2 is real
+                  tar -C /data -czf "/work/data-${TS}.tar.gz" . || [ $? -eq 1 ]
+                  [ -s "/work/data-${TS}.tar.gz" ] || { echo "empty data archive"; exit 1; }
+                  echo "==> Uploading to daily/ ..."
+                  /tools/mc alias set s3 "$AWS_ENDPOINTS" "$AWS_ACCESS_KEY_ID" "$AWS_SECRET_ACCESS_KEY"
+                  /tools/mc cp "/work/db-${TS}.sql.gz"   "s3/${BUCKET}/daily/db/db-${TS}.sql.gz"
+                  /tools/mc cp "/work/data-${TS}.tar.gz" "s3/${BUCKET}/daily/data/data-${TS}.tar.gz"
+
+                  # GFS promotion. Server-side copies inside the same bucket, so
+                  # nothing is re-uploaded. date +%u -> 1..7 (7=Sunday), %d -> 01..31.
+                  promote() {
+                    tier="$1"
+                    echo "==> Promoting to ${tier}/ ..."
+                    /tools/mc cp "s3/${BUCKET}/daily/db/db-${TS}.sql.gz"     "s3/${BUCKET}/${tier}/db/db-${TS}.sql.gz"
+                    /tools/mc cp "s3/${BUCKET}/daily/data/data-${TS}.tar.gz" "s3/${BUCKET}/${tier}/data/data-${TS}.tar.gz"
+                  }
+                  [ "$(date +%u)" = "7" ]  && promote weekly  || true
+                  [ "$(date +%d)" = "01" ] && promote monthly || true
+
+                  echo "==> Verifying objects are non-empty in the bucket ..."
+                  # A 0-byte object uploads happily; only a stat proves the copy landed.
+                  for p in "daily/db/db-${TS}.sql.gz" "daily/data/data-${TS}.tar.gz"; do
+                    /tools/mc stat --json "s3/${BUCKET}/${p}" | grep -q '"size":[1-9]' \
+                      || { echo "FAILED: ${p} missing or zero-byte in bucket"; exit 1; }
+                  done
+                  echo "==> Done (ILM: daily 30d / weekly 365d / monthly 1825d)"
+              volumeMounts:
+                - { name: tools, mountPath: /tools }
+                - { name: work, mountPath: /work }
+                - { name: data, mountPath: /data, readOnly: true }
+          volumes:
+            - { name: tools, emptyDir: {} }
+            - { name: work, emptyDir: {} }
+            - name: data
+              persistentVolumeClaim:
+                claimName: myinvoice-data
