@@ -1,0 +1,70 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: erin
+  namespace: erin
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: erin
+  template:
+    metadata:
+      labels:
+        app: erin
+    spec:
+      containers:
+        - name: erin
+          image: mosswill/erin:1.21.0@sha256:68512cae7544516b2f0be128abff894e7d3c3907eead9a6c8c442526216665bb
+          env:
+            # PUBLIC_URL IS THE CADDY SITE ADDRESS (docker/Caddyfile line 34 is
+            # literally `{$PUBLIC_URL} {`). It MUST stay http:// even though the
+            # site is served over https — an https:// value makes Caddy try to
+            # obtain its own ACME certificate, which cannot work behind the
+            # tunnel + ingress. Upstream's own reverse-proxy example says the
+            # same: "This is to prevent Caddy from generating a certificate,
+            # assuming that our proxy takes care of that already."
+            - { name: PUBLIC_URL, value: "http://feed.kostikidis.net" }
+            # Auth is handled by the *.kostikidis.net Cloudflare Access wildcard.
+            # Erin's own master password is left off to avoid double-prompting on
+            # a casual swipe feed. To enable it: set true and add AUTH_SECRET
+            # (a bcrypt hash from `docker run caddy caddy hash-password --plaintext '...'`)
+            # via a SOPS secret — do NOT put the hash in git in clear.
+            - { name: AUTH_ENABLED, value: "false" }
+            - { name: APP_TITLE, value: "Feed - [VIDEO_TITLE]" }
+            - { name: AUTOPLAY_ENABLED, value: "true" }
+            - { name: START_MUTED, value: "true" }
+            - { name: IGNORE_HIDDEN_PATHS, value: "true" }
+            - { name: SCROLL_DIRECTION, value: "vertical" }
+            - { name: VIDEO_START_POSITION, value: "start" }
+            - { name: PROGRESS_BAR_POSITION, value: "top" }
+            - { name: USE_CUSTOM_SKIN, value: "false" }
+          ports:
+            - containerPort: 80
+          resources:
+            requests:
+              memory: 64Mi
+              cpu: 20m
+            limits:
+              memory: 256Mi
+              cpu: 500m
+          readinessProbe:
+            httpGet: { path: /, port: 80 }
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          livenessProbe:
+            httpGet: { path: /, port: 80 }
+            initialDelaySeconds: 30
+            periodSeconds: 20
+            failureThreshold: 5
+          volumeMounts:
+            # Subdirectories here become the feeds/playlists. Erin picks up new
+            # files on refresh — there is no upload UI and no database.
+            - name: videos
+              mountPath: /srv/videos
+              readOnly: true
+      volumes:
+        - name: videos
+          persistentVolumeClaim:
+            claimName: erin-videos
+            readOnly: true

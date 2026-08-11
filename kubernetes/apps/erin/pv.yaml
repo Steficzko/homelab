@@ -1,0 +1,36 @@
+# Videos live on Unraid, share created 2026-08-11 (fsid=120).
+# Exported READ-ONLY to the five k3s nodes only — Erin never needs write access,
+# so the deployment physically cannot damage the video files.
+# Unraid side: /boot/config/shares/feed-video-stef.cfg (persistent) + /etc/exports (live).
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: erin-videos-pv
+spec:
+  capacity:
+    storage: 500Gi          # nominal — NFS ignores this, it is only for PVC matching
+  accessModes:
+    - ReadOnlyMany
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: ""
+  nfs:
+    server: 192.168.1.100
+    path: /mnt/user/feed-video-stef
+    readOnly: true
+  mountOptions:
+    - hard
+    - nfsvers=4.1
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: erin-videos
+  namespace: erin
+spec:
+  accessModes:
+    - ReadOnlyMany
+  storageClassName: ""
+  volumeName: erin-videos-pv
+  resources:
+    requests:
+      storage: 500Gi

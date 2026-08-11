@@ -1,0 +1,36 @@
+# Exposed via the kostikidis wildcard Cloudflare tunnel, behind the
+# *.kostikidis.net Cloudflare Access wildcard (Erin's own auth is off — see
+# deployment.yaml). No bypass policy.
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: erin
+  namespace: erin
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    # REQUIRED. cloudflared reaches ingress-nginx over PLAIN HTTP; with a tls:
+    # block and no annotation, ingress-nginx 308s http->https, the redirect goes
+    # back out to Cloudflare and re-enters the tunnel over http -> infinite loop
+    # (ERR_TOO_MANY_REDIRECTS — cost a debugging round on myinvoice 2026-08-10).
+    # Every tunnel-fronted ingress in this repo sets this.
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    # Short-form video streamed straight off NFS — keep proxy buffering off so
+    # seeking is not stalled by nginx buffering whole responses.
+    nginx.ingress.kubernetes.io/proxy-buffering: "off"
+    nginx.ingress.kubernetes.io/proxy-body-size: "0"
+spec:
+  ingressClassName: nginx
+  tls:
+    - hosts: [feed.kostikidis.net]
+      secretName: feed-kostikidis-net-tls
+  rules:
+    - host: feed.kostikidis.net
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: erin
+                port:
+                  number: 80
