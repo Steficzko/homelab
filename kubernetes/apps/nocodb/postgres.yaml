@@ -1,0 +1,56 @@
+# NocoDB metadata + user data live here. This is the thing to back up.
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: postgres
+  namespace: nocodb
+spec:
+  serviceName: postgres
+  replicas: 1
+  selector:
+    matchLabels: { app: postgres }
+  template:
+    metadata:
+      labels: { app: postgres }
+    spec:
+      containers:
+        - name: postgres
+          image: postgres:16-alpine
+          env:
+            - { name: POSTGRES_DB,   value: nocodb }
+            - { name: POSTGRES_USER, value: nocodb }
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef: { name: nocodb-secret, key: POSTGRES_PASSWORD }
+            - { name: PGDATA, value: /var/lib/postgresql/data/pgdata }
+            - { name: TZ, value: Asia/Baghdad }
+          ports: [{ containerPort: 5432 }]
+          resources:
+            requests: { memory: 256Mi, cpu: 50m }
+            limits:   { memory: 1Gi,   cpu: 1000m }
+          readinessProbe:
+            exec: { command: ["pg_isready","-U","nocodb","-d","nocodb"] }
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          livenessProbe:
+            exec: { command: ["pg_isready","-U","nocodb","-d","nocodb"] }
+            initialDelaySeconds: 45
+            periodSeconds: 20
+            failureThreshold: 5
+          volumeMounts:
+            - { name: data, mountPath: /var/lib/postgresql/data }
+  volumeClaimTemplates:
+    - metadata: { name: data }
+      spec:
+        accessModes: [ReadWriteOnce]
+        storageClassName: longhorn
+        resources: { requests: { storage: 10Gi } }
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres
+  namespace: nocodb
+spec:
+  selector: { app: postgres }
+  ports: [{ port: 5432, targetPort: 5432 }]

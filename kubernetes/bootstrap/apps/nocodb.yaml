@@ -1,0 +1,20 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: nocodb
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/Steficzko/homelab.git
+    targetRevision: HEAD
+    path: kubernetes/apps/nocodb
+    directory:
+      recurse: true
+      exclude: '*.sops.yaml'
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: nocodb
+  syncPolicy:
+    automated: { prune: true, selfHeal: true }
+    syncOptions: [CreateNamespace=true]

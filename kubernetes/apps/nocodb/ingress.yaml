@@ -1,0 +1,28 @@
+# Behind the *.kostikidis.net Cloudflare Access wildcard. TopMountain colleagues
+# will need Access + a NocoDB account; if that double login proves too much,
+# the alternative is an Access bypass with NocoDB's own auth as the only gate.
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: nocodb
+  namespace: nocodb
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    # REQUIRED: cloudflared reaches ingress-nginx over plain HTTP; without this
+    # the 308 http->https bounces back through Cloudflare and loops.
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    # Attachments: Drive copies and Zoom transcripts.
+    nginx.ingress.kubernetes.io/proxy-body-size: "100m"
+spec:
+  ingressClassName: nginx
+  tls:
+    - hosts: [topmountain.kostikidis.net]
+      secretName: topmountain-kostikidis-net-tls
+  rules:
+    - host: topmountain.kostikidis.net
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service: { name: nocodb, port: { number: 80 } }

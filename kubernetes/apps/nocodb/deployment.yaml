@@ -1,0 +1,76 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nocodb
+  namespace: nocodb
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate          # RWO data PVC — no rolling overlap
+  selector:
+    matchLabels: { app: nocodb }
+  template:
+    metadata:
+      labels: { app: nocodb }
+    spec:
+      containers:
+        - name: nocodb
+          # Pinned to the 2026.08.0 release tag (NocoDB publishes both 0.265.x
+          # and calendar tags; the calendar one matches the GitHub release).
+          image: nocodb/nocodb:2026.08.0@sha256:f8050f95d2acef8a554c791b479147625d736ea1a8f8cf82380be4033b661b59
+          env:
+            # Metadata + table data in Postgres, NOT the bundled SQLite — SQLite
+            # on a single PVC is the default and is the thing that makes NocoDB
+            # painful to back up and impossible to scale.
+            - name: NC_DB
+              valueFrom:
+                secretKeyRef: { name: nocodb-secret, key: NC_DB }
+            - name: NC_AUTH_JWT_SECRET
+              valueFrom:
+                secretKeyRef: { name: nocodb-secret, key: NC_AUTH_JWT_SECRET }
+            - { name: NC_PUBLIC_URL, value: "https://topmountain.kostikidis.net" }
+            # Attachments (Drive copies, Zoom transcripts) land on the PVC below.
+            # Switch to MinIO later if this grows — NC_S3_* env, bucket already
+            # a pattern here.
+            - { name: NC_TOOL_DIR, value: /usr/app/data }
+            - { name: TZ, value: Asia/Baghdad }
+            # Nobody should be able to self-register on a work tracker.
+            - { name: NC_DISABLE_TELE, value: "true" }
+            - { name: NC_INVITE_ONLY_SIGNUP, value: "true" }
+          ports: [{ containerPort: 8080 }]
+          resources:
+            requests: { memory: 512Mi, cpu: 100m }
+            limits:   { memory: 2Gi,   cpu: 1500m }
+          readinessProbe:
+            httpGet: { path: /api/v1/health, port: 8080 }
+            initialDelaySeconds: 20
+            periodSeconds: 10
+          livenessProbe:
+            httpGet: { path: /api/v1/health, port: 8080 }
+            initialDelaySeconds: 90
+            periodSeconds: 20
+            failureThreshold: 5
+          volumeMounts:
+            - { name: data, mountPath: /usr/app/data }
+      volumes:
+        - name: data
+          persistentVolumeClaim: { claimName: nocodb-data }
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: nocodb-data
+  namespace: nocodb
+spec:
+  accessModes: [ReadWriteOnce]
+  storageClassName: longhorn
+  resources: { requests: { storage: 10Gi } }
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nocodb
+  namespace: nocodb
+spec:
+  selector: { app: nocodb }
+  ports: [{ port: 80, targetPort: 8080 }]
