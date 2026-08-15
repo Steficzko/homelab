@@ -54,7 +54,9 @@ spec:
     # gompha.com is a SEPARATE CF account and TLS terminates at Cloudflare's edge
     # (the cloudflared-gompha tunnel reaches this ingress over HTTP). The gompha
     # landing (apex + www) and auto.gompha.com are EXACT hosts → ingress-nginx
-    # gives them precedence, so this wildcard only catches <slug>.gompha.com tenants.
+    # gives them precedence, so this wildcard only catches <slug>.gompha.com tenants —
+    # EXCEPT /manual, carved out by apps/gompha/landing/manual-ingress.yaml
+    # (longest-prefix wins; the staff manual is served there behind basic-auth).
     - host: "*.gompha.com"
       http:
         paths:

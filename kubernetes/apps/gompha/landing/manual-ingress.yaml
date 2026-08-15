@@ -1,0 +1,48 @@
+# Staff manual at /manual — apex AND tenant subdomains (e.g. <slug>.gompha.com/manual).
+# SEPARATE Ingress object on purpose: the basic-auth annotations below are
+# metadata-level, so they gate every rule in THIS object only — /manual gets a
+# password, the marketing site in ingress.yaml stays open.
+#
+# Path-steal note: the *.gompha.com rule carves /manual out of the tenant-app
+# wildcard owned by kubernetes/apps/dental.clinic/ingress.yaml (longest-prefix
+# wins at nginx level). Back-reference added there. If a tenant SPA ever routes
+# /manual client-side, it loses that route cluster-wide.
+#
+# Secret: manual-htpasswd (key MUST be `auth` — ingress-nginx auth-file
+# convention, cf. namo-apps/shlink-ui). SOPS files are excluded from ArgoCD
+# (bootstrap/apps/gompha.yaml), so the secret is applied by hand ONCE:
+#   sops -d manual-htpasswd.sops.yaml | kubectl apply -f -
+# See manual-htpasswd.example.yaml for the shape.
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: landing-manual
+  namespace: gompha
+  annotations:
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    nginx.ingress.kubernetes.io/auth-type: basic
+    nginx.ingress.kubernetes.io/auth-secret: manual-htpasswd
+    nginx.ingress.kubernetes.io/auth-realm: "Gompha Manual"
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: gompha.com
+      http:
+        paths:
+          - path: /manual
+            pathType: Prefix
+            backend:
+              service:
+                name: landing
+                port:
+                  number: 80
+    - host: "*.gompha.com"
+      http:
+        paths:
+          - path: /manual
+            pathType: Prefix
+            backend:
+              service:
+                name: landing
+                port:
+                  number: 80

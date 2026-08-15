@@ -14,9 +14,19 @@ data:
       server_name _;
       root /usr/share/nginx/html;
       index index.html;
+      # origin hop is plain HTTP; relative redirects so /manual -> /manual/
+      # doesn't mint an absolute http:// URL for Cloudflare to repair
+      absolute_redirect off;
       # Always revalidate — no stale HTML/CSS/JS/SVG at the browser or CF edge.
       add_header Cache-Control "no-cache, must-revalidate" always;
       location / {
+        try_files $uri $uri/ =404;
+      }
+      # staff manual — auth lives at the ingress (manual-ingress.yaml), the pod
+      # only serves the files; alias because the content mounts OUTSIDE the docroot
+      location /manual/ {
+        alias /usr/share/manual/;
+        index index.html;
         try_files $uri $uri/ =404;
       }
     }

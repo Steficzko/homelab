@@ -25,6 +25,11 @@ spec:
             - name: nginx-conf
               mountPath: /etc/nginx/conf.d
               readOnly: true
+            # sibling of the docroot — nesting under the read-only html mount
+            # would EROFS the pod; nginx serves it via `alias` (nginx.yaml)
+            - name: manual
+              mountPath: /usr/share/manual
+              readOnly: true
           resources:
             requests:
               memory: 16Mi
@@ -45,3 +50,6 @@ spec:
         - name: nginx-conf
           configMap:
             name: landing-nginx
+        - name: manual
+          configMap:
+            name: landing-manual
