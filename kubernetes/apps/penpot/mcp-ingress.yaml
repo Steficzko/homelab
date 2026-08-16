@@ -1,0 +1,44 @@
+# Penpot MCP — AI design access (the `enable-mcp` flag in bootstrap/apps/penpot.yaml).
+# The Helm chart creates the penpot-mcp Service but NO Ingress, so this hostname
+# did not exist until now.
+#
+# STAYS BEHIND THE *.kostikidis.net CLOUDFLARE ACCESS WILDCARD — do NOT add a
+# bypass policy. This endpoint can read every design in the instance without a
+# Penpot login. Clients (Claude Code) authenticate with a Cloudflare Access
+# SERVICE TOKEN sent as CF-Access-Client-Id / CF-Access-Client-Secret headers,
+# alongside the Penpot API token in Authorization.
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: penpot-mcp
+  namespace: penpot
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    # REQUIRED, not optional. cloudflared reaches ingress-nginx over PLAIN HTTP.
+    # With a tls: block present, ingress-nginx 308-redirects http->https, which
+    # goes back out to Cloudflare and re-enters the tunnel over http again ->
+    # ERR_TOO_MANY_REDIRECTS. TLS terminates at the Cloudflare edge; the origin
+    # hop is http by design. Every tunnel-fronted ingress in this repo sets this.
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    # MCP streamable-HTTP holds a long-lived SSE response per session. Default
+    # nginx buffering swallows the event stream and the 60s read timeout kills
+    # the session mid-tool-call.
+    nginx.ingress.kubernetes.io/proxy-buffering: "off"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
+spec:
+  ingressClassName: nginx
+  tls:
+    - hosts: [designmcp.kostikidis.net]
+      secretName: designmcp-kostikidis-net-tls
+  rules:
+    - host: designmcp.kostikidis.net
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: penpot-mcp
+                port:
+                  number: 4401
