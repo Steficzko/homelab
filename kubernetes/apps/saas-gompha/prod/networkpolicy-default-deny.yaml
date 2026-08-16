@@ -1,0 +1,27 @@
+# Default-deny from birth (build-start ruling 2026-08-16): nothing talks until a
+# workload manifest explicitly allows it — INCLUDING same-namespace traffic
+# (app -> postgres needs its own rule), ingress-nginx -> app, and all egress.
+# Non-obvious: kube-apiserver egress needs an ipBlock (10.43.0.1 DNATs to a node
+# IP, a namespaceSelector cannot match it); internet egress house style is ipBlock
+# (see n8n). DNS to CoreDNS is the one standing exception below.
+# No allow rule toward saas-gompha-licensing-* may ever be added here: the clinic
+# app verifies its licence locally against a public key and never phones home.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: default-deny
+  namespace: saas-gompha-prod
+spec:
+  podSelector: {}
+  policyTypes: [Ingress, Egress]
+  egress:
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: kube-system
+          podSelector:
+            matchLabels:
+              k8s-app: kube-dns
+      ports:
+        - { port: 53, protocol: UDP }
+        - { port: 53, protocol: TCP }

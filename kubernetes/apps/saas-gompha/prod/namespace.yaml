@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: saas-gompha-prod
+  labels:
+    app.kubernetes.io/part-of: gompha
+    gompha.io/env: prod

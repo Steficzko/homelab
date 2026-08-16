@@ -1,0 +1,24 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: saas-gompha-licensing-staging
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/Steficzko/homelab.git
+    targetRevision: HEAD
+    path: kubernetes/apps/saas-gompha-licensing/staging
+    directory:
+      recurse: true
+      exclude: '{*.sops.yaml,*placeholder*.yaml,*.example.yaml}'
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: saas-gompha-licensing-staging
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - RespectIgnoreDifferences=true
