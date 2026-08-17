@@ -1,0 +1,141 @@
+# Deployed via ArgoCD (bootstrap: saas-gompha-staging.yaml).
+# Additive over networkpolicy-default-deny.yaml (default-deny from birth,
+# same-namespace traffic INCLUDED): every flow below is an explicit grant;
+# anything not listed stays dead. DNS-to-CoreDNS is granted in default-deny.
+---
+# clinic-postgres: ONLY pods labeled clinic-db-access may connect. No ingress,
+# no NodePort, no egress beyond the default-deny DNS grant.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: clinic-postgres
+  namespace: saas-gompha-staging
+spec:
+  podSelector:
+    matchLabels: {app: clinic-postgres}
+  policyTypes: [Ingress, Egress]
+  ingress:
+    - from:
+        - podSelector: {matchLabels: {clinic-db-access: "true"}}
+      ports: [{port: 5432}]
+---
+# clinic-api: in from ingress-nginx only; out to Postgres and HTTPS-443 (the
+# HIBP k-anonymity range check on password-set, which has a DECIDED offline
+# answer — a tightened/blocked egress degrades gracefully, never breaks a
+# password set). NOTE the FORWARDED_ALLOW_IPS="*" coupling in api.yaml: this
+# ingress rule being ingress-nginx-only is what makes trusting the proxy headers
+# safe. There is DELIBERATELY no egress toward saas-gompha-licensing-* (see the
+# blocked block at the bottom).
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: clinic-api
+  namespace: saas-gompha-staging
+spec:
+  podSelector:
+    matchLabels: {app: clinic-api}
+  policyTypes: [Ingress, Egress]
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels: {kubernetes.io/metadata.name: ingress-nginx}
+      ports: [{port: 8000}]
+  egress:
+    - to:
+        - podSelector: {matchLabels: {app: clinic-postgres}}
+      ports: [{port: 5432}]
+    - to:
+        # internet egress house style (see n8n / licensing-main), no route back
+        # into cluster/LAN address space — HIBP is genuinely external.
+        - ipBlock:
+            cidr: 0.0.0.0/0
+            except: [10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16]
+      ports:
+        - {port: 443, protocol: TCP}   # HIBP k-anonymity range API (offline answer decided)
+---
+# clinic-web: in from ingress-nginx only; serves static files, needs no egress
+# beyond the default-deny DNS grant.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: clinic-web
+  namespace: saas-gompha-staging
+spec:
+  podSelector:
+    matchLabels: {app: clinic-web}
+  policyTypes: [Ingress, Egress]
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels: {kubernetes.io/metadata.name: ingress-nginx}
+      ports: [{port: 80}]
+---
+# clinic-cron (idempotency reaper): out to Postgres only.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: clinic-cron
+  namespace: saas-gompha-staging
+spec:
+  podSelector:
+    matchLabels: {app: clinic-cron}
+  policyTypes: [Ingress, Egress]
+  egress:
+    - to:
+        - podSelector: {matchLabels: {app: clinic-postgres}}
+      ports: [{port: 5432}]
+#
+# ══════════════════════════════════════════════════════════════════════════════
+#  BLOCKED — clinic-api -> licensing (redeem-invite). NEEDS A RULING before it
+#  is uncommented. This is the headline decision in the build report.
+# ══════════════════════════════════════════════════════════════════════════════
+#  The clinic app's root-onboarding seam (spec §4.1, ADR-024) calls licensing's
+#  redeem-invite to atomically burn the root invite. That is a clinic-app ->
+#  licensing call. But redeem-invite CURRENTLY runs on the licensing "all"
+#  surface (licensing-main), which MOUNTS THE Ed25519 SIGNING KEY and the mail
+#  master key. Opening a network path to it collides head-on with the written
+#  ISOLATION INVARIANT in BOTH default-deny files:
+#
+#    "the clinic app NEVER phones home — there must never be an allow rule from
+#     saas-gompha-* into [the licensing] namespace ... The Ed25519 SIGNING key
+#     lives ONLY here; a copy [or a path to it] lets a clinic mint its own
+#     licences."
+#
+#  App-layer auth (require_provider_auth gates mint/override; redeem-invite is
+#  instance-credential-only) is NOT sufficient to justify the path: the network
+#  isolation is deliberate defence-in-depth so that app-auth is not the ONLY
+#  wall. This is exactly pentest P2.
+#
+#  ADR-024 does NOT put redeem-invite on licensing-main: its "safe home is any
+#  instance-facing surface that mounts NEITHER key," left as a build choice. So
+#  the correct target is a keyless "onboard" surface that does not exist yet.
+#
+#  RECOMMENDATION (nkaBE, stated once):
+#    - STAGING (ADR-025 single-tenant interim): seed root DIRECTLY (bootstrap
+#      SQL, runbook) — root_redeem is never exercised, and NO clinic->licensing
+#      path is opened. Both isolation invariants stay intact. This is the 80/20.
+#    - Before self-hosted / multi-tenant: stand up the keyless "onboard"
+#      licensing surface (ADR-024 §2d shape, minus the mail key), give it its OWN
+#      ingress/NetworkPolicy, and open clinic-api -> that pod ONLY (never
+#      licensing-main). blankapentester rules on the widened surface first.
+#
+#  If Stefanos/manifest-reviewer/blankapentester instead approve pointing at
+#  licensing-main for the staging interim, the required rules are BELOW (two
+#  halves — clinic egress here AND a companion INGRESS allow on licensing-main,
+#  which I did NOT add to the licensing namespace because it would edit that
+#  service's default-deny invariant). Do not uncomment without that ruling.
+#
+# apiVersion: networking.k8s.io/v1
+# kind: NetworkPolicy
+# metadata:
+#   name: clinic-api-to-licensing-onboard
+#   namespace: saas-gompha-staging
+# spec:
+#   podSelector: {matchLabels: {app: clinic-api}}
+#   policyTypes: [Egress]
+#   egress:
+#     - to:
+#         - namespaceSelector:
+#             matchLabels: {kubernetes.io/metadata.name: saas-gompha-licensing-staging}
+#           podSelector: {matchLabels: {app: licensing-onboard}}   # the KEYLESS surface, never licensing-main
+#       ports: [{port: 8000}]

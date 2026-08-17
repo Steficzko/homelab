@@ -1,0 +1,23 @@
+apiVersion: v1
+data:
+    .dockerconfigjson: ENC[AES256_GCM,data:w8rAwcHVO1DgppytfIyRxyhfyOQdBn0efSSyZdsP94shl9H+JRcojPNNXc0Q366rCRi5f0BARRX1WM4WOC5v/TVlrfOlN0tAsZj2EFsJwg0ci1eAdenZTGgo2E4F/4g6X9uMMowUTRw39Rcc1b9XDMat2FIG20tKG7Vq/KMcv2AckErHBjJ2Ph5bxdPCCptLK1j1gRMTkYYw4UJCcCRc8uF4GBtCKtALACuJKnnU4O7ohW9tDIyhKQu3f2RWn5P3MuOs3zwZHO77mLN2,iv:lmmT8HuOhXN6m+KH1feqDQxQianPujiUmyLFrz6ud4g=,tag:TFECyIiJ1sdJR89g1Tl5kQ==,type:str]
+kind: Secret
+metadata:
+    name: ghcr-pull
+    namespace: saas-gompha-staging
+type: kubernetes.io/dockerconfigjson
+sops:
+    age:
+        - enc: |
+            -----BEGIN AGE ENCRYPTED FILE-----
+            YWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IFgyNTUxOSBySWlzeVhOOGZoZk9tSEVM
+            RXoyYkhVQXhNdFJGTjBYcDcwK0tZOW5ITG1vClpuTGRxS1pmK0FoeFJPd1AvMXdT
+            amtMNU5lM0hUQ1V5R2Q2Z1BFL081WkUKLS0tIHVxdCtvMDhKWHZPR3dUZXhpN0M2
+            Q1JEVzZBTVUzNmpjc0Nxb3dlZUdpMGMKmIkFk9oYTNdqRZDOYojz6QYTU7NVd3Cg
+            cXPyXvOJIkMp5jj6QiaE69w+hQeVQcd9vopMz+39oYbkZhGKSlOl8w==
+            -----END AGE ENCRYPTED FILE-----
+          recipient: age1v9pqv93dtdg7zuk2uc423rdtapu9p0fqucd2s9p6curt2c0y2vuq4yzw9n
+    encrypted_regex: ^(data|stringData)$
+    lastmodified: "2026-08-17T18:45:43Z"
+    mac: ENC[AES256_GCM,data:9b0Yzl/lv2JSKaiSjJUiNMUbOMGuxgGVdntX7Ih0PnSthEsuNZYdE56tmE4zztcqFD1l3XSdxHtiEvlVZiDtE2B9AwBjyEmg8NiYJKBtuJH/yTpMVCozZN/2my6urQU1tQdDrW81O+OUUQtoyGPeIlJCB3ld1XI8iqfDHR/dUlM=,iv:QswSeljkEeO6iFDYdwvmqab7MmTNVaE+afHLk8NsxJU=,tag:y7t5J0yEpytYbgXm6D080w==,type:str]
+    version: 3.13.1

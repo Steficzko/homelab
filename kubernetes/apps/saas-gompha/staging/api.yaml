@@ -1,0 +1,140 @@
+# Deployed via ArgoCD (bootstrap: saas-gompha-staging.yaml).
+# The clinic-app API — identity, permissions, rooms (M1 slice 1). FastAPI +
+# uvicorn, explicit SQL, no ORM. Online-first (ADR-014): the server is the
+# single source of truth; one instance per tenant on our hosting for the
+# single-tenant staging interim (ADR-025).
+#
+# Secrets:
+#   clinic-api-secret  (SOPS)  GOMPHA_MIGRATION_DATABASE_URL (gompha_owner DSN),
+#                              GOMPHA_DATABASE_URL (gompha_app DSN),
+#                              GOMPHA_INSTANCE_CREDENTIAL (redeem-invite bearer —
+#                              inert until the onboard path is ruled on, see
+#                              networkpolicies.yaml).
+#
+# NO signing/session secret here — a notable difference from a JWT app: clinic
+# sessions are OPAQUE server-side rows (ADR-017), a random token hashed in the
+# DB. The only key material the clinic app ever needs is the PUBLIC licence
+# verify key, which is not secret: it is mounted from the clinic-licence-pubkeys
+# ConfigMap (licence-pubkeys.yaml) at GOMPHA_LICENCE_PUBKEYS_DIR.
+#
+# At RUNTIME this slice only reads the cached tenant_licence row — it does not
+# fetch or refresh (that is the licence-sync slice, unbuilt on BOTH services).
+# The key is mounted anyway because the cache row is SEEDED through
+# licence.verify_and_cache at provisioning: expiry, grace and seat caps gate
+# every write, so they must arrive under a verified signature rather than a
+# hand-written INSERT (permissions.md §12.8).
+#
+# ⏰ Consequence while licence-sync does not exist: the cached licence expires
+# on its own date with no renewal and no warning. Staging's expires 2026-08-31
+# (grace 3 → writes 403 from 2026-09-03), chosen deliberately. See the runbook.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: clinic-api
+  namespace: saas-gompha-staging
+  labels: {app: clinic-api}
+spec:
+  replicas: 1   # in-process rate limiting assumes 1 replica (graduation point, as licensing)
+  strategy: {type: Recreate}   # RollingUpdate would surge to TWO pods = doubled rate budget
+  selector:
+    matchLabels: {app: clinic-api}
+  template:
+    metadata:
+      labels:
+        app: clinic-api
+        clinic-db-access: "true"   # NetworkPolicy selector for Postgres ingress
+    spec:
+      automountServiceAccountToken: false   # the API never calls the K8s API (manifest-reviewer S1)
+      imagePullSecrets: [{name: ghcr-pull}]
+      initContainers:
+        # migrate with the SAME image+tag as the API (delivery.md: the old stack
+        # pinned migrate separately and shipped mismatches). Runs forward-only
+        # migration 0001 as gompha_owner — the ONLY step that does DDL; the
+        # migration's GRANT block then hands table privileges to gompha_app.
+        - name: migrate
+          image: ghcr.io/steficzko/gompha-clinic:clinic-v0.1.2
+          # Wait for Postgres first — same loop, same reason as the reaper
+          # (cronjob-reaper.yaml): on a FIRST sync the database is still running
+          # initdb (TCP not listening yet) and kube-router has not admitted this
+          # pod to its NetworkPolicy. Without the wait the initContainer
+          # crash-loops for a minute or two and a healthy deploy reads as a
+          # broken one — the loudest kind of false alarm on day one.
+          command: ["/bin/sh", "-ec"]
+          args:
+            - |
+              for i in $(seq 1 40); do
+                python -c "import os, psycopg; psycopg.connect(os.environ['GOMPHA_MIGRATION_DATABASE_URL'], connect_timeout=5).close()" 2>/dev/null && break
+                sleep 3
+              done
+              exec python migrations/migrate.py up
+          env:
+            - name: GOMPHA_MIGRATION_DATABASE_URL
+              valueFrom: {secretKeyRef: {name: clinic-api-secret, key: GOMPHA_MIGRATION_DATABASE_URL}}
+          resources:
+            requests: {cpu: 25m, memory: 64Mi}
+            limits: {memory: 128Mi}
+      containers:
+        - name: api
+          image: ghcr.io/steficzko/gompha-clinic:clinic-v0.1.2
+          ports: [{containerPort: 8000, name: http}]
+          env:
+            # runtime role — subject to FORCE RLS (never the owner)
+            - name: GOMPHA_DATABASE_URL
+              valueFrom: {secretKeyRef: {name: clinic-api-secret, key: GOMPHA_DATABASE_URL}}
+            # the instance's tenant (spec §3, ADR-025 single-tenant interim):
+            # sourced from static config, NEVER the hostname (ADR-007). Must
+            # equal the tenant provisioned in licensing for staging.
+            - {name: GOMPHA_INSTANCE_TENANT_ID, value: "01a00ea2-23d0-7ef6-bf26-743cf77293e6"}
+            # P13: explicit CORS, never "*". The PWA is SAME-ORIGIN with the API
+            # (one host, path-split at the ingress — see ingress.yaml), so no
+            # cross-origin access is granted at all: an EMPTY allowlist is the
+            # explicit, correct value.
+            - {name: GOMPHA_CORS_ORIGINS, value: ""}
+            # invite links the inviter hand-delivers while staff mail is deferred
+            # (ADR-024) — token rides the URL fragment (P5/P8). Same host as the
+            # PWA so the redeem page loads same-origin.
+            - {name: GOMPHA_APP_BASE_URL, value: "https://app-staging.gompha.com"}
+            # "*" governs uvicorn's proxy-headers only; safe because the
+            # NetworkPolicy admits nobody but ingress-nginx (they move together).
+            # Per-caller rate identity comes from CF-Connecting-IP in the app
+            # (_client_key), not from this.
+            - {name: FORWARDED_ALLOW_IPS, value: "*"}
+            # The PUBLIC licence verify keys (licence-pubkeys.yaml). Not a
+            # secret — a ConfigMap in plain git. This is what lets the licence
+            # cache row be seeded through licence.verify_and_cache rather than a
+            # hand-written INSERT: expiry, grace and seat caps gate every write,
+            # so they must arrive under a signature, never hand-copied
+            # (permissions.md §12.8). A missing/wrong key fails at provisioning,
+            # which is exactly where it should fail.
+            - {name: GOMPHA_LICENCE_PUBKEYS_DIR, value: /etc/gompha/licence-keys}
+            # --- redeem-invite seam (spec §4.1) — GATED, see networkpolicies.yaml ---
+            # The clinic→licensing network path is BLOCKED pending the ADR-024
+            # keyless "onboard" surface ruling. Staging seeds root DIRECTLY
+            # (ADR-025 single-tenant interim; runbook), so root_redeem is not
+            # exercised and these are inert. Uncomment ONLY when the onboard
+            # surface + its NetworkPolicy land.
+            # - {name: GOMPHA_LICENSING_BASE_URL, value: "http://licensing-onboard.saas-gompha-licensing-staging.svc.cluster.local:8000"}
+            # - name: GOMPHA_INSTANCE_CREDENTIAL
+            #   valueFrom: {secretKeyRef: {name: clinic-api-secret, key: GOMPHA_INSTANCE_CREDENTIAL}}
+          resources:
+            requests: {cpu: 50m, memory: 128Mi}
+            limits: {memory: 512Mi}
+          # readiness only (house style; /healthz is DB-backed, liveness on it
+          # turns a Postgres blip into a kill-loop). Readiness pulls the pod
+          # from the Service on its own.
+          readinessProbe:
+            httpGet: {path: /healthz, port: 8000}
+          volumeMounts:
+            - {name: licence-keys, mountPath: /etc/gompha/licence-keys, readOnly: true}
+      volumes:
+        - name: licence-keys
+          configMap: {name: clinic-licence-pubkeys}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: clinic-api
+  namespace: saas-gompha-staging
+spec:
+  selector: {app: clinic-api}
+  ports: [{name: http, port: 8000, targetPort: 8000}]

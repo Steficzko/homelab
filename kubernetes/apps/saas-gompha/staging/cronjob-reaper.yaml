@@ -1,0 +1,57 @@
+# Deployed via ArgoCD (bootstrap: saas-gompha-staging.yaml).
+# The idempotency-key retention reaper (pentest P12). idempotency_keys is the
+# one scratch table (not a tombstoned domain table): DELETE is legitimate there,
+# and gompha_reap_idempotency_keys() (migration 0001) trims rows past their
+# retention window so response bodies do not accumulate forever (privacy.md
+# minimisation).
+#
+# Runs as gompha_owner (BYPASSRLS): the reaper is CROSS-tenant maintenance, and
+# gompha_app (subject to FORCE RLS, no tenant context in a cron) would fail
+# CLOSED — the tenant-isolation policy raises when app.tenant_id is unset. The
+# owner DSN is the maintenance role. (Future refinement: a SECURITY DEFINER
+# reaper callable by gompha_app; not this slice.)
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: clinic-idempotency-reaper
+  namespace: saas-gompha-staging
+spec:
+  schedule: "23 3 * * *"        # 03:23 clinic time, off-peak (after any migrate)
+  timeZone: "Asia/Baghdad"      # batch/v1 defaults to UTC = wrong hour in Erbil
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      backoffLimit: 2
+      ttlSecondsAfterFinished: 10800
+      template:
+        metadata:
+          labels:
+            app: clinic-cron
+            clinic-db-access: "true"
+        spec:
+          # OnFailure, NOT Never: k3s NetworkPolicy takes ~30-45s to admit a
+          # fresh pod; Never re-runs the race in a NEW unadmitted pod, OnFailure
+          # retries in the already-admitted one. The wait loop rides out the
+          # admit window; the slim image ships no psql client, so python probes.
+          restartPolicy: OnFailure
+          automountServiceAccountToken: false
+          imagePullSecrets: [{name: ghcr-pull}]
+          containers:
+            - name: reaper
+              image: ghcr.io/steficzko/gompha-clinic:clinic-v0.1.2
+              command: ["/bin/sh", "-ec"]
+              args:
+                - |
+                  for i in $(seq 1 40); do
+                    python -c "import os, psycopg; psycopg.connect(os.environ['GOMPHA_MIGRATION_DATABASE_URL'], connect_timeout=5).close()" 2>/dev/null && break
+                    sleep 3
+                  done
+                  exec python -c "import os, psycopg; c=psycopg.connect(os.environ['GOMPHA_MIGRATION_DATABASE_URL']); c.execute('SELECT gompha_reap_idempotency_keys()'); c.commit(); print('idempotency reaper ran')"
+              env:
+                - name: GOMPHA_MIGRATION_DATABASE_URL
+                  valueFrom: {secretKeyRef: {name: clinic-api-secret, key: GOMPHA_MIGRATION_DATABASE_URL}}
+              resources:
+                requests: {cpu: 25m, memory: 64Mi}
+                limits: {memory: 128Mi}

@@ -1,0 +1,57 @@
+# Deployed via ArgoCD (bootstrap: saas-gompha-staging.yaml).
+# Cloudflare-tunnel ingress for the clinic app, gompha.com zone (same mechanics
+# as licensing/ingress.yaml: SEPARATE CF account, TLS terminates at Cloudflare's
+# edge, no cert-manager DNS-01 for this zone — so NO tls block and NO
+# cluster-issuer annotation; the tunnel reaches ingress-nginx over HTTP. The
+# zone wildcard already routes to the tunnel; this EXACT host takes precedence,
+# so no DNS record is needed).
+#
+# ── HOSTNAME — NEEDS STEFANOS'S RULING ────────────────────────────────────────
+# RULED (Stefanos, 2026-08-17):  app-staging.gompha.com  — consistent with the
+# licensing zone (licensing-staging.gompha.com / licence-staging.gompha.com
+# already live on gompha.com; one product, one zone, one CF account). The build
+# brief's stagging.blancadentalcare.com was the alternative and was NOT chosen.
+# This host is used below AND as GOMPHA_APP_BASE_URL in api.yaml — keep the two
+# in lockstep (delivery.md: a wrong BASE_DOMAIN is what broke v1's reset links).
+#
+# ── STAGING ACCESS CONTROL — build-brief consideration ────────────────────────
+# Staging holds DEMO patient data (GDPR special category once real). Two guards
+# to decide with him, neither authored here:
+#   1. A Cloudflare Access app on this exact host (gompha.com account) so the
+#      public cannot reach staging — defence in depth on top of the app's own
+#      auth. Licensing left the same as an optional runbook step.
+#   2. A staging BANNER in the PWA so nobody mistakes it for production.
+#
+# ── SAME-ORIGIN PATH SPLIT ────────────────────────────────────────────────────
+# One host, path-routed by ingress-nginx: /v1 + /healthz -> clinic-api, the SPA
+# -> clinic-web. Same origin => the httponly session cookie just works for both.
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: clinic
+  namespace: saas-gompha-staging
+  annotations:
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    # 1m for this slice (invite/login bodies are tiny). The X-ray / photo upload
+    # slice will need a larger cap ON THE /v1 PATH — revisit then, do not blanket-raise.
+    nginx.ingress.kubernetes.io/proxy-body-size: "1m"
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: app-staging.gompha.com
+      http:
+        paths:
+          # API first — more specific prefixes win in ingress-nginx path ordering
+          - path: /v1
+            pathType: Prefix
+            backend:
+              service: {name: clinic-api, port: {number: 8000}}
+          - path: /healthz
+            pathType: Prefix
+            backend:
+              service: {name: clinic-api, port: {number: 8000}}
+          # everything else is the PWA (SPA fallback handled inside the web image)
+          - path: /
+            pathType: Prefix
+            backend:
+              service: {name: clinic-web, port: {number: 80}}

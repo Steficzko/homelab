@@ -1,0 +1,55 @@
+# Deployed via ArgoCD (bootstrap: saas-gompha-staging.yaml).
+# The static PWA (app/web/dist) served by nginx, SAME-ORIGIN with the API.
+#
+# FE-SERVING CHOICE (flagged for review): the PWA and the API share ONE host
+# (app-staging.gompha.com); ingress-nginx PATH-SPLITS it — /v1 + /healthz go to
+# clinic-api, everything else to this static server (see ingress.yaml). No
+# reverse proxy is configured here: the ingress does the split, so the API stays
+# a pure API (api.md — the backend serves no static files) and the httponly
+# session cookie is same-origin by construction (one host).
+#
+# Why this over "the app serves the static build": it keeps the backend a clean
+# API with no StaticFiles mount, matches how the FE dev proxy already assumes a
+# same-origin /v1, and lets the PWA image rev independently of the API image.
+# The alternative (uvicorn serves dist via StaticFiles) is a backend code change
+# and bakes the FE into the API image — rejected for this slice; noted for
+# Stefanos's call.
+#
+# gompha-web image: nginx + app/web/dist + an nginx.conf with `try_files $uri
+# /index.html` (SPA fallback) and gzip. It is a SEPARATE build/push prerequisite
+# (like the api image). Until it exists this Deployment is ImagePullBackOff and
+# does NOT affect the API.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: clinic-web
+  namespace: saas-gompha-staging
+  labels: {app: clinic-web}
+spec:
+  replicas: 1
+  selector:
+    matchLabels: {app: clinic-web}
+  template:
+    metadata:
+      labels: {app: clinic-web}
+    spec:
+      automountServiceAccountToken: false
+      imagePullSecrets: [{name: ghcr-pull}]
+      containers:
+        - name: web
+          image: ghcr.io/steficzko/gompha-web:clinic-v0.1.2
+          ports: [{containerPort: 80, name: http}]
+          resources:
+            requests: {cpu: 10m, memory: 32Mi}
+            limits: {memory: 128Mi}
+          readinessProbe:
+            httpGet: {path: /, port: 80}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: clinic-web
+  namespace: saas-gompha-staging
+spec:
+  selector: {app: clinic-web}
+  ports: [{name: http, port: 80, targetPort: 80}]

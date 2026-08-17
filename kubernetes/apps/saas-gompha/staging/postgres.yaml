@@ -1,0 +1,116 @@
+# Deployed via ArgoCD (bootstrap: saas-gompha-staging.yaml).
+# The clinic app's OWN Postgres (Gompha ADR-001) — never the licensing DB.
+# Mirrors licensing/postgres.yaml (which mirrors dental.clinic / bjj).
+#
+# TWO ROLES — this is the one real divergence from licensing's single-role
+# Postgres, and it is load-bearing (build report, spec §3, ADR-025):
+#   gompha_owner  NOSUPERUSER BYPASSRLS  — runs migrations + seeding. The
+#                 migration's own GRANT block hands table privileges to
+#                 gompha_app. BYPASSRLS is what lets migrations/seeding write
+#                 any tenant's rows; it is the "owner that bypasses" spec §3
+#                 names.
+#   gompha_app    NOSUPERUSER NOBYPASSRLS — the RUNTIME role the API connects
+#                 as. RLS is a REAL floor under it: FORCE ROW LEVEL SECURITY on
+#                 every table + no GUC default for app.tenant_id means a query
+#                 with the tenant unset RAISES (fail closed), never reads a
+#                 fallback scope. Under shared multi-tenant (ADR-025) this is
+#                 the ONLY cross-tenant wall, so the app must never be gompha_owner.
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: clinic-postgres-data
+  namespace: saas-gompha-staging
+  labels:
+    recurring-job.longhorn.io/daily-backup: "enabled"   # cluster's existing Longhorn backup label
+spec:
+  accessModes: [ReadWriteOnce]
+  storageClassName: longhorn
+  resources:
+    requests: {storage: 5Gi}
+---
+# Role bootstrap — runs ONCE, on first initialisation of an empty data dir
+# (postgres image sources /docker-entrypoint-initdb.d/*.sh). Passwords come
+# from the postgres secret via env; psql -v keeps them out of the SQL text and
+# quotes them safely.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: clinic-postgres-init
+  namespace: saas-gompha-staging
+data:
+  00-roles.sh: |
+    #!/bin/bash
+    set -euo pipefail
+    # gompha_owner: migrations + seeding, BYPASSRLS (spec §3 "owner that bypasses").
+    # gompha_app:   runtime, subject to FORCE RLS — never BYPASSRLS, never superuser.
+    psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "$POSTGRES_DB" \
+         -v owner_pw="$GOMPHA_OWNER_PASSWORD" -v app_pw="$GOMPHA_APP_PASSWORD" <<-'EOSQL'
+      CREATE ROLE gompha_owner LOGIN PASSWORD :'owner_pw' NOSUPERUSER BYPASSRLS CREATEDB;
+      CREATE ROLE gompha_app   LOGIN PASSWORD :'app_pw'   NOSUPERUSER NOBYPASSRLS;
+      ALTER DATABASE gompha_clinic OWNER TO gompha_owner;
+      GRANT CONNECT ON DATABASE gompha_clinic TO gompha_app;
+    EOSQL
+    # schema ownership + usage in the app DB (table grants arrive with the
+    # migration's own conditional GRANT block, run by gompha_owner).
+    psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname gompha_clinic <<-'EOSQL'
+      ALTER SCHEMA public OWNER TO gompha_owner;
+      GRANT USAGE ON SCHEMA public TO gompha_app;
+    EOSQL
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: clinic-postgres
+  namespace: saas-gompha-staging
+  labels: {app: clinic-postgres}
+spec:
+  replicas: 1
+  strategy: {type: Recreate}   # RWO volume
+  selector:
+    matchLabels: {app: clinic-postgres}
+  template:
+    metadata:
+      labels: {app: clinic-postgres}
+    spec:
+      automountServiceAccountToken: false   # manifest-reviewer W3 — no API access needed
+      containers:
+        - name: postgres
+          # 17: schema developed + tested against PG17. Digest-pinned (review
+          # N1; sibling licensing/dental pin the same way).
+          image: postgres:17-alpine@sha256:18cfe3ef5e6815560c98237d6216d1e5119702fb0f3894c8785dd58b8bbe5d73
+          ports: [{containerPort: 5432}]
+          env:
+            - {name: POSTGRES_DB, value: gompha_clinic}
+            # the bootstrap superuser (creates the two roles above); the API
+            # NEVER connects as this — it connects as gompha_app.
+            - name: POSTGRES_USER
+              valueFrom: {secretKeyRef: {name: clinic-postgres-secret, key: POSTGRES_USER}}
+            - name: POSTGRES_PASSWORD
+              valueFrom: {secretKeyRef: {name: clinic-postgres-secret, key: POSTGRES_PASSWORD}}
+            - name: GOMPHA_OWNER_PASSWORD
+              valueFrom: {secretKeyRef: {name: clinic-postgres-secret, key: GOMPHA_OWNER_PASSWORD}}
+            - name: GOMPHA_APP_PASSWORD
+              valueFrom: {secretKeyRef: {name: clinic-postgres-secret, key: GOMPHA_APP_PASSWORD}}
+            - {name: PGDATA, value: /var/lib/postgresql/data/pgdata}
+          volumeMounts:
+            - {name: data, mountPath: /var/lib/postgresql/data, subPath: pgdata}
+            - {name: init, mountPath: /docker-entrypoint-initdb.d, readOnly: true}
+          resources:
+            requests: {cpu: 50m, memory: 128Mi}
+            limits: {memory: 512Mi}
+          readinessProbe:
+            exec: {command: ["pg_isready", "-U", "postgres", "-d", "gompha_clinic"]}
+      volumes:
+        - name: data
+          persistentVolumeClaim: {claimName: clinic-postgres-data}
+        - name: init
+          configMap: {name: clinic-postgres-init}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: clinic-postgres
+  namespace: saas-gompha-staging
+spec:
+  selector: {app: clinic-postgres}
+  ports: [{port: 5432, targetPort: 5432}]

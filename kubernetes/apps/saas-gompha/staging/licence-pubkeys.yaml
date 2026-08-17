@@ -1,0 +1,28 @@
+# Deployed via ArgoCD (bootstrap: saas-gompha-staging.yaml).
+#
+# The PUBLIC half of the licence signing key. This is NOT a secret — it is the
+# verify key, and it is in plain git on purpose: publishing it costs nothing and
+# a clinic cannot mint a licence with it. The PRIVATE half never leaves the
+# licensing pod that mounts it (ADR-019), and there is no path from this
+# namespace to that pod (ADR-026, networkpolicies.yaml).
+#
+# One file per key id, named <key_id>.pem — that shape is what load_keyset()
+# globs, and it is what makes ADR-011 dual-key rotation possible: during a
+# rotation window BOTH the retiring and the incoming key sit here, so licences
+# signed by either verify, and an unknown key_id still fails closed at verify
+# time. Rotating = add the new pem, wait out the window, delete the old one.
+#
+# Consumed by GOMPHA_LICENCE_PUBKEYS_DIR (api.yaml). It is what lets the
+# licence cache row be seeded through licence.verify_and_cache instead of a
+# hand-written INSERT — the spec forbids parsing a blob that has not passed
+# verification (permissions.md §12.8), and provisioning is not an exception.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: clinic-licence-pubkeys
+  namespace: saas-gompha-staging
+data:
+  staging-1.pem: |
+    -----BEGIN PUBLIC KEY-----
+    MCowBQYDK2VwAyEAEJQ/K7lX6fDnb+3gbqgaHw89ihyg68R5M7thKe9gWhs=
+    -----END PUBLIC KEY-----
