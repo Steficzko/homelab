@@ -2,9 +2,28 @@
 # Cloudflare-tunnel ingress for the clinic app, gompha.com zone (same mechanics
 # as licensing/ingress.yaml: SEPARATE CF account, TLS terminates at Cloudflare's
 # edge, no cert-manager DNS-01 for this zone — so NO tls block and NO
-# cluster-issuer annotation; the tunnel reaches ingress-nginx over HTTP. The
-# zone wildcard already routes to the tunnel; this EXACT host takes precedence,
-# so no DNS record is needed).
+# cluster-issuer annotation; the tunnel reaches ingress-nginx over HTTP).
+#
+# ── DNS IS NOT AUTOMATIC — corrected 2026-08-17, learned the hard way ─────────
+# An earlier version of this comment claimed "the zone wildcard already routes
+# to the tunnel, so no DNS record is needed". That is HALF true and the wrong
+# half is load-bearing:
+#   • The TUNNEL does wildcard — its ingress rules carry `*.gompha.com` →
+#     ingress-nginx, so any hostname that REACHES the tunnel is routed. True.
+#   • DNS does NOT wildcard. gompha.com has one explicit proxied CNAME per
+#     hostname and no `*` record — `dig anything-else.gompha.com` returns
+#     NOTHING. So a new host resolves nowhere and never reaches the tunnel.
+# Every new hostname therefore needs its own CNAME → <tunnel-id>.cfargotunnel.com,
+# proxied. For this host, created 2026-08-17:
+#     app-staging.gompha.com CNAME 2cd98378-e42c-4132-866b-a1b042012e7f.cfargotunnel.com (proxied)
+# The tunnel config itself needed NO change — do not edit it to add a hostname
+# that the `*.gompha.com` rule already covers; every edit there risks the routes
+# that licensing-staging and the rest depend on.
+#
+# The credential for this is NOT the homelab's usual Cloudflare token: gompha.com
+# lives in a SEPARATE CF account (61417c55…), and neither the cert-manager token
+# nor ~/.cf_* can see the zone. Adding a host here needs a token for that account,
+# or the Zero Trust dashboard.
 #
 # ── HOSTNAME — NEEDS STEFANOS'S RULING ────────────────────────────────────────
 # RULED (Stefanos, 2026-08-17):  app-staging.gompha.com  — consistent with the
