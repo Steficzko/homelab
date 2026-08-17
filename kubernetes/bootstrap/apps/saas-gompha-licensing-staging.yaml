@@ -17,7 +17,7 @@ spec:
     namespace: saas-gompha-licensing-staging
   syncPolicy:
     automated:
-      prune: true
+      prune: false               # NEVER auto-delete the DB PVC (manifest-reviewer C2 precedent; B3 2026-08-17)
       selfHeal: true
     syncOptions:
       - CreateNamespace=true
