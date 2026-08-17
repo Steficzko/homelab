@@ -57,9 +57,14 @@ spec:
           imagePullSecrets: [{name: ghcr-pull}]
           containers:
             - name: backup
-              # tiny image: pg_dump + age + mc. Reused from dental-clinic rather
-              # than built again — same Postgres major (17), same tools.
-              image: ghcr.io/steficzko/dental-backup:v0.30.0
+              # pg_dump + age + mc, built from app/backup/Dockerfile on the SAME
+              # postgres:17-alpine the database runs. Reusing dental-clinic's
+              # image looked free and was not: it carries pg_dump 16, which
+              # REFUSES a 17 server, and the first drill wrote a 200-byte object
+              # that only the size assertion below caught. Client and server major
+              # move together now, and the tag matches the app release so a
+              # Postgres upgrade cannot silently outrun its own backup.
+              image: ghcr.io/steficzko/gompha-backup:clinic-v0.1.4
               command: ["/bin/sh", "-ec"]
               args:
                 - |
