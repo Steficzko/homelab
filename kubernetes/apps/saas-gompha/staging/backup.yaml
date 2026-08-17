@@ -1,0 +1,135 @@
+# Deployed via ArgoCD (bootstrap: saas-gompha-staging.yaml).
+#
+# Hourly encrypted logical backup of the clinic database, mirroring the pattern
+# that has run next door in dental-clinic for 44 days. The rebuild shipped with
+# NO backup at all while the app it replaces had one — a straight regression, and
+# the Longhorn pool is currently too tight to rebuild a replica, so a node loss
+# was the one real path to losing this database.
+#
+# The chain, end to end:
+#   pg_dump -Fc  ->  age (encrypt to a PUBLIC key)  ->  mc pipe  ->  MinIO on the
+#   LAN (192.168.1.100:9100)  ->  replicated by backup/minio-replication over
+#   Tailscale to 100.85.129.88 (the Greece standby, ADR-013), 30-day retention.
+# `clinic-backups` is already in that job's EXTRA_BUCKETS, so writing here
+# inherits the off-site leg with no change to replication. The prefix keeps the
+# rebuild's dumps separate from the old app's inside the shared bucket.
+#
+# age encrypts to a RECIPIENT (public key); the private half never touches the
+# cluster, so a compromise of this namespace yields ciphertext. Same recipient as
+# dental-clinic on purpose: one restore key to look after, not two.
+#
+# ⚠ operating.md: "a backup that has never been restored is not a backup." A
+# restore drill belongs in the runbook and must be done once before real patient
+# data lands — the dump being written is not evidence it can be read back.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: clinic-backup-config
+  namespace: saas-gompha-staging
+data:
+  # PUBLIC key — encryption only, safe in plain git (same as dental-clinic)
+  AGE_RECIPIENT: "age1292xyq2l38qj6ue964zsnuvlszqyftvds6v7ghj7aplsem8fyd3sx43dfq"
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: clinic-postgres-backup
+  namespace: saas-gompha-staging
+spec:
+  # :20 past the hour — dental-clinic runs at :00, and two pg_dumps plus a
+  # replication pass hitting one LAN MinIO at the same minute is avoidable.
+  schedule: "20 * * * *"
+  timeZone: Asia/Baghdad
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      ttlSecondsAfterFinished: 10800   # stops one-off failures re-alerting forever
+      template:
+        metadata:
+          labels:
+            app: clinic-backup
+            clinic-db-access: "true"   # Postgres ingress policy selector
+        spec:
+          restartPolicy: OnFailure
+          automountServiceAccountToken: false
+          imagePullSecrets: [{name: ghcr-pull}]
+          containers:
+            - name: backup
+              # tiny image: pg_dump + age + mc. Reused from dental-clinic rather
+              # than built again — same Postgres major (17), same tools.
+              image: ghcr.io/steficzko/dental-backup:v0.30.0
+              command: ["/bin/sh", "-ec"]
+              args:
+                - |
+                  ts="$(date +%Y%m%dT%H%M%S)"
+                  mc alias set minio "$S3_ENDPOINT" "$S3_ACCESS_KEY" "$S3_SECRET_KEY"
+                  # Wait for the database first. kube-router takes ~30-45s to admit
+                  # a freshly created pod through to clinic-postgres; without this
+                  # the dump runs too early and uploads an EMPTY file that looks
+                  # like a successful backup (dental-clinic found that 2026-07-05 —
+                  # inheriting the fix, not the lesson).
+                  for i in $(seq 1 40); do
+                    pg_isready -d "$DATABASE_URL" -t 5 >/dev/null 2>&1 && break
+                    sleep 3
+                  done
+                  # -Fc: custom format, so a single table can be restored without
+                  # replaying the whole dump. set -e means a pg_dump failure fails
+                  # the job rather than piping an empty stream into an object.
+                  pg_dump -Fc "$DATABASE_URL" \
+                    | age -r "$AGE_RECIPIENT" \
+                    | mc pipe "minio/clinic-backups/gompha-clinic-postgres/${ts}.dump.age"
+                  # prove something non-trivial landed: an empty or truncated
+                  # object is the failure mode that otherwise reports success
+                  size="$(mc stat --json "minio/clinic-backups/gompha-clinic-postgres/${ts}.dump.age" | sed -n 's/.*"size":\([0-9]*\).*/\1/p')"
+                  echo "uploaded ${ts}.dump.age size=${size}"
+                  [ "${size:-0}" -gt 2048 ] || { echo "backup too small — treating as FAILED"; exit 1; }
+              env:
+                # dumps as gompha_owner, not the superuser: it owns every object
+                # in the schema, so it can read all of it, and the credential is
+                # already in this namespace for migrations.
+                - name: DATABASE_URL
+                  valueFrom: {secretKeyRef: {name: clinic-api-secret, key: GOMPHA_MIGRATION_DATABASE_URL}}
+                - name: AGE_RECIPIENT
+                  valueFrom: {configMapKeyRef: {name: clinic-backup-config, key: AGE_RECIPIENT}}
+                - name: S3_ENDPOINT
+                  valueFrom: {secretKeyRef: {name: clinic-backup-s3-secret, key: S3_ENDPOINT}}
+                - name: S3_ACCESS_KEY
+                  valueFrom: {secretKeyRef: {name: clinic-backup-s3-secret, key: S3_ACCESS_KEY}}
+                - name: S3_SECRET_KEY
+                  valueFrom: {secretKeyRef: {name: clinic-backup-s3-secret, key: S3_SECRET_KEY}}
+              resources:
+                requests: {cpu: 25m, memory: 64Mi}
+                limits: {memory: 256Mi}
+---
+# The backup pod is the ONE workload here allowed to reach the LAN. The clinic-api
+# policy grants 0.0.0.0/0:443 minus RFC1918 (for the breach check), which
+# deliberately excludes 192.168.1.0/24 — so without this rule `mc alias set`
+# fails and the backup never runs. Scoped to app=clinic-backup and to the single
+# MinIO host and port: nothing else in this namespace gains LAN access.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: clinic-backup
+  namespace: saas-gompha-staging
+spec:
+  podSelector:
+    matchLabels: {app: clinic-backup}
+  policyTypes: [Ingress, Egress]
+  # no ingress at all — nothing calls a backup job
+  egress:
+    - to:
+        - podSelector: {matchLabels: {app: clinic-postgres}}
+      ports:
+        - {protocol: TCP, port: 5432}
+    - to:
+        - ipBlock: {cidr: 192.168.1.100/32}
+      ports:
+        - {protocol: TCP, port: 9100}
+    - to:
+        - namespaceSelector:
+            matchLabels: {kubernetes.io/metadata.name: kube-system}
+      ports:
+        - {protocol: UDP, port: 53}
+        - {protocol: TCP, port: 53}
