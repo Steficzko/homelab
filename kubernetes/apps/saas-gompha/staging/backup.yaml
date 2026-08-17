@@ -15,8 +15,14 @@
 # rebuild's dumps separate from the old app's inside the shared bucket.
 #
 # age encrypts to a RECIPIENT (public key); the private half never touches the
-# cluster, so a compromise of this namespace yields ciphertext. Same recipient as
-# dental-clinic on purpose: one restore key to look after, not two.
+# cluster, so a compromise of this namespace yields ciphertext.
+#
+# The recipient is the GOMPHA key, deliberately NOT the old app's. The first
+# version of this file reused dental-clinic's recipient for "one restore key to
+# look after" — which quietly made the rebuild's backups depend on the frozen
+# app's key material. Retiring the old app would then have made these dumps
+# undecryptable, and nobody would find out until a restore. Separate app,
+# separate key, retired on its own schedule.
 #
 # ⚠ operating.md: "a backup that has never been restored is not a backup." A
 # restore drill belongs in the runbook and must be done once before real patient
@@ -27,8 +33,9 @@ metadata:
   name: clinic-backup-config
   namespace: saas-gompha-staging
 data:
-  # PUBLIC key — encryption only, safe in plain git (same as dental-clinic)
-  AGE_RECIPIENT: "age1292xyq2l38qj6ue964zsnuvlszqyftvds6v7ghj7aplsem8fyd3sx43dfq"
+  # PUBLIC key — encryption only, safe in plain git. This is the GOMPHA key
+  # (~/.config/gompha-backup/age.key holds the private half, off-cluster).
+  AGE_RECIPIENT: "age186vffu4fdvtaejmd8lm69vmafh7q6m5swkcnfdxth7pjh7cd5s7s8l00jh"
 ---
 apiVersion: batch/v1
 kind: CronJob
