@@ -34,12 +34,23 @@ cd /mnt/user/appdata/bjj-failover && ./restore-from-minio.sh        # both
    `COMPOSE_PROFILES=failover` → **Update the stack**. (CLI equivalent:
    `docker compose --profile failover up -d` in the stack dir.)
    This starts `n8n` + `bjj-app`.
-3. **Re-activate workflows** (they import deactivated):
+3. **Re-activate workflows.** They import deactivated **and unpublished**; on n8n 2.27 a
+   workflow's triggers/webhooks register only when it is BOTH active and published.
+   `update:workflow --active=true` is DEPRECATED here and does NOT publish — using it leaves
+   every webhook returning 404. Use `publish:workflow`, which sets a workflow active **and**
+   published in one step (verified: `unpublish` clears both, `publish` restores both):
    ```bash
-   docker exec n8n n8n update:workflow --all --active=true   # then restart n8n
+   # publish (= activate + publish) every restored workflow, then restart so triggers register
+   docker exec n8n sh -c 'for id in $(n8n list:workflow --onlyId); do n8n publish:workflow --id="$id"; done'
    docker restart n8n
    ```
-   (Or activate only the ones you need in the n8n UI.)
+   Publishing ~100 workflows this way takes a few minutes (each CLI call cold-starts n8n) —
+   it's the sanctioned path. Then verify a key webhook is live:
+   ```bash
+   curl -s -o /dev/null -w '%{http_code}\n' -X POST https://auto.kostikidis.net/webhook/ledger-login
+   # 200/401 = registered & healthy; 404 = not registered yet
+   ```
+   (Or publish only the ones you need with `n8n publish:workflow --id=<id>` / the n8n UI.)
 4. **Send traffic to Greece** — run the sticky DNS flip:
    ```bash
    ./disaster-recovery/greece/failover.sh    # needs CF API token in ~/.cloudflare_token
@@ -56,4 +67,6 @@ cd /mnt/user/appdata/bjj-failover && ./restore-from-minio.sh        # both
 ## Notes
 - `n8n` runs as uid 1000; `/mnt/user/appdata/bjj-failover/n8n` is chowned 1000:1000.
 - Postgres data persists at `/mnt/user/appdata/bjj-failover/postgres` (subPath `pgdata`).
-- RPO ≈ 1 hour (hourly replication). RTO ≈ minutes once you run steps 1–4.
+- RPO ≈ 1 hour (hourly replication). RTO ≈ minutes for steps 1–2 + 4; add a few minutes
+  for step 3 (publishing ~100 workflows on 2.27 is sequential). Execution history is NOT
+  replicated — only workflows + credentials — so past run logs don't survive failover.
