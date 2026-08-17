@@ -22,6 +22,12 @@ data:
       location / {
         try_files $uri $uri/ =404;
       }
+      # /manual with no trailing slash returned 404: nginx only auto-redirects to
+      # a trailing slash for a REAL directory, and the manual is ALIASED from
+      # outside the docroot, so there is nothing for it to notice. Staff type the
+      # address without the slash. absolute_redirect off (above) keeps this
+      # relative, so the plain-HTTP origin hop cannot mint an http:// URL.
+      location = /manual { return 301 /manual/; }
       # staff manual — auth lives at the ingress (manual-ingress.yaml), the pod
       # only serves the files; alias because the content mounts OUTSIDE the docroot
       location /manual/ {

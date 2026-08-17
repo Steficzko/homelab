@@ -6,6 +6,114 @@ metadata:
   name: landing-manual
   namespace: gompha
 data:
+  "activate-your-account.html": |
+    <!doctype html><html lang="en"><head><meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Activate Your Account · Gompha Manual</title>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;600&family=IBM+Plex+Sans+Arabic&display=swap" rel="stylesheet">
+    <style>
+    body{margin:0;background:#FAF8F4;color:#3D3A34;font:15px/1.65 "IBM Plex Sans","IBM Plex Sans Arabic",sans-serif}
+    .wrap{max-width:760px;margin:0 auto;padding:40px 24px 80px}
+    a{color:#2E5D51} .dead{color:#98917F;border-bottom:1px dashed #C9C2B2}
+    h1,h2,h3{line-height:1.3} h1{font-size:26px}
+    code{background:#F1EDE6;border-radius:5px;padding:2px 6px}
+    .crumb{font-size:13px;color:#98917F;margin-bottom:28px} .crumb a{color:#6B655A;text-decoration:none}
+    .draft{background:#F3EDDC;color:#6A5A32;border-radius:9px;padding:9px 14px;font-size:13px;margin-bottom:26px}
+    table{border-collapse:collapse} td,th{border:1px solid #E9E3D8;padding:7px 12px;text-align:left}
+    </style></head><body><div class="wrap">
+    <div class="crumb"><a href="index.html">Gompha Manual</a></div>
+    <div class="draft">Draft — this manual describes the upcoming version of Gompha.</div>
+    <hr />
+    <p>tags: [task, milestone-1, screen/redeem]
+    screen: Join the clinic</p>
+    <hr />
+    <h1>Activate Your Account</h1>
+    <p>You were added to Gompha by the clinic owner and sent a link. The link is how you choose your own
+    password. Nobody at the clinic, and nobody at Gompha, knows or sets your password for you.</p>
+    <p><strong>The link is single-use and expires 48 hours after it was created.</strong> Once you have used it, it
+    will not work a second time — that is normal, you are already set up, and you sign in from then on
+    with <a href="sign-in.html">Sign-In</a>.</p>
+    <h2>Steps</h2>
+    <ol>
+    <li>Open the link you were sent. It arrives by WhatsApp, SMS or in person — <strong>not by email</strong>. See
+       <em>Why it works this way</em> below.</li>
+    <li>The screen is headed <strong>Join the clinic</strong>, with <em>"Set your password to activate your account."</em>
+       underneath.</li>
+    <li>Type your name in <strong>Your name</strong>. Arabic and Kurdish are fine here; type it the way you want it
+       to appear to colleagues.</li>
+    <li>Choose a password in the <strong>Password</strong> field. A small line of text under the field tells you
+       whether it is acceptable yet (<a href="passwords-and-sessions.html">Passwords-and-Sessions</a> has the rules).</li>
+    <li>Type the same password again in <strong>Confirm password</strong>.</li>
+    <li>Press <strong>Activate account</strong>.</li>
+    </ol>
+    <p>You are signed in immediately. You do not have to sign in again straight away.</p>
+    <h2>If something goes wrong</h2>
+    <table>
+    <thead>
+    <tr>
+    <th>On screen</th>
+    <th>What it means</th>
+    <th>What to do</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+    <td><strong>This link is incomplete</strong></td>
+    <td>The link lost its code, usually because it was retyped by hand or truncated when it was forwarded.</td>
+    <td>Ask the owner for the link again, and copy the whole thing.</td>
+    </tr>
+    <tr>
+    <td><strong>This link is invalid or has already been used. Ask for a new one.</strong></td>
+    <td>Used once already, or more than 48 hours old.</td>
+    <td>Ask the owner to issue a new link.</td>
+    </tr>
+    <tr>
+    <td><strong>At least 12 characters.</strong> under the password field</td>
+    <td>The password is too short.</td>
+    <td>Make it longer.</td>
+    </tr>
+    <tr>
+    <td><strong>This password appears in a known breach — choose another</strong></td>
+    <td>The password has appeared in a public leak of stolen passwords.</td>
+    <td>Choose a different one. It is not a judgement on you.</td>
+    </tr>
+    <tr>
+    <td>The sign-in screen appears instead of this one</td>
+    <td>See the known problem below.</td>
+    <td>Ask the owner for a corrected link.</td>
+    </tr>
+    </tbody>
+    </table>
+    <h2>⚠ Known problem with the link (Milestone 1)</h2>
+    <p><strong>On the version now running, the invite link the owner copies points at the wrong address.</strong>
+    Opening it lands on the sign-in screen rather than on <strong>Join the clinic</strong>, and the code is lost on
+    the way.</p>
+    <p>The link is created correctly and your account really exists — nothing is broken behind the
+    scenes. Only the address in the copied link is wrong.</p>
+    <ul>
+    <li>The link you are given looks like <code>…/staff/redeem#token=…</code></li>
+    <li>The address that actually opens this screen is <code>…/redeem/staff#token=…</code></li>
+    </ul>
+    <p><strong>⚠ verify</strong> — that corrected address has not been confirmed against a real invite end to end.
+    Report the problem rather than editing addresses by hand: an owner can issue a fresh link at any
+    time, and a mistyped code simply fails.</p>
+    <h2>Why it works this way</h2>
+    <p><strong>No email is sent.</strong> Sending mail as the clinic, from the clinic's own address, needs a mail
+    setup that is deliberately not switched on yet — half-configured mail lands in spam folders and
+    nobody finds out until an invite is silently lost. Until it is on, the owner copies the link and
+    delivers it the way this clinic already talks to its staff. Nothing is lost by hand delivery, and
+    an invite that visibly needs sending is better than one that quietly failed to send.</p>
+    <p><strong>Your password is yours.</strong> The owner creates the <em>person</em>, never the password. That way there is
+    no moment where someone else knows your password, and no shared first password making the rounds
+    of the clinic.</p>
+    <p><strong>The code sits after the <code>#</code> in the address.</strong> Everything after <code>#</code> stays inside your browser and
+    is never sent to any server that relays the page. That keeps a code that could take over your
+    account out of server logs and out of anybody's browsing history — the app wipes it from the
+    address bar as soon as the screen opens.</p>
+    <p><strong>One use, 48 hours.</strong> A link that works forever is a spare key to your account left lying in a
+    chat thread.</p>
+    <p>Next: <a href="sign-in.html">Sign-In</a> · <a href="passwords-and-sessions.html">Passwords-and-Sessions</a> · <a href="home.html">Home</a></p>
+    </div></body></html>
   "add-a-staff-member.html": |
     <!doctype html><html lang="en"><head><meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -24,16 +132,179 @@ data:
     <div class="crumb"><a href="index.html">Gompha Manual</a></div>
     <div class="draft">Draft — this manual describes the upcoming version of Gompha.</div>
     <hr />
-    <p>tags: [task, stub, not-live]
-    status: not-live</p>
+    <p>tags: [task, milestone-1, screen/add-person, root]
+    screen: Add a person</p>
     <hr />
     <h1>Add a Staff Member</h1>
-    <p><strong>Nothing live to document.</strong> There is no staff screen yet.</p>
-    <p>When it ships, this page gets numbered steps naming the real screens, then a short
-    <em>Why it works this way</em> — including why adding staff needs a working internet connection and how
-    many people of each kind your clinic may add. See <a href="roles-and-access.html">Roles-and-Access</a> and
-    <a href="what-your-licence-covers.html">What-Your-Licence-Covers</a>.</p>
-    <p>For: <a href="clinic-admin.html">Clinic-Admin</a> · Back to <a href="home.html">Home</a> · What is coming: <a href="roadmap.html">Roadmap</a></p>
+    <p><strong>For the owner only.</strong> On the <strong>people and access</strong> step of <a href="set-up-your-clinic.html">Set-Up-Your-Clinic</a>.</p>
+    <p>Add each person once. You add the <em>person</em>, not their password — they choose that themselves from
+    the link you send (<a href="activate-your-account.html">Activate-Your-Account</a>).</p>
+    <h2>Steps</h2>
+    <ol>
+    <li>Press <strong>+ Add person</strong> at the top of the people step. (The very first time, the button sits
+       inside a dashed box headed <strong>No one added yet</strong> and reads <strong>+ Add the first person</strong>.)</li>
+    <li>A panel slides in from the right, headed <strong>Add a person</strong>.</li>
+    <li><strong>Full name</strong> — type it as colleagues should see it. Arabic and Kurdish are fine.</li>
+    <li><strong>Email</strong> — this is what the person types to sign in, so get it right. Under the field it says
+       <em>"Stored now; the invite is delivered by hand until email is set up."</em></li>
+    <li><strong>Role</strong> — pick one of four: <strong>Admin doctor</strong>, <strong>Associate doctor</strong>, <strong>Receptionist</strong>,
+       <strong>Assistant</strong>. The box starts on <em>Associate doctor</em>. <a href="roles-and-access.html">Roles-and-Access</a> explains the
+       difference.</li>
+    <li><strong>Supervising doctor</strong> — this field appears <strong>only when you pick Assistant</strong>, and it is
+       required. Choose the doctor she works under. If you have not added any doctors yet the field is
+       greyed out and says <em>"Add a doctor first — an assistant works under one."</em> So <strong>add the doctors
+       before the assistants.</strong></li>
+    <li>Press <strong>Create invite</strong>.</li>
+    </ol>
+    <h2>Then: send the link, or the person cannot get in</h2>
+    <p>The panel does not just close. It changes to <strong>Invite created</strong> and shows:</p>
+    <ul>
+    <li>a line reading <em>"<name> is added as <Role> and needs to set a password."</em></li>
+    <li>a note that email is not set up yet, and that you must send the link yourself</li>
+    <li><strong>the invite link itself, with a Copy link button beside it</strong></li>
+    </ul>
+    <p><strong>Copy the link and send it to that person now</strong> — WhatsApp, SMS, or read it out and let them type
+    it. Then choose:</p>
+    <ul>
+    <li><strong>Add another</strong> — the panel goes back to a blank form for the next person</li>
+    <li><strong>Done</strong> — the panel closes</li>
+    </ul>
+    <p>The person now appears in the grid with an <strong>Invited</strong> badge and a small <strong>Copy invite link</strong>
+    button on their card, so you can copy the link again without re-creating anything.</p>
+    <blockquote>
+    <p><strong>The link is only recoverable while you stay on this screen.</strong> Gompha stores nothing that can
+    reproduce it — only a fingerprint used to check it once. If you reload the page or sign out, the
+    <strong>Copy invite link</strong> button disappears, and in this milestone <strong>there is no button that issues a
+    replacement</strong>. Send the link before you leave the screen. If one is lost, contact support.</p>
+    </blockquote>
+    <h2>What can go wrong</h2>
+    <table>
+    <thead>
+    <tr>
+    <th>On screen</th>
+    <th>What it means</th>
+    <th>What to do</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+    <td><strong>A staff member with this email already exists</strong></td>
+    <td>That email is already in the clinic.</td>
+    <td>Check the grid. They may already be listed as <em>Invited</em>.</td>
+    </tr>
+    <tr>
+    <td><strong>More doctors than your licence allows — contact us</strong></td>
+    <td>Your licence covers fewer doctors than you are trying to add.</td>
+    <td>See <a href="what-your-licence-covers.html">What-Your-Licence-Covers</a>. Contact us to raise it.</td>
+    </tr>
+    <tr>
+    <td><strong>Doctor seats for role '…' are at the licence limit</strong></td>
+    <td>Same thing, stated by role. Admin doctors and associate doctors are counted separately.</td>
+    <td>As above.</td>
+    </tr>
+    <tr>
+    <td><strong>No active licence — no doctor seats available</strong></td>
+    <td>The clinic has no valid licence recorded right now.</td>
+    <td>Contact support. Reception and assistants can still be added.</td>
+    </tr>
+    <tr>
+    <td><strong>Choose the supervising doctor.</strong></td>
+    <td>You picked Assistant and left the doctor blank.</td>
+    <td>Pick the doctor.</td>
+    </tr>
+    <tr>
+    <td><strong>No connection — adding a person needs the clinic link.</strong></td>
+    <td>The device cannot reach the server.</td>
+    <td>See <a href="working-offline.html">Working-Offline</a>. Nothing was saved; add them again when the link is back.</td>
+    </tr>
+    </tbody>
+    </table>
+    <p><strong>An invited person counts against your doctor seats from the moment you create the invite</strong>, not
+    from when they first sign in. That is intentional: a seat you have promised to someone is not free.</p>
+    <h2>Milestone 1 limits, worth knowing before you start typing</h2>
+    <ul>
+    <li><strong>You cannot correct a name or an email on screen.</strong> There is no edit on a person's card in this
+      version, and you cannot add the person again under the same email. Type carefully, or contact
+      support to fix it.</li>
+    <li><strong>You cannot remove a person on screen either.</strong> Nobody is ever deleted in Gompha — people are
+      archived, keeping the record of what they did — but the button for it is not in this version.</li>
+    <li><strong>You cannot change which doctor an assistant works under.</strong> Choose it correctly here.</li>
+    </ul>
+    <h2>Why it works this way</h2>
+    <p><strong>The owner creates people; people create their own passwords.</strong> No shared first password ever
+    circulates, and there is no moment when someone else knows your password.</p>
+    <p><strong>Reception and assistants are not counted against your licence; doctors are.</strong> Doctors are what a
+    dental practice is sized by, and capping receptionists would only push a clinic into sharing one
+    front-desk login — which destroys the record of who did what. See <a href="what-your-licence-covers.html">What-Your-Licence-Covers</a>.</p>
+    <p><strong>An assistant must have exactly one supervising doctor, and nobody else has one.</strong> Half of an
+    assistant's access is defined by the words "her doctor's" — her doctor's patients, her doctor's
+    schedule. Without a named doctor those permissions have no meaning, so the app refuses to create
+    her without one. Changing it later moves everything she can see to a different doctor at once,
+    which is why it is not an ordinary edit.</p>
+    <p><strong>Nobody is deleted.</strong> A doctor who leaves is archived. The treatments he recorded are part of a
+    patient's medical history and cannot be allowed to vanish with his account.</p>
+    <p>Next: <a href="set-what-each-person-can-see.html">Set-What-Each-Person-Can-See</a> · <a href="choose-a-doctor-colour.html">Choose-a-Doctor-Colour</a> · <a href="roles-and-access.html">Roles-and-Access</a></p>
+    </div></body></html>
+  "add-the-clinic-rooms.html": |
+    <!doctype html><html lang="en"><head><meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Add the Clinic Rooms · Gompha Manual</title>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;600&family=IBM+Plex+Sans+Arabic&display=swap" rel="stylesheet">
+    <style>
+    body{margin:0;background:#FAF8F4;color:#3D3A34;font:15px/1.65 "IBM Plex Sans","IBM Plex Sans Arabic",sans-serif}
+    .wrap{max-width:760px;margin:0 auto;padding:40px 24px 80px}
+    a{color:#2E5D51} .dead{color:#98917F;border-bottom:1px dashed #C9C2B2}
+    h1,h2,h3{line-height:1.3} h1{font-size:26px}
+    code{background:#F1EDE6;border-radius:5px;padding:2px 6px}
+    .crumb{font-size:13px;color:#98917F;margin-bottom:28px} .crumb a{color:#6B655A;text-decoration:none}
+    .draft{background:#F3EDDC;color:#6A5A32;border-radius:9px;padding:9px 14px;font-size:13px;margin-bottom:26px}
+    table{border-collapse:collapse} td,th{border:1px solid #E9E3D8;padding:7px 12px;text-align:left}
+    </style></head><body><div class="wrap">
+    <div class="crumb"><a href="index.html">Gompha Manual</a></div>
+    <div class="draft">Draft — this manual describes the upcoming version of Gompha.</div>
+    <hr />
+    <p>tags: [task, milestone-1, screen/rooms, root]
+    screen: Register the clinic's rooms</p>
+    <hr />
+    <h1>Add the Clinic Rooms</h1>
+    <p><strong>For the owner only.</strong> Step 3 of <a href="set-up-your-clinic.html">Set-Up-Your-Clinic</a>, headed <strong>"Register the clinic's rooms"</strong>.</p>
+    <p>Milestone 1 records <strong>room names and nothing else</strong>. Register every surgery, the X-ray room, and
+    any shared space.</p>
+    <h2>Steps</h2>
+    <ol>
+    <li>The first time, a dashed box headed <strong>No rooms yet</strong> offers <strong>+ Add the first room</strong>. Press it.
+       Afterwards the button at the bottom of the list reads <strong>+ Add room</strong>.</li>
+    <li>A dashed row appears with <strong>New room name</strong>. Type the name — Arabic and Kurdish are fine — and
+       press <strong>Add</strong>, or just press Enter. <strong>Escape</strong> or <strong>Cancel</strong> abandons it.</li>
+    <li>Repeat for each room.</li>
+    <li>When the list is complete, press <strong>Finish setup →</strong> at the bottom right.</li>
+    </ol>
+    <h2>Renaming and removing</h2>
+    <ul>
+    <li><strong>To rename:</strong> click into the room's name box, edit it, then click away. It saves when the field
+      loses focus. If you clear it or change nothing, it snaps back to the old name.</li>
+    <li><strong>To remove:</strong> press the <strong>bin icon</strong> at the right-hand end of the row. The room disappears from
+      the list.</li>
+    </ul>
+    <p><strong>Two rooms cannot share a name.</strong> Trying it gives <strong>"A room with this name already exists"</strong>.</p>
+    <h2>What you cannot do yet</h2>
+    <ul>
+    <li><strong>No opening hours.</strong> A room's working hours, and splitting one shared room between two doctors,
+      are set on the schedule when the Scheduling module arrives. The screen says so.</li>
+    <li><strong>No reordering.</strong> The order rooms appear in is the order you added them.</li>
+    </ul>
+    <h2>Why it works this way</h2>
+    <p><strong>Rooms before appointments.</strong> An appointment happens to a patient, with a doctor, in a room, at a
+    time. The room is one of the four things the schedule cannot be drawn without, so it is captured
+    before the schedule exists rather than being invented in a hurry on the day the schedule ships.</p>
+    <p><strong>Names only, for now.</strong> Opening hours belong on the surface where you can see them against the day
+    — a form full of time boxes with no calendar next to it is guesswork. Naming the rooms now costs a
+    minute and is never re-entered.</p>
+    <p><strong>The bin does not destroy the room.</strong> It marks it as no longer in use and hides it from the list.
+    Gompha deletes nothing outright: once the schedule exists, a room that had appointments in it must
+    still be nameable in last year's records. A truly deleted room would leave old appointments
+    pointing at nothing.</p>
+    <p>Next: <a href="set-up-your-clinic.html">Set-Up-Your-Clinic</a> · <a href="whats-not-here-yet.html">Whats-Not-Here-Yet</a> · <a href="home.html">Home</a></p>
     </div></body></html>
   "assistant.html": |
     <!doctype html><html lang="en"><head><meta charset="utf-8">
@@ -53,15 +324,45 @@ data:
     <div class="crumb"><a href="index.html">Gompha Manual</a></div>
     <div class="draft">Draft — this manual describes the upcoming version of Gompha.</div>
     <hr />
-    <p>tags: [role, stub, not-live]
-    status: not-live</p>
-    <hr />
+    <h2>tags: [role, milestone-1]</h2>
     <h1>Assistant</h1>
-    <p><strong>Nothing live to document.</strong> Nothing has shipped for assistants yet.</p>
-    <p>When it ships this page becomes a day-in-the-life: what you see when you log in, what you can and
-    cannot do, and why those limits exist.</p>
-    <p>Your tasks, once they exist: <a href="read-the-day-view.html">Read-the-Day-View</a> · <a href="record-a-treatment.html">Record-a-Treatment</a> · <a href="work-offline.html">Work-Offline</a></p>
-    <p>Back to <a href="home.html">Home</a> · what is coming: <a href="roadmap.html">Roadmap</a></p>
+    <h2>Read this first</h2>
+    <p><strong>Milestone 1 has no schedule and no patients</strong>, so there is nothing for you to do in Gompha yet
+    beyond getting your account working. <a href="whats-not-here-yet.html">Whats-Not-Here-Yet</a>.</p>
+    <h2>Set your account up</h2>
+    <p>The owner will send you a link — WhatsApp, SMS or in person, <strong>not email</strong>. Open it and choose your
+    own password. <a href="activate-your-account.html">Activate-Your-Account</a> · <a href="passwords-and-sessions.html">Passwords-and-Sessions</a>.</p>
+    <h2>When you sign in</h2>
+    <ol>
+    <li>Open <strong>https://app-staging.gompha.com</strong> and sign in (<a href="sign-in.html">Sign-In</a>).</li>
+    <li>You get a short page headed <strong>"You're signed in"</strong> which names your role and lists the clinic's
+       <strong>rooms</strong>.</li>
+    </ol>
+    <p>The <strong>gear</strong> at the top right gives you <a href="switch-to-dark-mode.html">Switch-to-Dark-Mode</a> and <strong>Sign out</strong>.</p>
+    <h2>You are attached to one doctor, and that matters</h2>
+    <p>Every assistant is created <strong>under one named doctor</strong>. On the owner's screen your card reads
+    <em>"Assistant · under Dr …"</em>.</p>
+    <p>That doctor decides the meaning of almost everything you can see. Your access is set to <strong>Own</strong> in
+    most sections, and for you <strong>"own" means your doctor's</strong>
+    (<a href="set-what-each-person-can-see.html">Set-What-Each-Person-Can-See</a>):</p>
+    <ul>
+    <li><strong>His patients</strong>, as contacts and as clinical records — not the whole clinic's</li>
+    <li><strong>His schedule</strong> — not the whole clinic's book</li>
+    <li><strong>What his patients owe</strong></li>
+    </ul>
+    <p>One section starts at <strong>None</strong>: <strong>Financial information</strong>. For you that would mean <em>your doctor's
+    earnings</em>, which is not something the software hands over by default. The owner can grant it, and
+    that has to be a choice somebody makes on purpose.</p>
+    <p><strong>If you move to a different doctor, tell the owner.</strong> Everything you can see moves with it, and in
+    Milestone 1 the change cannot be made on screen — support has to do it.</p>
+    <h2>Worth reading now</h2>
+    <ul>
+    <li><a href="working-offline.html">Working-Offline</a> — the grey <strong>"No connection"</strong> strip is normal, not an error, and while it shows
+      nothing can be saved.</li>
+    <li><a href="install-the-app-on-a-phone.html">Install-the-App-on-a-Phone</a> — you will be working from a phone or a chair-side tablet. Set the
+      tablet to <strong>Comfortable</strong> so the buttons are big enough with gloves on.</li>
+    </ul>
+    <p>Next: <a href="sign-in.html">Sign-In</a> · <a href="roles-and-access.html">Roles-and-Access</a> · <a href="whats-not-here-yet.html">Whats-Not-Here-Yet</a> · <a href="home.html">Home</a></p>
     </div></body></html>
   "book-an-appointment.html": |
     <!doctype html><html lang="en"><head><meta charset="utf-8">
@@ -81,15 +382,77 @@ data:
     <div class="crumb"><a href="index.html">Gompha Manual</a></div>
     <div class="draft">Draft — this manual describes the upcoming version of Gompha.</div>
     <hr />
-    <p>tags: [task, stub, not-live]
-    status: not-live</p>
+    <p>tags: [task, not-built]
+    status: not-built</p>
     <hr />
     <h1>Book an Appointment</h1>
-    <p><strong>Nothing live to document.</strong> Booking is not built yet, so there are no steps to follow.</p>
-    <p>When it ships, this page gets numbered steps naming the real screens, then a short
-    <em>Why it works this way</em> — including why booking needs a live connection to the server and what
-    the screen tells you while it does not have one. See <a href="working-offline.html">Working-Offline</a>.</p>
-    <p>For: <a href="receptionist.html">Receptionist</a> · Back to <a href="home.html">Home</a> · What is coming: <a href="roadmap.html">Roadmap</a></p>
+    <p><strong>Not built.</strong> There is no schedule and no appointment in Gompha yet. Nothing can be booked,
+    moved or cancelled.</p>
+    <p>The rooms you register in Milestone 1 (<a href="add-the-clinic-rooms.html">Add-the-Clinic-Rooms</a>) and the doctor colours
+    (<a href="choose-a-doctor-colour.html">Choose-a-Doctor-Colour</a>) are what the schedule will be built on.</p>
+    <p>See <a href="whats-not-here-yet.html">Whats-Not-Here-Yet</a> · <a href="roadmap.html">Roadmap</a> · <a href="home.html">Home</a></p>
+    </div></body></html>
+  "choose-a-doctor-colour.html": |
+    <!doctype html><html lang="en"><head><meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Choose a Doctor Colour · Gompha Manual</title>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;600&family=IBM+Plex+Sans+Arabic&display=swap" rel="stylesheet">
+    <style>
+    body{margin:0;background:#FAF8F4;color:#3D3A34;font:15px/1.65 "IBM Plex Sans","IBM Plex Sans Arabic",sans-serif}
+    .wrap{max-width:760px;margin:0 auto;padding:40px 24px 80px}
+    a{color:#2E5D51} .dead{color:#98917F;border-bottom:1px dashed #C9C2B2}
+    h1,h2,h3{line-height:1.3} h1{font-size:26px}
+    code{background:#F1EDE6;border-radius:5px;padding:2px 6px}
+    .crumb{font-size:13px;color:#98917F;margin-bottom:28px} .crumb a{color:#6B655A;text-decoration:none}
+    .draft{background:#F3EDDC;color:#6A5A32;border-radius:9px;padding:9px 14px;font-size:13px;margin-bottom:26px}
+    table{border-collapse:collapse} td,th{border:1px solid #E9E3D8;padding:7px 12px;text-align:left}
+    </style></head><body><div class="wrap">
+    <div class="crumb"><a href="index.html">Gompha Manual</a></div>
+    <div class="draft">Draft — this manual describes the upcoming version of Gompha.</div>
+    <hr />
+    <p>tags: [task, milestone-1, screen/permissions, root]
+    screen: Doctor colour (on a person's card)</p>
+    <hr />
+    <h1>Choose a Doctor Colour</h1>
+    <p><strong>For the owner only.</strong> At the bottom of a <strong>doctor's</strong> card, on the people and access step of
+    <a href="set-up-your-clinic.html">Set-Up-Your-Clinic</a>.</p>
+    <p>Each doctor gets one colour. Later, on the schedule, that colour is how staff tell one doctor's
+    column from another at a glance.</p>
+    <h2>Steps</h2>
+    <ol>
+    <li>Find the doctor's card on the people step.</li>
+    <li>At the bottom of the card, past the five access sections, is a row labelled <strong>Doctor colour</strong>
+       with a strip of eight small coloured squares.</li>
+    <li>Press the colour you want. The chosen one gets a dark ring and a tick, and the name of the
+       colour appears under the strip.</li>
+    </ol>
+    <p>The change saves immediately. There is no Save button.</p>
+    <h2>What you will notice</h2>
+    <ul>
+    <li><strong>A doctor already has a colour when you add them.</strong> The app hands out the next unused one from
+      the eight, so you never have to do this at all unless you want a particular doctor on a
+      particular colour.</li>
+    <li><strong>The eight colours are:</strong> Teal, Amber, Violet, Coral, Blue, Green, Rose, Slate. Hovering a
+      square tells you which is which.</li>
+    <li><strong>A colour already used by another doctor is faded, marked <em>"in use"</em>, and cannot be pressed.</strong>
+      Two doctors never share a colour.</li>
+    <li><strong>Non-doctors have no colour row at all.</strong> Reception and assistants do not appear on the schedule
+      as columns, so a colour would mean nothing.</li>
+    <li><strong>If all eight are taken</strong>, a ninth doctor is added with <strong>No colour yet</strong> under an empty strip.
+      Free one up by moving another doctor, or contact us.</li>
+    </ul>
+    <h2>Why it works this way</h2>
+    <p><strong>Eight chosen colours, not a colour wheel.</strong> They are picked to stay readable side by side, in
+    light and in dark mode, on the old tablets as well as a new phone. A free colour picker produces
+    two near-identical blues in different doctors' hands, and then a receptionist books into the wrong
+    column.</p>
+    <p><strong>Colour is never the only signal.</strong> A red/green colour-blind dentist cannot separate two columns
+    by hue, so every colour here also carries a name, a tick and a written label. The same rule holds
+    everywhere in Gompha: colour adds, it never carries meaning alone.</p>
+    <p><strong>One colour per clinic, enforced by the server.</strong> The screen fades a taken colour out, and the
+    server refuses a clash even if something got past the screen. Two doctors on the same colour would
+    make a shared-room schedule unreadable exactly when it is busiest.</p>
+    <p>Next: <a href="set-what-each-person-can-see.html">Set-What-Each-Person-Can-See</a> · <a href="add-the-clinic-rooms.html">Add-the-Clinic-Rooms</a> · <a href="home.html">Home</a></p>
     </div></body></html>
   "clinic-admin.html": |
     <!doctype html><html lang="en"><head><meta charset="utf-8">
@@ -109,17 +472,64 @@ data:
     <div class="crumb"><a href="index.html">Gompha Manual</a></div>
     <div class="draft">Draft — this manual describes the upcoming version of Gompha.</div>
     <hr />
-    <p>tags: [role, stub, not-live]
-    status: not-live</p>
-    <hr />
-    <h1>Clinic Admin</h1>
-    <p><strong>Nothing live to document.</strong> There is no admin area yet — no staff list, no settings, no licence
-    screen.</p>
-    <p>When it ships this page becomes a day-in-the-life: what you see when you log in, what you can and
-    cannot do, and why those limits exist.</p>
-    <p>Your tasks, once they exist: <a href="add-a-staff-member.html">Add-a-Staff-Member</a> · <a href="what-your-licence-covers.html">What-Your-Licence-Covers</a> ·
-    <a href="roles-and-access.html">Roles-and-Access</a></p>
-    <p>Back to <a href="home.html">Home</a> · what is coming: <a href="roadmap.html">Roadmap</a></p>
+    <h2>tags: [role, milestone-1, root]</h2>
+    <h1>Clinic Admin (Admin Doctor and Owner)</h1>
+    <p>In Milestone 1 this is <strong>the only role with real work to do</strong>. The clinic exists in Gompha because
+    the owner sets it up.</p>
+    <h2>When you sign in</h2>
+    <p>You sign in at <strong>https://app-staging.gompha.com</strong> like everyone else (<a href="sign-in.html">Sign-In</a>). Because you are
+    the owner, you land on <strong>Welcome</strong> — the setup screen — not on an ordinary home page.</p>
+    <p>Across the top: the Gompha mark on the left, a <strong>gear</strong> on the right. <strong>No menu down the side.</strong>
+    Under that, three named boxes: <strong>Permissions</strong>, <strong>Rooms</strong>, <strong>Financials</strong> (dimmed, not built yet).</p>
+    <p>Your whole day-one job is those first two boxes.</p>
+    <h2>Your work, in order</h2>
+    <ol>
+    <li><strong>Read the greeting and check your own card.</strong> Your name, your email, a green ROOT badge.
+       Collect the emails it asks you for before you go further — each doctor's, reception's, and each
+       assistant's along with which doctor she works under.</li>
+    <li><strong>Add the doctors first.</strong> <a href="add-a-staff-member.html">Add-a-Staff-Member</a>. Assistants cannot be created until a doctor
+       exists to attach them to.</li>
+    <li><strong>Add reception and the assistants.</strong></li>
+    <li><strong>Send every invite link as you create it.</strong> No email is sent. The link is shown once, on the
+       screen, with a <strong>Copy link</strong> button. If you leave the screen without copying it, only support can
+       help. This is the single most important habit on this screen.</li>
+    <li><strong>Adjust access where this clinic is different.</strong> <a href="set-what-each-person-can-see.html">Set-What-Each-Person-Can-See</a>. The role
+       already filled sensible values in; you only touch what differs.</li>
+    <li><strong>Set doctor colours</strong> if the automatic ones are not what you want.
+       <a href="choose-a-doctor-colour.html">Choose-a-Doctor-Colour</a>.</li>
+    <li><strong>Name the rooms.</strong> <a href="add-the-clinic-rooms.html">Add-the-Clinic-Rooms</a>.</li>
+    <li><strong>Finish setup.</strong></li>
+    </ol>
+    <h2>Coming back later</h2>
+    <p>There is no menu item for setup. <strong>Open the plain clinic address and you land back on Welcome</strong>, with
+    everything you entered still there. That is how you add a person or change access next month.</p>
+    <h2>What you can do that nobody else can</h2>
+    <ul>
+    <li>Add people, and decide what each of them can see</li>
+    <li>Add and rename rooms</li>
+    <li>Give a doctor their schedule colour</li>
+    <li>Reach the setup screen at all</li>
+    </ul>
+    <h2>What you cannot do in Milestone 1</h2>
+    <p>Worth knowing before you type, because none of these have a button yet:</p>
+    <ul>
+    <li><strong>Correct a person's name or email.</strong> Not editable on screen, and you cannot re-add them under the
+      same email. Type carefully.</li>
+    <li><strong>Remove or archive a person.</strong></li>
+    <li><strong>Change which doctor an assistant works under.</strong></li>
+    <li><strong>Issue a replacement invite link.</strong> The one you are shown at creation is the only one.</li>
+    <li><strong>Read the record of who did what.</strong> It is being kept; there is no screen for it yet.</li>
+    </ul>
+    <p>Contact support for any of those. None of them are lost causes — they simply have no screen in this
+    version.</p>
+    <h2>A second admin doctor is not a second owner</h2>
+    <p>You can give another doctor the <strong>Admin doctor</strong> role. In this milestone that does <strong>not</strong> give them
+    the setup screen: <strong>only the owner reaches Welcome</strong>, so in practice you remain the only person who
+    can add people and rooms. Plan for that.</p>
+    <h2>What is not here yet</h2>
+    <p>No schedule, no patients, no money, no inventory. <a href="whats-not-here-yet.html">Whats-Not-Here-Yet</a> is the page to show anyone
+    who goes looking.</p>
+    <p>Next: <a href="set-up-your-clinic.html">Set-Up-Your-Clinic</a> · <a href="roles-and-access.html">Roles-and-Access</a> · <a href="what-your-licence-covers.html">What-Your-Licence-Covers</a> · <a href="home.html">Home</a></p>
     </div></body></html>
   "doctor.html": |
     <!doctype html><html lang="en"><head><meta charset="utf-8">
@@ -139,16 +549,48 @@ data:
     <div class="crumb"><a href="index.html">Gompha Manual</a></div>
     <div class="draft">Draft — this manual describes the upcoming version of Gompha.</div>
     <hr />
-    <p>tags: [role, stub, not-live]
-    status: not-live</p>
-    <hr />
+    <h2>tags: [role, milestone-1]</h2>
     <h1>Doctor</h1>
-    <p><strong>Nothing live to document.</strong> No clinical screen has shipped, so there is nothing to show you.</p>
-    <p>When it ships this page becomes a day-in-the-life: what you see when you log in, what you can and
-    cannot do, and why those limits exist.</p>
-    <p>Your tasks, once they exist: <a href="use-the-tooth-chart.html">Use-the-Tooth-Chart</a> · <a href="record-a-treatment.html">Record-a-Treatment</a> ·
-    <a href="read-the-day-view.html">Read-the-Day-View</a> · <a href="work-offline.html">Work-Offline</a></p>
-    <p>Back to <a href="home.html">Home</a> · what is coming: <a href="roadmap.html">Roadmap</a></p>
+    <p>Covers both <strong>Admin doctor</strong> and <strong>Associate doctor</strong>. The difference between them is who may manage
+    staff, not what happens when you sign in.</p>
+    <h2>Set your account up first</h2>
+    <p>You will be sent a link by the owner, by WhatsApp or in person — <strong>not by email</strong>. Open it and choose
+    your own password. <a href="activate-your-account.html">Activate-Your-Account</a>.</p>
+    <p>Nobody, including us, can tell you your password afterwards. <a href="passwords-and-sessions.html">Passwords-and-Sessions</a>.</p>
+    <h2>When you sign in</h2>
+    <ol>
+    <li>Open <strong>https://app-staging.gompha.com</strong> and sign in (<a href="sign-in.html">Sign-In</a>).</li>
+    <li>You get a short page headed <strong>"You're signed in"</strong>, which tells you your role and lists the
+       clinic's <strong>rooms</strong>.</li>
+    </ol>
+    <p><strong>That is all there is in Milestone 1, and it is correct.</strong> It is not a permission problem, and
+    nothing is misconfigured. <a href="whats-not-here-yet.html">Whats-Not-Here-Yet</a>.</p>
+    <p>At the top right is a <strong>gear</strong> for <a href="switch-to-dark-mode.html">Switch-to-Dark-Mode</a> and <strong>Sign out</strong>.</p>
+    <h2>What is coming for you, and is not here yet</h2>
+    <p>No schedule, no patient list, no patient card, no tooth chart, no notes, no X-rays, no earnings.
+    None of it exists.</p>
+    <h2>What has already been decided about your access</h2>
+    <p>The owner has set five things for you, and they take effect as each module arrives
+    (<a href="set-what-each-person-can-see.html">Set-What-Each-Person-Can-See</a>):</p>
+    <ul>
+    <li><strong>Financial information</strong> — normally <strong>Own</strong>, so your own earnings are yours. Two doctors in the
+      same clinic are not automatically partners in each other's money.</li>
+    <li><strong>Schedule</strong> — normally <strong>All</strong>: doctors see the whole clinic's book.</li>
+    <li><strong>Patients</strong> — an admin doctor normally sees <strong>All</strong>; an associate doctor normally sees <strong>Own</strong>.</li>
+    </ul>
+    <p>If any of that is wrong for how this clinic works, ask the owner. It is one press on a card, and it
+    takes effect immediately.</p>
+    <h2>Practical things worth knowing now</h2>
+    <ul>
+    <li><strong>Install it on your phone.</strong> You will be working from your phone once the schedule lands, and the
+      install is what later lets reminders reach you. <a href="install-the-app-on-a-phone.html">Install-the-App-on-a-Phone</a>.</li>
+    <li><strong>You will be signed out after 12 hours.</strong> Normal. Sign in again.</li>
+    <li><strong>A dropped connection does not sign you out</strong>, and it does not lose anything.
+      <a href="working-offline.html">Working-Offline</a>.</li>
+    <li><strong>You get a colour.</strong> It is how your column is recognised on the schedule when it arrives. The
+      owner sets it. <a href="choose-a-doctor-colour.html">Choose-a-Doctor-Colour</a>.</li>
+    </ul>
+    <p>Next: <a href="sign-in.html">Sign-In</a> · <a href="working-offline.html">Working-Offline</a> · <a href="roles-and-access.html">Roles-and-Access</a> · <a href="home.html">Home</a></p>
     </div></body></html>
   "dual-currency-money.html": |
     <!doctype html><html lang="en"><head><meta charset="utf-8">
@@ -168,16 +610,16 @@ data:
     <div class="crumb"><a href="index.html">Gompha Manual</a></div>
     <div class="draft">Draft — this manual describes the upcoming version of Gompha.</div>
     <hr />
-    <p>tags: [concept, stub, not-live]
-    status: not-live</p>
+    <p>tags: [concept, not-built]
+    status: not-built</p>
     <hr />
     <h1>Money in Two Currencies</h1>
-    <p><strong>Nothing live to document.</strong> There is no money handling in the app yet — no prices, no payments,
-    no rate.</p>
-    <p>When it ships, this page explains in plain words how a price and a payment are shown in both
-    currencies, who sets the rate, and what happens to an old receipt when the rate changes.</p>
-    <p>Related, once live: <a href="take-a-payment.html">Take-a-Payment</a></p>
-    <p>Back to <a href="home.html">Home</a> · What is coming: <a href="roadmap.html">Roadmap</a></p>
+    <p><strong>Not built.</strong> Gompha holds no money at all yet — no prices, no payments, no balances, no Income
+    and Expenses. Nothing about how two currencies will work can be described honestly, so nothing is
+    described here.</p>
+    <p>The one money-shaped thing that <em>is</em> live is the licence, and that is a different subject:
+    <a href="what-your-licence-covers.html">What-Your-Licence-Covers</a>.</p>
+    <p>See <a href="whats-not-here-yet.html">Whats-Not-Here-Yet</a> · <a href="roadmap.html">Roadmap</a> · <a href="home.html">Home</a></p>
     </div></body></html>
   "index.html": |
     <!doctype html><html lang="en"><head><meta charset="utf-8">
@@ -199,68 +641,78 @@ data:
     <hr />
     <h2>tags: [home]</h2>
     <h1>Gompha Manual</h1>
-    <p><strong>Version: v0.0 — no modules live · Stamped 2026-08-15</strong></p>
+    <p><strong>Version: Milestone 1 · image <code>clinic-v0.1.2</code> · Stamped 2026-08-18</strong></p>
     <blockquote>
-    <p><strong>Architecture update (2026-08-15):</strong> ADR-014 moved Gompha to online-first. The server is the
-    single source of truth for every write; there is no writable offline replica. Offline now
-    means viewing cached data, read-only. See <a href="working-offline.html">Working-Offline</a>.</p>
-    <p><strong>Nothing live to document.</strong>
-    Gompha is being built. No screen has shipped, so this vault has no instructions in it yet.
-    Every page below is a placeholder that keeps the structure stable. Each one gets written the
-    day its module ships, from the screens as they actually are.</p>
+    <h3>This manual covers Milestone 1 only</h3>
+    <p>Milestone 1 is <strong>sign-in, people and access, and rooms</strong>. That is the whole of the live
+    software today, at <strong>https://app-staging.gompha.com</strong>.</p>
+    <p>There is <strong>no schedule, no patients, no patient card, no tooth chart, no appointments, no
+    Income and Expenses, no inventory and no X-rays yet</strong>. If you are looking for one of those,
+    read <a href="whats-not-here-yet.html">Whats-Not-Here-Yet</a> first so nobody spends an afternoon hunting for a screen that
+    has not been built.</p>
     </blockquote>
-    <p>If you are onboarding a clinic today, this vault is not yet the thing to hand over. Nothing here
-    describes working software.</p>
-    <h2>What this vault is</h2>
-    <p>The single onboarding source for everyone who uses Gompha — reception, doctors, assistants and
-    clinic admins. It documents the software <strong>as it is right now</strong>. Not what is planned, not what
-    the old app did. Anything not yet live lives as one line in <a href="roadmap.html">Roadmap</a>.</p>
-    <h2>By role</h2>
+    <p>This vault is the single onboarding source for everyone who uses Gompha. It describes the
+    software <strong>exactly as it is right now</strong>. Anything decided but not built lives as one line in
+    <a href="roadmap.html">Roadmap</a>.</p>
+    <h2>Start here, by role</h2>
     <table>
     <thead>
     <tr>
     <th>You are</th>
     <th>Start here</th>
+    <th>Is there work for you in Milestone 1?</th>
     </tr>
     </thead>
     <tbody>
     <tr>
+    <td>The owner (root)</td>
+    <td><a href="clinic-admin.html">Clinic-Admin</a></td>
+    <td>Yes — you set the clinic up</td>
+    </tr>
+    <tr>
+    <td>A doctor</td>
+    <td><a href="doctor.html">Doctor</a></td>
+    <td>Sign in only</td>
+    </tr>
+    <tr>
     <td>Front desk</td>
     <td><a href="receptionist.html">Receptionist</a></td>
+    <td>Sign in only</td>
     </tr>
     <tr>
-    <td>Doctor</td>
-    <td><a href="doctor.html">Doctor</a></td>
-    </tr>
-    <tr>
-    <td>Assistant</td>
+    <td>An assistant</td>
     <td><a href="assistant.html">Assistant</a></td>
-    </tr>
-    <tr>
-    <td>Clinic admin</td>
-    <td><a href="clinic-admin.html">Clinic-Admin</a></td>
+    <td>Sign in only</td>
     </tr>
     </tbody>
     </table>
-    <h2>By task</h2>
-    <p>Named the way staff ask for them, not the way the software is organised.</p>
+    <h2>Tasks that work today</h2>
     <ul>
-    <li><a href="register-a-patient.html">Register-a-Patient</a></li>
-    <li><a href="book-an-appointment.html">Book-an-Appointment</a></li>
-    <li><a href="take-a-payment.html">Take-a-Payment</a></li>
-    <li><a href="use-the-tooth-chart.html">Use-the-Tooth-Chart</a></li>
-    <li><a href="record-a-treatment.html">Record-a-Treatment</a></li>
-    <li><a href="read-the-day-view.html">Read-the-Day-View</a></li>
-    <li><a href="work-offline.html">Work-Offline</a></li>
-    <li><a href="install-the-app-on-a-phone.html">Install-the-App-on-a-Phone</a></li>
-    <li><a href="add-a-staff-member.html">Add-a-Staff-Member</a></li>
+    <li><a href="sign-in.html">Sign-In</a> — the sign-in screen, and how you get signed out</li>
+    <li><a href="activate-your-account.html">Activate-Your-Account</a> — you were sent an invite link</li>
+    <li><a href="reset-your-password.html">Reset-Your-Password</a> — you forgot it</li>
+    <li><a href="set-up-your-clinic.html">Set-Up-Your-Clinic</a> — the three-step Welcome, for the owner</li>
+    <li><a href="add-a-staff-member.html">Add-a-Staff-Member</a> — add a person and send them their invite</li>
+    <li><a href="set-what-each-person-can-see.html">Set-What-Each-Person-Can-See</a> — the five access sections</li>
+    <li><a href="choose-a-doctor-colour.html">Choose-a-Doctor-Colour</a> — the colour a doctor gets on the schedule later</li>
+    <li><a href="add-the-clinic-rooms.html">Add-the-Clinic-Rooms</a> — name each surgery</li>
+    <li><a href="switch-to-dark-mode.html">Switch-to-Dark-Mode</a> — dark mode and display density</li>
+    <li><a href="install-the-app-on-a-phone.html">Install-the-App-on-a-Phone</a> — add it to a home screen</li>
+    </ul>
+    <h2>Tasks that do not exist yet</h2>
+    <p>Left in place so the structure stays stable. Each one is a placeholder, not a feature.</p>
+    <ul>
+    <li><a href="register-a-patient.html">Register-a-Patient</a> · <a href="book-an-appointment.html">Book-an-Appointment</a> · <a href="take-a-payment.html">Take-a-Payment</a></li>
+    <li><a href="use-the-tooth-chart.html">Use-the-Tooth-Chart</a> · <a href="record-a-treatment.html">Record-a-Treatment</a> · <a href="read-the-day-view.html">Read-the-Day-View</a></li>
     </ul>
     <h2>Things worth understanding</h2>
     <ul>
-    <li><a href="working-offline.html">Working-Offline</a> — the one to read first, once it exists</li>
-    <li><a href="roles-and-access.html">Roles-and-Access</a></li>
-    <li><a href="dual-currency-money.html">Dual-Currency-Money</a></li>
-    <li><a href="what-your-licence-covers.html">What-Your-Licence-Covers</a></li>
+    <li><a href="whats-not-here-yet.html">Whats-Not-Here-Yet</a> — what Milestone 1 does and does not include</li>
+    <li><a href="roles-and-access.html">Roles-and-Access</a> — the four roles and the five access sections</li>
+    <li><a href="passwords-and-sessions.html">Passwords-and-Sessions</a> — password rules, and why you are signed out after a while</li>
+    <li><a href="working-offline.html">Working-Offline</a> — read this before the first "the internet is down" phone call</li>
+    <li><a href="what-your-licence-covers.html">What-Your-Licence-Covers</a> — doctor seats, and what read-only means</li>
+    <li><a href="dual-currency-money.html">Dual-Currency-Money</a> — not built yet</li>
     </ul>
     <h2>What is coming</h2>
     <p><a href="roadmap.html">Roadmap</a> — one line each, no dates, no promises.</p>
@@ -283,14 +735,125 @@ data:
     <div class="crumb"><a href="index.html">Gompha Manual</a></div>
     <div class="draft">Draft — this manual describes the upcoming version of Gompha.</div>
     <hr />
-    <p>tags: [task, stub, not-live]
-    status: not-live</p>
+    <p>tags: [task, milestone-1, phone]
+    screen: Home screen install</p>
     <hr />
     <h1>Install the App on a Phone</h1>
-    <p><strong>Nothing live to document.</strong> There is no app to install.</p>
-    <p>When it ships, this page gets numbered steps for a phone and for a tablet, named exactly as the
-    buttons appear, then a short <em>Why it works this way</em>.</p>
-    <p>For: everyone · Back to <a href="home.html">Home</a> · What is coming: <a href="roadmap.html">Roadmap</a></p>
+    <p>Gompha is a website that behaves like an app. There is nothing to download from an app store. You
+    add it to the phone's home screen and it opens in its own window, without the browser's address bar.</p>
+    <h2>On Android (Chrome)</h2>
+    <ol>
+    <li>Open <strong>https://app-staging.gompha.com</strong> in Chrome.</li>
+    <li>Press the <strong>⋮</strong> menu at the top right.</li>
+    <li>Choose <strong>Install app</strong>, or <strong>Add to Home screen</strong> if that is what your Chrome calls it.</li>
+    <li>Confirm. A <strong>Gompha</strong> icon appears with your other apps.</li>
+    </ol>
+    <h2>On iPhone or iPad (Safari)</h2>
+    <ol>
+    <li>Open <strong>https://app-staging.gompha.com</strong> in <strong>Safari</strong>. It must be Safari — Chrome on an iPhone
+       cannot add to the home screen.</li>
+    <li>Press the <strong>Share</strong> button (the square with the arrow going up), at the bottom of the screen on
+       a phone and the top on an iPad.</li>
+    <li>Scroll down and choose <strong>Add to Home Screen</strong>.</li>
+    <li>Press <strong>Add</strong>. A <strong>Gompha</strong> icon appears on the home screen.</li>
+    </ol>
+    <p><strong>⚠ verify</strong> — the icon that iOS shows on the home screen has not been checked on a real iPhone. If
+    it appears as a small picture of the page rather than the green Gompha mark, that is cosmetic; the
+    app itself works. Report it.</p>
+    <h2>What installing does and does not give you</h2>
+    <p><strong>It does give you:</strong></p>
+    <ul>
+    <li>Its own icon and its own window, with no address bar taking up space</li>
+    <li>One tap instead of typing an address</li>
+    <li>The correct size and colours for the phone</li>
+    </ul>
+    <p><strong>It does not give you offline use.</strong> This is the part staff misread. Opening the installed app
+    without a connection gives the browser's <em>cannot reach this site</em> page, not Gompha. Nothing is
+    broken and nothing is lost — the app simply needs the clinic server to show you anything at all.
+    Read <a href="working-offline.html">Working-Offline</a>; it matters more than this page does.</p>
+    <h2>Why it works this way</h2>
+    <p><strong>No app store.</strong> An app store version would mean a review queue between a fix and the clinic
+    having it, plus store rules about payments the product deliberately stays clear of. A website
+    updates the moment it is deployed, and every device gets the same version.</p>
+    <p><strong>Install it anyway, even though it looks optional.</strong> A phone that has the app on its home screen
+    is a phone that has been given permission to behave like an app — which is what appointment
+    reminders will need later. A clinic that skips this step discovers it the day a reminder does not
+    arrive.</p>
+    <p>Next: <a href="working-offline.html">Working-Offline</a> · <a href="switch-to-dark-mode.html">Switch-to-Dark-Mode</a> · <a href="home.html">Home</a></p>
+    </div></body></html>
+  "passwords-and-sessions.html": |
+    <!doctype html><html lang="en"><head><meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Passwords and Sessions · Gompha Manual</title>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;600&family=IBM+Plex+Sans+Arabic&display=swap" rel="stylesheet">
+    <style>
+    body{margin:0;background:#FAF8F4;color:#3D3A34;font:15px/1.65 "IBM Plex Sans","IBM Plex Sans Arabic",sans-serif}
+    .wrap{max-width:760px;margin:0 auto;padding:40px 24px 80px}
+    a{color:#2E5D51} .dead{color:#98917F;border-bottom:1px dashed #C9C2B2}
+    h1,h2,h3{line-height:1.3} h1{font-size:26px}
+    code{background:#F1EDE6;border-radius:5px;padding:2px 6px}
+    .crumb{font-size:13px;color:#98917F;margin-bottom:28px} .crumb a{color:#6B655A;text-decoration:none}
+    .draft{background:#F3EDDC;color:#6A5A32;border-radius:9px;padding:9px 14px;font-size:13px;margin-bottom:26px}
+    table{border-collapse:collapse} td,th{border:1px solid #E9E3D8;padding:7px 12px;text-align:left}
+    </style></head><body><div class="wrap">
+    <div class="crumb"><a href="index.html">Gompha Manual</a></div>
+    <div class="draft">Draft — this manual describes the upcoming version of Gompha.</div>
+    <hr />
+    <h2>tags: [concept, milestone-1, support]</h2>
+    <h1>Passwords and Being Signed Out</h1>
+    <h2>The password rules</h2>
+    <p>When you set a password — on your invite (<a href="activate-your-account.html">Activate-Your-Account</a>) or on a reset
+    (<a href="reset-your-password.html">Reset-Your-Password</a>) — Gompha checks four things:</p>
+    <ol>
+    <li><strong>At least 12 characters.</strong></li>
+    <li><strong>Not blank.</strong></li>
+    <li><strong>At least 5 different characters</strong>, so <code>aaaaaaaaaaaa</code> is refused.</li>
+    <li><strong>Not a password that has appeared in a known public breach.</strong></li>
+    </ol>
+    <p>A line under the field tells you as you type whether the first three are satisfied. The fourth is
+    checked when you press the button, and if it fails you get:</p>
+    <blockquote>
+    <p>This password appears in a known breach — choose another</p>
+    </blockquote>
+    <p><strong>That is not a comment on how clever your password is.</strong> It means that exact password already
+    appears on lists that attackers try first. A long phrase of three or four ordinary words is easier
+    to remember and passes comfortably.</p>
+    <p><strong>Your password is never sent anywhere in a readable form</strong>, and the breach check does not send it
+    either — only a short fragment of a scrambled version leaves the clinic, which is not enough to
+    reconstruct anything. If that check cannot be reached, setting your password still works: a flicker
+    in the internet must never be what stops a new receptionist from getting started.</p>
+    <h2>Why you get signed out</h2>
+    <p><strong>A session lasts 12 hours.</strong> That covers a clinic day with room to spare. After that you sign in
+    again. There is nothing wrong.</p>
+    <p>You are also signed out when:</p>
+    <ul>
+    <li>you press <strong>Sign out</strong> in the Settings panel (<a href="sign-in.html">Sign-In</a>),</li>
+    <li>you finish a <strong>password reset</strong> — that deliberately signs out every other device,</li>
+    <li>your account is <strong>archived</strong>, which stops every device immediately.</li>
+    </ul>
+    <p><strong>Being offline does not sign you out.</strong> See <a href="working-offline.html">Working-Offline</a>.</p>
+    <p><strong>Closing the browser does not sign you out</strong>, and neither does closing the tab. Use <strong>Sign out</strong> on
+    a shared machine.</p>
+    <h2>What Gompha never asks you</h2>
+    <ul>
+    <li>Nobody at the clinic and nobody at Gompha can tell you your password. It is not stored in a form
+      anyone can read, including us.</li>
+    <li><strong>No support request will ever ask you for your password.</strong> If one does, it is not from us.</li>
+    <li>Anyone who needs to get you back in issues you a fresh link. They never set a password for you.</li>
+    </ul>
+    <h2>Why it works this way</h2>
+    <p><strong>Twelve characters, not eight with a capital and a symbol.</strong> Length beats decoration: the rules
+    that demand a symbol produce <code>Passw0rd!</code> in every clinic in the world. Length and a breach check
+    between them refuse the passwords that actually get guessed.</p>
+    <p><strong>The breach check happens when the password is set, not later.</strong> A password already known to
+    attackers is the single most likely way into this clinic's records, and the only moment it can be
+    refused cheaply is the moment somebody chooses it.</p>
+    <p><strong>A reset signs out every other device.</strong> If someone else had got in, the reset is what removes them.
+    Changing the lock while leaving the intruder inside would be theatre.</p>
+    <p><strong>A session is a record on the server, not a note in the browser.</strong> In the first version of Gompha,
+    signing out only cleared the browser, so a session on a forgotten tablet stayed alive. Now ending a
+    session ends it for real, and archiving a person kills every session they had in the same breath.</p>
+    <p>Next: <a href="sign-in.html">Sign-In</a> · <a href="roles-and-access.html">Roles-and-Access</a> · <a href="home.html">Home</a></p>
     </div></body></html>
   "read-the-day-view.html": |
     <!doctype html><html lang="en"><head><meta charset="utf-8">
@@ -310,16 +873,13 @@ data:
     <div class="crumb"><a href="index.html">Gompha Manual</a></div>
     <div class="draft">Draft — this manual describes the upcoming version of Gompha.</div>
     <hr />
-    <p>tags: [task, stub, not-live]
-    status: not-live</p>
+    <p>tags: [task, not-built]
+    status: not-built</p>
     <hr />
     <h1>Read the Day View</h1>
-    <p><strong>Nothing live to document.</strong> There is no day view yet.</p>
-    <p>When it ships, this page gets numbered steps naming the real screens, then a short
-    <em>Why it works this way</em> — including how an empty day looks different from a day view that is
-    offline and only showing what it last had from the server. See <a href="working-offline.html">Working-Offline</a>.</p>
-    <p>For: <a href="receptionist.html">Receptionist</a> · <a href="doctor.html">Doctor</a> · <a href="assistant.html">Assistant</a> · Back to <a href="home.html">Home</a> ·
-    What is coming: <a href="roadmap.html">Roadmap</a></p>
+    <p><strong>Not built.</strong> The day grid — the front desk's home screen, with a column per doctor — does not
+    exist yet. In Milestone 1 the front desk sees only a short signed-in page (<a href="receptionist.html">Receptionist</a>).</p>
+    <p>See <a href="whats-not-here-yet.html">Whats-Not-Here-Yet</a> · <a href="roadmap.html">Roadmap</a> · <a href="home.html">Home</a></p>
     </div></body></html>
   "receptionist.html": |
     <!doctype html><html lang="en"><head><meta charset="utf-8">
@@ -339,16 +899,47 @@ data:
     <div class="crumb"><a href="index.html">Gompha Manual</a></div>
     <div class="draft">Draft — this manual describes the upcoming version of Gompha.</div>
     <hr />
-    <p>tags: [role, stub, not-live]
-    status: not-live</p>
-    <hr />
+    <h2>tags: [role, milestone-1]</h2>
     <h1>Receptionist</h1>
-    <p><strong>Nothing live to document.</strong> There is no reception screen yet, so there is no day to describe.</p>
-    <p>When it ships this page becomes a day-in-the-life: what you see when you log in, what you can and
-    cannot do, and why those limits exist.</p>
-    <p>Your tasks, once they exist: <a href="register-a-patient.html">Register-a-Patient</a> · <a href="book-an-appointment.html">Book-an-Appointment</a> ·
-    <a href="take-a-payment.html">Take-a-Payment</a> · <a href="read-the-day-view.html">Read-the-Day-View</a> · <a href="work-offline.html">Work-Offline</a></p>
-    <p>Back to <a href="home.html">Home</a> · what is coming: <a href="roadmap.html">Roadmap</a></p>
+    <h2>Read this first</h2>
+    <p><strong>Milestone 1 has no schedule and no patients.</strong> There is nothing for the front desk to do in Gompha
+    yet. Signing in and knowing your way to the sign-in screen is the whole of it for now.</p>
+    <p>That is deliberate, not an oversight. <a href="whats-not-here-yet.html">Whats-Not-Here-Yet</a>.</p>
+    <h2>Set your account up</h2>
+    <p>The owner will send you a link — WhatsApp, SMS or in person, <strong>not email</strong>. Open it and choose your
+    own password. <a href="activate-your-account.html">Activate-Your-Account</a> · <a href="passwords-and-sessions.html">Passwords-and-Sessions</a>.</p>
+    <h2>When you sign in</h2>
+    <ol>
+    <li>Open <strong>https://app-staging.gompha.com</strong> and sign in (<a href="sign-in.html">Sign-In</a>).</li>
+    <li>You get a short page headed <strong>"You're signed in"</strong> which names your role and lists the clinic's
+       <strong>rooms</strong>.</li>
+    </ol>
+    <p>The <strong>gear</strong> at the top right gives you <a href="switch-to-dark-mode.html">Switch-to-Dark-Mode</a> and <strong>Sign out</strong>.</p>
+    <p><strong>Set the front desk machine to Compact.</strong> It fits more on the screen, which is what you will want
+    the day the day-grid arrives.</p>
+    <h2>What the front desk will and will not be able to see</h2>
+    <p>The owner has already set this, and it takes effect as each module ships
+    (<a href="set-what-each-person-can-see.html">Set-What-Each-Person-Can-See</a>):</p>
+    <ul>
+    <li><strong>Schedule — All.</strong> The whole clinic's book. This is the front desk's home screen when it lands.</li>
+    <li><strong>Patients as contacts — All.</strong> Names and phone numbers, so you can ring and confirm.</li>
+    <li><strong>Patient financial record — All.</strong> What each patient owes and has paid.</li>
+    <li><strong>Patients as medical — None.</strong> You will not see clinical notes or treatments. That is the design,
+      not a restriction on you personally: a name and a phone number are one thing, a medical record is
+      another.</li>
+    <li><strong>Financial information — None.</strong> The clinic's and the doctors' own earnings are not front-desk
+      information.</li>
+    </ul>
+    <p>If a doctor tells you that you should be able to see something and you cannot, that is a
+    conversation with the owner, not a fault to report.</p>
+    <h2>The one page you should actually read now</h2>
+    <p><a href="working-offline.html">Working-Offline</a>. When the schedule arrives you will be the person who notices the internet is
+    down first, and you need to know two things by heart:</p>
+    <ol>
+    <li>The grey strip at the top saying <strong>"No connection"</strong> is normal and is not an error.</li>
+    <li>While it is showing, <strong>you cannot book</strong> — and nothing you did earlier has been lost.</li>
+    </ol>
+    <p>Next: <a href="sign-in.html">Sign-In</a> · <a href="working-offline.html">Working-Offline</a> · <a href="whats-not-here-yet.html">Whats-Not-Here-Yet</a> · <a href="home.html">Home</a></p>
     </div></body></html>
   "record-a-treatment.html": |
     <!doctype html><html lang="en"><head><meta charset="utf-8">
@@ -368,14 +959,12 @@ data:
     <div class="crumb"><a href="index.html">Gompha Manual</a></div>
     <div class="draft">Draft — this manual describes the upcoming version of Gompha.</div>
     <hr />
-    <p>tags: [task, stub, not-live]
-    status: not-live</p>
+    <p>tags: [task, not-built]
+    status: not-built</p>
     <hr />
     <h1>Record a Treatment</h1>
-    <p><strong>Nothing live to document.</strong> Treatment recording is not built yet.</p>
-    <p>When it ships, this page gets numbered steps naming the real screens, then a short
-    <em>Why it works this way</em>.</p>
-    <p>For: <a href="doctor.html">Doctor</a> · <a href="assistant.html">Assistant</a> · Back to <a href="home.html">Home</a> · What is coming: <a href="roadmap.html">Roadmap</a></p>
+    <p><strong>Not built.</strong> Treatments and clinical notes do not exist in Gompha yet.</p>
+    <p>See <a href="whats-not-here-yet.html">Whats-Not-Here-Yet</a> · <a href="roadmap.html">Roadmap</a> · <a href="home.html">Home</a></p>
     </div></body></html>
   "register-a-patient.html": |
     <!doctype html><html lang="en"><head><meta charset="utf-8">
@@ -395,15 +984,71 @@ data:
     <div class="crumb"><a href="index.html">Gompha Manual</a></div>
     <div class="draft">Draft — this manual describes the upcoming version of Gompha.</div>
     <hr />
-    <p>tags: [task, stub, not-live]
-    status: not-live</p>
+    <p>tags: [task, not-built]
+    status: not-built</p>
     <hr />
     <h1>Register a Patient</h1>
-    <p><strong>Nothing live to document.</strong> There is no patient screen yet, so there are no steps to follow and
-    no buttons to name.</p>
-    <p>When it ships, this page gets numbered steps naming the real screens, then a short
-    <em>Why it works this way</em>.</p>
-    <p>For: <a href="receptionist.html">Receptionist</a> · Back to <a href="home.html">Home</a> · What is coming: <a href="roadmap.html">Roadmap</a></p>
+    <p><strong>Not built.</strong> Gompha has no patients in it yet — no patient list, no patient card, no way to
+    register anyone. Milestone 1 is people, access and rooms only.</p>
+    <p>This page exists so the vault's shape stays the same as the software grows. It gets written the day
+    the screen ships, from the screen as it actually is.</p>
+    <p>See <a href="whats-not-here-yet.html">Whats-Not-Here-Yet</a> · <a href="roadmap.html">Roadmap</a> · <a href="home.html">Home</a></p>
+    </div></body></html>
+  "reset-your-password.html": |
+    <!doctype html><html lang="en"><head><meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Reset Your Password · Gompha Manual</title>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;600&family=IBM+Plex+Sans+Arabic&display=swap" rel="stylesheet">
+    <style>
+    body{margin:0;background:#FAF8F4;color:#3D3A34;font:15px/1.65 "IBM Plex Sans","IBM Plex Sans Arabic",sans-serif}
+    .wrap{max-width:760px;margin:0 auto;padding:40px 24px 80px}
+    a{color:#2E5D51} .dead{color:#98917F;border-bottom:1px dashed #C9C2B2}
+    h1,h2,h3{line-height:1.3} h1{font-size:26px}
+    code{background:#F1EDE6;border-radius:5px;padding:2px 6px}
+    .crumb{font-size:13px;color:#98917F;margin-bottom:28px} .crumb a{color:#6B655A;text-decoration:none}
+    .draft{background:#F3EDDC;color:#6A5A32;border-radius:9px;padding:9px 14px;font-size:13px;margin-bottom:26px}
+    table{border-collapse:collapse} td,th{border:1px solid #E9E3D8;padding:7px 12px;text-align:left}
+    </style></head><body><div class="wrap">
+    <div class="crumb"><a href="index.html">Gompha Manual</a></div>
+    <div class="draft">Draft — this manual describes the upcoming version of Gompha.</div>
+    <hr />
+    <p>tags: [task, milestone-1, screen/forgot]
+    screen: Reset your password</p>
+    <hr />
+    <h1>Reset Your Password</h1>
+    <h2>⚠ Read this first (Milestone 1)</h2>
+    <p><strong>The reset screen works, but no email is sent, because email is not switched on yet
+    (<a href="activate-your-account.html">Activate-Your-Account</a> explains why).</strong></p>
+    <p>So if you use <strong>Forgot your password?</strong> the app will tell you a link is on its way, and <strong>nothing
+    will arrive</strong>. That message is the same for every address on purpose (see <em>Why it works this way</em>),
+    and in this milestone it is reassuring about something that has not happened.</p>
+    <p><strong>If you have forgotten your password, contact support.</strong> There is no screen — not even the
+    owner's — that can hand you a new link in this version. Nothing is lost: your account, your role
+    and your access settings are all intact and untouched.</p>
+    <h2>The screen, for when email is on</h2>
+    <ol>
+    <li>On the sign-in screen, press <strong>Forgot your password?</strong> under the card.</li>
+    <li>The screen is headed <strong>Reset your password</strong>.</li>
+    <li>Type your work email in <strong>Email</strong>.</li>
+    <li>Press <strong>Send reset link</strong>.</li>
+    <li>The screen changes to <strong>Check your email</strong>.</li>
+    </ol>
+    <p>Opening a reset link gives you a screen headed <strong>Choose a new password</strong>, with the line <em>"Set a new
+    password. Every other signed-in device will be signed out."</em> Type the new password twice, press
+    <strong>Set new password</strong>, and you are returned to the sign-in screen with a green confirmation.</p>
+    <p><strong>A reset link lasts one hour</strong> and works once.</p>
+    <h2>Why it works this way</h2>
+    <p><strong>The screen never tells you whether an address has an account.</strong> Whatever you type, the answer is
+    the same. If it said "no such user", anyone could type addresses at it until one came back
+    different, and learn who works at this clinic. The reassurance is deliberately vague for that
+    reason alone.</p>
+    <p><strong>A reset lasts one hour, an invite lasts 48.</strong> A reset link opens a live account with a real
+    history behind it, so it is worth more to a thief than an invite to an account that has not been
+    used yet. The more valuable key gets the shorter life.</p>
+    <p><strong>Using a reset signs out every other device.</strong> If someone else had got into your account, the
+    reset is what removes them. A password change that left old sessions alive would change the lock
+    and leave the intruder inside.</p>
+    <p>Next: <a href="sign-in.html">Sign-In</a> · <a href="passwords-and-sessions.html">Passwords-and-Sessions</a> · <a href="home.html">Home</a></p>
     </div></body></html>
   "roadmap.html": |
     <!doctype html><html lang="en"><head><meta charset="utf-8">
@@ -425,32 +1070,52 @@ data:
     <hr />
     <h2>tags: [roadmap]</h2>
     <h1>Roadmap</h1>
-    <p>Things that are decided but <strong>not live</strong>. One line each. No dates. Nothing here is usable today,
-    and nothing here should be shown to a clinic as a feature.</p>
+    <p>Decided, but <strong>not in the software today</strong>. One line each. No dates, no promises. Nothing on this
+    page can be shown to a clinic as a feature.</p>
     <p>When one of these ships, it leaves this page and becomes a real page in the vault.</p>
-    <h2>Decided, not built</h2>
+    <h2>The next things staff will notice</h2>
     <ul>
-    <li>The app is online-first: the server is the single source of truth for every write, and there is
-      no writable offline replica. Offline means viewing cached data, read-only — see
-      <a href="working-offline.html">Working-Offline</a>.</li>
-    <li>Licensing and provisioning service — designed, no code (<code>docs/specs/licensing.md</code>).</li>
-    <li>The licence itself is checked on the device and does not need the internet — but that is
-      separate from the app's data, which does need a connection to book, take payments or add notes.</li>
-    <li>A lapsed licence turns the app read-only; the 3-day grace before that happens is a licence
-      allowance, not an offline data buffer.</li>
-    <li>What a clinic may do is carried in its own licence, so a deal never needs a new release.</li>
-    <li>Staff seats are counted per role — so many doctors, so many assistants, so many receptionists.</li>
-    <li>A seat is a person, not a device: one person on a phone, a tablet and the front desk is one seat.</li>
-    <li>Clinics that buy their own branding get their own domain and look.</li>
-    <li>Email from the system is sent using the clinic's own mail account, switched on only after a test
-      message actually arrives.</li>
-    <li>No billing, invoicing or payment inside the product — money is arranged out of band, as clinics
-      here actually buy.</li>
+    <li>Email from Gompha — staff invites and password resets sent automatically, from the clinic's own
+      mail address, switched on only after a test message actually arrives. Until then invite links are
+      hand-delivered (<a href="activate-your-account.html">Activate-Your-Account</a>).</li>
+    <li>A way for the owner to issue a replacement invite or reset link when one is lost.</li>
+    <li>Editing a person: correcting a name or an email, archiving someone who has left, moving an
+      assistant to a different doctor.</li>
+    <li>A screen for reading the record of who did what, and the owner's choice of who may read it.</li>
+    <li>A warning before the licence lapses, and quiet automatic renewal behind it
+      (<a href="what-your-licence-covers.html">What-Your-Licence-Covers</a>).</li>
+    <li>A copy of the schedule and a doctor's own patients kept on the device, readable when the link is
+      down (<a href="working-offline.html">Working-Offline</a>).</li>
+    <li>Room opening hours, and splitting a shared room between doctors, set on the schedule itself.</li>
     </ul>
-    <h2>Not yet designed</h2>
-    <p>Everything else — patients, appointments, the tooth chart, treatments, payments, the day view,
-    the phone app. Nothing has been specified, so nothing is promised here.</p>
-    <p>Back to <a href="home.html">Home</a>.</p>
+    <h2>The modules themselves</h2>
+    <ul>
+    <li>The schedule and the day grid — reception's home screen.</li>
+    <li>Patients: the patient card, search, the clinical record.</li>
+    <li>The tooth chart.</li>
+    <li>Treatments and notes.</li>
+    <li>Income and Expenses, patient balances and payments.</li>
+    <li>Inventory.</li>
+    <li>X-rays and photos.</li>
+    </ul>
+    <h2>Settled ways of working, already true underneath</h2>
+    <p>These are not features. They are decisions already built into what exists, mentioned here so nobody
+    proposes the opposite later.</p>
+    <ul>
+    <li>The server decides everything. There is no device that can save a change on its own, and there is
+      never a half-saved record to reconcile (<a href="working-offline.html">Working-Offline</a>).</li>
+    <li>A lapsed licence makes the clinic read-only. It never deletes anything
+      (<a href="what-your-licence-covers.html">What-Your-Licence-Covers</a>).</li>
+    <li>Doctor seats are counted per role; reception and assistants are not counted.</li>
+    <li>A seat is a person, not a device.</li>
+    <li>Nobody and nothing is truly deleted — people and rooms are archived.</li>
+    <li>What a clinic may do is carried in its own licence, so a bespoke arrangement never needs a new
+      version of the software.</li>
+    <li>Clinics that buy their own branding get their own domain and look.</li>
+    <li>No billing, invoicing or payment inside the product. Money is arranged out of band, the way
+      clinics here actually buy.</li>
+    </ul>
+    <p>Back to <a href="home.html">Home</a> · what Milestone 1 covers: <a href="whats-not-here-yet.html">Whats-Not-Here-Yet</a></p>
     </div></body></html>
   "roles-and-access.html": |
     <!doctype html><html lang="en"><head><meta charset="utf-8">
@@ -470,17 +1135,500 @@ data:
     <div class="crumb"><a href="index.html">Gompha Manual</a></div>
     <div class="draft">Draft — this manual describes the upcoming version of Gompha.</div>
     <hr />
-    <p>tags: [concept, stub, not-live]
-    status: not-live</p>
-    <hr />
+    <h2>tags: [concept, milestone-1]</h2>
     <h1>Roles and Access</h1>
-    <p><strong>Nothing live to document.</strong> Logging in does not exist yet, and no role has been built, so there
-    is nothing to tell you about what each person can see.</p>
-    <p>When it ships, this page explains each role in plain words, what it may and may not do, and why
-    those limits are there.</p>
-    <p>Related, once live: <a href="receptionist.html">Receptionist</a> · <a href="doctor.html">Doctor</a> · <a href="assistant.html">Assistant</a> · <a href="clinic-admin.html">Clinic-Admin</a> ·
-    <a href="what-your-licence-covers.html">What-Your-Licence-Covers</a></p>
-    <p>Back to <a href="home.html">Home</a> · What is coming: <a href="roadmap.html">Roadmap</a></p>
+    <p>Gompha has <strong>four roles</strong> and, separately, <strong>one owner</strong>. The role sets sensible starting access;
+    the owner can change any of it per person.</p>
+    <h2>The four roles</h2>
+    <table>
+    <thead>
+    <tr>
+    <th>Role</th>
+    <th>Who it is</th>
+    <th>Can manage people and rooms?</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+    <td><strong>Admin doctor</strong></td>
+    <td>A doctor who also runs the clinic</td>
+    <td><strong>Yes</strong></td>
+    </tr>
+    <tr>
+    <td><strong>Associate doctor</strong></td>
+    <td>A doctor who treats patients but does not run the place</td>
+    <td>No</td>
+    </tr>
+    <tr>
+    <td><strong>Receptionist</strong></td>
+    <td>Front desk</td>
+    <td>No</td>
+    </tr>
+    <tr>
+    <td><strong>Assistant</strong></td>
+    <td>Works alongside one named doctor</td>
+    <td>No</td>
+    </tr>
+    </tbody>
+    </table>
+    <p><strong>Only an admin doctor can add people, change what they can see, or add rooms.</strong> An associate
+    doctor, a receptionist and an assistant cannot see the staff list at all — not a greyed-out button,
+    the screen simply is not theirs.</p>
+    <h2>The owner (root)</h2>
+    <p>One person in each clinic is the <strong>owner</strong>, shown with a green <strong>ROOT</strong> badge. The owner:</p>
+    <ul>
+    <li>is always an <strong>admin doctor</strong> as well,</li>
+    <li>is created when the clinic is first set up, not invited like everyone else,</li>
+    <li>lands on the <strong>Welcome</strong> setup screen instead of the ordinary home screen
+      (<a href="set-up-your-clinic.html">Set-Up-Your-Clinic</a>),</li>
+    <li>cannot be deactivated while they are the only owner.</li>
+    </ul>
+    <p><strong>Root is the ownership relationship with Gompha</strong>, not a job title. It is who decides who the users
+    are. The clinical roles above are the jobs.</p>
+    <h2>An assistant works under exactly one doctor</h2>
+    <p>An assistant must be given a <strong>supervising doctor</strong> when she is created, and she is the only role
+    that has one. Her card shows it as <em>"Assistant · under Dr …"</em>.</p>
+    <p>This is not decoration. Half her permissions read <em>"her doctor's"</em> — her doctor's patients, her
+    doctor's schedule (<a href="set-what-each-person-can-see.html">Set-What-Each-Person-Can-See</a>). Change the doctor and everything she can see
+    moves at once, which is why it is a deliberate, recorded change rather than an ordinary edit. <strong>In
+    Milestone 1 it cannot be changed on screen at all</strong>, so choose it correctly when you add her.</p>
+    <h2>What each person can see</h2>
+    <p>Five sections, each set to All, Own or None, per person. That is its own page:
+    <a href="set-what-each-person-can-see.html">Set-What-Each-Person-Can-See</a>.</p>
+    <h2>One person, one account</h2>
+    <p>A person is one account, however many devices they use. A doctor on his phone, on the chair-side
+    tablet and at the front desk is <strong>one</strong> person and <strong>one</strong> licensed seat, not three
+    (<a href="what-your-licence-covers.html">What-Your-Licence-Covers</a>).</p>
+    <p><strong>Never share a login.</strong> With a shared account the record of who did what becomes worthless, and
+    that record is the only thing that can answer "who changed this patient's note?".</p>
+    <h2>Nobody is deleted</h2>
+    <p>A person who leaves is <strong>archived</strong>, never erased. Their sessions stop working immediately and they
+    can no longer sign in, but the record of what they did stays — a treatment recorded by a doctor is
+    part of a patient's medical history and cannot leave with him.</p>
+    <p><strong>In Milestone 1 there is no archive button on screen.</strong> Contact support if someone must be removed
+    today.</p>
+    <h2>Every action is recorded</h2>
+    <p>Gompha keeps a permanent, append-only record of who did what: a person invited, a password reset, a
+    permission changed, a supervisor changed, a room created. It records <strong>which</strong> fields changed, never
+    their values — the record of a change must not become a second copy of the data it describes.</p>
+    <p><strong>There is no screen for reading it yet in Milestone 1.</strong> The owner controls who <em>will</em> be able to
+    read it, and by default that is admin doctors as well as the owner.</p>
+    <h2>Why it works this way</h2>
+    <p><strong>Role first, then per-person adjustment.</strong> A role that could not be adjusted would force every
+    clinic into one shape, and every Iraqi clinic is arranged slightly differently. A role that carried
+    <em>no</em> defaults would leave someone deciding twenty switches for each new hire, at the moment when
+    they are most likely to click "All" to get it over with.</p>
+    <p><strong>Managing people is limited to admin doctors, not "everyone senior".</strong> Whoever can grant access can
+    grant themselves access to everything. That has to be a short list.</p>
+    <p>Next: <a href="set-what-each-person-can-see.html">Set-What-Each-Person-Can-See</a> · <a href="add-a-staff-member.html">Add-a-Staff-Member</a> · <a href="clinic-admin.html">Clinic-Admin</a> · <a href="home.html">Home</a></p>
+    </div></body></html>
+  "set-up-your-clinic.html": |
+    <!doctype html><html lang="en"><head><meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Set Up Your Clinic · Gompha Manual</title>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;600&family=IBM+Plex+Sans+Arabic&display=swap" rel="stylesheet">
+    <style>
+    body{margin:0;background:#FAF8F4;color:#3D3A34;font:15px/1.65 "IBM Plex Sans","IBM Plex Sans Arabic",sans-serif}
+    .wrap{max-width:760px;margin:0 auto;padding:40px 24px 80px}
+    a{color:#2E5D51} .dead{color:#98917F;border-bottom:1px dashed #C9C2B2}
+    h1,h2,h3{line-height:1.3} h1{font-size:26px}
+    code{background:#F1EDE6;border-radius:5px;padding:2px 6px}
+    .crumb{font-size:13px;color:#98917F;margin-bottom:28px} .crumb a{color:#6B655A;text-decoration:none}
+    .draft{background:#F3EDDC;color:#6A5A32;border-radius:9px;padding:9px 14px;font-size:13px;margin-bottom:26px}
+    table{border-collapse:collapse} td,th{border:1px solid #E9E3D8;padding:7px 12px;text-align:left}
+    </style></head><body><div class="wrap">
+    <div class="crumb"><a href="index.html">Gompha Manual</a></div>
+    <div class="draft">Draft — this manual describes the upcoming version of Gompha.</div>
+    <hr />
+    <p>tags: [task, milestone-1, screen/welcome, root]
+    screen: Welcome (setup)</p>
+    <hr />
+    <h1>Set Up Your Clinic</h1>
+    <p><strong>For the owner only.</strong> This is the screen the owner (root) lands on straight after signing in.
+    Nobody else can reach it; a doctor or a receptionist who tries is sent to their own page.</p>
+    <p>It takes about five minutes. Everything saves as you go, so you can stop and come back.</p>
+    <h2>What you are looking at</h2>
+    <ul>
+    <li><strong>Across the top:</strong> the Gompha mark on the left, and a <strong>gear icon on the right</strong> that opens
+      <a href="switch-to-dark-mode.html">Switch-to-Dark-Mode</a> and <strong>Sign out</strong>. There is no menu down the side. That is deliberate:
+      during setup there is nothing to navigate to yet.</li>
+    <li><strong>Under that, three named boxes</strong> showing where you are:</li>
+    <li><strong>Permissions</strong> — who the users are</li>
+    <li><strong>Rooms</strong> — rooms &amp; hours</li>
+    <li><strong>Financials</strong> — opens with the money module</li>
+    </ul>
+    <p>The one you are on is outlined and filled; a finished one shows a tick; <strong>Financials stays
+      dimmed and cannot be opened</strong>, because the money module does not exist yet
+      (<a href="whats-not-here-yet.html">Whats-Not-Here-Yet</a>).</p>
+    <h2>Step 1 — the greeting</h2>
+    <p>The heading reads <strong>"Welcome, <your name>."</strong></p>
+    <p>Two cards sit under it:</p>
+    <ul>
+    <li><strong>Your own card</strong>, with your initials, your name, your email and a green <strong>ROOT</strong> badge. Check
+      the name and email are right. (In this milestone they cannot be corrected on screen — see
+      <a href="add-a-staff-member.html">Add-a-Staff-Member</a>.)</li>
+    <li><strong>"Before you start — have everyone's email ready"</strong>, listing what to collect: each doctor's
+      email, reception's email, and each assistant's email <em>plus which doctor they work under</em>.</li>
+    </ul>
+    <p>Collect those before you press the button. Adding people is much faster with the list in front of
+    you.</p>
+    <p>Press <strong>Start — add the team →</strong> at the bottom.</p>
+    <h2>Step 2 — people and access</h2>
+    <p>The heading reads <strong>"Who works here, and what can each see?"</strong> This is the main work of Milestone 1
+    and it has its own pages:</p>
+    <ul>
+    <li><a href="add-a-staff-member.html">Add-a-Staff-Member</a> — adding each person and delivering their invite</li>
+    <li><a href="set-what-each-person-can-see.html">Set-What-Each-Person-Can-See</a> — the five access sections</li>
+    <li><a href="choose-a-doctor-colour.html">Choose-a-Doctor-Colour</a> — the colour each doctor gets</li>
+    </ul>
+    <p>When the team is in, press <strong>Continue to rooms →</strong> at the bottom right. <strong>← Back</strong> returns to the
+    greeting.</p>
+    <h2>Step 3 — rooms</h2>
+    <p>The heading reads <strong>"Register the clinic's rooms"</strong>. See <a href="add-the-clinic-rooms.html">Add-the-Clinic-Rooms</a>.</p>
+    <p>Press <strong>Finish setup →</strong> at the bottom right. That takes you into the app.</p>
+    <blockquote>
+    <p>On image <code>clinic-v0.1.2</code> this last button is still a greyed-out <strong>Continue</strong> that cannot be
+    pressed; <code>clinic-v0.1.3</code> replaces it with a working <strong>Finish setup</strong>. Nothing is lost either
+    way, because every step saves as you go.</p>
+    </blockquote>
+    <h2>Getting back to setup later</h2>
+    <p>There is no menu item for it. <strong>Open the plain clinic address —
+    https://app-staging.gompha.com — and as the owner you land back on Welcome</strong>, with everything you
+    already entered in place. Use that whenever you need to add a person, change someone's access, or
+    add a room.</p>
+    <h2>Why it works this way</h2>
+    <p><strong>Setup is not the app with a form dropped into it.</strong> There is no side menu here because none of
+    those destinations exist for you yet, and a menu full of dead links is how software teaches people
+    not to trust it. The chrome appears when there is something behind it.</p>
+    <p><strong>Three named steps, not "Step 1 of 3" circles.</strong> You should be able to see at a glance what the
+    setup is <em>about</em> — people, rooms, money — not merely how far through it you are. It is also why
+    Financials is shown at all: you know the money module is a real part of the plan, and you know it
+    is not here yet.</p>
+    <p><strong>Everything saves as you pressed it.</strong> There is no final <strong>Save</strong> on this screen. Each change is
+    sent to the server the moment you make it, and if one fails you get a plain sentence saying so and
+    the control goes back to what it was. Nothing waits in the browser to be lost.</p>
+    <p>Next: <a href="add-a-staff-member.html">Add-a-Staff-Member</a> · <a href="clinic-admin.html">Clinic-Admin</a> · <a href="home.html">Home</a></p>
+    </div></body></html>
+  "set-what-each-person-can-see.html": |
+    <!doctype html><html lang="en"><head><meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Set What Each Person Can See · Gompha Manual</title>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;600&family=IBM+Plex+Sans+Arabic&display=swap" rel="stylesheet">
+    <style>
+    body{margin:0;background:#FAF8F4;color:#3D3A34;font:15px/1.65 "IBM Plex Sans","IBM Plex Sans Arabic",sans-serif}
+    .wrap{max-width:760px;margin:0 auto;padding:40px 24px 80px}
+    a{color:#2E5D51} .dead{color:#98917F;border-bottom:1px dashed #C9C2B2}
+    h1,h2,h3{line-height:1.3} h1{font-size:26px}
+    code{background:#F1EDE6;border-radius:5px;padding:2px 6px}
+    .crumb{font-size:13px;color:#98917F;margin-bottom:28px} .crumb a{color:#6B655A;text-decoration:none}
+    .draft{background:#F3EDDC;color:#6A5A32;border-radius:9px;padding:9px 14px;font-size:13px;margin-bottom:26px}
+    table{border-collapse:collapse} td,th{border:1px solid #E9E3D8;padding:7px 12px;text-align:left}
+    </style></head><body><div class="wrap">
+    <div class="crumb"><a href="index.html">Gompha Manual</a></div>
+    <div class="draft">Draft — this manual describes the upcoming version of Gompha.</div>
+    <hr />
+    <p>tags: [task, milestone-1, screen/permissions, root]
+    screen: Who works here, and what can each see?</p>
+    <hr />
+    <h1>Set What Each Person Can See</h1>
+    <p><strong>For the owner only.</strong> The <strong>people and access</strong> step of <a href="set-up-your-clinic.html">Set-Up-Your-Clinic</a>.</p>
+    <p>Every person in the clinic gets one card. On each card there are <strong>five sections</strong>, and each
+    section is set to <strong>All</strong>, <strong>Own</strong> or <strong>None</strong>.</p>
+    <h2>What a card shows</h2>
+    <p>Reading down a card:</p>
+    <ul>
+    <li><strong>Initials, name and email</strong> at the top. A doctor's initials sit on a soft wash of their
+      schedule colour.</li>
+    <li><strong>A grey badge with the role</strong>, and for an assistant, <em>"· under <doctor's name>"</em> after it.</li>
+    <li><strong>A green ROOT badge</strong> on the owner's own card.</li>
+    <li><strong>An Invited badge</strong> on anyone who has not set their password yet, plus a <strong>Copy invite link</strong>
+      button while it is still available (<a href="add-a-staff-member.html">Add-a-Staff-Member</a>).</li>
+    <li><strong>The five sections</strong>, each with its own <strong>All / Own / None</strong> control.</li>
+    <li><strong>Doctor colour</strong>, on doctors only (<a href="choose-a-doctor-colour.html">Choose-a-Doctor-Colour</a>).</li>
+    </ul>
+    <h2>Steps</h2>
+    <ol>
+    <li>Find the person's card in the grid.</li>
+    <li>Find the section you want to change.</li>
+    <li>Press <strong>All</strong>, <strong>Own</strong> or <strong>None</strong>.</li>
+    </ol>
+    <p>That is the whole action. <strong>There is no Save button</strong> — the change is sent to the server as you
+    press it. The line at the bottom of the step reads <em>"Changes save as you go"</em>.</p>
+    <p>If a change cannot be saved, a red strip appears at the top of the step reading <strong>"Couldn't save
+    that change. Nothing was lost."</strong> with the reason, and the button springs back to what it was.
+    Nothing is left half-set.</p>
+    <h2>The five sections</h2>
+    <table>
+    <thead>
+    <tr>
+    <th>Section</th>
+    <th>What it covers</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+    <td><strong>Financial information</strong></td>
+    <td>The clinic's and a doctor's own money — takings, profit and loss</td>
+    </tr>
+    <tr>
+    <td><strong>Patient financial record</strong></td>
+    <td>What a patient owes and has paid</td>
+    </tr>
+    <tr>
+    <td><strong>Schedule</strong></td>
+    <td>The appointment book</td>
+    </tr>
+    <tr>
+    <td><strong>Patients as contacts</strong></td>
+    <td>A patient's name and phone number, enough to call and confirm</td>
+    </tr>
+    <tr>
+    <td><strong>Patients as medical</strong></td>
+    <td>The clinical record — the treatments and the notes</td>
+    </tr>
+    </tbody>
+    </table>
+    <h2>What All, Own and None mean</h2>
+    <ul>
+    <li><strong>All</strong> — everyone's.</li>
+    <li><strong>None</strong> — nothing at all.</li>
+    <li><strong>Own</strong> — <em>their doctor's</em>, and this is the one worth being precise about:</li>
+    <li>for a <strong>doctor</strong>, "own" means his own,</li>
+    <li>for an <strong>assistant</strong>, "own" means the doctor she works under,</li>
+    <li>for a <strong>receptionist</strong>, "own" means <strong>nothing</strong>, because she is attached to no doctor. Do not
+        use <strong>Own</strong> for reception. Use <strong>All</strong> or <strong>None</strong>.</li>
+    </ul>
+    <h2>The starting point per role</h2>
+    <p>Picking a role fills the five sections in for you. These are sensible starting values, not rules:
+    change any of them.</p>
+    <table>
+    <thead>
+    <tr>
+    <th></th>
+    <th>Financial information</th>
+    <th>Patient financial record</th>
+    <th>Schedule</th>
+    <th>Patients as contacts</th>
+    <th>Patients as medical</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+    <td><strong>Admin doctor</strong></td>
+    <td>Own</td>
+    <td>All</td>
+    <td>All</td>
+    <td>All</td>
+    <td>All</td>
+    </tr>
+    <tr>
+    <td><strong>Associate doctor</strong></td>
+    <td>Own</td>
+    <td>Own</td>
+    <td>All</td>
+    <td>Own</td>
+    <td>Own</td>
+    </tr>
+    <tr>
+    <td><strong>Receptionist</strong></td>
+    <td>None</td>
+    <td>All</td>
+    <td>All</td>
+    <td>All</td>
+    <td>None</td>
+    </tr>
+    <tr>
+    <td><strong>Assistant</strong></td>
+    <td>None</td>
+    <td>Own</td>
+    <td>Own</td>
+    <td>Own</td>
+    <td>Own</td>
+    </tr>
+    </tbody>
+    </table>
+    <p><strong>When you change one away from its starting value, the button is underlined and carries a small
+    coloured dot</strong>, and hovering it says <em>"Changed from the default"</em>. The legend under the grid spells
+    this out. It means you can scan a whole clinic's worth of cards and see instantly where this clinic
+    does something unusual.</p>
+    <h2>What these settings do today</h2>
+    <p><strong>They are recorded, and they take effect on each screen as that screen ships.</strong> In Milestone 1
+    there is no schedule and no patient record, so there is nothing yet for <strong>None</strong> to hide.
+    <a href="whats-not-here-yet.html">Whats-Not-Here-Yet</a> explains the sequence. Setting them now is not busywork: the later modules
+    read these values from the start rather than having access bolted on afterwards.</p>
+    <h2>Why it works this way</h2>
+    <p><strong>Five sections, not one "can see patients" switch.</strong> A receptionist must ring a patient to confirm
+    tomorrow's appointment, and must never read his clinical notes. A name and a phone number are a
+    different thing from a medical record, and one switch cannot separate them. Splitting money the
+    same way is the other half: what a patient owes is front-desk work; what the clinic earns is not.</p>
+    <p><strong>An admin doctor's own money defaults to Own, not All.</strong> Two admin doctors are equals, not
+    partners in each other's earnings. Personal takings stay personal unless the owner decides
+    otherwise.</p>
+    <p><strong>An assistant's Financial information starts at None.</strong> For her, "own" would mean <em>her doctor's</em>
+    earnings. That may be exactly right in some clinics, but it must be a decision the owner makes on
+    purpose, never a default that quietly hands it over.</p>
+    <p><strong>The same word governs money and clinical data.</strong> One rule for what "own" means, applied to all
+    five sections, so nobody has to remember an exception.</p>
+    <p><strong>A hidden button is not access control.</strong> Access is decided on the server on every request, never
+    by which buttons a screen happens to draw. Someone who tampers with the page in their browser gains
+    nothing, because the screen was never what was stopping them. As each module arrives, the same
+    five values are also enforced inside the database itself, one layer below the app — so a mistake in
+    the app cannot open a door the database still holds shut.</p>
+    <p>Next: <a href="roles-and-access.html">Roles-and-Access</a> · <a href="add-a-staff-member.html">Add-a-Staff-Member</a> · <a href="home.html">Home</a></p>
+    </div></body></html>
+  "sign-in.html": |
+    <!doctype html><html lang="en"><head><meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Sign In · Gompha Manual</title>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;600&family=IBM+Plex+Sans+Arabic&display=swap" rel="stylesheet">
+    <style>
+    body{margin:0;background:#FAF8F4;color:#3D3A34;font:15px/1.65 "IBM Plex Sans","IBM Plex Sans Arabic",sans-serif}
+    .wrap{max-width:760px;margin:0 auto;padding:40px 24px 80px}
+    a{color:#2E5D51} .dead{color:#98917F;border-bottom:1px dashed #C9C2B2}
+    h1,h2,h3{line-height:1.3} h1{font-size:26px}
+    code{background:#F1EDE6;border-radius:5px;padding:2px 6px}
+    .crumb{font-size:13px;color:#98917F;margin-bottom:28px} .crumb a{color:#6B655A;text-decoration:none}
+    .draft{background:#F3EDDC;color:#6A5A32;border-radius:9px;padding:9px 14px;font-size:13px;margin-bottom:26px}
+    table{border-collapse:collapse} td,th{border:1px solid #E9E3D8;padding:7px 12px;text-align:left}
+    </style></head><body><div class="wrap">
+    <div class="crumb"><a href="index.html">Gompha Manual</a></div>
+    <div class="draft">Draft — this manual describes the upcoming version of Gompha.</div>
+    <hr />
+    <p>tags: [task, milestone-1, screen/login]
+    screen: Sign in</p>
+    <hr />
+    <h1>Sign In and Out</h1>
+    <p>Everyone starts here. One screen, two fields.</p>
+    <h2>Sign in</h2>
+    <ol>
+    <li>Open <strong>https://app-staging.gompha.com</strong> in the browser (Chrome or Safari, phone or desktop).</li>
+    <li>You get a small card in the middle of the screen with the green <strong>G</strong> mark above it and the
+       heading <strong>Sign in</strong>.</li>
+    <li>Type your work email in <strong>Email</strong>. It is always typed left to right, even on an Arabic
+       keyboard.</li>
+    <li>Type your password in <strong>Password</strong>. The small eye button at the right-hand end of the field
+       shows what you typed, in case of a mistyped character.</li>
+    <li>Press <strong>Sign in</strong>.</li>
+    </ol>
+    <p>Where you land depends on who you are:</p>
+    <ul>
+    <li><strong>The owner (root)</strong> lands on the setup screen, <strong>Welcome</strong>. See <a href="set-up-your-clinic.html">Set-Up-Your-Clinic</a>.</li>
+    <li><strong>Everyone else</strong> lands on a short page that says <em>"You're signed in"</em>, names your role, and
+      lists the clinic's rooms. In Milestone 1 that is all there is. See <a href="whats-not-here-yet.html">Whats-Not-Here-Yet</a>.</li>
+    </ul>
+    <p><strong>No password yet?</strong> You cannot sign in until you have set one from your invite link. See
+    <a href="activate-your-account.html">Activate-Your-Account</a>.</p>
+    <h2>Sign out</h2>
+    <ol>
+    <li>Press the <strong>gear icon in the top-right corner</strong> of the screen.</li>
+    <li>A panel slides in from the right, headed <strong>Settings</strong>.</li>
+    <li><strong>Sign out</strong> is the button at the bottom of that panel.</li>
+    </ol>
+    <p>Signing out ends the session on the server, not only in this browser. Closing the tab is <em>not</em>
+    signing out.</p>
+    <h2>What the messages mean</h2>
+    <table>
+    <thead>
+    <tr>
+    <th>On screen</th>
+    <th>What it means</th>
+    <th>What to do</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+    <td><strong>Invalid email or password.</strong></td>
+    <td>One of the two is wrong. The app deliberately does not say which.</td>
+    <td>Retype the password. Then check the email spelling.</td>
+    </tr>
+    <tr>
+    <td><strong>Too many attempts — wait a moment and try again.</strong></td>
+    <td>Too many tries in a short time, from this account or this clinic's connection.</td>
+    <td>Wait about a minute and try again. Nothing is locked or damaged.</td>
+    </tr>
+    <tr>
+    <td><strong>No connection — viewing cached data, read-only.</strong></td>
+    <td>The device cannot reach the clinic server.</td>
+    <td>See <a href="working-offline.html">Working-Offline</a>. You cannot sign in while offline.</td>
+    </tr>
+    <tr>
+    <td><strong>Your password was changed. Sign in with your new password.</strong></td>
+    <td>You just finished a reset.</td>
+    <td>Sign in normally.</td>
+    </tr>
+    </tbody>
+    </table>
+    <h2>Why it works this way</h2>
+    <p><strong>"Invalid email or password" never says which one was wrong.</strong> If it did, anyone could type
+    addresses into the sign-in box until one produced a different message, and learn who works at the
+    clinic. The same reason is why <a href="reset-your-password.html">Reset-Your-Password</a> always says the same reassuring thing
+    whatever address you type.</p>
+    <p><strong>Signing out really ends the session.</strong> In the first version of Gompha, a session lived in the
+    browser, so a person who had left the clinic could still be signed in on a tablet nobody
+    remembered. Now the session is a record on the server: ending it there ends it everywhere that
+    cookie is used.</p>
+    <p><strong>The password is checked on the server, never in the browser.</strong> So is every rule about what you
+    may see. A button being missing from a screen is not what stops access; the server refusing is.</p>
+    <p>Next: <a href="passwords-and-sessions.html">Passwords-and-Sessions</a> · <a href="roles-and-access.html">Roles-and-Access</a> · <a href="home.html">Home</a></p>
+    </div></body></html>
+  "switch-to-dark-mode.html": |
+    <!doctype html><html lang="en"><head><meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Switch to Dark Mode · Gompha Manual</title>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;600&family=IBM+Plex+Sans+Arabic&display=swap" rel="stylesheet">
+    <style>
+    body{margin:0;background:#FAF8F4;color:#3D3A34;font:15px/1.65 "IBM Plex Sans","IBM Plex Sans Arabic",sans-serif}
+    .wrap{max-width:760px;margin:0 auto;padding:40px 24px 80px}
+    a{color:#2E5D51} .dead{color:#98917F;border-bottom:1px dashed #C9C2B2}
+    h1,h2,h3{line-height:1.3} h1{font-size:26px}
+    code{background:#F1EDE6;border-radius:5px;padding:2px 6px}
+    .crumb{font-size:13px;color:#98917F;margin-bottom:28px} .crumb a{color:#6B655A;text-decoration:none}
+    .draft{background:#F3EDDC;color:#6A5A32;border-radius:9px;padding:9px 14px;font-size:13px;margin-bottom:26px}
+    table{border-collapse:collapse} td,th{border:1px solid #E9E3D8;padding:7px 12px;text-align:left}
+    </style></head><body><div class="wrap">
+    <div class="crumb"><a href="index.html">Gompha Manual</a></div>
+    <div class="draft">Draft — this manual describes the upcoming version of Gompha.</div>
+    <hr />
+    <p>tags: [task, milestone-1, screen/settings]
+    screen: Settings</p>
+    <hr />
+    <h1>Switch to Dark Mode (and Change the Size)</h1>
+    <p>Anyone can do this, on any screen, at any time. Both switches are personal to the device you are
+    holding.</p>
+    <h2>Steps</h2>
+    <ol>
+    <li>Press the <strong>gear icon in the top-right corner</strong>.</li>
+    <li>A panel slides in from the right, headed <strong>Settings</strong>.</li>
+    <li>Under <strong>Appearance</strong>, choose <strong>Light</strong>, <strong>Dark</strong> or <strong>System</strong>.</li>
+    <li><strong>System</strong> follows the phone's or laptop's own setting, so the app goes dark in the evening
+         with everything else.</li>
+    <li>Under <strong>Display density</strong>, choose <strong>Comfortable</strong> or <strong>Compact</strong>.</li>
+    <li><strong>Comfortable</strong> — bigger touch targets. Right for phones and chair-side tablets. This is the
+         starting setting.</li>
+    <li><strong>Compact</strong> — tighter, fits more on screen. Right for the front-desk desktop.</li>
+    <li>Close the panel by pressing outside it, or with the close control at its top.</li>
+    </ol>
+    <p>The change happens at once. There is nothing to save.</p>
+    <h2>Where the setting is kept</h2>
+    <p><strong>On that device only.</strong> The panel says so: <em>"These settings stay on this device."</em></p>
+    <ul>
+    <li>The front desk can run <strong>Compact + Light</strong> while the same person's phone runs <strong>Comfortable +
+      Dark</strong>.</li>
+    <li>It survives closing the browser and signing out.</li>
+    <li>It does <strong>not</strong> follow you to another device, and it does not change what anyone else sees.</li>
+    </ul>
+    <p><strong>Sign out</strong> also lives at the bottom of this panel. See <a href="sign-in.html">Sign-In</a>.</p>
+    <h2>Why it works this way</h2>
+    <p><strong>Density is a choice, not a guess about your screen.</strong> Screen width is a poor guide to how the
+    device is actually used: a chair-side tablet lives on a bracket at arm's length and needs big
+    targets, while a 13-inch laptop at reception wants everything visible at once. The clinic runs mixed
+    hardware, so staff choose rather than being measured.</p>
+    <p><strong>Per device, not per person.</strong> The front desk machine is used by whoever is standing at it, and it
+    should not change size when the shift changes.</p>
+    <p><strong>Dark mode is a real theme, not a filter over a light one.</strong> Every colour in Gompha has a dark
+    counterpart chosen for it, so a doctor's colour and a warning still mean the same thing at 9pm as at
+    9am.</p>
+    <p>Next: <a href="sign-in.html">Sign-In</a> · <a href="install-the-app-on-a-phone.html">Install-the-App-on-a-Phone</a> · <a href="home.html">Home</a></p>
     </div></body></html>
   "take-a-payment.html": |
     <!doctype html><html lang="en"><head><meta charset="utf-8">
@@ -500,14 +1648,13 @@ data:
     <div class="crumb"><a href="index.html">Gompha Manual</a></div>
     <div class="draft">Draft — this manual describes the upcoming version of Gompha.</div>
     <hr />
-    <p>tags: [task, stub, not-live]
-    status: not-live</p>
+    <p>tags: [task, not-built]
+    status: not-built</p>
     <hr />
     <h1>Take a Payment</h1>
-    <p><strong>Nothing live to document.</strong> There is no payment screen yet.</p>
-    <p>When it ships, this page gets numbered steps naming the real screens, then a short
-    <em>Why it works this way</em>. See also <a href="dual-currency-money.html">Dual-Currency-Money</a>.</p>
-    <p>For: <a href="receptionist.html">Receptionist</a> · Back to <a href="home.html">Home</a> · What is coming: <a href="roadmap.html">Roadmap</a></p>
+    <p><strong>Not built.</strong> Gompha records no money yet — no payments, no patient balances, no Income and
+    Expenses.</p>
+    <p>See <a href="whats-not-here-yet.html">Whats-Not-Here-Yet</a> · <a href="dual-currency-money.html">Dual-Currency-Money</a> · <a href="roadmap.html">Roadmap</a> · <a href="home.html">Home</a></p>
     </div></body></html>
   "use-the-tooth-chart.html": |
     <!doctype html><html lang="en"><head><meta charset="utf-8">
@@ -527,17 +1674,13 @@ data:
     <div class="crumb"><a href="index.html">Gompha Manual</a></div>
     <div class="draft">Draft — this manual describes the upcoming version of Gompha.</div>
     <hr />
-    <p>tags: [task, stub, not-live]
-    status: not-live</p>
+    <p>tags: [task, not-built]
+    status: not-built</p>
     <hr />
     <h1>Use the Tooth Chart</h1>
-    <p><strong>Nothing live to document.</strong> The tooth chart has not shipped in Gompha.</p>
-    <p>A tooth chart existed in the old app, and drawings from it are kept in the repository as
-    reference for the rebuild. <strong>That is not this software</strong> and is deliberately not described here —
-    documenting it would teach staff a screen they will never see.</p>
-    <p>When it ships, this page gets numbered steps naming the real screens, then a short
-    <em>Why it works this way</em>.</p>
-    <p>For: <a href="doctor.html">Doctor</a> · Back to <a href="home.html">Home</a> · What is coming: <a href="roadmap.html">Roadmap</a></p>
+    <p><strong>Not built.</strong> There is no tooth chart (odontogram) in Gompha yet, because there is no patient
+    record for it to sit inside.</p>
+    <p>See <a href="whats-not-here-yet.html">Whats-Not-Here-Yet</a> · <a href="roadmap.html">Roadmap</a> · <a href="home.html">Home</a></p>
     </div></body></html>
   "what-your-licence-covers.html": |
     <!doctype html><html lang="en"><head><meta charset="utf-8">
@@ -557,23 +1700,77 @@ data:
     <div class="crumb"><a href="index.html">Gompha Manual</a></div>
     <div class="draft">Draft — this manual describes the upcoming version of Gompha.</div>
     <hr />
-    <p>tags: [concept, stub, not-live]
-    status: not-live</p>
-    <hr />
+    <h2>tags: [concept, milestone-1, licence]</h2>
     <h1>What Your Licence Covers</h1>
-    <p><strong>Nothing live to document.</strong> The licensing service is designed but not built. No clinic holds a
-    licence, nothing checks one, and there is no screen showing you what yours includes.</p>
-    <p>The shape of it has been decided and is listed in <a href="roadmap.html">Roadmap</a> — but a decision is not a working
-    feature, and this page will not describe one as though it were.</p>
-    <p>When it ships, this page explains in plain words: how many people of each kind your clinic may
-    add, what happens as your licence nears its end, and what the app still lets you do if it lapses.</p>
-    <p>Related, once live: <a href="add-a-staff-member.html">Add-a-Staff-Member</a> · <a href="roles-and-access.html">Roles-and-Access</a> · <a href="clinic-admin.html">Clinic-Admin</a></p>
-    <p>Back to <a href="home.html">Home</a> · What is coming: <a href="roadmap.html">Roadmap</a></p>
+    <p>Gompha is licensed per clinic. The licence records two things that staff actually meet: <strong>how many
+    doctors the clinic may have</strong>, and <strong>whether the clinic may make changes at all</strong>.</p>
+    <h2>Doctor seats are counted; reception and assistants are not</h2>
+    <ul>
+    <li><strong>Admin doctors and associate doctors each have their own limit.</strong> Two separate counts, not one
+      pooled number — so a clinic licensed for one admin doctor and three associates cannot quietly
+      turn that into four admin doctors.</li>
+    <li><strong>Receptionists and assistants are unlimited.</strong> Add as many as the clinic employs.</li>
+    <li><strong>An invited doctor already occupies a seat</strong>, from the moment the invite is created and before
+      they have ever signed in. A seat you have promised to somebody is not free.</li>
+    </ul>
+    <p>When there is no seat left, adding a doctor is refused on the spot with a message you can act on:</p>
+    <blockquote>
+    <p>More doctors than your licence allows — contact us</p>
+    </blockquote>
+    <p>or, when the limit is simply reached:</p>
+    <blockquote>
+    <p>Doctor seats for role '…' are at the licence limit</p>
+    </blockquote>
+    <p>Nothing is half-created. See <a href="add-a-staff-member.html">Add-a-Staff-Member</a>.</p>
+    <h2>A seat is a person, not a device</h2>
+    <p>One doctor, on his phone, on the chair-side tablet and at the front desk, is <strong>one</strong> seat. Seats
+    count people, not screens. This is also why nobody should share a login: two people on one seat
+    destroys the record of who did what (<a href="roles-and-access.html">Roles-and-Access</a>).</p>
+    <h2>If the licence lapses: read-only</h2>
+    <p>When a licence runs out, the clinic does <strong>not</strong> stop working and nothing is deleted. It becomes
+    <strong>read-only</strong>:</p>
+    <ul>
+    <li><strong>Everything can still be read.</strong> Every record already saved stays exactly as it is.</li>
+    <li><strong>Nothing new can be saved.</strong> Any attempt shows a calm grey box with a padlock:</li>
+    </ul>
+    <blockquote>
+    <p><strong>The clinic is read-only.</strong> The licence needs renewing before anything can be changed.
+    Everything already saved is safe.</p>
+    </blockquote>
+    <p>Renew, and full use returns. Nothing has to be re-entered.</p>
+    <p><strong>Read-only is not the same as offline.</strong> Offline means this device cannot reach the server;
+    read-only means the server is fine and is waiting on a renewal. The two look similar on purpose —
+    both are calm, informational, never red — but they are told apart by the icon and the wording. See
+    <a href="working-offline.html">Working-Offline</a>.</p>
+    <h2>⚠ In Milestone 1 there is no warning before it happens</h2>
+    <p>The reminder that a licence is about to expire, and the automatic quiet renewal behind it, are not
+    built yet. Today a lapse arrives without notice.</p>
+    <p><strong>Practical consequence: keep track of the renewal date outside the app.</strong> Speak to us before it
+    falls due.</p>
+    <h2>Buying and renewing happen outside the app</h2>
+    <p>There is no billing screen, no invoice, no card form and no self-serve upgrade in Gompha, and there
+    is not going to be one. Renewals, extra doctor seats and bespoke arrangements are agreed the way
+    clinics here actually buy: a conversation, by phone or WhatsApp.</p>
+    <h2>Why it works this way</h2>
+    <p><strong>Only doctors are counted.</strong> Doctors are what a dental practice is sized by. Capping receptionists
+    would push a clinic straight into sharing one front-desk login, which is worse for the clinic and
+    worse for the record than any licensing benefit.</p>
+    <p><strong>Expiry never destroys work.</strong> A clinic that lost data over a late payment would be right never to
+    trust the software again. Read-only stops new work; it never touches old work.</p>
+    <p><strong>Named seats, not "however many are logged in right now".</strong> Counting simultaneous users needs a
+    live connection to police it, and the whole point of Gompha's licence design is that the clinic keeps
+    working when the link to us is down. Counting people instead of connections is what makes that
+    possible.</p>
+    <p><strong>The clinic's entitlements live in the licence, not in the software.</strong> Every clinic here bargains a
+    different real price, so a bespoke arrangement must be a licence we issue for that clinic — never a
+    change to the code and never a special version. That is why a limit can be raised without anybody
+    deploying anything.</p>
+    <p>Next: <a href="roles-and-access.html">Roles-and-Access</a> · <a href="working-offline.html">Working-Offline</a> · <a href="home.html">Home</a></p>
     </div></body></html>
-  "work-offline.html": |
+  "whats-not-here-yet.html": |
     <!doctype html><html lang="en"><head><meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>Work Offline · Gompha Manual</title>
+    <title>Whats Not Here Yet · Gompha Manual</title>
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;600&family=IBM+Plex+Sans+Arabic&display=swap" rel="stylesheet">
     <style>
     body{margin:0;background:#FAF8F4;color:#3D3A34;font:15px/1.65 "IBM Plex Sans","IBM Plex Sans Arabic",sans-serif}
@@ -588,17 +1785,92 @@ data:
     <div class="crumb"><a href="index.html">Gompha Manual</a></div>
     <div class="draft">Draft — this manual describes the upcoming version of Gompha.</div>
     <hr />
-    <p>tags: [task, stub, not-live]
-    status: not-live</p>
-    <hr />
-    <h1>Work Offline</h1>
-    <p><strong>Nothing live to document.</strong> There is no app to lose connection with yet.</p>
-    <p>This will be the most-used page in the vault, because most support calls will be this. The app is
-    online-first (ADR-014): while offline you can look at cached data, but you cannot book, take a
-    payment or write a note until the connection is back. When it ships this page gets numbered
-    steps: how to tell that a device is offline, what stays safe to do, and what to do while you wait.</p>
-    <p>The idea behind it: <a href="working-offline.html">Working-Offline</a></p>
-    <p>For: everyone · Back to <a href="home.html">Home</a> · What is coming: <a href="roadmap.html">Roadmap</a></p>
+    <h2>tags: [concept, scope, milestone-1]</h2>
+    <h1>What Is Not Here Yet</h1>
+    <p><strong>Gompha is being built in milestones. This manual, and the software behind it, is at
+    Milestone 1.</strong></p>
+    <p>Milestone 1 is deliberately small. It is the part everything else needs first: who the users
+    are, what each of them may see, and which rooms the clinic has.</p>
+    <h2>What Milestone 1 gives you</h2>
+    <ul>
+    <li>Signing in and out, with your own password (<a href="sign-in.html">Sign-In</a>)</li>
+    <li>An invite link that lets each person set their own password (<a href="activate-your-account.html">Activate-Your-Account</a>)</li>
+    <li>Resetting a forgotten password (<a href="reset-your-password.html">Reset-Your-Password</a>)</li>
+    <li>A three-step setup for the owner: greeting, people and access, rooms (<a href="set-up-your-clinic.html">Set-Up-Your-Clinic</a>)</li>
+    <li>The five access sections, set per person (<a href="set-what-each-person-can-see.html">Set-What-Each-Person-Can-See</a>)</li>
+    <li>The clinic's rooms, by name (<a href="add-the-clinic-rooms.html">Add-the-Clinic-Rooms</a>)</li>
+    <li>Dark mode and a display-density switch (<a href="switch-to-dark-mode.html">Switch-to-Dark-Mode</a>)</li>
+    </ul>
+    <h2>What it does not give you</h2>
+    <p>None of the following exists in the software today. Not hidden, not behind a permission, not
+    "coming next week" — <strong>not built</strong>.</p>
+    <table>
+    <thead>
+    <tr>
+    <th>You are looking for</th>
+    <th>Status</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+    <td>The schedule / day grid</td>
+    <td>Not built</td>
+    </tr>
+    <tr>
+    <td>Booking or cancelling an appointment</td>
+    <td>Not built</td>
+    </tr>
+    <tr>
+    <td>Patients, patient search, the patient card</td>
+    <td>Not built</td>
+    </tr>
+    <tr>
+    <td>The tooth chart (odontogram)</td>
+    <td>Not built</td>
+    </tr>
+    <tr>
+    <td>Treatments and clinical notes</td>
+    <td>Not built</td>
+    </tr>
+    <tr>
+    <td>Income and Expenses</td>
+    <td>Not built</td>
+    </tr>
+    <tr>
+    <td>Payments and what a patient owes</td>
+    <td>Not built</td>
+    </tr>
+    <tr>
+    <td>Inventory</td>
+    <td>Not built</td>
+    </tr>
+    <tr>
+    <td>X-rays and photos</td>
+    <td>Not built</td>
+    </tr>
+    <tr>
+    <td>Reports</td>
+    <td>Not built</td>
+    </tr>
+    </tbody>
+    </table>
+    <p><strong>A doctor, a receptionist or an assistant who signs in today sees one screen</strong>: a short "You're
+    signed in" page that names your role and lists the clinic's rooms. That is correct behaviour, not
+    a fault, and not a permission problem. See <a href="doctor.html">Doctor</a>, <a href="receptionist.html">Receptionist</a> and <a href="assistant.html">Assistant</a>.</p>
+    <h2>Why the access settings are there before the screens are</h2>
+    <p>The five sections you set in Milestone 1 (<a href="set-what-each-person-can-see.html">Set-What-Each-Person-Can-See</a>) are recorded now and
+    govern each module <strong>as it arrives</strong>. Getting them decided before there is a patient record to
+    guard is deliberate: retrofitting access to a system that already holds clinical data is how
+    clinics end up with everyone seeing everything.</p>
+    <p>So today, setting a section to <code>None</code> has nothing yet to hide. It will, the moment the module it
+    covers ships.</p>
+    <h2>Two things to tell staff on day one</h2>
+    <ol>
+    <li><strong>Do not go looking for the schedule.</strong> It is not there. Nobody has misconfigured anything.</li>
+    <li><strong>The setup you do now is not throwaway.</strong> People, access and rooms are the real records the
+       later modules attach to. Nothing here is re-entered later.</li>
+    </ol>
+    <p>Back to <a href="home.html">Home</a> · what is decided but unbuilt: <a href="roadmap.html">Roadmap</a></p>
     </div></body></html>
   "working-offline.html": |
     <!doctype html><html lang="en"><head><meta charset="utf-8">
@@ -618,27 +1890,117 @@ data:
     <div class="crumb"><a href="index.html">Gompha Manual</a></div>
     <div class="draft">Draft — this manual describes the upcoming version of Gompha.</div>
     <hr />
-    <p>tags: [concept, stub, not-live]
-    status: not-live</p>
-    <hr />
+    <h2>tags: [concept, milestone-1, support]</h2>
     <h1>Working Offline</h1>
-    <p><strong>Nothing live to document.</strong> No part of the app exists yet, so nothing here can be described
-    honestly.</p>
-    <p><strong>This is the most important page in the vault</strong>, and it stays deliberately empty until there is
-    real behaviour to describe. Guessing here would be worse than saying nothing: staff would be
-    taught to look for a mark on the screen that does not exist, and would trust a booking that was
-    never confirmed.</p>
-    <p><strong>Architecture note (ADR-014, accepted 2026-08-15):</strong> the app is online-first. The server is the
-    single source of truth for every write. There is no writable offline replica and no 3-day offline
-    data buffer — that buffer now applies only to the licence, not to patient or appointment data
-    (see <a href="what-your-licence-covers.html">What-Your-Licence-Covers</a>). Being offline means <em>viewing cached data, read-only</em>: nothing
-    can be booked, paid or written to a patient's record until the device is back online.</p>
-    <p>When the app ships, this page must answer three questions in plain words:</p>
+    <p><strong>Read this page before the first "the internet is down" phone call.</strong> Most support calls will be
+    this one, and almost none of them are faults.</p>
+    <h2>The one sentence</h2>
+    <p><strong>Offline in Gompha means looking, not working.</strong> You can read what is already on your screen. You
+    cannot add, change or save anything until the connection is back — and <strong>nothing you had done is
+    lost</strong>, because Gompha never accepts a change it has not actually saved.</p>
+    <h2>How you know you are offline</h2>
+    <p><strong>A slim grey strip appears across the very top of the screen:</strong></p>
+    <blockquote>
+    <p>No connection — viewing cached data, read-only.</p>
+    </blockquote>
+    <p>It is deliberately calm — grey, small, never red, never a pop-up. It is telling you something, not
+    warning you about a fault.</p>
+    <p>Inside a screen you get the same message in a soft grey box with a small signal icon:</p>
+    <blockquote>
+    <p><strong>No connection — viewing cached data, read-only.</strong> You can review what is set up; adding or
+    changing anything needs the clinic link. Nothing is lost.</p>
+    </blockquote>
+    <p>On the setup screens the buttons go grey and the line at the bottom changes from <em>"Changes save as
+    you go"</em> to <strong>"Read-only while offline"</strong>.</p>
+    <h2>What happens if you try to change something anyway</h2>
+    <p>You get a plain sentence, and <strong>nothing is saved</strong>. Adding a person offline says:</p>
+    <blockquote>
+    <p>No connection — adding a person needs the clinic link.</p>
+    </blockquote>
+    <p>There is no half-saved person, no queue, and nothing to clean up afterwards. Do it again when the
+    connection is back.</p>
+    <h2>What being offline does <em>not</em> do</h2>
+    <ul>
+    <li><strong>It does not sign you out.</strong> A dropped link is not a sign-out. Your session survives; you carry
+      on when the connection returns. Only a genuine sign-out, or a session that has expired, sends you
+      back to the sign-in screen (<a href="passwords-and-sessions.html">Passwords-and-Sessions</a>).</li>
+    <li><strong>It does not lose anything.</strong> Everything you had saved before the link dropped is on the server.</li>
+    <li><strong>It does not mean the clinic's data is gone.</strong> It means this device cannot reach it right now.</li>
+    </ul>
+    <h2>What to actually do</h2>
     <ol>
-    <li>How do I know this device is offline, and why is that normal rather than a fault?</li>
-    <li>What can I still do while offline (look things up) and what must wait (booking, payments,
-       notes)?</li>
-    <li>What happens the moment the connection comes back?</li>
+    <li><strong>Wait.</strong> Most drops last seconds. The strip disappears by itself when the link returns.</li>
+    <li>If a screen shows the offline box, press <strong>Try again</strong> or <strong>Retry</strong> when the strip has gone.</li>
+    <li>If it stays down, check the clinic's own internet the way you always do. Gompha cannot fix a
+       dead link, and it will not pretend the link is alive.</li>
     </ol>
-    <p>Until then: <a href="work-offline.html">Work-Offline</a> · <a href="home.html">Home</a> · <a href="roadmap.html">Roadmap</a></p>
+    <h2>The honest limit in Milestone 1</h2>
+    <p><strong>Milestone 1 keeps no copy of your data on the device.</strong> So:</p>
+    <ul>
+    <li>If the app is <strong>already open</strong>, what is on screen stays readable, and you get the calm strip.</li>
+    <li>If you <strong>reload the page, or open the app fresh, while offline</strong>, you get the <em>browser's</em> "cannot
+      reach this site" page rather than Gompha at all. Not a fault, and nothing is damaged. Reload once
+      the link is back.</li>
+    </ul>
+    <p>The stored-on-the-device reading copy — a doctor's own patients and the day's schedule, readable
+    when the link is down — arrives with the schedule and patient modules. Until then, treat Gompha as
+    needing the connection to open at all.</p>
+    <h2>The four things a screen can be showing you</h2>
+    <p>They look different on purpose. Confusing two of them is what makes staff distrust the app.</p>
+    <table>
+    <thead>
+    <tr>
+    <th>What you see</th>
+    <th>What it means</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+    <td><strong>Grey placeholder shapes</strong> where text and boxes will be</td>
+    <td>Loading. The data is on its way. Never a spinning circle — a shape that matches what is arriving tells you it <em>is</em> arriving.</td>
+    </tr>
+    <tr>
+    <td><strong>A dashed box</strong> saying <em>"No rooms yet"</em> or <em>"No one added yet"</em></td>
+    <td>Empty. It loaded fine, and there genuinely is nothing there yet.</td>
+    </tr>
+    <tr>
+    <td><strong>A soft red box</strong> saying <em>"Couldn't load this"</em> with a <strong>Try again</strong></td>
+    <td>Something failed. The details went to the log, not to your screen. Nothing was lost.</td>
+    </tr>
+    <tr>
+    <td><strong>A calm grey box</strong> saying <em>"No connection"</em></td>
+    <td>Offline. Read-only, informational. Not a fault.</td>
+    </tr>
+    </tbody>
+    </table>
+    <p><strong>An empty day and an unreachable server must never look the same.</strong> A receptionist seeing an empty
+    schedule has to know instantly whether the day is free or the device cannot see it.</p>
+    <h2>The other read-only: a lapsed licence</h2>
+    <p>Occasionally you will see a grey box with a <strong>padlock</strong>, not a signal icon:</p>
+    <blockquote>
+    <p><strong>The clinic is read-only.</strong> The licence needs renewing before anything can be changed.
+    Everything already saved is safe.</p>
+    </blockquote>
+    <p>That is not a connection problem — see <a href="what-your-licence-covers.html">What-Your-Licence-Covers</a>. The connection is fine;
+    Gompha is waiting on a renewal. Reading still works.</p>
+    <h2>Why it works this way</h2>
+    <p><strong>The clinic asked for it.</strong> The requirement was for the schedule to be <em>the most accurate thing in
+    the building</em> — always the latest state on every device, no stale copies. You cannot have that and
+    also let six devices book appointments independently while the internet is down. Given the choice,
+    the clinic chose accuracy.</p>
+    <p><strong>The alternative is worse than an inconvenience.</strong> If devices accepted bookings offline, two
+    receptionists offline at once would each promise the same 10:00 slot, and the app would later have
+    to pick a winner. Somebody's patient arrives to no appointment. Refusing to book is visible and
+    immediately understood; a double booking is invisible until the patient is standing at the desk.</p>
+    <p><strong>"No connection" is a state, not an error.</strong> Painting it red would teach staff that red means
+    "ignore it", and then a real error gets ignored too.</p>
+    <p><strong>Nothing is ever half-saved.</strong> Every change is a single request the server either accepted or did
+    not. There is no draft on the device that could be lost, so "did that save?" always has a
+    straight answer.</p>
+    <p><strong>Availability is bought with better connections, not with copies.</strong> The work goes into making the
+    link reliable — a spare route into the clinic, monitoring from outside the building — rather than
+    into copies of the record on six devices that then have to be reconciled. During a full outage staff
+    can look but not book, and that trade was accepted deliberately.</p>
+    <p>Next: <a href="whats-not-here-yet.html">Whats-Not-Here-Yet</a> · <a href="what-your-licence-covers.html">What-Your-Licence-Covers</a> · <a href="install-the-app-on-a-phone.html">Install-the-App-on-a-Phone</a> ·
+    <a href="home.html">Home</a></p>
     </div></body></html>
