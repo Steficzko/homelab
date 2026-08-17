@@ -53,7 +53,9 @@ spec:
     # gompha.com tenant wildcard (multi-domain, Option B). No TLS block here:
     # gompha.com is a SEPARATE CF account and TLS terminates at Cloudflare's edge
     # (the cloudflared-gompha tunnel reaches this ingress over HTTP). The gompha
-    # landing (apex + www) and auto.gompha.com are EXACT hosts → ingress-nginx
+    # landing (apex + www), auto.gompha.com, and the licensing pair
+    # licensing-staging/licence-staging.gompha.com (saas-gompha-licensing-staging
+    # ns; prod adds licensing/licence.gompha.com) are EXACT hosts → ingress-nginx
     # gives them precedence, so this wildcard only catches <slug>.gompha.com tenants —
     # EXCEPT /manual, carved out by apps/gompha/landing/manual-ingress.yaml
     # (longest-prefix wins; the staff manual is served there behind basic-auth).

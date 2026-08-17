@@ -1,0 +1,67 @@
+# Deployed via ArgoCD (bootstrap: saas-gompha-licensing-staging.yaml).
+# The licensing service's OWN Postgres (Gompha ADR-001) — never the clinic DB.
+# Mirrors dental.clinic/postgres.yaml (which mirrors bjj).
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: licensing-postgres-data
+  namespace: saas-gompha-licensing-staging
+  labels:
+    recurring-job.longhorn.io/daily-backup: "enabled"   # cluster's existing Longhorn backup label
+spec:
+  accessModes: [ReadWriteOnce]
+  storageClassName: longhorn
+  resources:
+    requests: {storage: 5Gi}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: licensing-postgres
+  namespace: saas-gompha-licensing-staging
+  labels: {app: licensing-postgres}
+spec:
+  replicas: 1
+  strategy: {type: Recreate}   # RWO volume
+  selector:
+    matchLabels: {app: licensing-postgres}
+  template:
+    metadata:
+      labels: {app: licensing-postgres}
+    spec:
+      containers:
+        - name: postgres
+          # 17: the schema was developed and tested against PG17.
+          # Digest-pinned (review N1 — renovate updates existing digests but
+          # never adds one; the sibling dental postgres is pinned the same way).
+          image: postgres:17-alpine@sha256:18cfe3ef5e6815560c98237d6216d1e5119702fb0f3894c8785dd58b8bbe5d73
+          ports: [{containerPort: 5432}]
+          env:
+            - {name: POSTGRES_DB, value: licensing}
+            - name: POSTGRES_USER
+              valueFrom: {secretKeyRef: {name: licensing-postgres-secret, key: POSTGRES_USER}}
+            - name: POSTGRES_PASSWORD
+              valueFrom: {secretKeyRef: {name: licensing-postgres-secret, key: POSTGRES_PASSWORD}}
+            - {name: PGDATA, value: /var/lib/postgresql/data/pgdata}
+          # ponytail: ONE role — the migrate initContainer needs DDL and the
+          # app shares its user. Ceiling: prod gets a limited app role split
+          # from the owner (dental.clinic REQ-2 shape) before real tenants.
+          volumeMounts:
+            - {name: data, mountPath: /var/lib/postgresql/data, subPath: pgdata}
+          resources:
+            requests: {cpu: 50m, memory: 128Mi}
+            limits: {memory: 512Mi}
+          readinessProbe:
+            exec: {command: ["pg_isready", "-U", "postgres", "-d", "licensing"]}
+      volumes:
+        - name: data
+          persistentVolumeClaim: {claimName: licensing-postgres-data}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: licensing-postgres
+  namespace: saas-gompha-licensing-staging
+spec:
+  selector: {app: licensing-postgres}
+  ports: [{port: 5432, targetPort: 5432}]

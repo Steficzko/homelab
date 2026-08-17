@@ -1,0 +1,151 @@
+# Deployed via ArgoCD (bootstrap: saas-gompha-licensing-staging.yaml).
+# TWO deployments from ONE image — the pentest S1 deploy-half split:
+#
+#   licensing-main   surface=all    admin+tenant surface. Mounts the mail
+#                                   master key (ADR-018) AND the signing key
+#                                   (ADR-019 — in-process signer, the recorded
+#                                   ponytail; separate signer deployment is the
+#                                   upgrade path).
+#   licensing-fetch  surface=fetch  the ONE public endpoint. Mounts NEITHER
+#                                   key: full compromise of the public pod can
+#                                   neither mint licences nor decrypt
+#                                   tenant_mail. Enforced by what is absent
+#                                   from this manifest, not by app checks.
+#
+# Secrets:
+#   licensing-api-secret        (SOPS)        LICENSING_DATABASE_URL
+#   licensing-mail-master-key   (SOPS)        master.key — ADR-018 blesses the
+#                                             deploy-secrets pipeline for it
+#   licensing-signing-key       (OUT-OF-BAND) key.pem — NEVER in git, not even
+#                                             encrypted (ADR-019: its own
+#                                             custody, bundled with nothing).
+#                                             Created once by the runbook:
+#                                             Gompha ops/runbooks/licensing-deploy.md
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: licensing-main
+  namespace: saas-gompha-licensing-staging
+  labels: {app: licensing-main}
+spec:
+  replicas: 1   # in-process rate limiting + in-process signer assume 1 replica (marked graduation point)
+  strategy: {type: Recreate}   # review S5: default RollingUpdate surges to TWO
+                               # pods mid-rollout — two signers, doubled rate
+                               # budget — silently breaking the line above
+  selector:
+    matchLabels: {app: licensing-main}
+  template:
+    metadata:
+      labels:
+        app: licensing-main
+        licensing-db-access: "true"   # NetworkPolicy selector for Postgres ingress
+    spec:
+      automountServiceAccountToken: false   # neither pod calls the K8s API (manifest-reviewer S1) — closes the future-Role-binding gap, hardens the S1 split
+      imagePullSecrets: [{name: ghcr-pull}]
+      initContainers:
+        # migrate with the SAME image+tag as the API (delivery.md: the old
+        # stack pinned migrate separately and shipped mismatches)
+        - name: migrate
+          image: ghcr.io/steficzko/gompha-licensing:lic-v0.1.1
+          command: ["python", "migrations/migrate.py", "up"]
+          env:
+            - name: LICENSING_DATABASE_URL
+              valueFrom: {secretKeyRef: {name: licensing-api-secret, key: LICENSING_DATABASE_URL}}
+          resources:
+            requests: {cpu: 25m, memory: 64Mi}
+            limits: {memory: 128Mi}
+      containers:
+        - name: api
+          image: ghcr.io/steficzko/gompha-licensing:lic-v0.1.1
+          ports: [{containerPort: 8000, name: http}]
+          env:
+            - {name: LICENSING_SURFACE, value: "all"}
+            - name: LICENSING_DATABASE_URL
+              valueFrom: {secretKeyRef: {name: licensing-api-secret, key: LICENSING_DATABASE_URL}}
+            # ADR-019: file paths, never env values — env leaks into crash dumps
+            - {name: LICENSING_SIGNING_KEY_FILE, value: /secrets/signing/key.pem}
+            - {name: LICENSING_SIGNING_KEY_ID, value: staging-1}
+            - {name: LICENSING_MAIL_MASTER_KEY_FILE, value: /secrets/mail-master/master.key}
+            - {name: LICENSING_MAIL_MASTER_KEY_ID, value: staging-mail-1}
+            - {name: LICENSING_APP_BASE_URL, value: "https://licensing-staging.gompha.com"}
+            # "*" governs uvicorn's proxy-headers only and is safe because the
+            # NetworkPolicy admits nobody but ingress-nginx (they move
+            # together). It does NOT deliver the true client — behind the
+            # tunnel everyone arrives as the cloudflared pod IP; per-caller
+            # identity for rate buckets comes from CF-Connecting-IP in the app
+            # (_client_key, review S3).
+            - {name: FORWARDED_ALLOW_IPS, value: "*"}
+          volumeMounts:
+            # review B4 / ADR-022: signing key + mail master key + DB creds
+            # co-mounted in one pod is an ACCEPTED, ADR-recorded deviation
+            # from ADR-019's three-blast-radii end state — see ADR-022 for
+            # the retirement trigger. Do not add further secrets here.
+            - {name: signing-key, mountPath: /secrets/signing, readOnly: true}
+            - {name: mail-master-key, mountPath: /secrets/mail-master, readOnly: true}
+          resources:
+            requests: {cpu: 50m, memory: 128Mi}
+            limits: {memory: 512Mi}
+          # readiness only (review S1, house style — dental api has no
+          # liveness): /healthz is DB-backed, and liveness on it turns a
+          # Postgres blip into an API kill-loop. Readiness already pulls the
+          # pod from the Service.
+          readinessProbe:
+            httpGet: {path: /healthz, port: 8000}
+      volumes:
+        - name: signing-key
+          secret: {secretName: licensing-signing-key}
+        - name: mail-master-key
+          secret: {secretName: licensing-mail-master-key}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: licensing-main
+  namespace: saas-gompha-licensing-staging
+spec:
+  selector: {app: licensing-main}
+  ports: [{name: http, port: 8000, targetPort: 8000}]
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: licensing-fetch
+  namespace: saas-gompha-licensing-staging
+  labels: {app: licensing-fetch}
+spec:
+  replicas: 1
+  selector:
+    matchLabels: {app: licensing-fetch}
+  template:
+    metadata:
+      labels:
+        app: licensing-fetch
+        licensing-db-access: "true"
+    spec:
+      automountServiceAccountToken: false   # neither pod calls the K8s API (manifest-reviewer S1)
+      imagePullSecrets: [{name: ghcr-pull}]
+      containers:
+        - name: api
+          image: ghcr.io/steficzko/gompha-licensing:lic-v0.1.1
+          ports: [{containerPort: 8000, name: http}]
+          env:
+            - {name: LICENSING_SURFACE, value: "fetch"}
+            - name: LICENSING_DATABASE_URL
+              valueFrom: {secretKeyRef: {name: licensing-api-secret, key: LICENSING_DATABASE_URL}}
+            - {name: FORWARDED_ALLOW_IPS, value: "*"}   # same coupling + same S3 note as licensing-main
+            # DELIBERATELY ABSENT: signing key, mail master key. The public
+            # pod can serve pre-signed blobs and nothing else. Do not add.
+          resources:
+            requests: {cpu: 25m, memory: 96Mi}
+            limits: {memory: 256Mi}
+          readinessProbe:   # readiness only — see licensing-main (review S1)
+            httpGet: {path: /healthz, port: 8000}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: licensing-fetch
+  namespace: saas-gompha-licensing-staging
+spec:
+  selector: {app: licensing-fetch}
+  ports: [{name: http, port: 8000, targetPort: 8000}]

@@ -1,0 +1,90 @@
+# Deployed via ArgoCD (bootstrap: saas-gompha-licensing-staging.yaml).
+# Additive over networkpolicy-default-deny.yaml (default-deny from birth,
+# same-namespace traffic INCLUDED): every flow below is an explicit grant;
+# anything not listed stays dead. DNS-to-CoreDNS is granted in default-deny.
+---
+# Postgres: ONLY pods labeled licensing-db-access may connect. Never at
+# ingress, never a NodePort. No egress beyond the default-deny DNS grant.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: licensing-postgres
+  namespace: saas-gompha-licensing-staging
+spec:
+  podSelector:
+    matchLabels: {app: licensing-postgres}
+  policyTypes: [Ingress, Egress]
+  ingress:
+    - from:
+        - podSelector: {matchLabels: {licensing-db-access: "true"}}
+      ports: [{port: 5432}]
+---
+# licensing-main: in from ingress-nginx only; out to Postgres, SMTP-587 (the
+# tenant-credential mail path, ADR-008) and HTTPS-443 (HIBP range API — which
+# has a decided offline answer, so a tightened egress degrades, never breaks).
+# NOTE the FORWARDED_ALLOW_IPS="*" coupling in api.yaml: this ingress rule
+# being ingress-nginx-only is what makes trusting X-Forwarded-For safe.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: licensing-main
+  namespace: saas-gompha-licensing-staging
+spec:
+  podSelector:
+    matchLabels: {app: licensing-main}
+  policyTypes: [Ingress, Egress]
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels: {kubernetes.io/metadata.name: ingress-nginx}
+      ports: [{port: 8000}]
+  egress:
+    - to:
+        - podSelector: {matchLabels: {app: licensing-postgres}}
+      ports: [{port: 5432}]
+    - to:
+        # internet egress house style (see n8n), tightened per review N6: the
+        # pod holding the signing key gets no route back into cluster/LAN
+        # address space — SMTP and HIBP are both genuinely external.
+        - ipBlock:
+            cidr: 0.0.0.0/0
+            except: [10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16]
+      ports:
+        - {port: 587, protocol: TCP}   # SMTP submission (clinic credentials)
+        - {port: 443, protocol: TCP}   # HIBP k-anonymity range API
+---
+# licensing-fetch: in from ingress-nginx only; out to Postgres ONLY — the
+# public pod has no business on the internet, and no path to anything else.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: licensing-fetch
+  namespace: saas-gompha-licensing-staging
+spec:
+  podSelector:
+    matchLabels: {app: licensing-fetch}
+  policyTypes: [Ingress, Egress]
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels: {kubernetes.io/metadata.name: ingress-nginx}
+      ports: [{port: 8000}]
+  egress:
+    - to:
+        - podSelector: {matchLabels: {app: licensing-postgres}}
+      ports: [{port: 5432}]
+---
+# mark-lapsed CronJob pods: out to Postgres only.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: licensing-cron
+  namespace: saas-gompha-licensing-staging
+spec:
+  podSelector:
+    matchLabels: {app: licensing-cron}
+  policyTypes: [Ingress, Egress]
+  egress:
+    - to:
+        - podSelector: {matchLabels: {app: licensing-postgres}}
+      ports: [{port: 5432}]

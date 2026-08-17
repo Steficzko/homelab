@@ -1,0 +1,59 @@
+# Deployed via ArgoCD (bootstrap: saas-gompha-licensing-staging.yaml).
+# Licensing lives on gompha.com (owner ruling 2026-08-17; spec: the control
+# plane is ours, licensing.gompha.com — kostikidis.net has no business here).
+#
+# gompha.com mechanics (same as gompha/landing): SEPARATE CF account, TLS
+# terminates at Cloudflare's edge, no cert-manager DNS-01 token for this zone
+# — so NO tls block and NO cluster-issuer annotation; the tunnel reaches
+# ingress-nginx over HTTP. The zone's wildcard already routes to the tunnel
+# (the dental *.gompha.com tenant wildcard proves it); these EXACT hosts take
+# precedence over that wildcard, so no DNS record is needed.
+#
+# Two hosts, two trust models:
+#   licensing-staging.gompha.com -> licensing-main   admin+tenant surface.
+#       No CF Access exists on this zone: the app's own auth — provider
+#       sessions + TOTP (S1/F4) and tenant sessions — is the gate. Adding a
+#       CF Access app for this exact host in the gompha.com account is listed
+#       in the runbook as optional defence in depth.
+#   licence-staging.gompha.com   -> licensing-fetch  the ONE public path.
+#       Machines with bearer instance credentials; no Access in this zone
+#       means no exemption dance either.
+# Prod hosts (licensing.gompha.com / licence.gompha.com) arrive with the prod
+# dir once staging proves.
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: licensing-main
+  namespace: saas-gompha-licensing-staging
+  annotations:
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    nginx.ingress.kubernetes.io/proxy-body-size: "1m"
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: licensing-staging.gompha.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service: {name: licensing-main, port: {number: 8000}}
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: licensing-fetch
+  namespace: saas-gompha-licensing-staging
+  annotations:
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    nginx.ingress.kubernetes.io/proxy-body-size: "64k"   # a licence fetch is a GET with a header
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: licence-staging.gompha.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service: {name: licensing-fetch, port: {number: 8000}}

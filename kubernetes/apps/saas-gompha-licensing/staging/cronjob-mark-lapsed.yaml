@@ -1,0 +1,51 @@
+# Deployed via ArgoCD (bootstrap: saas-gompha-licensing-staging.yaml).
+# spec §6: expiry is enforced at OUR records too — live tenants whose active
+# licence is past expiry+grace flip to lapsed. Idempotent; one run, one count
+# in the job log (alerting on the clinic, not the pods: a nonzero count is a
+# tenant that just went read-only — worth a human's eyes).
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: licensing-mark-lapsed
+  namespace: saas-gompha-licensing-staging
+spec:
+  schedule: "17 3 * * *"        # 03:17 clinic time, off-peak
+  timeZone: "Asia/Baghdad"      # review S7: batch/v1 defaults to UTC = 06:17 Erbil
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      backoffLimit: 2
+      ttlSecondsAfterFinished: 10800   # review N5 / sibling: one-off failures must not re-alert forever
+      template:
+        metadata:
+          labels:
+            app: licensing-cron
+            licensing-db-access: "true"
+        spec:
+          # OnFailure, NOT Never (review S2): k3s NetworkPolicy takes ~30-45s
+          # to admit a freshly created pod (dental.clinic/postgres.yaml,
+          # found 2026-07-05). Never+backoffLimit re-runs the same race in a
+          # NEW unadmitted pod; OnFailure retries in the already-admitted one.
+          # The wait loop below rides out the admit window; python replaces
+          # pg_isready because the slim image ships no postgres client.
+          restartPolicy: OnFailure
+          imagePullSecrets: [{name: ghcr-pull}]
+          containers:
+            - name: mark-lapsed
+              image: ghcr.io/steficzko/gompha-licensing:lic-v0.1.1
+              command: ["/bin/sh", "-ec"]
+              args:
+                - |
+                  for i in $(seq 1 40); do
+                    python -c "import os, psycopg; psycopg.connect(os.environ['LICENSING_DATABASE_URL'], connect_timeout=5).close()" 2>/dev/null && break
+                    sleep 3
+                  done
+                  exec python -m gompha_licensing.lifecycle mark-lapsed
+              env:
+                - name: LICENSING_DATABASE_URL
+                  valueFrom: {secretKeyRef: {name: licensing-api-secret, key: LICENSING_DATABASE_URL}}
+              resources:
+                requests: {cpu: 25m, memory: 64Mi}
+                limits: {memory: 128Mi}

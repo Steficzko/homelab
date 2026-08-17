@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: Secret
+metadata:
+    name: licensing-mail-master-key
+    namespace: saas-gompha-licensing-staging
+type: Opaque
+data:
+    master.key: ENC[AES256_GCM,data:RmpPnCAMqeZ5m9Sg+uUpdgurYUWn27/jV63GUncgcOnrfJFaUpLsWT6HNzg=,iv:KTUW18dpEHrspZGv8jZy+wl2q3D65aeGxOWjDyIE9nw=,tag:8UAMTYLpYEF0u79ukjQ3Xg==,type:str]
+sops:
+    age:
+        - enc: |
+            -----BEGIN AGE ENCRYPTED FILE-----
+            YWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IFgyNTUxOSArRjE5VDM1N0ZGNU9mbzVY
+            cG9MOHg3WjRRZnRXZWFaYldZcGlLbzJnT25FCnJXSE02Y0ZrUXlkMkdVKzZuelRW
+            RlZtWXA5N0FQMlBUYkJ6SHBaRlM4WVUKLS0tIHh3Mnp6ZkFwMzFEZWMrU0h2ZEZQ
+            VnB2eVBQa2Q1bElLYWk4ZVVOVERSZlUKQIwimaEaJBBACtO26IttcNIysd+SX74i
+            S54ynCE9zHPPfHkvMo6SehJ9ZINDOTt2mu5JPxKQ0vWXiQf2r1lyIQ==
+            -----END AGE ENCRYPTED FILE-----
+          recipient: age1v9pqv93dtdg7zuk2uc423rdtapu9p0fqucd2s9p6curt2c0y2vuq4yzw9n
+    encrypted_regex: ^(data|stringData)$
+    lastmodified: "2026-08-16T21:06:00Z"
+    mac: ENC[AES256_GCM,data:WwdORb8LIUwpDSepZDqYw/GOr/78nb/Xr071hyBl0ea+/zNL8qhHQoX6EkyraPSEmVw5Q+zztkZpselcZW/qM6w/D5AYkFQAy8JOa6x+GJ/aS3Z6pdopp0k8Ghn3iz8Wu3vkIjaYRnMq5DhgYc46YI8y3WlbZlJ31xHW6Ea45ic=,iv:23y3jO4wTTDHvZ7Kk9+PaXWQeXG9ns8cOi43/gqNFjM=,tag:nkolrHkidBH4iUQseTHztA==,type:str]
+    version: 3.13.1
