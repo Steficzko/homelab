@@ -37,6 +37,8 @@ spec:
                   valueFrom: { secretKeyRef: { name: kuma-push, key: GOMPHA_N8N } }
                 - name: PUSH_REPLICATION
                   valueFrom: { secretKeyRef: { name: kuma-push, key: REPLICATION } }
+                - name: PUSH_GOMPHA_CLINIC
+                  valueFrom: { secretKeyRef: { name: kuma-push, key: GOMPHA_CLINIC } }
               command: ["/bin/sh", "-c"]
               args:
                 - |
@@ -60,3 +62,9 @@ spec:
                   check dental      "src/clinic-backups/clinic-postgres/" 50000 5400 "$PUSH_DENTAL"
                   check gompha-n8n  "src/app-backups/gompha-n8n/"          100  5400 "$PUSH_GOMPHA_N8N"
                   check replication "dst/clinic-backups/clinic-postgres/" 50000 7200 "$PUSH_REPLICATION"
+                  # The REBUILD's database. It had no backup at all until
+                  # 2026-08-18 and no watch until now — a silently failing backup
+                  # looks exactly like a working one, which is worse than none.
+                  # 20000 B: real dumps are ~38 KB and the failure mode this
+                  # guards against (pg_dump refusing a newer server) wrote 200 B.
+                  check gompha-clinic "src/clinic-backups/gompha-clinic-postgres/" 20000 5400 "$PUSH_GOMPHA_CLINIC"
