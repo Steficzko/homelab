@@ -90,7 +90,7 @@ services:
   # Its Cloudflare ingress: demo/blanca/*.gompha.com -> http://clinic-spa:8080,
   # auto.gompha.com -> http://n8n:5678. DNS is flipped to it by the failover script.
   cloudflared:
-    image: cloudflare/cloudflared:2026.6.1
+    image: cloudflare/cloudflared:2026.8.2
     container_name: gompha-failover-cloudflared
     restart: unless-stopped
     profiles: ["failover"]
