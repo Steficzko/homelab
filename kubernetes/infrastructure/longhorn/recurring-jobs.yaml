@@ -1,0 +1,61 @@
+# Longhorn maintenance jobs — apply by hand, like default-setting.yaml:
+#   kubectl apply -f kubernetes/infrastructure/longhorn/recurring-jobs.yaml
+# Longhorn is installed via `kubectl apply` (see README.md), NOT ArgoCD, so
+# nothing reconciles this file automatically. Re-apply after a Longhorn upgrade.
+#
+# WHY THESE EXIST — measured 2026-08-18:
+#   prometheus       spec 20Gi  disk 39.25G  real data  7.19G   5.5x bloat
+#   immich-postgres  spec 30Gi  disk 48.82G  real data 16.33G   3.0x
+#   storage-loki-0   spec 10Gi  disk 10.93G  real data  5.52G   2.0x
+# Longhorn never returns freed blocks to the pool on its own, and every backup
+# leaves a snapshot behind. Write-heavy volumes (Prometheus, Postgres, Loki)
+# therefore grow without bound while idle volumes stay flat. ~100 GiB of real
+# disk (3 replicas) is recoverable here — far more than right-sizing PVCs would
+# give back, and with no downtime or data migration.
+#
+# GROUP TARGETING: these use groups:[default]. Longhorn auto-adds EVERY new
+# volume to the "default" group, so these cover all 43 current volumes and every
+# future one with no per-volume labelling. Contrast daily-backup, which has
+# groups:[] and so only runs on the 9 volumes carrying its own explicit label.
+---
+apiVersion: longhorn.io/v1beta2
+kind: RecurringJob
+metadata:
+  name: filesystem-trim
+  namespace: longhorn-system
+spec:
+  name: filesystem-trim
+  task: filesystem-trim
+  # 02:00 — deliberately BEFORE the 03:00 backup window so the nightly backups
+  # capture an already-trimmed volume instead of snapshotting dead blocks.
+  cron: "0 2 * * *"
+  groups:
+    - default
+  # retain is not used by filesystem-trim; the field is required, so 0.
+  retain: 0
+  # Trim is IO-heavy. 2 matches daily-backup and keeps the storage network calm.
+  concurrency: 2
+  labels: {}
+  parameters: {}
+---
+apiVersion: longhorn.io/v1beta2
+kind: RecurringJob
+metadata:
+  name: snapshot-cleanup
+  namespace: longhorn-system
+spec:
+  name: snapshot-cleanup
+  task: snapshot-cleanup
+  # Sunday 05:00 — AFTER every backup job has finished (longhorn daily-backup
+  # 03:00, app-level dumps 03:00-03:45). Running it before them would purge
+  # snapshots the backups still need. Weekly, not daily: purging rewrites the
+  # snapshot chain, so doing it nightly costs IO for little extra reclaim.
+  cron: "0 5 * * 0"
+  groups:
+    - default
+  # retain is not used by snapshot-cleanup; it purges already-removable
+  # snapshots only. Backup retention stays governed by daily-backup's retain:30.
+  retain: 0
+  concurrency: 2
+  labels: {}
+  parameters: {}
