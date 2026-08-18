@@ -1,6 +1,6 @@
 # gompha.com apex + www. Exact hosts — ingress-nginx gives these precedence over the
 # *.gompha.com tenant wildcard (dental-clinic ns). The landing shadows tenants in exactly
-# ONE path: /manual, via manual-ingress.yaml (basic-auth staff manual).
+# ONE path: /manual, via manual-ingress.yaml (cookie-gated staff manual).
 # HTTP-only: gompha.com is in a separate CF account with no cert-manager DNS-01 token,
 # so TLS terminates at Cloudflare's edge and the tunnel reaches the ingress over HTTP.
 apiVersion: networking.k8s.io/v1
@@ -34,4 +34,4 @@ spec:
                 port:
                   number: 80
     # /manual on these hosts and on tenant subdomains lives in manual-ingress.yaml
-    # (separate object so its basic-auth annotations gate ONLY /manual).
+    # (separate object kept for the path carve; auth is a cookie gate in the landing pod).

@@ -1,0 +1,19 @@
+# Shape of the real secret (manual-gate.sops.yaml, applied by hand — SOPS
+# files are excluded from ArgoCD, see bootstrap/apps/gompha.yaml):
+#   sops -d manual-gate.sops.yaml | kubectl apply -f -
+#   kubectl rollout restart deploy/landing -n gompha   # env is read at startup —
+#                                                      # rotation without this changes nothing
+# The value is compared VERBATIM against the gompha_manual cookie by nginx
+# (nginx.yaml) and typed into login.html by staff — keep it alphanumeric so it
+# survives both the cookie and the envsubst untouched.
+apiVersion: v1
+kind: Secret
+metadata:
+  name: manual-gate
+  namespace: gompha
+  annotations:
+    argocd.argoproj.io/compare-options: IgnoreExtraneous
+    argocd.argoproj.io/sync-options: Prune=false
+type: Opaque
+stringData:
+  MANUAL_KEY: "REPLACE_ME_ALNUM_ONLY"

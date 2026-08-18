@@ -2,13 +2,22 @@
 # Cache-Control: no-cache so neither the browser nor Cloudflare's edge serves a
 # stale marketing page (the site is deployed by ConfigMap swaps, often).
 # CF respects origin no-cache/no-store and will not edge-cache these responses.
+#
+# TEMPLATE, not plain conf: mounted at /etc/nginx/templates/, where the stock
+# nginx image envsubsts ${MANUAL_KEY} (from the manual-gate secret) into
+# /etc/nginx/conf.d/default.conf at startup. Only variables that EXIST in the
+# container env are substituted, so nginx's own $uri/$cookie_* pass through
+# untouched. The manual moved from ingress basic-auth to this cookie gate on
+# 2026-08-18 so browsers' password managers can SAVE the password — a real
+# login form is saveable everywhere; an HTTP auth prompt is not (Telegram's
+# in-app browser, older Android). login.html sets the cookie; nginx compares.
 apiVersion: v1
 kind: ConfigMap
 metadata:
   name: landing-nginx
   namespace: gompha
 data:
-  default.conf: |
+  default.conf.template: |
     server {
       listen 80;
       server_name _;
@@ -28,11 +37,86 @@ data:
       # address without the slash. absolute_redirect off (above) keeps this
       # relative, so the plain-HTTP origin hop cannot mint an http:// URL.
       location = /manual { return 301 /manual/; }
-      # staff manual — auth lives at the ingress (manual-ingress.yaml), the pod
-      # only serves the files; alias because the content mounts OUTSIDE the docroot
+      # The one ungated page under /manual/: the login form. Exact match beats
+      # the prefix location below, so it needs no cookie. Its JS writes the
+      # gompha_manual cookie and reloads /manual/.
+      location = /manual/login.html {
+        alias /usr/share/manual-login/login.html;
+      }
+      # staff manual — cookie gate (see header); the pod serves the files
       location /manual/ {
         alias /usr/share/manual/;
         index index.html;
+        # FAIL CLOSED: an empty MANUAL_KEY (botched rotation) must not turn the
+        # first check into `!= ""` and wave every cookie-less visitor through.
+        if ($cookie_gompha_manual = "") {
+          return 302 /manual/login.html;
+        }
+        if ($cookie_gompha_manual != "${MANUAL_KEY}") {
+          return 302 /manual/login.html;
+        }
         try_files $uri $uri/ =404;
       }
     }
+  login.html: |
+    <!doctype html>
+    <html lang="en">
+    <head>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <title>Gompha Manual</title>
+      <style>
+        :root { color-scheme: light dark; }
+        body {
+          margin: 0; min-height: 100dvh; display: grid; place-items: center;
+          font-family: system-ui, -apple-system, sans-serif;
+          background: #faf8f5; color: #2b2926;
+        }
+        @media (prefers-color-scheme: dark) {
+          body { background: #211f1c; color: #efe9e2; }
+          input { background: #2b2926; color: #efe9e2; border-color: #4a453f; }
+        }
+        form { width: min(20rem, 90vw); }
+        h1 { font-size: 1.2rem; font-weight: 600; margin: 0 0 .3rem; }
+        p { margin: 0 0 1.2rem; font-size: .88rem; opacity: .75; }
+        input {
+          width: 100%; box-sizing: border-box; font-size: 1rem;
+          padding: .65rem .8rem; border: 1px solid #d8d2c9; border-radius: 10px;
+        }
+        button {
+          margin-top: .7rem; width: 100%; font-size: 1rem; padding: .65rem;
+          border: 0; border-radius: 10px; background: #2b6a63; color: #fff;
+          cursor: pointer;
+        }
+        #wrong { display: none; color: #a4442e; font-size: .85rem; margin-top: .6rem; }
+      </style>
+    </head>
+    <body>
+      <form id="f" method="post" action="/manual/login.html">
+        <h1>Gompha staff manual</h1>
+        <p>Enter the manual password. Your browser will offer to save it.</p>
+        <input type="text" name="username" value="staff" autocomplete="username" hidden>
+        <input type="password" name="password" autocomplete="current-password"
+               placeholder="Password" required autofocus>
+        <div id="wrong">That password didn&rsquo;t open the manual.</div>
+        <button type="submit">Open the manual</button>
+      </form>
+      <script>
+        // A cookie already set but bounced back here = wrong password last try.
+        if (document.cookie.includes('gompha_manual=')) {
+          document.getElementById('wrong').style.display = 'block';
+        }
+        document.getElementById('f').addEventListener('submit', function (e) {
+          e.preventDefault();
+          var v = this.password.value;
+          // secure flag: over plain-http (port-forward testing) the cookie is
+          // silently NOT set and this page just reloads — test via the edge.
+          // 30 days, not a year: if someone mistypes a REAL password here it
+          // ages out; the browser's saved password refills the field anyway.
+          document.cookie = 'gompha_manual=' + v +
+            '; path=/manual; max-age=2592000; secure; samesite=lax';
+          location.href = '/manual/';
+        });
+      </script>
+    </body>
+    </html>

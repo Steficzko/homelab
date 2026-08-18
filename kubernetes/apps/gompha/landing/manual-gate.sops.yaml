@@ -1,0 +1,26 @@
+apiVersion: v1
+kind: Secret
+metadata:
+    name: manual-gate
+    namespace: gompha
+    annotations:
+        argocd.argoproj.io/compare-options: IgnoreExtraneous
+        argocd.argoproj.io/sync-options: Prune=false
+type: Opaque
+stringData:
+    MANUAL_KEY: ENC[AES256_GCM,data:qfIEuiVvKLxWfDki2Q9VWDwmPZc=,iv:mUI5EoVynV4k9R5zPmf/jqV/aQ6nj/9PBcKiqG9Fa0U=,tag:QwWz7YGgqk2batlHIB5VQQ==,type:str]
+sops:
+    age:
+        - enc: |
+            -----BEGIN AGE ENCRYPTED FILE-----
+            YWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IFgyNTUxOSA4cVVGejdMMkJWZ2twWU1S
+            ekI3dmJubGFtOHRYeFdMUHRHd3hYVGY0SWlzCjk1TE9VUXNYY3d4RENyeGg5VFpR
+            MFFYY09aekh6ZjdDRTRabmZWMW1wUDQKLS0tIHVzZTViRjVRYWpEOWMyTm52QVM5
+            QlNuZ3AzSWFxZFlEVHU5dWg4Y2FSazgK7AiuHlEIWBmnzXWA8ltOIzOvjOaP1ZTI
+            aPtngIvWJjLi027xzbzpqJCBGBzcYfbAAPveU91diZHFHPr+QlP3EA==
+            -----END AGE ENCRYPTED FILE-----
+          recipient: age1v9pqv93dtdg7zuk2uc423rdtapu9p0fqucd2s9p6curt2c0y2vuq4yzw9n
+    encrypted_regex: ^(data|stringData)$
+    lastmodified: "2026-08-18T01:30:58Z"
+    mac: ENC[AES256_GCM,data:VEuTYta0nt6R9LZD+bRalYOx9Du8ASP3TB94UdfzQagXfp7id/M55s2E38MkZyDzSgeZJ5PIluvYQdfsjQGRzZpJ7tAaTsbG1xQ6abD1/HRwgfSQohIQHHaa0NiXwGZyKoJb2X0Vgl8+YKGEJKFQJr/DKJYEqP8WTeoum7JH76Q=,iv:sElFQwGLr36alDTbGmt6GhkwgXqrg7UhhHB7oycFAfQ=,tag:OH9pfeOeRNRmUEdb0PUWfQ==,type:str]
+    version: 3.13.1

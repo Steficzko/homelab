@@ -18,12 +18,27 @@ spec:
           image: nginx:1.29-alpine
           ports:
             - containerPort: 80
+          env:
+            # The manual gate password (nginx.yaml cookie check). envsubst'd
+            # into the config template by the stock image entrypoint. Secret is
+            # SOPS-applied by hand, like manual-htpasswd was — see
+            # manual-gate.example.yaml.
+            - name: MANUAL_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: manual-gate
+                  key: MANUAL_KEY
           volumeMounts:
             - name: html
               mountPath: /usr/share/nginx/html
               readOnly: true
+            # templates, not conf.d: the stock entrypoint envsubsts
+            # *.template → /etc/nginx/conf.d (which must stay writable)
             - name: nginx-conf
-              mountPath: /etc/nginx/conf.d
+              mountPath: /etc/nginx/templates
+              readOnly: true
+            - name: manual-login
+              mountPath: /usr/share/manual-login
               readOnly: true
             # sibling of the docroot — nesting under the read-only html mount
             # would EROFS the pod; nginx serves it via `alias` (nginx.yaml)
@@ -50,6 +65,15 @@ spec:
         - name: nginx-conf
           configMap:
             name: landing-nginx
+            items:
+              - key: default.conf.template
+                path: default.conf.template
+        - name: manual-login
+          configMap:
+            name: landing-nginx
+            items:
+              - key: login.html
+                path: login.html
         - name: manual
           configMap:
             name: landing-manual

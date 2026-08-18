@@ -78,25 +78,23 @@ data:
     <td>Choose a different one. It is not a judgement on you.</td>
     </tr>
     <tr>
+    <td><strong>Too many attempts — wait a moment and try again.</strong></td>
+    <td>Too many tries in a short time.</td>
+    <td>Wait about a minute. Nothing is locked or damaged.</td>
+    </tr>
+    <tr>
     <td>The sign-in screen appears instead of this one</td>
-    <td>See the known problem below.</td>
-    <td>Ask the owner for a corrected link.</td>
+    <td>The link was cut short — usually copied by hand, or truncated by the app it was forwarded through.</td>
+    <td>Ask the owner for a fresh link and open it whole.</td>
     </tr>
     </tbody>
     </table>
-    <h2>⚠ Known problem with the link (Milestone 1)</h2>
-    <p><strong>On the version now running, the invite link the owner copies points at the wrong address.</strong>
-    Opening it lands on the sign-in screen rather than on <strong>Join the clinic</strong>, and the code is lost on
-    the way.</p>
-    <p>The link is created correctly and your account really exists — nothing is broken behind the
-    scenes. Only the address in the copied link is wrong.</p>
-    <ul>
-    <li>The link you are given looks like <code>…/staff/redeem#token=…</code></li>
-    <li>The address that actually opens this screen is <code>…/redeem/staff#token=…</code></li>
-    </ul>
-    <p><strong>⚠ verify</strong> — that corrected address has not been confirmed against a real invite end to end.
-    Report the problem rather than editing addresses by hand: an owner can issue a fresh link at any
-    time, and a mistyped code simply fails.</p>
+    <h2>Lost the link, or it has expired?</h2>
+    <p><strong>Ask the owner for another one.</strong> They press one button on your card and a new link appears —
+    <a href="give-someone-a-new-link.html">Give-Someone-a-New-Link</a>. Nothing about your account is affected: your role, your access and
+    your name are all still there, waiting for you to set a password.</p>
+    <p>Note for the owner: an older link you already sent keeps working until it expires, so issuing a
+    new one does not break the old one.</p>
     <h2>Why it works this way</h2>
     <p><strong>No email is sent.</strong> Sending mail as the clinic, from the clinic's own address, needs a mail
     setup that is deliberately not switched on yet — half-configured mail lands in spam folders and
@@ -112,7 +110,7 @@ data:
     address bar as soon as the screen opens.</p>
     <p><strong>One use, 48 hours.</strong> A link that works forever is a spare key to your account left lying in a
     chat thread.</p>
-    <p>Next: <a href="sign-in.html">Sign-In</a> · <a href="passwords-and-sessions.html">Passwords-and-Sessions</a> · <a href="home.html">Home</a></p>
+    <p>Next: <a href="sign-in.html">Sign-In</a> · <a href="passwords-and-sessions.html">Passwords-and-Sessions</a> · <a href="give-someone-a-new-link.html">Give-Someone-a-New-Link</a> · <a href="home.html">Home</a></p>
     </div></body></html>
   "add-a-staff-member.html": |
     <!doctype html><html lang="en"><head><meta charset="utf-8">
@@ -172,10 +170,11 @@ data:
     <p>The person now appears in the grid with an <strong>Invited</strong> badge and a small <strong>Copy invite link</strong>
     button on their card, so you can copy the link again without re-creating anything.</p>
     <blockquote>
-    <p><strong>The link is only recoverable while you stay on this screen.</strong> Gompha stores nothing that can
-    reproduce it — only a fingerprint used to check it once. If you reload the page or sign out, the
-    <strong>Copy invite link</strong> button disappears, and in this milestone <strong>there is no button that issues a
-    replacement</strong>. Send the link before you leave the screen. If one is lost, contact support.</p>
+    <p><strong>This exact link is only recoverable while you stay on this screen.</strong> Gompha stores nothing that
+    can reproduce it — only a fingerprint used to check it once. Reload the page or sign out and the
+    <strong>Copy invite link</strong> button goes.</p>
+    <p><strong>That is no longer a problem.</strong> Press <strong>New invite link</strong> on their card and you get a fresh one,
+    as often as you like — <a href="give-someone-a-new-link.html">Give-Someone-a-New-Link</a>.</p>
     </blockquote>
     <h2>What can go wrong</h2>
     <table>
@@ -221,15 +220,37 @@ data:
     </table>
     <p><strong>An invited person counts against your doctor seats from the moment you create the invite</strong>, not
     from when they first sign in. That is intentional: a seat you have promised to someone is not free.</p>
-    <h2>Milestone 1 limits, worth knowing before you start typing</h2>
-    <ul>
-    <li><strong>You cannot correct a name or an email on screen.</strong> There is no edit on a person's card in this
-      version, and you cannot add the person again under the same email. Type carefully, or contact
-      support to fix it.</li>
-    <li><strong>You cannot remove a person on screen either.</strong> Nobody is ever deleted in Gompha — people are
-      archived, keeping the record of what they did — but the button for it is not in this version.</li>
-    <li><strong>You cannot change which doctor an assistant works under.</strong> Choose it correctly here.</li>
-    </ul>
+    <h2>If you got something wrong</h2>
+    <p>Every card carries its own buttons along the bottom. Nothing here is a one-way door except the last
+    one.</p>
+    <table>
+    <thead>
+    <tr>
+    <th>What happened</th>
+    <th>The button</th>
+    <th>Page</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+    <td>The invite link was lost, or they forgot their password</td>
+    <td><strong>New invite link</strong> / <strong>New password link</strong></td>
+    <td><a href="give-someone-a-new-link.html">Give-Someone-a-New-Link</a></td>
+    </tr>
+    <tr>
+    <td>A typo in the name or the email</td>
+    <td><strong>Edit details</strong></td>
+    <td><a href="fix-a-persons-details.html">Fix-a-Persons-Details</a></td>
+    </tr>
+    <tr>
+    <td>They never joined, or they have left</td>
+    <td><strong>Archive</strong></td>
+    <td><a href="archive-a-person.html">Archive-a-Person</a></td>
+    </tr>
+    </tbody>
+    </table>
+    <p><strong>The one thing you still cannot change is which doctor an assistant works under.</strong> Choose it
+    correctly here — it has no button yet, and it moves everything she can see at once.</p>
     <h2>Why it works this way</h2>
     <p><strong>The owner creates people; people create their own passwords.</strong> No shared first password ever
     circulates, and there is no moment when someone else knows your password.</p>
@@ -242,8 +263,10 @@ data:
     her without one. Changing it later moves everything she can see to a different doctor at once,
     which is why it is not an ordinary edit.</p>
     <p><strong>Nobody is deleted.</strong> A doctor who leaves is archived. The treatments he recorded are part of a
-    patient's medical history and cannot be allowed to vanish with his account.</p>
-    <p>Next: <a href="set-what-each-person-can-see.html">Set-What-Each-Person-Can-See</a> · <a href="choose-a-doctor-colour.html">Choose-a-Doctor-Colour</a> · <a href="roles-and-access.html">Roles-and-Access</a></p>
+    patient's medical history and cannot be allowed to vanish with his account.
+    <a href="archive-a-person.html">Archive-a-Person</a>.</p>
+    <p>Next: <a href="give-someone-a-new-link.html">Give-Someone-a-New-Link</a> · <a href="set-what-each-person-can-see.html">Set-What-Each-Person-Can-See</a> · <a href="choose-a-doctor-colour.html">Choose-a-Doctor-Colour</a> ·
+    <a href="roles-and-access.html">Roles-and-Access</a></p>
     </div></body></html>
   "add-the-clinic-rooms.html": |
     <!doctype html><html lang="en"><head><meta charset="utf-8">
@@ -306,6 +329,119 @@ data:
     pointing at nothing.</p>
     <p>Next: <a href="set-up-your-clinic.html">Set-Up-Your-Clinic</a> · <a href="whats-not-here-yet.html">Whats-Not-Here-Yet</a> · <a href="home.html">Home</a></p>
     </div></body></html>
+  "archive-a-person.html": |
+    <!doctype html><html lang="en"><head><meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Archive a Person · Gompha Manual</title>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;600&family=IBM+Plex+Sans+Arabic&display=swap" rel="stylesheet">
+    <style>
+    body{margin:0;background:#FAF8F4;color:#3D3A34;font:15px/1.65 "IBM Plex Sans","IBM Plex Sans Arabic",sans-serif}
+    .wrap{max-width:760px;margin:0 auto;padding:40px 24px 80px}
+    a{color:#2E5D51} .dead{color:#98917F;border-bottom:1px dashed #C9C2B2}
+    h1,h2,h3{line-height:1.3} h1{font-size:26px}
+    code{background:#F1EDE6;border-radius:5px;padding:2px 6px}
+    .crumb{font-size:13px;color:#98917F;margin-bottom:28px} .crumb a{color:#6B655A;text-decoration:none}
+    .draft{background:#F3EDDC;color:#6A5A32;border-radius:9px;padding:9px 14px;font-size:13px;margin-bottom:26px}
+    table{border-collapse:collapse} td,th{border:1px solid #E9E3D8;padding:7px 12px;text-align:left}
+    </style></head><body><div class="wrap">
+    <div class="crumb"><a href="index.html">Gompha Manual</a></div>
+    <div class="draft">Draft — this manual describes the upcoming version of Gompha.</div>
+    <hr />
+    <p>tags: [task, milestone-1, screen/person-archive, root]
+    screen: Archive this person (panel)</p>
+    <hr />
+    <h1>Archive a Person</h1>
+    <p><strong>For the owner.</strong> On a person's card, on the people and access step of <a href="set-up-your-clinic.html">Set-Up-Your-Clinic</a>.</p>
+    <p><strong>There is no Delete in Gompha, and there never will be.</strong> Somebody who leaves the clinic is
+    <strong>archived</strong>: they stop being able to sign in, and everything they did stays exactly where it is,
+    still under their name.</p>
+    <blockquote>
+    <p><strong>Read this whole page before you press it.</strong> Bringing an archived person back is not in this
+    version. Archive the wrong person and it takes a call to us to undo.</p>
+    </blockquote>
+    <h2>Steps</h2>
+    <ol>
+    <li>Find the person's card on the people step.</li>
+    <li>Press <strong>Archive</strong> — the red-outlined button at the bottom right of the card.</li>
+    <li>A panel slides in from the right, headed <strong>Archive this person</strong>, naming who it is and their
+       role. It tells you plainly:<blockquote>
+    <p>They stop being able to sign in straight away, and any device they are already signed in on
+    is signed out.</p>
+    </blockquote>
+    </li>
+    <li>To go ahead, press the red <strong>Archive</strong>. To back out, press <strong>Keep them</strong> — nothing happens.</li>
+    </ol>
+    <h2>What changes on the card</h2>
+    <ul>
+    <li>The card turns grey and gains an <strong>Archived</strong> badge.</li>
+    <li>A line appears: <em>"Sign-in is blocked and their access is frozen. Their past work and their
+      colour stay with them."</em></li>
+    <li>The five access sections are greyed out. So is the doctor colour.</li>
+    <li><strong>New invite link</strong> and <strong>Archive</strong> are gone; only <strong>Edit details</strong> stays.</li>
+    </ul>
+    <h2>What archiving does <em>not</em> do</h2>
+    <ul>
+    <li><strong>It does not delete anything.</strong> In the panel's own words:<blockquote>
+    <p><strong>Archived, not deleted.</strong> Nothing is erased: every appointment they booked and every payment
+    recorded against them stays exactly where it is, still under their name. That is why there is
+    no delete — deleting a doctor would take his work with him.</p>
+    </blockquote>
+    </li>
+    <li><strong>It does not free up their doctor colour.</strong> The colour stays reserved to them, so old records
+      keep reading the way they always did.</li>
+    <li><strong>It does not remove them from the list.</strong> They stay visible, greyed, so nobody wonders where a
+      name went.</li>
+    </ul>
+    <h2>Who cannot be archived</h2>
+    <p><strong>The owner.</strong> A card carrying the green <strong>ROOT</strong> badge has no Archive button at all — it is not
+    offered rather than offered and refused. The clinic must always have an owner.</p>
+    <h2>What can go wrong</h2>
+    <table>
+    <thead>
+    <tr>
+    <th>On screen</th>
+    <th>What it means</th>
+    <th>What to do</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+    <td>The button is greyed out with <strong>Needs the clinic link.</strong></td>
+    <td>The device cannot reach the server.</td>
+    <td>See <a href="working-offline.html">Working-Offline</a>.</td>
+    </tr>
+    <tr>
+    <td><strong>No connection — this needs the clinic link. Nothing changed; try again when it is back.</strong></td>
+    <td>The connection dropped mid-press.</td>
+    <td>Nobody was archived. Try again.</td>
+    </tr>
+    <tr>
+    <td><strong>The clinic is read-only until the licence is renewed. Nothing changed.</strong></td>
+    <td>The licence has lapsed.</td>
+    <td>See <a href="what-your-licence-covers.html">What-Your-Licence-Covers</a>.</td>
+    </tr>
+    <tr>
+    <td>There is no Archive button on this card</td>
+    <td>It is the owner's card.</td>
+    <td>See above.</td>
+    </tr>
+    </tbody>
+    </table>
+    <h2>Why it works this way</h2>
+    <p><strong>A treatment belongs to the patient, not to the doctor who typed it.</strong> If deleting a doctor
+    deleted his work, a patient's medical history would lose entries every time a dentist moved on.
+    That is not a data-tidiness preference; it is what makes the record trustworthy.</p>
+    <p><strong>Sessions die in the same breath.</strong> Blocking sign-in but leaving a live session alive on a tablet
+    somebody took home would be a lock with the intruder still inside. Archiving ends every one of
+    their sessions in the same instant (<a href="passwords-and-sessions.html">Passwords-and-Sessions</a>).</p>
+    <p><strong>"Archive", not "Remove" or "Delete".</strong> The word on the button has to match what actually happens.
+    A button labelled Delete that quietly keeps everything teaches staff that the words in this app
+    cannot be trusted — and the first time that matters will be somewhere far more expensive.</p>
+    <p><strong>Bringing someone back is a separate decision.</strong> It is not a side effect of asking for a link or
+    of editing a name. Until it has its own button, it needs a call — which is the right cost for an
+    action that hands somebody their access back.</p>
+    <p>Next: <a href="give-someone-a-new-link.html">Give-Someone-a-New-Link</a> · <a href="fix-a-persons-details.html">Fix-a-Persons-Details</a> · <a href="roles-and-access.html">Roles-and-Access</a> · <a href="home.html">Home</a></p>
+    </div></body></html>
   "assistant.html": |
     <!doctype html><html lang="en"><head><meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -361,6 +497,9 @@ data:
       nothing can be saved.</li>
     <li><a href="install-the-app-on-a-phone.html">Install-the-App-on-a-Phone</a> — you will be working from a phone or a chair-side tablet. Set the
       tablet to <strong>Comfortable</strong> so the buttons are big enough with gloves on.</li>
+    <li><strong>Forgotten your password? Ask the owner</strong> — Gompha sends no email, and one button from them
+      gets you a fresh link. <a href="reset-your-password.html">Reset-Your-Password</a>.</li>
+    <li><a href="when-something-goes-wrong.html">When-Something-Goes-Wrong</a> — if a red box shows a code, press <strong>Report this</strong>.</li>
     </ul>
     <p>Next: <a href="sign-in.html">Sign-In</a> · <a href="roles-and-access.html">Roles-and-Access</a> · <a href="whats-not-here-yet.html">Whats-Not-Here-Yet</a> · <a href="home.html">Home</a></p>
     </div></body></html>
@@ -422,7 +561,7 @@ data:
     <ol>
     <li>Find the doctor's card on the people step.</li>
     <li>At the bottom of the card, past the five access sections, is a row labelled <strong>Doctor colour</strong>
-       with a strip of eight small coloured squares.</li>
+       with a strip of twelve small coloured squares.</li>
     <li>Press the colour you want. The chosen one gets a dark ring and a tick, and the name of the
        colour appears under the strip.</li>
     </ol>
@@ -430,19 +569,24 @@ data:
     <h2>What you will notice</h2>
     <ul>
     <li><strong>A doctor already has a colour when you add them.</strong> The app hands out the next unused one from
-      the eight, so you never have to do this at all unless you want a particular doctor on a
+      the twelve, so you never have to do this at all unless you want a particular doctor on a
       particular colour.</li>
-    <li><strong>The eight colours are:</strong> Teal, Amber, Violet, Coral, Blue, Green, Rose, Slate. Hovering a
-      square tells you which is which.</li>
+    <li><strong>The twelve colours are:</strong> Teal, Amber, Violet, Coral, Blue, Green, Rose, Slate, Sky, Olive,
+      Plum, Indigo. Hovering a square tells you which is which.</li>
     <li><strong>A colour already used by another doctor is faded, marked <em>"in use"</em>, and cannot be pressed.</strong>
       Two doctors never share a colour.</li>
     <li><strong>Non-doctors have no colour row at all.</strong> Reception and assistants do not appear on the schedule
       as columns, so a colour would mean nothing.</li>
-    <li><strong>If all eight are taken</strong>, a ninth doctor is added with <strong>No colour yet</strong> under an empty strip.
-      Free one up by moving another doctor, or contact us.</li>
+    <li><strong>An archived doctor keeps his colour</strong>, and it stays out of use (<a href="archive-a-person.html">Archive-a-Person</a>).</li>
+    <li><strong>If all twelve are taken</strong>, a thirteenth doctor is added with <strong>No colour yet</strong> under the strip.
+      Free one up by moving another doctor, or talk to us.</li>
     </ul>
+    <p><strong>A doctor's colour also tints his own card.</strong> The five access controls on that card take his
+    colour, so with a dozen cards on screen you can see at a glance whose settings you are changing.
+    The words <strong>All / Own / None</strong> and their small monochrome gauge carry the setting itself — the
+    colour only says <em>whose card this is</em>.</p>
     <h2>Why it works this way</h2>
-    <p><strong>Eight chosen colours, not a colour wheel.</strong> They are picked to stay readable side by side, in
+    <p><strong>Twelve chosen colours, not a colour wheel.</strong> They are picked to stay readable side by side, in
     light and in dark mode, on the old tablets as well as a new phone. A free colour picker produces
     two near-identical blues in different doctors' hands, and then a receptionist books into the wrong
     column.</p>
@@ -452,6 +596,10 @@ data:
     <p><strong>One colour per clinic, enforced by the server.</strong> The screen fades a taken colour out, and the
     server refuses a clash even if something got past the screen. Two doctors on the same colour would
     make a shared-room schedule unreadable exactly when it is busiest.</p>
+    <p><strong>The colour on the card is a deepened version of the dot, not the dot itself.</strong> Several of the
+    twelve are too light to put white text on. Rather than dropping those colours, the card uses a
+    darker shade of the same hue behind any text, so every doctor's card stays comfortably readable in
+    light and dark mode.</p>
     <p>Next: <a href="set-what-each-person-can-see.html">Set-What-Each-Person-Can-See</a> · <a href="add-the-clinic-rooms.html">Add-the-Clinic-Rooms</a> · <a href="home.html">Home</a></p>
     </div></body></html>
   "clinic-admin.html": |
@@ -491,8 +639,9 @@ data:
        exists to attach them to.</li>
     <li><strong>Add reception and the assistants.</strong></li>
     <li><strong>Send every invite link as you create it.</strong> No email is sent. The link is shown once, on the
-       screen, with a <strong>Copy link</strong> button. If you leave the screen without copying it, only support can
-       help. This is the single most important habit on this screen.</li>
+       screen, with a <strong>Copy link</strong> button. Leave the screen without copying it and that link is gone
+       for good — but you can mint a fresh one from their card whenever you like
+       (<a href="give-someone-a-new-link.html">Give-Someone-a-New-Link</a>). Sending it as you go is still the habit worth having.</li>
     <li><strong>Adjust access where this clinic is different.</strong> <a href="set-what-each-person-can-see.html">Set-What-Each-Person-Can-See</a>. The role
        already filled sensible values in; you only touch what differs.</li>
     <li><strong>Set doctor colours</strong> if the automatic ones are not what you want.
@@ -506,21 +655,26 @@ data:
     <h2>What you can do that nobody else can</h2>
     <ul>
     <li>Add people, and decide what each of them can see</li>
+    <li><strong>Get anybody back in</strong> — a fresh invite or password link, on demand
+      (<a href="give-someone-a-new-link.html">Give-Someone-a-New-Link</a>)</li>
+    <li><strong>Correct a name or an email</strong>, including your own (<a href="fix-a-persons-details.html">Fix-a-Persons-Details</a>)</li>
+    <li><strong>Archive somebody who has left</strong> (<a href="archive-a-person.html">Archive-a-Person</a>)</li>
     <li>Add and rename rooms</li>
     <li>Give a doctor their schedule colour</li>
     <li>Reach the setup screen at all</li>
     </ul>
+    <p><strong>You are the clinic's support desk for passwords.</strong> Nobody can be emailed a reset, so when a
+    doctor cannot get in, he asks <em>you</em>, and you press one button. Make sure the staff know that on
+    day one — otherwise they wait for an email that is never coming.</p>
     <h2>What you cannot do in Milestone 1</h2>
     <p>Worth knowing before you type, because none of these have a button yet:</p>
     <ul>
-    <li><strong>Correct a person's name or email.</strong> Not editable on screen, and you cannot re-add them under the
-      same email. Type carefully.</li>
-    <li><strong>Remove or archive a person.</strong></li>
-    <li><strong>Change which doctor an assistant works under.</strong></li>
-    <li><strong>Issue a replacement invite link.</strong> The one you are shown at creation is the only one.</li>
+    <li><strong>Bring an archived person back.</strong> Archiving is one-way in this version — read
+      <a href="archive-a-person.html">Archive-a-Person</a> before you press it.</li>
+    <li><strong>Change a person's role</strong>, or <strong>which doctor an assistant works under</strong>.</li>
     <li><strong>Read the record of who did what.</strong> It is being kept; there is no screen for it yet.</li>
     </ul>
-    <p>Contact support for any of those. None of them are lost causes — they simply have no screen in this
+    <p>Talk to us for any of those. None of them are lost causes — they simply have no screen in this
     version.</p>
     <h2>A second admin doctor is not a second owner</h2>
     <p>You can give another doctor the <strong>Admin doctor</strong> role. In this milestone that does <strong>not</strong> give them
@@ -529,7 +683,8 @@ data:
     <h2>What is not here yet</h2>
     <p>No schedule, no patients, no money, no inventory. <a href="whats-not-here-yet.html">Whats-Not-Here-Yet</a> is the page to show anyone
     who goes looking.</p>
-    <p>Next: <a href="set-up-your-clinic.html">Set-Up-Your-Clinic</a> · <a href="roles-and-access.html">Roles-and-Access</a> · <a href="what-your-licence-covers.html">What-Your-Licence-Covers</a> · <a href="home.html">Home</a></p>
+    <p>Next: <a href="set-up-your-clinic.html">Set-Up-Your-Clinic</a> · <a href="give-someone-a-new-link.html">Give-Someone-a-New-Link</a> · <a href="roles-and-access.html">Roles-and-Access</a> ·
+    <a href="what-your-licence-covers.html">What-Your-Licence-Covers</a> · <a href="home.html">Home</a></p>
     </div></body></html>
   "doctor.html": |
     <!doctype html><html lang="en"><head><meta charset="utf-8">
@@ -588,7 +743,11 @@ data:
     <li><strong>A dropped connection does not sign you out</strong>, and it does not lose anything.
       <a href="working-offline.html">Working-Offline</a>.</li>
     <li><strong>You get a colour.</strong> It is how your column is recognised on the schedule when it arrives. The
-      owner sets it. <a href="choose-a-doctor-colour.html">Choose-a-Doctor-Colour</a>.</li>
+      owner sets it, from twelve. <a href="choose-a-doctor-colour.html">Choose-a-Doctor-Colour</a>.</li>
+    <li><strong>Forgot your password? Message the owner, not us.</strong> No email is sent by Gompha. The owner
+      presses one button and sends you a fresh link. <a href="reset-your-password.html">Reset-Your-Password</a>.</li>
+    <li><strong>If a screen shows a code like <code>GMP-1304</code>, press Report this.</strong> It takes thirty seconds and it
+      is the only way a problem reaches anyone who can fix it. <a href="when-something-goes-wrong.html">When-Something-Goes-Wrong</a>.</li>
     </ul>
     <p>Next: <a href="sign-in.html">Sign-In</a> · <a href="working-offline.html">Working-Offline</a> · <a href="roles-and-access.html">Roles-and-Access</a> · <a href="home.html">Home</a></p>
     </div></body></html>
@@ -621,6 +780,435 @@ data:
     <a href="what-your-licence-covers.html">What-Your-Licence-Covers</a>.</p>
     <p>See <a href="whats-not-here-yet.html">Whats-Not-Here-Yet</a> · <a href="roadmap.html">Roadmap</a> · <a href="home.html">Home</a></p>
     </div></body></html>
+  "error-codes.html": |
+    <!doctype html><html lang="en"><head><meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Error Codes · Gompha Manual</title>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;600&family=IBM+Plex+Sans+Arabic&display=swap" rel="stylesheet">
+    <style>
+    body{margin:0;background:#FAF8F4;color:#3D3A34;font:15px/1.65 "IBM Plex Sans","IBM Plex Sans Arabic",sans-serif}
+    .wrap{max-width:760px;margin:0 auto;padding:40px 24px 80px}
+    a{color:#2E5D51} .dead{color:#98917F;border-bottom:1px dashed #C9C2B2}
+    h1,h2,h3{line-height:1.3} h1{font-size:26px}
+    code{background:#F1EDE6;border-radius:5px;padding:2px 6px}
+    .crumb{font-size:13px;color:#98917F;margin-bottom:28px} .crumb a{color:#6B655A;text-decoration:none}
+    .draft{background:#F3EDDC;color:#6A5A32;border-radius:9px;padding:9px 14px;font-size:13px;margin-bottom:26px}
+    table{border-collapse:collapse} td,th{border:1px solid #E9E3D8;padding:7px 12px;text-align:left}
+    </style></head><body><div class="wrap">
+    <div class="crumb"><a href="index.html">Gompha Manual</a></div>
+    <div class="draft">Draft — this manual describes the upcoming version of Gompha.</div>
+    <hr />
+    <h2>tags: [concept, milestone-1, support]</h2>
+    <h1>Error Codes</h1>
+    <p>Every refusal Gompha makes carries a code: <strong><code>GMP</code> and four digits</strong>. It is short on purpose —
+    short enough to say down a phone, in a second language, over a busy waiting room.</p>
+    <p><strong>A code names the kind of problem. It never changes.</strong> <code>GMP-1201</code> will mean the same thing next
+    year and in every clinic that runs Gompha. Beside it you will usually see a <strong>reference</strong> — a short
+    block of characters naming that one attempt. How to send them to us: <a href="when-something-goes-wrong.html">When-Something-Goes-Wrong</a>.</p>
+    <h2>How to read the number</h2>
+    <p>The first two digits say which family the problem is in, so you know who can fix it before you
+    read any further.</p>
+    <table>
+    <thead>
+    <tr>
+    <th>Family</th>
+    <th>What it is about</th>
+    <th>Who fixes it</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+    <td><strong>10xx</strong></td>
+    <td>Signing in, links, passwords</td>
+    <td>You, or the owner</td>
+    </tr>
+    <tr>
+    <td><strong>11xx</strong></td>
+    <td>What you are allowed to do</td>
+    <td>The owner</td>
+    </tr>
+    <tr>
+    <td><strong>12xx</strong></td>
+    <td>The clinic's licence</td>
+    <td>Us, by phone</td>
+    </tr>
+    <tr>
+    <td><strong>13xx</strong></td>
+    <td>Something about what was typed or asked for</td>
+    <td>You</td>
+    </tr>
+    <tr>
+    <td><strong>14xx</strong></td>
+    <td>Our machinery</td>
+    <td>Us</td>
+    </tr>
+    <tr>
+    <td><strong>19xx</strong></td>
+    <td>Something we did not expect</td>
+    <td>Us</td>
+    </tr>
+    </tbody>
+    </table>
+    <h2>The full list</h2>
+    <p>The sentence in the middle column is exactly what Gompha shows.</p>
+    <table>
+    <thead>
+    <tr>
+    <th>Code</th>
+    <th>What it says</th>
+    <th>What it means</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+    <td><strong>GMP-1001</strong></td>
+    <td>That email and password do not match.</td>
+    <td>One of the two is wrong; it will not say which. <a href="sign-in.html">Sign-In</a></td>
+    </tr>
+    <tr>
+    <td><strong>GMP-1002</strong></td>
+    <td>Please sign in again.</td>
+    <td>The session ended — usually 12 hours, or you were signed out elsewhere. <a href="passwords-and-sessions.html">Passwords-and-Sessions</a></td>
+    </tr>
+    <tr>
+    <td><strong>GMP-1003</strong></td>
+    <td>This link is no longer valid. Ask for a new one.</td>
+    <td>An invite or reset link that is used up or expired. <a href="give-someone-a-new-link.html">Give-Someone-a-New-Link</a></td>
+    </tr>
+    <tr>
+    <td><strong>GMP-1004</strong></td>
+    <td>That password is too easy to guess.</td>
+    <td>Too short, too repetitive, or in a known public breach. <a href="passwords-and-sessions.html">Passwords-and-Sessions</a></td>
+    </tr>
+    <tr>
+    <td><strong>GMP-1101</strong></td>
+    <td>Your access does not cover this.</td>
+    <td>Your role or your access settings do not include this. <a href="roles-and-access.html">Roles-and-Access</a></td>
+    </tr>
+    <tr>
+    <td><strong>GMP-1102</strong></td>
+    <td>Only a clinic admin can change people and access.</td>
+    <td>Adding people and setting access is the owner's job.</td>
+    </tr>
+    <tr>
+    <td><strong>GMP-1103</strong></td>
+    <td>The clinic owner's account cannot be changed this way.</td>
+    <td>The ROOT account is protected. <a href="archive-a-person.html">Archive-a-Person</a></td>
+    </tr>
+    <tr>
+    <td><strong>GMP-1201</strong></td>
+    <td>The clinic licence has expired, so nothing can be saved right now. Everything already saved is safe.</td>
+    <td>Read-only. Nothing is lost; call us. <a href="what-your-licence-covers.html">What-Your-Licence-Covers</a></td>
+    </tr>
+    <tr>
+    <td><strong>GMP-1202</strong></td>
+    <td>The licence has no free seat for that role.</td>
+    <td>You are adding a doctor beyond what the licence covers. <a href="add-a-staff-member.html">Add-a-Staff-Member</a></td>
+    </tr>
+    <tr>
+    <td><strong>GMP-1301</strong></td>
+    <td>That is already taken.</td>
+    <td>An email or a room name that is in use here.</td>
+    </tr>
+    <tr>
+    <td><strong>GMP-1302</strong></td>
+    <td>That is not here any more.</td>
+    <td>It was archived or removed while you had the screen open.</td>
+    </tr>
+    <tr>
+    <td><strong>GMP-1303</strong></td>
+    <td>Some of that could not be accepted.</td>
+    <td>A field was blank, malformed, or not allowed.</td>
+    </tr>
+    <tr>
+    <td><strong>GMP-1304</strong></td>
+    <td>Too many tries. Wait a moment and try again.</td>
+    <td>Deliberate slowing-down. Wait about a minute. Nothing is locked or damaged.</td>
+    </tr>
+    <tr>
+    <td><strong>GMP-1401</strong></td>
+    <td>The clinic server is not reachable right now.</td>
+    <td>Tell us. Not the same as your internet being down — see <a href="working-offline.html">Working-Offline</a>.</td>
+    </tr>
+    <tr>
+    <td><strong>GMP-1901</strong></td>
+    <td>Something went wrong at our end.</td>
+    <td>We did not anticipate this one. Please send it.</td>
+    </tr>
+    </tbody>
+    </table>
+    <h2>⚠ How refusals are labelled on this version</h2>
+    <p>On the version now running, Gompha labels a refusal from <strong>the kind of refusal it is</strong> rather than
+    from the specific reason behind it. In practice that means the codes you will actually meet are
+    <strong>GMP-1002, 1101, 1301, 1302, 1303, 1304</strong> — the more specific ones in the list above are defined
+    and reserved, and become visible as each screen learns to name its own reason.</p>
+    <p>The one to know about: <strong>a lapsed licence is reported under GMP-1101 today</strong>, not GMP-1201. You can
+    tell them apart instantly without the code, because a lapsed licence also puts a padlock box on the
+    screen saying <em>"The clinic is read-only."</em> Padlock means the licence; no padlock means access.
+    <a href="what-your-licence-covers.html">What-Your-Licence-Covers</a>.</p>
+    <p><strong>⚠ verify</strong> — this is what the running code does; expect this note to disappear as screens start
+    naming their own reasons.</p>
+    <h2>Why it works this way</h2>
+    <p><strong>A code is not decoration.</strong> "Something went wrong" tells nobody anything, and a clinic that reads
+    it ten times learns to ignore the eleventh. A code lets a receptionist tell a doctor, a doctor tell
+    the owner, and the owner tell us, without any of them having to describe software.</p>
+    <p><strong>Codes are never re-used or renumbered.</strong> Once a code has been on a clinic's screen it exists in a
+    screenshot, in a support inbox, and on this page. Renumbering it would make every one of those
+    disagree with the app. New problems get new numbers.</p>
+    <p><strong>Numbered by family, not in the order they were invented.</strong> The first two digits tell you where to
+    look before you have read the sentence — which is the difference between a code being useful at the
+    front desk and being a number somebody copies out.</p>
+    <p>Next: <a href="when-something-goes-wrong.html">When-Something-Goes-Wrong</a> · <a href="working-offline.html">Working-Offline</a> · <a href="what-your-licence-covers.html">What-Your-Licence-Covers</a> · <a href="home.html">Home</a></p>
+    </div></body></html>
+  "fix-a-persons-details.html": |
+    <!doctype html><html lang="en"><head><meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Fix a Persons Details · Gompha Manual</title>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;600&family=IBM+Plex+Sans+Arabic&display=swap" rel="stylesheet">
+    <style>
+    body{margin:0;background:#FAF8F4;color:#3D3A34;font:15px/1.65 "IBM Plex Sans","IBM Plex Sans Arabic",sans-serif}
+    .wrap{max-width:760px;margin:0 auto;padding:40px 24px 80px}
+    a{color:#2E5D51} .dead{color:#98917F;border-bottom:1px dashed #C9C2B2}
+    h1,h2,h3{line-height:1.3} h1{font-size:26px}
+    code{background:#F1EDE6;border-radius:5px;padding:2px 6px}
+    .crumb{font-size:13px;color:#98917F;margin-bottom:28px} .crumb a{color:#6B655A;text-decoration:none}
+    .draft{background:#F3EDDC;color:#6A5A32;border-radius:9px;padding:9px 14px;font-size:13px;margin-bottom:26px}
+    table{border-collapse:collapse} td,th{border:1px solid #E9E3D8;padding:7px 12px;text-align:left}
+    </style></head><body><div class="wrap">
+    <div class="crumb"><a href="index.html">Gompha Manual</a></div>
+    <div class="draft">Draft — this manual describes the upcoming version of Gompha.</div>
+    <hr />
+    <p>tags: [task, milestone-1, screen/person-details, root]
+    screen: Edit details (panel)</p>
+    <hr />
+    <h1>Fix a Person's Details</h1>
+    <p><strong>For the owner.</strong> On a person's card, on the people and access step of <a href="set-up-your-clinic.html">Set-Up-Your-Clinic</a>.</p>
+    <p>You can correct <strong>their name</strong> and <strong>their email</strong>. That is the whole of it — and the email is the
+    one that matters, because the email is how they sign in.</p>
+    <h2>Steps</h2>
+    <ol>
+    <li>Find the person's card on the people step.</li>
+    <li>Press <strong>Edit details</strong> in the row of buttons at the bottom of the card.</li>
+    <li>A panel slides in from the right, headed <strong>Edit details</strong>, with the person's name and role at
+       the top.</li>
+    <li><strong>Full name</strong> — type it as colleagues should see it. Arabic and Kurdish are fine.</li>
+    <li><strong>Email</strong> — always typed left to right. Under the field it says <em>"This is how they sign in.
+       Fixing a typo here is safe — changing it grants nothing on its own."</em></li>
+    <li>Press <strong>Save changes</strong>.</li>
+    <li>A green line confirms it saved.</li>
+    </ol>
+    <p><strong>Change nothing and press Save</strong> and you get <em>"Nothing to save — change something first."</em> That is
+    not a fault.</p>
+    <h2>If you changed the email, issue a new link</h2>
+    <p>The moment you edit the address, a blue box appears:</p>
+    <blockquote>
+    <p>After saving a new address, issue a fresh link and send it there — the old one points at the
+    same person, so an unused link still works.</p>
+    </blockquote>
+    <p>And after saving, the confirmation says:</p>
+    <blockquote>
+    <p>Saved. The new address still needs a fresh link before they can sign in — issue one from their
+    card.</p>
+    </blockquote>
+    <p>So: <strong>fix the email, then press New invite link on the same card</strong> and send it to the corrected
+    address. <a href="give-someone-a-new-link.html">Give-Someone-a-New-Link</a>.</p>
+    <h2>What you cannot change here</h2>
+    <ul>
+    <li><strong>Their role.</strong> An admin doctor cannot be turned into a receptionist on screen.</li>
+    <li><strong>Which doctor an assistant works under.</strong> Choose that correctly when you add her
+      (<a href="add-a-staff-member.html">Add-a-Staff-Member</a>).</li>
+    <li><strong>A doctor's colour.</strong> That stays on the card itself, one press away —
+      <a href="choose-a-doctor-colour.html">Choose-a-Doctor-Colour</a>. The panel tells you so.</li>
+    <li><strong>What they can see.</strong> The five access sections are on the card too —
+      <a href="set-what-each-person-can-see.html">Set-What-Each-Person-Can-See</a>.</li>
+    </ul>
+    <h2>What can go wrong</h2>
+    <table>
+    <thead>
+    <tr>
+    <th>On screen</th>
+    <th>What it means</th>
+    <th>What to do</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+    <td><strong>Enter a valid email.</strong></td>
+    <td>The address has no <code>@</code>, or no dot after it.</td>
+    <td>Retype it.</td>
+    </tr>
+    <tr>
+    <td><strong>Enter a name.</strong></td>
+    <td>The name field is empty.</td>
+    <td>Type the name.</td>
+    </tr>
+    <tr>
+    <td><strong>A staff member with this email already exists</strong></td>
+    <td>Somebody else in this clinic already uses that address.</td>
+    <td>Check the grid — you may be looking at a duplicate of the same person.</td>
+    </tr>
+    <tr>
+    <td><strong>No connection — this needs the clinic link. Nothing changed; try again when it is back.</strong></td>
+    <td>The device cannot reach the server.</td>
+    <td>Nothing was saved. See <a href="working-offline.html">Working-Offline</a>.</td>
+    </tr>
+    <tr>
+    <td><strong>The clinic is read-only until the licence is renewed. Nothing changed.</strong></td>
+    <td>The licence has lapsed.</td>
+    <td>See <a href="what-your-licence-covers.html">What-Your-Licence-Covers</a>.</td>
+    </tr>
+    </tbody>
+    </table>
+    <h2>Why it works this way</h2>
+    <p><strong>The email had to become editable.</strong> A typo in an address used to strand the account for good:
+    nothing is emailed, the invite link cannot be recovered, and adding the person again fails because
+    that address is already taken. One mistyped character cost a person their account. Now it is a
+    correction.</p>
+    <p><strong>Changing the address grants nothing by itself.</strong> Moving an account to a new email does not let
+    anybody in — they still have to hold a valid link and set a password. That is why editing it is a
+    safe, ordinary action rather than a dangerous one.</p>
+    <p><strong>Only two fields, deliberately.</strong> A panel that could change a role or a supervising doctor as
+    casually as a spelling is how somebody quietly gains access nobody meant to give them. The changes
+    that move what a person can <em>see</em> are separate, visible, and recorded.</p>
+    <p>Next: <a href="give-someone-a-new-link.html">Give-Someone-a-New-Link</a> · <a href="archive-a-person.html">Archive-a-Person</a> · <a href="roles-and-access.html">Roles-and-Access</a> · <a href="home.html">Home</a></p>
+    </div></body></html>
+  "give-someone-a-new-link.html": |
+    <!doctype html><html lang="en"><head><meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Give Someone a New Link · Gompha Manual</title>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;600&family=IBM+Plex+Sans+Arabic&display=swap" rel="stylesheet">
+    <style>
+    body{margin:0;background:#FAF8F4;color:#3D3A34;font:15px/1.65 "IBM Plex Sans","IBM Plex Sans Arabic",sans-serif}
+    .wrap{max-width:760px;margin:0 auto;padding:40px 24px 80px}
+    a{color:#2E5D51} .dead{color:#98917F;border-bottom:1px dashed #C9C2B2}
+    h1,h2,h3{line-height:1.3} h1{font-size:26px}
+    code{background:#F1EDE6;border-radius:5px;padding:2px 6px}
+    .crumb{font-size:13px;color:#98917F;margin-bottom:28px} .crumb a{color:#6B655A;text-decoration:none}
+    .draft{background:#F3EDDC;color:#6A5A32;border-radius:9px;padding:9px 14px;font-size:13px;margin-bottom:26px}
+    table{border-collapse:collapse} td,th{border:1px solid #E9E3D8;padding:7px 12px;text-align:left}
+    </style></head><body><div class="wrap">
+    <div class="crumb"><a href="index.html">Gompha Manual</a></div>
+    <div class="draft">Draft — this manual describes the upcoming version of Gompha.</div>
+    <hr />
+    <p>tags: [task, milestone-1, screen/person-link, root, support]
+    screen: Invite link / Password reset link (panel)</p>
+    <hr />
+    <h1>Give Someone a New Link</h1>
+    <p><strong>For the owner.</strong> On a person's card, on the people and access step of <a href="set-up-your-clinic.html">Set-Up-Your-Clinic</a>.</p>
+    <p>This is the answer to <strong>both</strong> of these:</p>
+    <ul>
+    <li><em>"The invite link got lost — I never sent it, or they deleted the message."</em></li>
+    <li><em>"He has forgotten his password."</em></li>
+    </ul>
+    <p>They are the same button. Gompha decides which kind of link to make from where that person is
+    stuck, so you do not have to.</p>
+    <h2>Steps</h2>
+    <ol>
+    <li>Find the person's card on the people step.</li>
+    <li>In the row of buttons at the bottom of the card, press either:</li>
+    <li><strong>New invite link</strong> — shown for someone still marked <strong>Invited</strong>, who has never set a
+         password, or</li>
+    <li><strong>New password link</strong> — shown for someone who is already using Gompha.</li>
+    <li>A panel slides in from the right, headed <strong>Invite link</strong> or <strong>Password reset link</strong>. It tells
+       you which one you are about to make and how long it lasts:</li>
+    <li><em>"They have never set a password, so this is a fresh invitation. Valid for 48 hours, and it
+         works once."</em></li>
+    <li><em>"They already have an account, so this lets them set a new password. Valid for 1 hour, and
+         it works once."</em></li>
+    <li>Read the blue box before you press anything:<blockquote>
+    <p>Nothing is emailed. Pressing <strong>Issue link</strong> creates the link here, and you deliver it —
+    WhatsApp, SMS or in person.</p>
+    </blockquote>
+    </li>
+    <li>Press <strong>Issue link</strong>.</li>
+    <li>The link appears in a box with a <strong>Copy link</strong> button beside it. Press <strong>Copy link</strong> — the
+       button changes to <strong>Copied</strong>.</li>
+    <li><strong>Send it to that person now.</strong> WhatsApp, SMS, or hand them the phone.</li>
+    <li>Press <strong>Done</strong>.</li>
+    </ol>
+    <h2>Copy it before you leave — there is no second chance at the same link</h2>
+    <p>The panel says so, in an amber box, at the moment it matters:</p>
+    <blockquote>
+    <p><strong>Copy it now.</strong> Only a scrambled copy is kept, so this link cannot be shown again — if you
+    leave this page without it, issue another one.</p>
+    </blockquote>
+    <p>That is literal. Gompha keeps only a fingerprint of the link, enough to check it once when it is
+    used and not enough to rebuild it. Nobody can look it up afterwards — not the owner, not support,
+    not us.</p>
+    <p><strong>This is no longer a disaster.</strong> Lose it and you simply press the button again. Pressing <strong>Issue
+    another</strong> or coming back to the card makes a fresh one.</p>
+    <p>While you stay on the setup screen, the link you just made also sits on the person's card as a
+    small <strong>Copy invite link</strong> / <strong>Copy password link</strong> button, so you can copy it a second time
+    without issuing anything. Leave the screen and that button goes.</p>
+    <h2>What the person does with it</h2>
+    <ul>
+    <li>An <strong>invite link</strong> opens <strong>Join the clinic</strong>, where they choose their own password —
+      <a href="activate-your-account.html">Activate-Your-Account</a>.</li>
+    <li>A <strong>password link</strong> opens <strong>Choose a new password</strong> — <a href="reset-your-password.html">Reset-Your-Password</a>. Using it signs
+      them out of every other device.</li>
+    </ul>
+    <h2>What can go wrong</h2>
+    <table>
+    <thead>
+    <tr>
+    <th>On screen</th>
+    <th>What it means</th>
+    <th>What to do</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+    <td>The button is greyed out and says <strong>Archived people cannot be given a link — they cannot sign in.</strong></td>
+    <td>The person has been archived.</td>
+    <td>Archiving is deliberate and cannot be undone in this version. See <a href="archive-a-person.html">Archive-a-Person</a>.</td>
+    </tr>
+    <tr>
+    <td>The button is greyed out and says <strong>Needs the clinic link.</strong></td>
+    <td>The device cannot reach the server.</td>
+    <td>See <a href="working-offline.html">Working-Offline</a>.</td>
+    </tr>
+    <tr>
+    <td><strong>No connection — this needs the clinic link. Nothing changed; try again when it is back.</strong></td>
+    <td>The connection dropped as you pressed.</td>
+    <td>No link was made. Try again when the strip at the top clears.</td>
+    </tr>
+    <tr>
+    <td><strong>The clinic is read-only until the licence is renewed. Nothing changed.</strong></td>
+    <td>The clinic licence has lapsed.</td>
+    <td>See <a href="what-your-licence-covers.html">What-Your-Licence-Covers</a>.</td>
+    </tr>
+    <tr>
+    <td><strong>This person is deactivated — reactivate them first</strong></td>
+    <td>Same as the first row, from the server.</td>
+    <td>As above.</td>
+    </tr>
+    </tbody>
+    </table>
+    <h2>An older link you already sent keeps working</h2>
+    <p>Issuing a new link does <strong>not</strong> kill the old one. If you sent an invite yesterday and issue
+    another today, either of them still activates the account until it expires or one of them is used.
+    That is why the panel says <em>"An earlier link you already sent keeps working until it expires."</em></p>
+    <h2>Why it works this way</h2>
+    <p><strong>One button, not two.</strong> "Resend the invitation" and "he forgot his password" feel like different
+    problems to the person asking, but they are one question — <em>this person cannot get in, let them
+    in</em>. The server looks at whether they ever set a password and picks the right kind. A receptionist
+    should not have to know the difference.</p>
+    <p><strong>Nothing is emailed, on purpose.</strong> Sending mail as the clinic needs a mail setup that is
+    deliberately not switched on yet. Half-configured mail lands in spam and nobody finds out until an
+    invite is silently lost. A link you can see and must send is worse-looking and far more reliable
+    than one that quietly failed.</p>
+    <p><strong>A reset lasts one hour; an invite lasts 48.</strong> A reset link opens a live account with a real
+    history behind it, so it is worth more to a thief than an invitation to an account nobody has used
+    yet. The more valuable key gets the shorter life.</p>
+    <p><strong>Only a fingerprint is stored.</strong> If Gompha kept the link itself, then anyone who reached the
+    database — including us — could walk into any account. Storing something that can only ever be
+    checked, never read back, is what makes "we cannot recover it" a security feature rather than an
+    apology.</p>
+    <p><strong>Before this existed, a forgotten password was permanent.</strong> No email is sent, the link cannot be
+    recovered, and re-adding the person fails because their email is already in use. A doctor who
+    forgot his password was locked out for good. This button is the whole of the recovery path.</p>
+    <p>Next: <a href="fix-a-persons-details.html">Fix-a-Persons-Details</a> · <a href="archive-a-person.html">Archive-a-Person</a> · <a href="add-a-staff-member.html">Add-a-Staff-Member</a> · <a href="home.html">Home</a></p>
+    </div></body></html>
   "index.html": |
     <!doctype html><html lang="en"><head><meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -641,7 +1229,7 @@ data:
     <hr />
     <h2>tags: [home]</h2>
     <h1>Gompha Manual</h1>
-    <p><strong>Version: Milestone 1 · image <code>clinic-v0.1.2</code> · Stamped 2026-08-18</strong></p>
+    <p><strong>Version: Milestone 1 · image <code>clinic-v0.1.7</code> · Stamped 2026-08-18</strong></p>
     <blockquote>
     <h3>This manual covers Milestone 1 only</h3>
     <p>Milestone 1 is <strong>sign-in, people and access, and rooms</strong>. That is the whole of the live
@@ -687,15 +1275,29 @@ data:
     </tbody>
     </table>
     <h2>Tasks that work today</h2>
+    <p><strong>Getting in</strong></p>
     <ul>
     <li><a href="sign-in.html">Sign-In</a> — the sign-in screen, and how you get signed out</li>
     <li><a href="activate-your-account.html">Activate-Your-Account</a> — you were sent an invite link</li>
     <li><a href="reset-your-password.html">Reset-Your-Password</a> — you forgot it</li>
-    <li><a href="set-up-your-clinic.html">Set-Up-Your-Clinic</a> — the three-step Welcome, for the owner</li>
+    </ul>
+    <p><strong>Setting the clinic up</strong> (the owner)</p>
+    <ul>
+    <li><a href="set-up-your-clinic.html">Set-Up-Your-Clinic</a> — the three-step Welcome</li>
     <li><a href="add-a-staff-member.html">Add-a-Staff-Member</a> — add a person and send them their invite</li>
     <li><a href="set-what-each-person-can-see.html">Set-What-Each-Person-Can-See</a> — the five access sections</li>
     <li><a href="choose-a-doctor-colour.html">Choose-a-Doctor-Colour</a> — the colour a doctor gets on the schedule later</li>
     <li><a href="add-the-clinic-rooms.html">Add-the-Clinic-Rooms</a> — name each surgery</li>
+    </ul>
+    <p><strong>Fixing something on a person's card</strong> (the owner)</p>
+    <ul>
+    <li><a href="give-someone-a-new-link.html">Give-Someone-a-New-Link</a> — lost invite, or a forgotten password</li>
+    <li><a href="fix-a-persons-details.html">Fix-a-Persons-Details</a> — correct a name or an email</li>
+    <li><a href="archive-a-person.html">Archive-a-Person</a> — somebody has left</li>
+    </ul>
+    <p><strong>On any screen</strong></p>
+    <ul>
+    <li><a href="when-something-goes-wrong.html">When-Something-Goes-Wrong</a> — the error box, the code, and <strong>Report this</strong></li>
     <li><a href="switch-to-dark-mode.html">Switch-to-Dark-Mode</a> — dark mode and display density</li>
     <li><a href="install-the-app-on-a-phone.html">Install-the-App-on-a-Phone</a> — add it to a home screen</li>
     </ul>
@@ -711,6 +1313,7 @@ data:
     <li><a href="roles-and-access.html">Roles-and-Access</a> — the four roles and the five access sections</li>
     <li><a href="passwords-and-sessions.html">Passwords-and-Sessions</a> — password rules, and why you are signed out after a while</li>
     <li><a href="working-offline.html">Working-Offline</a> — read this before the first "the internet is down" phone call</li>
+    <li><a href="error-codes.html">Error-Codes</a> — look up any <code>GMP-…</code> code you have been shown</li>
     <li><a href="what-your-licence-covers.html">What-Your-Licence-Covers</a> — doctor seats, and what read-only means</li>
     <li><a href="dual-currency-money.html">Dual-Currency-Money</a> — not built yet</li>
     </ul>
@@ -939,7 +1542,16 @@ data:
     <li>The grey strip at the top saying <strong>"No connection"</strong> is normal and is not an error.</li>
     <li>While it is showing, <strong>you cannot book</strong> — and nothing you did earlier has been lost.</li>
     </ol>
-    <p>Next: <a href="sign-in.html">Sign-In</a> · <a href="working-offline.html">Working-Offline</a> · <a href="whats-not-here-yet.html">Whats-Not-Here-Yet</a> · <a href="home.html">Home</a></p>
+    <h2>Two more things to know by heart</h2>
+    <ul>
+    <li><strong>Forgotten your password? Ask the owner.</strong> Gompha sends no email; the owner presses one button
+      and sends you a fresh link. Do not wait for an inbox. <a href="reset-your-password.html">Reset-Your-Password</a>.</li>
+    <li><strong>A red box with a code like <code>GMP-1304</code> has a Report this link.</strong> Press it, add one sentence
+      about what you were doing, send. You will be the person who sees most of these.
+      <a href="when-something-goes-wrong.html">When-Something-Goes-Wrong</a>.</li>
+    </ul>
+    <p>Next: <a href="sign-in.html">Sign-In</a> · <a href="working-offline.html">Working-Offline</a> · <a href="when-something-goes-wrong.html">When-Something-Goes-Wrong</a> · <a href="whats-not-here-yet.html">Whats-Not-Here-Yet</a> ·
+    <a href="home.html">Home</a></p>
     </div></body></html>
   "record-a-treatment.html": |
     <!doctype html><html lang="en"><head><meta charset="utf-8">
@@ -1016,27 +1628,39 @@ data:
     screen: Reset your password</p>
     <hr />
     <h1>Reset Your Password</h1>
-    <h2>⚠ Read this first (Milestone 1)</h2>
-    <p><strong>The reset screen works, but no email is sent, because email is not switched on yet
-    (<a href="activate-your-account.html">Activate-Your-Account</a> explains why).</strong></p>
-    <p>So if you use <strong>Forgot your password?</strong> the app will tell you a link is on its way, and <strong>nothing
-    will arrive</strong>. That message is the same for every address on purpose (see <em>Why it works this way</em>),
-    and in this milestone it is reassuring about something that has not happened.</p>
-    <p><strong>If you have forgotten your password, contact support.</strong> There is no screen — not even the
-    owner's — that can hand you a new link in this version. Nothing is lost: your account, your role
-    and your access settings are all intact and untouched.</p>
-    <h2>The screen, for when email is on</h2>
+    <h2>Forgotten it? Ask the owner — do not wait for an email</h2>
+    <p><strong>Gompha sends no email yet.</strong> So the way back in is a person, not an inbox:</p>
     <ol>
-    <li>On the sign-in screen, press <strong>Forgot your password?</strong> under the card.</li>
-    <li>The screen is headed <strong>Reset your password</strong>.</li>
-    <li>Type your work email in <strong>Email</strong>.</li>
-    <li>Press <strong>Send reset link</strong>.</li>
-    <li>The screen changes to <strong>Check your email</strong>.</li>
+    <li><strong>Tell the clinic owner</strong> you cannot get in. WhatsApp, or walk over.</li>
+    <li>They open your card on the setup screen and press <strong>New password link</strong>
+       (<a href="give-someone-a-new-link.html">Give-Someone-a-New-Link</a>).</li>
+    <li>They send you the link — WhatsApp, SMS, or on their phone in front of you.</li>
+    <li>Open it and choose a new password (below).</li>
     </ol>
+    <p>It takes about a minute, and it is the whole recovery path. <strong>Nothing of yours is lost while you
+    are locked out</strong>: your account, your role and your access settings are untouched.</p>
+    <h2>⚠ "Forgot your password?" on the sign-in screen sends nothing</h2>
+    <p>The <strong>Forgot your password?</strong> link under the sign-in card still works as a screen, but <strong>no mail
+    leaves the building</strong>. If you use it, the app says a link is on its way and nothing will arrive.</p>
+    <p>That is not a fault to report — it is email being deliberately switched off until it is set up
+    properly (<a href="activate-your-account.html">Activate-Your-Account</a> explains why). <strong>Ask the owner instead.</strong></p>
+    <p>For completeness, the screen does this: press <strong>Forgot your password?</strong> → the screen headed
+    <strong>Reset your password</strong> → type your work email → press <strong>Send reset link</strong> → the screen changes to
+    <strong>Check your email</strong>. The message is the same whatever address you type, on purpose (see <em>Why it
+    works this way</em>).</p>
+    <h2>Setting the new password</h2>
     <p>Opening a reset link gives you a screen headed <strong>Choose a new password</strong>, with the line <em>"Set a new
-    password. Every other signed-in device will be signed out."</em> Type the new password twice, press
-    <strong>Set new password</strong>, and you are returned to the sign-in screen with a green confirmation.</p>
-    <p><strong>A reset link lasts one hour</strong> and works once.</p>
+    password. Every other signed-in device will be signed out."</em></p>
+    <ol>
+    <li>Type your name in <strong>Your name</strong>.</li>
+    <li>Type the new password twice — <strong>Password</strong> and <strong>Confirm password</strong>
+       (<a href="passwords-and-sessions.html">Passwords-and-Sessions</a> has the rules).</li>
+    <li>Press <strong>Set new password</strong>.</li>
+    </ol>
+    <p>You are returned to the sign-in screen with a green confirmation: <em>"Your password was changed. Sign
+    in with your new password."</em></p>
+    <p><strong>A reset link lasts one hour</strong> and works once. If it has gone stale, ask the owner for another —
+    it is one button, and they can press it as often as needed.</p>
     <h2>Why it works this way</h2>
     <p><strong>The screen never tells you whether an address has an account.</strong> Whatever you type, the answer is
     the same. If it said "no such user", anyone could type addresses at it until one came back
@@ -1048,7 +1672,11 @@ data:
     <p><strong>Using a reset signs out every other device.</strong> If someone else had got into your account, the
     reset is what removes them. A password change that left old sessions alive would change the lock
     and leave the intruder inside.</p>
-    <p>Next: <a href="sign-in.html">Sign-In</a> · <a href="passwords-and-sessions.html">Passwords-and-Sessions</a> · <a href="home.html">Home</a></p>
+    <p><strong>Somebody at the clinic can always let you back in.</strong> Nobody can tell you your old password — it
+    is not stored in any form anyone can read, including us. What the owner can do is mint you a fresh
+    way to set a new one. That is the difference between a password nobody can recover and an account
+    nobody can recover, and only the first of the two is meant to be true.</p>
+    <p>Next: <a href="sign-in.html">Sign-In</a> · <a href="give-someone-a-new-link.html">Give-Someone-a-New-Link</a> · <a href="passwords-and-sessions.html">Passwords-and-Sessions</a> · <a href="home.html">Home</a></p>
     </div></body></html>
   "roadmap.html": |
     <!doctype html><html lang="en"><head><meta charset="utf-8">
@@ -1076,12 +1704,13 @@ data:
     <h2>The next things staff will notice</h2>
     <ul>
     <li>Email from Gompha — staff invites and password resets sent automatically, from the clinic's own
-      mail address, switched on only after a test message actually arrives. Until then invite links are
-      hand-delivered (<a href="activate-your-account.html">Activate-Your-Account</a>).</li>
-    <li>A way for the owner to issue a replacement invite or reset link when one is lost.</li>
-    <li>Editing a person: correcting a name or an email, archiving someone who has left, moving an
-      assistant to a different doctor.</li>
+      mail address, switched on only after a test message actually arrives. Until then links are
+      hand-delivered (<a href="give-someone-a-new-link.html">Give-Someone-a-New-Link</a>).</li>
+    <li>Bringing an archived person back (<a href="archive-a-person.html">Archive-a-Person</a>).</li>
+    <li>Changing a person's role, and moving an assistant to a different doctor.</li>
     <li>A screen for reading the record of who did what, and the owner's choice of who may read it.</li>
+    <li>Screens naming their own reason for a refusal, so a lapsed licence reports GMP-1201 rather than
+      the general permission code (<a href="error-codes.html">Error-Codes</a>).</li>
     <li>A warning before the licence lapses, and quiet automatic renewal behind it
       (<a href="what-your-licence-covers.html">What-Your-Licence-Covers</a>).</li>
     <li>A copy of the schedule and a doctor's own patients kept on the device, readable when the link is
@@ -1108,7 +1737,8 @@ data:
       (<a href="what-your-licence-covers.html">What-Your-Licence-Covers</a>).</li>
     <li>Doctor seats are counted per role; reception and assistants are not counted.</li>
     <li>A seat is a person, not a device.</li>
-    <li>Nobody and nothing is truly deleted — people and rooms are archived.</li>
+    <li>Nobody and nothing is truly deleted — people and rooms are archived (<a href="archive-a-person.html">Archive-a-Person</a>).</li>
+    <li>Every refusal carries a code that never changes its meaning (<a href="error-codes.html">Error-Codes</a>).</li>
     <li>What a clinic may do is carried in its own licence, so a bespoke arrangement never needs a new
       version of the software.</li>
     <li>Clinics that buy their own branding get their own domain and look.</li>
@@ -1205,8 +1835,9 @@ data:
     <p>A person who leaves is <strong>archived</strong>, never erased. Their sessions stop working immediately and they
     can no longer sign in, but the record of what they did stays — a treatment recorded by a doctor is
     part of a patient's medical history and cannot leave with him.</p>
-    <p><strong>In Milestone 1 there is no archive button on screen.</strong> Contact support if someone must be removed
-    today.</p>
+    <p>The owner does this from an <strong>Archive</strong> button on the person's card. There is no Delete anywhere in
+    Gompha. See <a href="archive-a-person.html">Archive-a-Person</a> — and read it before pressing, because <strong>bringing an archived
+    person back is not in this version</strong>.</p>
     <h2>Every action is recorded</h2>
     <p>Gompha keeps a permanent, append-only record of who did what: a person invited, a password reset, a
     permission changed, a supervisor changed, a room created. It records <strong>which</strong> fields changed, never
@@ -1220,6 +1851,9 @@ data:
     they are most likely to click "All" to get it over with.</p>
     <p><strong>Managing people is limited to admin doctors, not "everyone senior".</strong> Whoever can grant access can
     grant themselves access to everything. That has to be a short list.</p>
+    <p><strong>Nobody is locked out permanently by accident.</strong> The owner can mint anyone a fresh link at any
+    time (<a href="give-someone-a-new-link.html">Give-Someone-a-New-Link</a>) and can correct a wrong email
+    (<a href="fix-a-persons-details.html">Fix-a-Persons-Details</a>). Losing access to an account has to be a decision, never a typo.</p>
     <p>Next: <a href="set-what-each-person-can-see.html">Set-What-Each-Person-Can-See</a> · <a href="add-a-staff-member.html">Add-a-Staff-Member</a> · <a href="clinic-admin.html">Clinic-Admin</a> · <a href="home.html">Home</a></p>
     </div></body></html>
   "set-up-your-clinic.html": |
@@ -1249,9 +1883,11 @@ data:
     <p>It takes about five minutes. Everything saves as you go, so you can stop and come back.</p>
     <h2>What you are looking at</h2>
     <ul>
-    <li><strong>Across the top:</strong> the Gompha mark on the left, and a <strong>gear icon on the right</strong> that opens
-      <a href="switch-to-dark-mode.html">Switch-to-Dark-Mode</a> and <strong>Sign out</strong>. There is no menu down the side. That is deliberate:
-      during setup there is nothing to navigate to yet.</li>
+    <li><strong>Across the top:</strong> the green <strong>G</strong> mark and the word <strong>Gompha</strong> on the left, with a small
+      <strong>powered by Steficzko</strong> under it — that is the maker's credit, and it opens their page in a new
+      tab if you press it. On the right, a <strong>gear icon</strong> that opens <a href="switch-to-dark-mode.html">Switch-to-Dark-Mode</a> and <strong>Sign
+      out</strong>. There is no menu down the side. That is deliberate: during setup there is nothing to
+      navigate to yet.</li>
     <li><strong>Under that, three named boxes</strong> showing where you are:</li>
     <li><strong>Permissions</strong> — who the users are</li>
     <li><strong>Rooms</strong> — rooms &amp; hours</li>
@@ -1265,8 +1901,8 @@ data:
     <p>Two cards sit under it:</p>
     <ul>
     <li><strong>Your own card</strong>, with your initials, your name, your email and a green <strong>ROOT</strong> badge. Check
-      the name and email are right. (In this milestone they cannot be corrected on screen — see
-      <a href="add-a-staff-member.html">Add-a-Staff-Member</a>.)</li>
+      the name and email are right — and if they are not, they can be corrected on the next step
+      (<a href="fix-a-persons-details.html">Fix-a-Persons-Details</a>).</li>
     <li><strong>"Before you start — have everyone's email ready"</strong>, listing what to collect: each doctor's
       email, reception's email, and each assistant's email <em>plus which doctor they work under</em>.</li>
     </ul>
@@ -1281,21 +1917,24 @@ data:
     <li><a href="set-what-each-person-can-see.html">Set-What-Each-Person-Can-See</a> — the five access sections</li>
     <li><a href="choose-a-doctor-colour.html">Choose-a-Doctor-Colour</a> — the colour each doctor gets</li>
     </ul>
+    <p>Each person's card also carries three buttons of its own, for when something needs fixing:
+    <a href="give-someone-a-new-link.html">Give-Someone-a-New-Link</a>, <a href="fix-a-persons-details.html">Fix-a-Persons-Details</a> and <a href="archive-a-person.html">Archive-a-Person</a>.</p>
     <p>When the team is in, press <strong>Continue to rooms →</strong> at the bottom right. <strong>← Back</strong> returns to the
     greeting.</p>
     <h2>Step 3 — rooms</h2>
     <p>The heading reads <strong>"Register the clinic's rooms"</strong>. See <a href="add-the-clinic-rooms.html">Add-the-Clinic-Rooms</a>.</p>
-    <p>Press <strong>Finish setup →</strong> at the bottom right. That takes you into the app.</p>
-    <blockquote>
-    <p>On image <code>clinic-v0.1.2</code> this last button is still a greyed-out <strong>Continue</strong> that cannot be
-    pressed; <code>clinic-v0.1.3</code> replaces it with a working <strong>Finish setup</strong>. Nothing is lost either
-    way, because every step saves as you go.</p>
-    </blockquote>
+    <p>Press <strong>Finish setup →</strong> at the bottom right. That takes you into the app, on the home screen
+    everyone else sees.</p>
+    <p>Setup is never sealed shut. Come back whenever you need to — see below.</p>
+    <h2>Where Finish setup takes you</h2>
+    <p>Onto the same short home page everyone else gets: <strong>"You're signed in"</strong>, your role, and the list
+    of rooms you just named. In Milestone 1 there is nothing else behind it yet
+    (<a href="whats-not-here-yet.html">Whats-Not-Here-Yet</a>).</p>
     <h2>Getting back to setup later</h2>
     <p>There is no menu item for it. <strong>Open the plain clinic address —
     https://app-staging.gompha.com — and as the owner you land back on Welcome</strong>, with everything you
-    already entered in place. Use that whenever you need to add a person, change someone's access, or
-    add a room.</p>
+    already entered in place. Use that whenever you need to add a person, fix an email, issue somebody
+    a new link, change access, or add a room.</p>
     <h2>Why it works this way</h2>
     <p><strong>Setup is not the app with a form dropped into it.</strong> There is no side menu here because none of
     those destinations exist for you yet, and a menu full of dead links is how software teaches people
@@ -1516,8 +2155,13 @@ data:
     <li><strong>Everyone else</strong> lands on a short page that says <em>"You're signed in"</em>, names your role, and
       lists the clinic's rooms. In Milestone 1 that is all there is. See <a href="whats-not-here-yet.html">Whats-Not-Here-Yet</a>.</li>
     </ul>
+    <p>Both screens carry the Gompha mark top-left with <strong>powered by Steficzko</strong> beneath it, and the same
+    credit again at the very bottom of the page. It is the maker's name, and pressing it opens their
+    page in a new tab. Nothing about your clinic is in it.</p>
     <p><strong>No password yet?</strong> You cannot sign in until you have set one from your invite link. See
     <a href="activate-your-account.html">Activate-Your-Account</a>.</p>
+    <p><strong>Forgotten your password?</strong> Ask the clinic owner — no email is sent. See
+    <a href="reset-your-password.html">Reset-Your-Password</a>.</p>
     <h2>Sign out</h2>
     <ol>
     <li>Press the <strong>gear icon in the top-right corner</strong> of the screen.</li>
@@ -1555,6 +2199,11 @@ data:
     <td><strong>Your password was changed. Sign in with your new password.</strong></td>
     <td>You just finished a reset.</td>
     <td>Sign in normally.</td>
+    </tr>
+    <tr>
+    <td><strong>Invalid email or password</strong>, when you are certain both are right</td>
+    <td>Your account may have been archived — an archived person cannot sign in.</td>
+    <td>Ask the owner. See <a href="archive-a-person.html">Archive-a-Person</a>.</td>
     </tr>
     </tbody>
     </table>
@@ -1738,6 +2387,19 @@ data:
     Everything already saved is safe.</p>
     </blockquote>
     <p>Renew, and full use returns. Nothing has to be re-entered.</p>
+    <p><strong>What that looks like at the desk.</strong> Buttons that would save something go grey. Opening a panel to
+    add a person, issue a link, edit details or archive somebody shows the padlock box, and the action
+    button is dead. A change you press anyway comes back with <em>"The clinic is read-only until the
+    licence is renewed. Nothing changed."</em> — and <strong>nothing did change</strong>. There is no queue of pending
+    work waiting to go in; there is nothing to clean up afterwards.</p>
+    <p>If a code appears with it, the one that means this is <strong>GMP-1201</strong>:</p>
+    <blockquote>
+    <p>The clinic licence has expired, so nothing can be saved right now. Everything already saved is
+    safe.</p>
+    </blockquote>
+    <p><strong>⚠ On the version now running, that refusal is labelled GMP-1101</strong> — the general "your access does
+    not cover this" code — because the screens do not yet name their own reason. <strong>The padlock box is
+    what tells you it is the licence and not your permissions.</strong> See <a href="error-codes.html">Error-Codes</a>.</p>
     <p><strong>Read-only is not the same as offline.</strong> Offline means this device cannot reach the server;
     read-only means the server is fine and is waiting on a renewal. The two look similar on purpose —
     both are calm, informational, never red — but they are told apart by the icon and the wording. See
@@ -1747,6 +2409,9 @@ data:
     built yet. Today a lapse arrives without notice.</p>
     <p><strong>Practical consequence: keep track of the renewal date outside the app.</strong> Speak to us before it
     falls due.</p>
+    <p><strong>This is not hypothetical.</strong> The licence on the clinic now running at
+    https://app-staging.gompha.com <strong>runs out on 31 August 2026</strong>. On that day, without a renewal, the
+    padlock box appears and nothing further can be saved. Nothing is lost when it does.</p>
     <h2>Buying and renewing happen outside the app</h2>
     <p>There is no billing screen, no invoice, no card form and no self-serve upgrade in Gompha, and there
     is not going to be one. Renewals, extra doctor seats and bespoke arrangements are agreed the way
@@ -1765,7 +2430,7 @@ data:
     different real price, so a bespoke arrangement must be a licence we issue for that clinic — never a
     change to the code and never a special version. That is why a limit can be raised without anybody
     deploying anything.</p>
-    <p>Next: <a href="roles-and-access.html">Roles-and-Access</a> · <a href="working-offline.html">Working-Offline</a> · <a href="home.html">Home</a></p>
+    <p>Next: <a href="roles-and-access.html">Roles-and-Access</a> · <a href="working-offline.html">Working-Offline</a> · <a href="error-codes.html">Error-Codes</a> · <a href="home.html">Home</a></p>
     </div></body></html>
   "whats-not-here-yet.html": |
     <!doctype html><html lang="en"><head><meta charset="utf-8">
@@ -1795,11 +2460,16 @@ data:
     <ul>
     <li>Signing in and out, with your own password (<a href="sign-in.html">Sign-In</a>)</li>
     <li>An invite link that lets each person set their own password (<a href="activate-your-account.html">Activate-Your-Account</a>)</li>
-    <li>Resetting a forgotten password (<a href="reset-your-password.html">Reset-Your-Password</a>)</li>
+    <li>Setting a new password from a link (<a href="reset-your-password.html">Reset-Your-Password</a>)</li>
     <li>A three-step setup for the owner: greeting, people and access, rooms (<a href="set-up-your-clinic.html">Set-Up-Your-Clinic</a>)</li>
     <li>The five access sections, set per person (<a href="set-what-each-person-can-see.html">Set-What-Each-Person-Can-See</a>)</li>
+    <li>Per-person fixes on each card: a fresh link (<a href="give-someone-a-new-link.html">Give-Someone-a-New-Link</a>), correcting a name or
+      email (<a href="fix-a-persons-details.html">Fix-a-Persons-Details</a>), archiving someone who has left (<a href="archive-a-person.html">Archive-a-Person</a>)</li>
+    <li>Twelve doctor colours (<a href="choose-a-doctor-colour.html">Choose-a-Doctor-Colour</a>)</li>
     <li>The clinic's rooms, by name (<a href="add-the-clinic-rooms.html">Add-the-Clinic-Rooms</a>)</li>
     <li>Dark mode and a display-density switch (<a href="switch-to-dark-mode.html">Switch-to-Dark-Mode</a>)</li>
+    <li>An error code and a reference on failures, with a <strong>Report this</strong> link
+      (<a href="when-something-goes-wrong.html">When-Something-Goes-Wrong</a>, <a href="error-codes.html">Error-Codes</a>)</li>
     </ul>
     <h2>What it does not give you</h2>
     <p>None of the following exists in the software today. Not hidden, not behind a permission, not
@@ -1852,6 +2522,26 @@ data:
     <td>Reports</td>
     <td>Not built</td>
     </tr>
+    <tr>
+    <td>Email from Gompha — invites and password links arrive by hand</td>
+    <td><strong>Deliberately off</strong> (<a href="give-someone-a-new-link.html">Give-Someone-a-New-Link</a>)</td>
+    </tr>
+    <tr>
+    <td>Bringing an archived person back</td>
+    <td>Not built (<a href="archive-a-person.html">Archive-a-Person</a>)</td>
+    </tr>
+    <tr>
+    <td>Changing which doctor an assistant works under</td>
+    <td>Not built (<a href="add-a-staff-member.html">Add-a-Staff-Member</a>)</td>
+    </tr>
+    <tr>
+    <td>A screen for the record of who did what</td>
+    <td>Not built — the record is being kept</td>
+    </tr>
+    <tr>
+    <td>A warning before the licence lapses</td>
+    <td>Not built (<a href="what-your-licence-covers.html">What-Your-Licence-Covers</a>)</td>
+    </tr>
     </tbody>
     </table>
     <p><strong>A doctor, a receptionist or an assistant who signs in today sees one screen</strong>: a short "You're
@@ -1871,6 +2561,119 @@ data:
        later modules attach to. Nothing here is re-entered later.</li>
     </ol>
     <p>Back to <a href="home.html">Home</a> · what is decided but unbuilt: <a href="roadmap.html">Roadmap</a></p>
+    </div></body></html>
+  "when-something-goes-wrong.html": |
+    <!doctype html><html lang="en"><head><meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>When Something Goes Wrong · Gompha Manual</title>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;600&family=IBM+Plex+Sans+Arabic&display=swap" rel="stylesheet">
+    <style>
+    body{margin:0;background:#FAF8F4;color:#3D3A34;font:15px/1.65 "IBM Plex Sans","IBM Plex Sans Arabic",sans-serif}
+    .wrap{max-width:760px;margin:0 auto;padding:40px 24px 80px}
+    a{color:#2E5D51} .dead{color:#98917F;border-bottom:1px dashed #C9C2B2}
+    h1,h2,h3{line-height:1.3} h1{font-size:26px}
+    code{background:#F1EDE6;border-radius:5px;padding:2px 6px}
+    .crumb{font-size:13px;color:#98917F;margin-bottom:28px} .crumb a{color:#6B655A;text-decoration:none}
+    .draft{background:#F3EDDC;color:#6A5A32;border-radius:9px;padding:9px 14px;font-size:13px;margin-bottom:26px}
+    table{border-collapse:collapse} td,th{border:1px solid #E9E3D8;padding:7px 12px;text-align:left}
+    </style></head><body><div class="wrap">
+    <div class="crumb"><a href="index.html">Gompha Manual</a></div>
+    <div class="draft">Draft — this manual describes the upcoming version of Gompha.</div>
+    <hr />
+    <p>tags: [task, milestone-1, screen/error, support]
+    screen: Couldn't load this (error box)</p>
+    <hr />
+    <h1>When Something Goes Wrong</h1>
+    <p>When part of a screen fails to load, Gompha shows a soft red box:</p>
+    <blockquote>
+    <p><strong>Couldn't load this.</strong> Nothing was lost. <strong>Try again</strong>.</p>
+    </blockquote>
+    <p>Under it there is a <strong>Retry</strong> button, and — when the server told the app what went wrong — a short
+    line like this:</p>
+    <blockquote>
+    <p><code>GMP-1304 · 7F3A9C21</code>   <strong>Report this</strong></p>
+    </blockquote>
+    <p>Those two things are the whole point of this page. <strong>Please send them.</strong> Thirty seconds of your
+    time turns "the app is broken" into something we can find in a second.</p>
+    <h2>Steps</h2>
+    <ol>
+    <li><strong>Press Retry first.</strong> Most failures are a hiccup and it works the second time. If it does, you
+       are done — there is nothing to tell us.</li>
+    <li>If it fails again, <strong>read the code out to whoever you are telling</strong>: it is short and it is
+       meant to be said down a phone. <code>GMP</code> then four digits.</li>
+    <li>Press <strong>Report this</strong>.</li>
+    <li>Your own email program opens with a message already written to <strong>support@gompha.com</strong>. The
+       subject is <em>Gompha problem GMP-…</em>.</li>
+    <li>The message starts with <strong>"What were you doing when this happened?"</strong> and a blank space.
+       <strong>Write one sentence there.</strong> "I pressed Continue to rooms and it did this" is worth more than
+       everything else in the mail.</li>
+    <li>Leave the lines below the dashes exactly as they are. Press send.</li>
+    </ol>
+    <p>If <strong>Report this</strong> does not appear, the server did not give a code. Press <strong>Retry</strong>, and if it
+    keeps failing, tell us which screen you were on and roughly when.</p>
+    <h2>What the email contains, and what it does not</h2>
+    <p>The message carries <strong>four identifiers and nothing else</strong>:</p>
+    <table>
+    <thead>
+    <tr>
+    <th>Line</th>
+    <th>What it is</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+    <td><code>code</code></td>
+    <td>The kind of thing that went wrong, e.g. <code>GMP-1304</code>. See <a href="error-codes.html">Error-Codes</a>.</td>
+    </tr>
+    <tr>
+    <td><code>reference</code></td>
+    <td>A short block of characters naming <strong>this one attempt</strong>, e.g. <code>7F3A9C21</code>.</td>
+    </tr>
+    <tr>
+    <td><code>screen</code></td>
+    <td>Which screen it happened on — a short fixed word such as <code>rooms</code> or <code>home</code>.</td>
+    </tr>
+    <tr>
+    <td><code>time</code></td>
+    <td>When.</td>
+    </tr>
+    </tbody>
+    </table>
+    <p><strong>No patient name. No clinical note. No password. Nothing typed into the page.</strong> Whatever you
+    write in the blank space at the top is yours; the app harvests nothing from the screen.</p>
+    <p>It leaves from <strong>your own mailbox</strong>, using your own email program. Gompha does not send it and
+    cannot: nothing about your email account is inside the app. That also means that if there is no
+    email set up on that phone, <strong>Report this</strong> may do nothing — in that case read the code and the
+    reference to whoever you are telling, or photograph the line.</p>
+    <h2>The two numbers, and why there are two</h2>
+    <ul>
+    <li><strong>The code</strong> says <em>what kind of problem</em>. It is stable: <code>GMP-1201</code> means the same thing today and
+      next year, in every clinic. It is what tells anyone reading it whether this is something you can
+      fix yourself. <a href="error-codes.html">Error-Codes</a> lists them all.</li>
+    <li><strong>The reference</strong> says <em>which attempt</em>. It matches this exact request in our records, so we can
+      read the full story of what happened without you having to describe it, and without any of your
+      clinic's data ever leaving the building.</li>
+    </ul>
+    <h2>Not every message is a fault</h2>
+    <p>Three things look like problems and are not. Do not send those.</p>
+    <ul>
+    <li><strong>"No connection — viewing cached data, read-only."</strong> The internet dropped. <a href="working-offline.html">Working-Offline</a>.</li>
+    <li><strong>"The clinic is read-only."</strong> The licence needs renewing. <a href="what-your-licence-covers.html">What-Your-Licence-Covers</a>.</li>
+    <li><strong>A plain sentence under a field</strong> — a name left blank, an email with no <code>@</code>, a password too
+      short. Fix it and carry on.</li>
+    </ul>
+    <h2>Why it works this way</h2>
+    <p><strong>A clinic can only report what it can see.</strong> Before the code was on screen, the only thing anyone
+    could say was "it does not work", and a problem that breaks one workflow three hundred times a week
+    never reaches anybody who could fix it. A code and a reference are what make a real report possible
+    from a busy front desk.</p>
+    <p><strong>The detail stays here, not in the email.</strong> Everything about what actually happened is already
+    written down on our side, and the reference points straight at it. That is what lets the message be
+    four short lines — an email leaves the clinic, and a patient's details must never be in one.</p>
+    <p><strong>It opens your own email rather than sending for you.</strong> It arrives from the clinic, so we know who
+    it is without putting your clinic's identity in the message; you can add a sentence no automatic
+    report could ever guess; and it needs no connection to anything of ours to work.</p>
+    <p>Next: <a href="error-codes.html">Error-Codes</a> · <a href="working-offline.html">Working-Offline</a> · <a href="home.html">Home</a></p>
     </div></body></html>
   "working-offline.html": |
     <!doctype html><html lang="en"><head><meta charset="utf-8">
@@ -1965,7 +2768,7 @@ data:
     </tr>
     <tr>
     <td><strong>A soft red box</strong> saying <em>"Couldn't load this"</em> with a <strong>Try again</strong></td>
-    <td>Something failed. The details went to the log, not to your screen. Nothing was lost.</td>
+    <td>Something failed. The details went to the log, not to your screen. Nothing was lost. It often carries a code and a <strong>Report this</strong> link — please send it (<a href="when-something-goes-wrong.html">When-Something-Goes-Wrong</a>).</td>
     </tr>
     <tr>
     <td><strong>A calm grey box</strong> saying <em>"No connection"</em></td>
@@ -1983,6 +2786,8 @@ data:
     </blockquote>
     <p>That is not a connection problem — see <a href="what-your-licence-covers.html">What-Your-Licence-Covers</a>. The connection is fine;
     Gompha is waiting on a renewal. Reading still works.</p>
+    <p><strong>The quick way to tell them apart:</strong> a signal icon and the word <em>connection</em> means your internet;
+    a <strong>padlock</strong> means the licence. Neither is red, and neither loses anything.</p>
     <h2>Why it works this way</h2>
     <p><strong>The clinic asked for it.</strong> The requirement was for the schedule to be <em>the most accurate thing in
     the building</em> — always the latest state on every device, no stale copies. You cannot have that and
@@ -2001,6 +2806,6 @@ data:
     link reliable — a spare route into the clinic, monitoring from outside the building — rather than
     into copies of the record on six devices that then have to be reconciled. During a full outage staff
     can look but not book, and that trade was accepted deliberately.</p>
-    <p>Next: <a href="whats-not-here-yet.html">Whats-Not-Here-Yet</a> · <a href="what-your-licence-covers.html">What-Your-Licence-Covers</a> · <a href="install-the-app-on-a-phone.html">Install-the-App-on-a-Phone</a> ·
-    <a href="home.html">Home</a></p>
+    <p>Next: <a href="whats-not-here-yet.html">Whats-Not-Here-Yet</a> · <a href="what-your-licence-covers.html">What-Your-Licence-Covers</a> · <a href="when-something-goes-wrong.html">When-Something-Goes-Wrong</a> ·
+    <a href="install-the-app-on-a-phone.html">Install-the-App-on-a-Phone</a> · <a href="home.html">Home</a></p>
     </div></body></html>

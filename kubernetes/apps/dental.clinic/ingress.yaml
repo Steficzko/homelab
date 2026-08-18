@@ -58,7 +58,7 @@ spec:
     # ns; prod adds licensing/licence.gompha.com) are EXACT hosts → ingress-nginx
     # gives them precedence, so this wildcard only catches <slug>.gompha.com tenants —
     # EXCEPT /manual, carved out by apps/gompha/landing/manual-ingress.yaml
-    # (longest-prefix wins; the staff manual is served there behind basic-auth).
+    # (longest-prefix wins; the staff manual sits behind the landing pod's cookie gate).
     - host: "*.gompha.com"
       http:
         paths:
