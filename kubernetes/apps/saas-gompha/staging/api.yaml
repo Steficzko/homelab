@@ -52,7 +52,7 @@ spec:
         # migration 0001 as gompha_owner — the ONLY step that does DDL; the
         # migration's GRANT block then hands table privileges to gompha_app.
         - name: migrate
-          image: ghcr.io/steficzko/gompha-clinic:clinic-v0.1.8
+          image: ghcr.io/steficzko/gompha-clinic:clinic-v0.1.9
           # Wait for Postgres first — same loop, same reason as the reaper
           # (cronjob-reaper.yaml): on a FIRST sync the database is still running
           # initdb (TCP not listening yet) and kube-router has not admitted this
@@ -75,7 +75,7 @@ spec:
             limits: {memory: 128Mi}
       containers:
         - name: api
-          image: ghcr.io/steficzko/gompha-clinic:clinic-v0.1.8
+          image: ghcr.io/steficzko/gompha-clinic:clinic-v0.1.9
           ports: [{containerPort: 8000, name: http}]
           env:
             # runtime role — subject to FORCE RLS (never the owner)
