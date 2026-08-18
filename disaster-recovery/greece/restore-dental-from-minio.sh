@@ -57,7 +57,7 @@ restore_n8n() {
   rm -rf /tmp/gn8nrestore && mkdir -p /tmp/gn8nrestore
   $MC cat "dr/app-backups/gompha-n8n/$f" | tar xzf - -C /tmp/gn8nrestore
   install -d -o 1000 -g 1000 "$BASE/n8n"
-  local run="docker run --rm --user 1000:1000 -e N8N_ENCRYPTION_KEY=$GOMPHA_N8N_ENCRYPTION_KEY -v $BASE/n8n:/home/node/.n8n -v /tmp/gn8nrestore:/restore:ro n8nio/n8n:2.27.0"
+  local run="docker run --rm --user 1000:1000 -e N8N_ENCRYPTION_KEY=$GOMPHA_N8N_ENCRYPTION_KEY -v $BASE/n8n:/home/node/.n8n -v /tmp/gn8nrestore:/restore:ro n8nio/n8n:2.35.3"
   # tolerate an empty export (fresh product n8n has no workflows/credentials yet)
   $run import:workflow --separate --input=/restore/workflows || echo "    (no workflows to import yet)"
   $run import:credentials --input=/restore/credentials.json  || echo "    (no credentials to import yet)"
