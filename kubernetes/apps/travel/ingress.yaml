@@ -7,7 +7,15 @@ metadata:
   name: travel
   namespace: travel
   annotations:
-    cert-manager.io/cluster-issuer: letsencrypt-prod
+    # NO cert-manager.io/cluster-issuer HERE — deliberate. The travel-wildcard
+    # Certificate below already manages secret travel-wildcard-tls. With this
+    # annotation present, cert-manager's ingress-shim ALSO auto-creates a
+    # Certificate named after the secret (travel-wildcard-tls), so two objects
+    # fight over one secret: the explicit one wins and the shim's copy sits
+    # Ready=False forever ("Secret was issued for travel-wildcard ... you might
+    # have two conflicting Certificates pointing to the same secret").
+    # The explicit Certificate is the one to keep — it also covers the apex,
+    # which the shim's copy does not. Re-adding this annotation re-creates the clash.
     nginx.ingress.kubernetes.io/ssl-redirect: "false"
 spec:
   ingressClassName: nginx
