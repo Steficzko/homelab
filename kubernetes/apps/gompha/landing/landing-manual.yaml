@@ -141,7 +141,8 @@ data:
     <ol>
     <li>Press <strong>+ Add person</strong> at the top of the people step. (The very first time, the button sits
        inside a dashed box headed <strong>No one added yet</strong> and reads <strong>+ Add the first person</strong>.)</li>
-    <li>A panel slides in from the right, headed <strong>Add a person</strong>.</li>
+    <li>A popup opens in the middle of the screen, headed <strong>Add a person</strong>. On a phone it fills the
+       screen.</li>
     <li><strong>Full name</strong> — type it as colleagues should see it. Arabic and Kurdish are fine.</li>
     <li><strong>Email</strong> — this is what the person types to sign in, so get it right. Under the field it says
        <em>"Stored now; the invite is delivered by hand until email is set up."</em></li>
@@ -155,7 +156,7 @@ data:
     <li>Press <strong>Create invite</strong>.</li>
     </ol>
     <h2>Then: send the link, or the person cannot get in</h2>
-    <p>The panel does not just close. It changes to <strong>Invite created</strong> and shows:</p>
+    <p>The popup does not just close. It changes to <strong>Invite created</strong> and shows:</p>
     <ul>
     <li>a line reading <em>"<name> is added as <Role> and needs to set a password."</em></li>
     <li>a note that email is not set up yet, and that you must send the link yourself</li>
@@ -164,8 +165,8 @@ data:
     <p><strong>Copy the link and send it to that person now</strong> — WhatsApp, SMS, or read it out and let them type
     it. Then choose:</p>
     <ul>
-    <li><strong>Add another</strong> — the panel goes back to a blank form for the next person</li>
-    <li><strong>Done</strong> — the panel closes</li>
+    <li><strong>Add another</strong> — the popup goes back to a blank form for the next person</li>
+    <li><strong>Done</strong> — the popup closes</li>
     </ul>
     <p>The person now appears in the grid with an <strong>Invited</strong> badge and a small <strong>Copy invite link</strong>
     button on their card, so you can copy the link again without re-creating anything.</p>
@@ -348,7 +349,7 @@ data:
     <div class="draft">Draft — this manual describes the upcoming version of Gompha.</div>
     <hr />
     <p>tags: [task, milestone-1, screen/person-archive, root]
-    screen: Archive this person (panel)</p>
+    screen: Archive this person (popup)</p>
     <hr />
     <h1>Archive a Person</h1>
     <p><strong>For the owner.</strong> On a person's card, on the people and access step of <a href="set-up-your-clinic.html">Set-Up-Your-Clinic</a>.</p>
@@ -363,8 +364,8 @@ data:
     <ol>
     <li>Find the person's card on the people step.</li>
     <li>Press <strong>Archive</strong> — the red-outlined button at the bottom right of the card.</li>
-    <li>A panel slides in from the right, headed <strong>Archive this person</strong>, naming who it is and their
-       role. It tells you plainly:<blockquote>
+    <li>A popup opens in the middle of the screen (on a phone it fills the screen), headed <strong>Archive
+       this person</strong>, naming who it is and their role. It tells you plainly:<blockquote>
     <p>They stop being able to sign in straight away, and any device they are already signed in on
     is signed out.</p>
     </blockquote>
@@ -381,7 +382,7 @@ data:
     </ul>
     <h2>What archiving does <em>not</em> do</h2>
     <ul>
-    <li><strong>It does not delete anything.</strong> In the panel's own words:<blockquote>
+    <li><strong>It does not delete anything.</strong> In the popup's own words:<blockquote>
     <p><strong>Archived, not deleted.</strong> Nothing is erased: every appointment they booked and every payment
     recorded against them stays exactly where it is, still under their name. That is why there is
     no delete — deleting a doctor would take his work with him.</p>
@@ -392,6 +393,14 @@ data:
     <li><strong>It does not remove them from the list.</strong> They stay visible, greyed, so nobody wonders where a
       name went.</li>
     </ul>
+    <h2>If you archive a doctor, read this</h2>
+    <p><strong>His assistant loses her view of his work at the same moment.</strong> An assistant is attached to one
+    doctor, and most of what she can see is <em>his</em> (<a href="roles-and-access.html">Roles-and-Access</a>). Archive him and that half of
+    her screen goes — instantly, and on any device she is already signed in on.</p>
+    <p>Her own account is untouched: she can still sign in, and nothing she recorded is lost. But until the
+    owner attaches her to another doctor, there is nothing of his left for her to open.</p>
+    <p><strong>In Milestone 1 that reattachment cannot be done on screen</strong> — it needs a call to us. So before you
+    archive a doctor, decide who his assistant works under next.</p>
     <h2>Who cannot be archived</h2>
     <p><strong>The owner.</strong> A card carrying the green <strong>ROOT</strong> badge has no Archive button at all — it is not
     offered rather than offered and refused. The clinic must always have an owner.</p>
@@ -491,6 +500,17 @@ data:
     that has to be a choice somebody makes on purpose.</p>
     <p><strong>If you move to a different doctor, tell the owner.</strong> Everything you can see moves with it, and in
     Milestone 1 the change cannot be made on screen — support has to do it.</p>
+    <h3>If his side of the app is empty</h3>
+    <p>Two ordinary reasons, neither of them a fault on your account:</p>
+    <ul>
+    <li><strong>He has not opened his invite yet.</strong> Until he sets his own password there is no active doctor for
+      you to be attached to. It appears as soon as he does (<a href="activate-your-account.html">Activate-Your-Account</a>).</li>
+    <li><strong>He has been archived</strong> — he has left the clinic. His side of the app goes at that moment, even
+      if you were already signed in. You can still sign in and nothing you recorded is lost; the owner
+      has to attach you to another doctor, and in Milestone 1 that needs a call to us.</li>
+    </ul>
+    <p><strong>Ask the owner to check the doctor's card.</strong> Do not reset your own password over this — it is not a
+    sign-in problem, and a new password will change nothing.</p>
     <h2>Worth reading now</h2>
     <ul>
     <li><a href="working-offline.html">Working-Offline</a> — the grey <strong>"No connection"</strong> strip is normal, not an error, and while it shows
@@ -715,15 +735,20 @@ data:
     <h2>When you sign in</h2>
     <ol>
     <li>Open <strong>https://app-staging.gompha.com</strong> and sign in (<a href="sign-in.html">Sign-In</a>).</li>
-    <li>You get a short page headed <strong>"You're signed in"</strong>, which tells you your role and lists the
-       clinic's <strong>rooms</strong>.</li>
+    <li>The first time, you are taken to <strong>your own treatment list</strong> — the treatments you do, your
+       prices and how long each one takes. Afterwards you land on a short page headed <strong>"You're signed
+       in"</strong>, which tells you your role and lists the clinic's <strong>rooms</strong>.</li>
     </ol>
-    <p><strong>That is all there is in Milestone 1, and it is correct.</strong> It is not a permission problem, and
-    nothing is misconfigured. <a href="whats-not-here-yet.html">Whats-Not-Here-Yet</a>.</p>
     <p>At the top right is a <strong>gear</strong> for <a href="switch-to-dark-mode.html">Switch-to-Dark-Mode</a> and <strong>Sign out</strong>.</p>
+    <blockquote>
+    <p>⚠ <strong>Your treatment list has no page in this manual yet.</strong> It reached the software after this
+    manual's last full pass, so rather than describe it from memory we have left it out until it can
+    be written properly. Ask us while you are setting yours up.</p>
+    </blockquote>
     <h2>What is coming for you, and is not here yet</h2>
     <p>No schedule, no patient list, no patient card, no tooth chart, no notes, no X-rays, no earnings.
-    None of it exists.</p>
+    None of it exists — and none of it is a permission problem or a misconfiguration.
+    <a href="whats-not-here-yet.html">Whats-Not-Here-Yet</a>.</p>
     <h2>What has already been decided about your access</h2>
     <p>The owner has set five things for you, and they take effect as each module arrives
     (<a href="set-what-each-person-can-see.html">Set-What-Each-Person-Can-See</a>):</p>
@@ -979,7 +1004,7 @@ data:
     <div class="draft">Draft — this manual describes the upcoming version of Gompha.</div>
     <hr />
     <p>tags: [task, milestone-1, screen/person-details, root]
-    screen: Edit details (panel)</p>
+    screen: Edit details (popup)</p>
     <hr />
     <h1>Fix a Person's Details</h1>
     <p><strong>For the owner.</strong> On a person's card, on the people and access step of <a href="set-up-your-clinic.html">Set-Up-Your-Clinic</a>.</p>
@@ -989,8 +1014,8 @@ data:
     <ol>
     <li>Find the person's card on the people step.</li>
     <li>Press <strong>Edit details</strong> in the row of buttons at the bottom of the card.</li>
-    <li>A panel slides in from the right, headed <strong>Edit details</strong>, with the person's name and role at
-       the top.</li>
+    <li>A popup opens in the middle of the screen (on a phone it fills the screen), headed <strong>Edit
+       details</strong>, with the person's name and role at the top.</li>
     <li><strong>Full name</strong> — type it as colleagues should see it. Arabic and Kurdish are fine.</li>
     <li><strong>Email</strong> — always typed left to right. Under the field it says <em>"This is how they sign in.
        Fixing a typo here is safe — changing it grants nothing on its own."</em></li>
@@ -1018,7 +1043,7 @@ data:
     <li><strong>Which doctor an assistant works under.</strong> Choose that correctly when you add her
       (<a href="add-a-staff-member.html">Add-a-Staff-Member</a>).</li>
     <li><strong>A doctor's colour.</strong> That stays on the card itself, one press away —
-      <a href="choose-a-doctor-colour.html">Choose-a-Doctor-Colour</a>. The panel tells you so.</li>
+      <a href="choose-a-doctor-colour.html">Choose-a-Doctor-Colour</a>. The popup tells you so.</li>
     <li><strong>What they can see.</strong> The five access sections are on the card too —
       <a href="set-what-each-person-can-see.html">Set-What-Each-Person-Can-See</a>.</li>
     </ul>
@@ -1067,7 +1092,7 @@ data:
     <p><strong>Changing the address grants nothing by itself.</strong> Moving an account to a new email does not let
     anybody in — they still have to hold a valid link and set a password. That is why editing it is a
     safe, ordinary action rather than a dangerous one.</p>
-    <p><strong>Only two fields, deliberately.</strong> A panel that could change a role or a supervising doctor as
+    <p><strong>Only two fields, deliberately.</strong> A popup that could change a role or a supervising doctor as
     casually as a spelling is how somebody quietly gains access nobody meant to give them. The changes
     that move what a person can <em>see</em> are separate, visible, and recorded.</p>
     <p>Next: <a href="give-someone-a-new-link.html">Give-Someone-a-New-Link</a> · <a href="archive-a-person.html">Archive-a-Person</a> · <a href="roles-and-access.html">Roles-and-Access</a> · <a href="home.html">Home</a></p>
@@ -1091,7 +1116,7 @@ data:
     <div class="draft">Draft — this manual describes the upcoming version of Gompha.</div>
     <hr />
     <p>tags: [task, milestone-1, screen/person-link, root, support]
-    screen: Invite link / Password reset link (panel)</p>
+    screen: Invite link / Password reset link (popup)</p>
     <hr />
     <h1>Give Someone a New Link</h1>
     <p><strong>For the owner.</strong> On a person's card, on the people and access step of <a href="set-up-your-clinic.html">Set-Up-Your-Clinic</a>.</p>
@@ -1109,8 +1134,9 @@ data:
     <li><strong>New invite link</strong> — shown for someone still marked <strong>Invited</strong>, who has never set a
          password, or</li>
     <li><strong>New password link</strong> — shown for someone who is already using Gompha.</li>
-    <li>A panel slides in from the right, headed <strong>Invite link</strong> or <strong>Password reset link</strong>. It tells
-       you which one you are about to make and how long it lasts:</li>
+    <li>A popup opens in the middle of the screen (on a phone it fills the screen), headed <strong>Invite
+       link</strong> or <strong>Password reset link</strong>. It tells you which one you are about to make and how long it
+       lasts:</li>
     <li><em>"They have never set a password, so this is a fresh invitation. Valid for 48 hours, and it
          works once."</em></li>
     <li><em>"They already have an account, so this lets them set a new password. Valid for 1 hour, and
@@ -1127,7 +1153,7 @@ data:
     <li>Press <strong>Done</strong>.</li>
     </ol>
     <h2>Copy it before you leave — there is no second chance at the same link</h2>
-    <p>The panel says so, in an amber box, at the moment it matters:</p>
+    <p>The popup says so, in an amber box, at the moment it matters:</p>
     <blockquote>
     <p><strong>Copy it now.</strong> Only a scrambled copy is kept, so this link cannot be shown again — if you
     leave this page without it, issue another one.</p>
@@ -1187,7 +1213,7 @@ data:
     <h2>An older link you already sent keeps working</h2>
     <p>Issuing a new link does <strong>not</strong> kill the old one. If you sent an invite yesterday and issue
     another today, either of them still activates the account until it expires or one of them is used.
-    That is why the panel says <em>"An earlier link you already sent keeps working until it expires."</em></p>
+    That is why the popup says <em>"An earlier link you already sent keeps working until it expires."</em></p>
     <h2>Why it works this way</h2>
     <p><strong>One button, not two.</strong> "Resend the invitation" and "he forgot his password" feel like different
     problems to the person asking, but they are one question — <em>this person cannot get in, let them
@@ -1229,15 +1255,18 @@ data:
     <hr />
     <h2>tags: [home]</h2>
     <h1>Gompha Manual</h1>
-    <p><strong>Version: Milestone 1 · image <code>clinic-v0.1.7</code> · Stamped 2026-08-18</strong></p>
+    <p><strong>Version: Milestone 1 · checked against image <code>clinic-v0.1.14</code> · Stamped 2026-08-20</strong></p>
     <blockquote>
     <h3>This manual covers Milestone 1 only</h3>
-    <p>Milestone 1 is <strong>sign-in, people and access, and rooms</strong>. That is the whole of the live
-    software today, at <strong>https://app-staging.gompha.com</strong>.</p>
+    <p>Milestone 1 is <strong>sign-in, people and access, rooms</strong>, and <strong>a doctor's own treatment list</strong>.
+    That is the whole of the live software today, at <strong>https://app-staging.gompha.com</strong>.</p>
     <p>There is <strong>no schedule, no patients, no patient card, no tooth chart, no appointments, no
     Income and Expenses, no inventory and no X-rays yet</strong>. If you are looking for one of those,
     read <a href="whats-not-here-yet.html">Whats-Not-Here-Yet</a> first so nobody spends an afternoon hunting for a screen that
     has not been built.</p>
+    <p>⚠ <strong>One live screen is not written up yet:</strong> a doctor's <strong>Services &amp; Timings</strong> — his treatments,
+    his prices, his timings. It shipped after this manual's last full pass. Everything else on this
+    page has been checked against the running software. <a href="whats-not-here-yet.html">Whats-Not-Here-Yet</a>.</p>
     </blockquote>
     <p>This vault is the single onboarding source for everyone who uses Gompha. It describes the
     software <strong>exactly as it is right now</strong>. Anything decided but not built lives as one line in
@@ -1260,7 +1289,7 @@ data:
     <tr>
     <td>A doctor</td>
     <td><a href="doctor.html">Doctor</a></td>
-    <td>Sign in only</td>
+    <td>Yes — you set up your own treatment list</td>
     </tr>
     <tr>
     <td>Front desk</td>
@@ -1430,7 +1459,7 @@ data:
     again. There is nothing wrong.</p>
     <p>You are also signed out when:</p>
     <ul>
-    <li>you press <strong>Sign out</strong> in the Settings panel (<a href="sign-in.html">Sign-In</a>),</li>
+    <li>you press <strong>Sign out</strong> in the Settings popup (<a href="sign-in.html">Sign-In</a>),</li>
     <li>you finish a <strong>password reset</strong> — that deliberately signs out every other device,</li>
     <li>your account is <strong>archived</strong>, which stops every device immediately.</li>
     </ul>
@@ -1822,6 +1851,18 @@ data:
     doctor's schedule (<a href="set-what-each-person-can-see.html">Set-What-Each-Person-Can-See</a>). Change the doctor and everything she can see
     moves at once, which is why it is a deliberate, recorded change rather than an ordinary edit. <strong>In
     Milestone 1 it cannot be changed on screen at all</strong>, so choose it correctly when you add her.</p>
+    <p><strong>Her view only exists while his account does.</strong> Everything she sees <em>through</em> her doctor is there
+    only while his account is live and in use:</p>
+    <ul>
+    <li><strong>He is archived</strong> → she stops seeing his side of the clinic in the same instant, even if she is
+      already signed in on a tablet. Her own account keeps working; there is simply nothing of his left
+      in it.</li>
+    <li><strong>He has not opened his invite yet</strong> → she sees nothing of his either, because there is no active
+      doctor for her to be attached to. It appears the moment he sets his password
+      (<a href="activate-your-account.html">Activate-Your-Account</a>).</li>
+    </ul>
+    <p>If a new assistant reports that she "can't see anything", check her doctor's card first. That is
+    almost always the answer.</p>
     <h2>What each person can see</h2>
     <p>Five sections, each set to All, Own or None, per person. That is its own page:
     <a href="set-what-each-person-can-see.html">Set-What-Each-Person-Can-See</a>.</p>
@@ -2165,8 +2206,8 @@ data:
     <h2>Sign out</h2>
     <ol>
     <li>Press the <strong>gear icon in the top-right corner</strong> of the screen.</li>
-    <li>A panel slides in from the right, headed <strong>Settings</strong>.</li>
-    <li><strong>Sign out</strong> is the button at the bottom of that panel.</li>
+    <li>A popup opens in the middle of the screen, headed <strong>Settings</strong>. On a phone it fills the screen.</li>
+    <li><strong>Sign out</strong> is the button at the bottom of that popup.</li>
     </ol>
     <p>Signing out ends the session on the server, not only in this browser. Closing the tab is <em>not</em>
     signing out.</p>
@@ -2247,7 +2288,7 @@ data:
     <h2>Steps</h2>
     <ol>
     <li>Press the <strong>gear icon in the top-right corner</strong>.</li>
-    <li>A panel slides in from the right, headed <strong>Settings</strong>.</li>
+    <li>A popup opens in the middle of the screen, headed <strong>Settings</strong>. On a phone it fills the screen.</li>
     <li>Under <strong>Appearance</strong>, choose <strong>Light</strong>, <strong>Dark</strong> or <strong>System</strong>.</li>
     <li><strong>System</strong> follows the phone's or laptop's own setting, so the app goes dark in the evening
          with everything else.</li>
@@ -2255,18 +2296,18 @@ data:
     <li><strong>Comfortable</strong> — bigger touch targets. Right for phones and chair-side tablets. This is the
          starting setting.</li>
     <li><strong>Compact</strong> — tighter, fits more on screen. Right for the front-desk desktop.</li>
-    <li>Close the panel by pressing outside it, or with the close control at its top.</li>
+    <li>Close the popup by pressing outside it, or with the close control at its top.</li>
     </ol>
     <p>The change happens at once. There is nothing to save.</p>
     <h2>Where the setting is kept</h2>
-    <p><strong>On that device only.</strong> The panel says so: <em>"These settings stay on this device."</em></p>
+    <p><strong>On that device only.</strong> The popup says so: <em>"These settings stay on this device."</em></p>
     <ul>
     <li>The front desk can run <strong>Compact + Light</strong> while the same person's phone runs <strong>Comfortable +
       Dark</strong>.</li>
     <li>It survives closing the browser and signing out.</li>
     <li>It does <strong>not</strong> follow you to another device, and it does not change what anyone else sees.</li>
     </ul>
-    <p><strong>Sign out</strong> also lives at the bottom of this panel. See <a href="sign-in.html">Sign-In</a>.</p>
+    <p><strong>Sign out</strong> also lives at the bottom of this popup. See <a href="sign-in.html">Sign-In</a>.</p>
     <h2>Why it works this way</h2>
     <p><strong>Density is a choice, not a guess about your screen.</strong> Screen width is a poor guide to how the
     device is actually used: a chair-side tablet lives on a bracket at arm's length and needs big
@@ -2387,7 +2428,7 @@ data:
     Everything already saved is safe.</p>
     </blockquote>
     <p>Renew, and full use returns. Nothing has to be re-entered.</p>
-    <p><strong>What that looks like at the desk.</strong> Buttons that would save something go grey. Opening a panel to
+    <p><strong>What that looks like at the desk.</strong> Buttons that would save something go grey. Opening a popup to
     add a person, issue a link, edit details or archive somebody shows the padlock box, and the action
     button is dead. A change you press anyway comes back with <em>"The clinic is read-only until the
     licence is renewed. Nothing changed."</em> — and <strong>nothing did change</strong>. There is no queue of pending
@@ -2470,6 +2511,10 @@ data:
     <li>Dark mode and a display-density switch (<a href="switch-to-dark-mode.html">Switch-to-Dark-Mode</a>)</li>
     <li>An error code and a reference on failures, with a <strong>Report this</strong> link
       (<a href="when-something-goes-wrong.html">When-Something-Goes-Wrong</a>, <a href="error-codes.html">Error-Codes</a>)</li>
+    <li><strong>A doctor's own treatment list, with his prices and his timings</strong> — the <strong>Services &amp; Timings</strong>
+      screen. ⚠ This shipped after the last full pass of this manual and <strong>has no page here yet</strong>; a
+      doctor setting his list up should ask us rather than guess. It is the reason a doctor signing in
+      now lands on his own setup screen instead of the plain "You're signed in" page.</li>
     </ul>
     <h2>What it does not give you</h2>
     <p>None of the following exists in the software today. Not hidden, not behind a permission, not
@@ -2499,7 +2544,7 @@ data:
     <td>Not built</td>
     </tr>
     <tr>
-    <td>Treatments and clinical notes</td>
+    <td>Recording a treatment on a patient, and clinical notes</td>
     <td>Not built</td>
     </tr>
     <tr>
@@ -2544,9 +2589,11 @@ data:
     </tr>
     </tbody>
     </table>
-    <p><strong>A doctor, a receptionist or an assistant who signs in today sees one screen</strong>: a short "You're
-    signed in" page that names your role and lists the clinic's rooms. That is correct behaviour, not
-    a fault, and not a permission problem. See <a href="doctor.html">Doctor</a>, <a href="receptionist.html">Receptionist</a> and <a href="assistant.html">Assistant</a>.</p>
+    <p><strong>A receptionist or an assistant who signs in today sees one screen</strong>: a short "You're signed in"
+    page that names your role and lists the clinic's rooms. That is correct behaviour, not a fault, and
+    not a permission problem. See <a href="receptionist.html">Receptionist</a> and <a href="assistant.html">Assistant</a>.</p>
+    <p><strong>A doctor sees that page too, plus his own Services &amp; Timings</strong> — his treatment list, his prices,
+    his timings. Nothing patient-facing hangs off it yet. See <a href="doctor.html">Doctor</a>.</p>
     <h2>Why the access settings are there before the screens are</h2>
     <p>The five sections you set in Milestone 1 (<a href="set-what-each-person-can-see.html">Set-What-Each-Person-Can-See</a>) are recorded now and
     govern each module <strong>as it arrives</strong>. Getting them decided before there is a patient record to
