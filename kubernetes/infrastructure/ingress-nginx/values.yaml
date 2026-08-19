@@ -1,9 +1,50 @@
 controller:
   config:
+    # ── HSTS: LIVE ON ONE ZONE, INERT ON THE OTHER ────────────────────────────
+    # nginx emits HSTS only on an HTTPS connection, so what these do depends
+    # entirely on where TLS terminates — and the two zones here differ:
+    #
+    #   • gompha.com — INERT. TLS terminates at Cloudflare's edge and cloudflared
+    #     reaches ingress over plain HTTP, so `$scheme` is http and the directive
+    #     never fires. Verified 2026-08-19: `curl -D-` on gompha.com and
+    #     app-staging.gompha.com returned no HSTS, no CSP, no X-Frame-Options,
+    #     no nosniff — only `server: cloudflare`.
+    #   • kostikidis.net — LIVE. cert-manager DNS-01 terminates TLS at the
+    #     ingress, so these DO fire. Verified 2026-08-19: design.kostikidis.net
+    #     returns `max-age=31536000; includeSubDomains; preload`.
+    #
+    # An earlier version of this comment claimed the settings were inert
+    # everywhere. That was wrong, and the wrong half was the load-bearing one:
+    # `preload` has been asserted on every kostikidis.net host for months.
+    #
+    # hsts-preload is now FALSE, deliberately. Preload is only honoured once a
+    # domain is submitted to the browsers' preload list, but asserting it is a
+    # standing invitation to do so, and submission is effectively irreversible —
+    # it would bind EVERY subdomain, including ones that do not exist yet, to
+    # HTTPS-only for a full browser release cycle. That is an owner decision, not
+    # a default. max-age and includeSubDomains stay.
     hsts: "true"
     hsts-max-age: "31536000"
     hsts-include-subdomains: "true"
-    hsts-preload: "true"
+    hsts-preload: "false"
+    # ── Allow-list for the per-ingress `custom-headers` annotation ────────────
+    # ⚠ THE REFUSAL IS A 503, NOT A DROPPED HEADER. If an annotated Ingress names
+    # a ConfigMap key that is not in this list — or names a ConfigMap that does
+    # not exist — ingress-nginx returns LocationDenied and serves 503 on EVERY
+    # path of that Ingress. So: add the name HERE FIRST, and only then add the key
+    # to a *-security-headers ConfigMap. Removing works in reverse — drop the
+    # annotation before the ConfigMap (the gompha app prunes).
+    # This list and the app annotations live in DIFFERENT ArgoCD Applications
+    # (`ingress-nginx` vs `gompha`), so they must ship in ONE commit; a partial
+    # commit 503s gompha.com, www and the /manual carve on *.gompha.com until the
+    # missing half lands.
+    #
+    # Purely permissive: it only populates AllowedResponseHeaders, which is read
+    # solely by the customheaders parser. An ingress without the annotation sees
+    # no change. Deliberately per-host rather than the global `add-headers`: a
+    # cluster-wide X-Frame-Options would hit n8n, Penpot, Nextcloud and Immich,
+    # some of which legitimately embed.
+    global-allowed-response-headers: "X-Frame-Options,X-Content-Type-Options,Referrer-Policy,Permissions-Policy,Strict-Transport-Security,Cross-Origin-Opener-Policy,Cross-Origin-Resource-Policy,Content-Security-Policy,Content-Security-Policy-Report-Only"
   service:
     # F-001 fix: do NOT allocate NodePorts.
     # The LoadBalancer NodePort path (node-IP:3xxxx) listens on 0.0.0.0 on every

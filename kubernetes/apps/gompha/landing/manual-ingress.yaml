@@ -17,6 +17,11 @@ metadata:
   namespace: gompha
   annotations:
     nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    # Security response headers — see security-headers.yaml. Set separately here
+    # because this is its own Ingress object: /manual would otherwise be the one
+    # bare path on the apex, and it is the only one behind a gate. It also spans
+    # *.gompha.com, so tenant subdomains get the headers on /manual too.
+    nginx.ingress.kubernetes.io/custom-headers: "gompha/landing-security-headers"
 spec:
   ingressClassName: nginx
   rules:

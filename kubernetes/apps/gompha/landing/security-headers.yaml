@@ -1,0 +1,50 @@
+# Security response headers for gompha.com + www.gompha.com — the public apex
+# (landing page, and the cookie-gated staff manual at /manual).
+#
+# Referenced by ingress.yaml's `nginx.ingress.kubernetes.io/custom-headers`.
+# Uses more_set_headers, so it fires even though TLS terminates at Cloudflare
+# and the tunnel reaches ingress over HTTP — which is exactly why the
+# controller's own `hsts:` setting never produced a header here
+# (infrastructure/ingress-nginx/values.yaml).
+#
+# Verified 2026-08-19: a GET on gompha.com returned no HSTS, no CSP, no
+# X-Frame-Options and no nosniff — only `server: cloudflare`. Recon run 1 called
+# this low severity and it is: a brochure. It is fixed here because it is the
+# same one-line change as the app host, and because /manual is NOT a brochure —
+# it is gated staff documentation.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: landing-security-headers
+  namespace: gompha
+data:
+  # SAMEORIGIN rather than the app host's DENY: the manual gate lives on this
+  # host and same-host framing is plausible for documentation. Nothing external
+  # may frame it either way.
+  X-Frame-Options: "SAMEORIGIN"
+
+  X-Content-Type-Options: "nosniff"
+  Referrer-Policy: "strict-origin-when-cross-origin"
+  Permissions-Policy: "geolocation=(), microphone=(), camera=(), payment=(), usb=()"
+
+  # One year, includeSubDomains, NO preload — preload is an owner decision and
+  # effectively irreversible (see infrastructure/ingress-nginx/values.yaml).
+  #
+  # includeSubDomains on the APEX is the consequential half: it binds every
+  # hostname under gompha.com, and every one of them is already Cloudflare-
+  # proxied HTTPS (app-staging, licensing-staging, licence-staging) — HTTPS by
+  # construction, since a host only reaches this cluster through the tunnel and
+  # there is no wildcard DNS record (see saas-gompha/staging/ingress.yaml).
+  #
+  # ⚠ THE ONE WAY TO BREAK THIS: a future DNS-ONLY (grey-cloud) record under
+  # gompha.com pointing at a plain-HTTP origin — a bare-IP host, a local dev
+  # box. Any browser that has seen this header will refuse to reach it over HTTP
+  # for up to a year, and there is no way to call that back. Keep new gompha.com
+  # hostnames proxied.
+  Strict-Transport-Security: "max-age=31536000; includeSubDomains"
+
+  # ponytail: no CSP on the landing at all yet — not even report-only. The
+  # landing is a separate nginx pod with its own markup (configmap.yaml) and
+  # unknown inline-style usage; a policy written blind would either be a lie
+  # (unsafe-inline everything) or break the page. Write it when the landing
+  # markup is next touched, from what the page actually loads.

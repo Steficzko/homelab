@@ -10,6 +10,8 @@ metadata:
   namespace: gompha
   annotations:
     nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    # Security response headers — see security-headers.yaml for values and why.
+    nginx.ingress.kubernetes.io/custom-headers: "gompha/landing-security-headers"
 spec:
   ingressClassName: nginx
   rules:
