@@ -46,7 +46,7 @@ spec:
         # migrate with the SAME image+tag as the API (delivery.md: the old
         # stack pinned migrate separately and shipped mismatches)
         - name: migrate
-          image: ghcr.io/steficzko/gompha-licensing:lic-v0.1.2
+          image: ghcr.io/steficzko/gompha-licensing:lic-v0.1.3
           command: ["python", "migrations/migrate.py", "up"]
           env:
             - name: LICENSING_DATABASE_URL
@@ -56,7 +56,7 @@ spec:
             limits: {memory: 128Mi}
       containers:
         - name: api
-          image: ghcr.io/steficzko/gompha-licensing:lic-v0.1.2
+          image: ghcr.io/steficzko/gompha-licensing:lic-v0.1.3
           ports: [{containerPort: 8000, name: http}]
           env:
             - {name: LICENSING_SURFACE, value: "all"}
@@ -126,7 +126,7 @@ spec:
       imagePullSecrets: [{name: ghcr-pull}]
       containers:
         - name: api
-          image: ghcr.io/steficzko/gompha-licensing:lic-v0.1.2
+          image: ghcr.io/steficzko/gompha-licensing:lic-v0.1.3
           ports: [{containerPort: 8000, name: http}]
           env:
             - {name: LICENSING_SURFACE, value: "fetch"}

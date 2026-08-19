@@ -34,7 +34,7 @@ spec:
           imagePullSecrets: [{name: ghcr-pull}]
           containers:
             - name: mark-lapsed
-              image: ghcr.io/steficzko/gompha-licensing:lic-v0.1.2
+              image: ghcr.io/steficzko/gompha-licensing:lic-v0.1.3
               command: ["/bin/sh", "-ec"]
               args:
                 - |
