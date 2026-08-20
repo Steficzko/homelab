@@ -2486,12 +2486,16 @@ data:
     time</strong> instead, in the same size as a real figure. It is an empty field, not a mistake.</p>
     <p>Above the list, if any are unpriced, one grey sentence counts them: <em>"5 treatments have no price
     yet."</em></p>
+    <p><strong>If your list is empty</strong>, you get a dashed box saying <strong>Your list is empty</strong> with one button, and
+    under it three faint example lines marked <strong>EXAMPLE</strong> — <em>Cleaning / Scaling</em>, <em>Composite Filling</em>,
+    <em>Diagnosis</em>. They are there to show you the shape of a line. They are not yours, they are not real
+    prices, and pressing them does nothing.</p>
     <h2>Steps</h2>
     <ol>
     <li>Sign in. If the treatment list does not open by itself, press the <strong>gear</strong> → <strong>Set up services
        &amp; timings</strong>.</li>
-    <li>Read down the list. Anything already there was typed in from the price sheet you gave us — see
-       below.</li>
+    <li>Read down the list. If there is anything on it already, it was typed in from a price sheet you
+       gave us — see below.</li>
     <li>Press any line to open it and correct it. <a href="add-a-treatment.html">Add-a-Treatment</a>.</li>
     <li>Press <strong>+ Add a treatment</strong> for anything you do that is missing.</li>
     <li>Fill in every <strong>Add price</strong> and <strong>Add chair time</strong> you can see.</li>
