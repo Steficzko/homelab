@@ -25,14 +25,25 @@ spec:
                     nodeFit: true
                 - name: LowNodeUtilization
                   args:
+                    # Tuned 2026-08-20. A node is an eviction RECEIVER only if it
+                    # is below ALL `thresholds`; a SOURCE if above ANY
+                    # `targetThresholds`. The old pods:22 (=24 pods of 110) sat
+                    # below every node's real count, so NO node counted as
+                    # under-utilized and the plugin evicted nothing. Raised to 45
+                    # so workers qualify as receivers. Memory target 75->65 so a
+                    # tight control plane (g2 was 67% req) becomes a source; the
+                    # 55/65 band leaves a 10% gap to avoid evict/replace churn.
+                    # This only EQUALISES load — the worker-bias (system-reserved
+                    # on the CPs, allocatable 15.8Gi vs 12.2Gi) is what makes the
+                    # kube-scheduler re-place the evicted pods onto w1/w2.
                     thresholds:
-                      cpu: 60
-                      memory: 60
-                      pods: 22
+                      cpu: 55
+                      memory: 55
+                      pods: 45
                     targetThresholds:
-                      cpu: 85
-                      memory: 75
-                      pods: 32
+                      cpu: 80
+                      memory: 65
+                      pods: 50
                 - name: RemoveDuplicates
                   args: {}
               plugins:
