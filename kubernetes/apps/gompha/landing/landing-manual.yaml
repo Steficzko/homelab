@@ -269,6 +269,118 @@ data:
     <p>Next: <a href="give-someone-a-new-link.html">Give-Someone-a-New-Link</a> · <a href="set-what-each-person-can-see.html">Set-What-Each-Person-Can-See</a> · <a href="choose-a-doctor-colour.html">Choose-a-Doctor-Colour</a> ·
     <a href="roles-and-access.html">Roles-and-Access</a></p>
     </div></body></html>
+  "add-a-treatment.html": |
+    <!doctype html><html lang="en"><head><meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Add a Treatment · Gompha Manual</title>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;600&family=IBM+Plex+Sans+Arabic&display=swap" rel="stylesheet">
+    <style>
+    body{margin:0;background:#FAF8F4;color:#3D3A34;font:15px/1.65 "IBM Plex Sans","IBM Plex Sans Arabic",sans-serif}
+    .wrap{max-width:760px;margin:0 auto;padding:40px 24px 80px}
+    a{color:#2E5D51} .dead{color:#98917F;border-bottom:1px dashed #C9C2B2}
+    h1,h2,h3{line-height:1.3} h1{font-size:26px}
+    code{background:#F1EDE6;border-radius:5px;padding:2px 6px}
+    .crumb{font-size:13px;color:#98917F;margin-bottom:28px} .crumb a{color:#6B655A;text-decoration:none}
+    .draft{background:#F3EDDC;color:#6A5A32;border-radius:9px;padding:9px 14px;font-size:13px;margin-bottom:26px}
+    table{border-collapse:collapse} td,th{border:1px solid #E9E3D8;padding:7px 12px;text-align:left}
+    </style></head><body><div class="wrap">
+    <div class="crumb"><a href="index.html">Gompha Manual</a></div>
+    <div class="draft">Draft — this manual describes the upcoming version of Gompha.</div>
+    <hr />
+    <p>tags: [task, milestone-1, screen/services, doctor]
+    screen: Add / edit a treatment (box over the treatment list)</p>
+    <hr />
+    <h1>Add a Treatment</h1>
+    <p><strong>For doctors only</strong>, on your own treatment list (<a href="set-up-your-treatment-list.html">Set-Up-Your-Treatment-List</a>). The same box
+    adds a new treatment and edits one you already have.</p>
+    <h2>How to open it</h2>
+    <ul>
+    <li><strong>To add one:</strong> press <strong>+ Add a treatment</strong>. It sits above the list and again at the bottom.</li>
+    <li><strong>To change one:</strong> press anywhere on its line.</li>
+    <li><strong>To fix one thing quickly:</strong> press the words <strong>Add price</strong> or <strong>Add chair time</strong> on the line —
+      the box opens with that field already selected.</li>
+    <li><strong>To copy one:</strong> press the <strong>⋮</strong> at the right of a line and choose <strong>Duplicate</strong>. Everything is
+      copied except the name, which you type fresh.</li>
+    </ul>
+    <p>On a phone the box fills the screen. On a computer it sits in the middle, over the list. The list
+    never goes away underneath. <strong>Escape</strong>, <strong>Cancel</strong> or the <strong>✕</strong> closes it.</p>
+    <h2>The fields, in the order you meet them</h2>
+    <p><strong>Treatment name.</strong> The only one that must be filled in. It is yours — another doctor's wording
+    does not matter here. If you already have a treatment with the same name, a small note says so and
+    lets you carry on; only two <em>live</em> treatments with exactly the same name are refused, and then the
+    box tells you to open the one you have.</p>
+    <p><strong>Your code.</strong> Optional, up to 40 characters, anything you like. It is used for searching and will
+    appear on reports.</p>
+    <p><strong>Category.</strong> <em>Not in a category</em> to begin with, then any category you have made, then <strong>New
+    category…</strong>, which gives you a box to name one on the spot.
+    <a href="organise-your-treatment-list.html">Organise-Your-Treatment-List</a>.</p>
+    <p><strong>Price.</strong> Three buttons: <strong>Unknown · Free · Priced</strong>.</p>
+    <ul>
+    <li><strong>Unknown</strong> means no price is recorded. <em>It is not zero and it is not free.</em></li>
+    <li><strong>Free</strong> is a decision — a line that appears on the bill at nothing.</li>
+    <li><strong>Priced</strong> opens two rows, <strong>USD</strong> and <strong>IQD</strong>. Type into either one. The row you typed into gets
+      a small <strong>padlock</strong> and the words <strong>Set by you</strong>; the other row shows <strong>Converted</strong> and works
+      itself out. Typing into the converted row moves the padlock to it.</li>
+    </ul>
+    <p><strong>Chair time.</strong> Two boxes, <strong>h</strong> and <strong>m</strong> — hours and minutes. Under them are quick buttons:
+    15m, 30m, 45m, 1h, 1h 30m, 2h. Typing <code>90</code> into the minutes box turns into <code>1h 30m</code> when you leave
+    it. <strong>+ Add a range</strong> turns it into <strong>From / To</strong> for treatments that vary; reception then confirms
+    the exact length when booking.</p>
+    <p><strong>Working time.</strong> The same control. Chair time is <strong>how long the appointment takes</strong>; working time
+    is <strong>how long you are hands-on</strong>. <strong>Leave working time blank and it is the same as chair time</strong> —
+    which is the usual answer, and then the line in the list says nothing about it at all.</p>
+    <p><strong>This treatment takes more than one visit.</strong> A tick-box. Tick it and you get <strong>Part 1</strong> and <strong>Part
+    2</strong>, each with its own name and its own chair time, up to twelve. <strong>↑ Move up</strong> and <strong>↓ Move down</strong>
+    put them in order; <strong>Remove part</strong> deletes one. <strong>The price stays on the treatment as a whole</strong>,
+    never on the parts.</p>
+    <p><strong>A grey note at the very bottom</strong>, on rows that came from the price sheet you gave us: where the
+    row came from, and <em>"Your sheet said: …"</em> — the original wording. You cannot edit it, and it does
+    not appear on rows you created yourself.</p>
+    <h2>Saving</h2>
+    <p>Press <strong>Save</strong>. <strong>Cancel</strong> and the <strong>✕</strong> throw the changes away, and if you have typed anything the
+    box asks first — <strong>Keep editing</strong> or <strong>Discard</strong>.</p>
+    <p>Things it will say instead of saving:</p>
+    <table>
+    <thead>
+    <tr>
+    <th>What you see</th>
+    <th>What it means</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+    <td><strong>No connection — this can't be saved yet.</strong></td>
+    <td>Your typing is still on screen. Wait for the link and press Save again. Nothing was half-saved. <a href="working-offline.html">Working-Offline</a></td>
+    </tr>
+    <tr>
+    <td><strong>This treatment changed on another device.</strong></td>
+    <td>Somebody — or you, on your phone — saved this row while you had it open. Press <strong>Reload the latest</strong>, look, then make your change again. <strong>Read the sentence after the heading</strong>: the same warning box also carries <em>"You already have a treatment with that name"</em> (<code>GMP-1311</code>), which is not a device clash at all.</td>
+    </tr>
+    <tr>
+    <td><strong>Couldn't save that. Nothing was lost.</strong></td>
+    <td>Followed by the reason and a code. <a href="when-something-goes-wrong.html">When-Something-Goes-Wrong</a></td>
+    </tr>
+    </tbody>
+    </table>
+    <p><strong>Delete treatment</strong> sits at the bottom left, and only when you are editing an existing one.
+    <a href="delete-and-restore-a-treatment.html">Delete-and-Restore-a-Treatment</a>.</p>
+    <h2>Why it works this way</h2>
+    <p><strong>Unknown, free and zero are three different facts.</strong> A blank box can never be saved as <code>0</code>. A
+    missing price means nobody has decided yet; <em>free</em> means somebody decided. If they looked the same,
+    a treatment nobody had priced would quietly bill at nothing.</p>
+    <p><strong>Only the side you typed is kept.</strong> The dinar–dollar rate moves. Storing both figures would freeze
+    today's rate into next year's price list, so Gompha stores the one you set and works the other one
+    out fresh each time you look. A dinar figure you typed is kept exactly as typed;
+    <a href="dual-currency-money.html">Dual-Currency-Money</a>.</p>
+    <p><strong>Hours and minutes, not a box of minutes.</strong> In Dr Ali's words: <em>easier just to choose two hours
+    instead of 120 minutes.</em> Doctors who think in minutes are not punished for it — <code>90</code> becomes
+    <code>1h 30m</code> by itself.</p>
+    <p><strong>A name is yours, not the clinic's.</strong> There is no shared clinic list to match against, and no
+    "adopt the existing name" prompt. Two doctors describing the same work differently is normal, and
+    forcing them to agree before either can book was the thing that made an earlier design unusable.</p>
+    <p>Next: <a href="set-up-your-treatment-list.html">Set-Up-Your-Treatment-List</a> · <a href="organise-your-treatment-list.html">Organise-Your-Treatment-List</a> · <a href="dual-currency-money.html">Dual-Currency-Money</a> ·
+    <a href="home.html">Home</a></p>
+    </div></body></html>
   "add-the-clinic-rooms.html": |
     <!doctype html><html lang="en"><head><meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -498,6 +610,10 @@ data:
     <p>One section starts at <strong>None</strong>: <strong>Financial information</strong>. For you that would mean <em>your doctor's
     earnings</em>, which is not something the software hands over by default. The owner can grant it, and
     that has to be a choice somebody makes on purpose.</p>
+    <p><strong>His treatment list is his alone.</strong> Each doctor keeps his own treatments, prices and times
+    (<a href="set-up-your-treatment-list.html">Set-Up-Your-Treatment-List</a>). In this version there is no screen for you to open it — no button
+    in your gear menu, and nothing on your home page. If he asks you to fix a price for him, he has to
+    do it from his own sign-in.</p>
     <p><strong>If you move to a different doctor, tell the owner.</strong> Everything you can see moves with it, and in
     Milestone 1 the change cannot be made on screen — support has to do it.</p>
     <h3>If his side of the app is empty</h3>
@@ -645,8 +761,11 @@ data:
     <p>In Milestone 1 this is <strong>the only role with real work to do</strong>. The clinic exists in Gompha because
     the owner sets it up.</p>
     <h2>When you sign in</h2>
-    <p>You sign in at <strong>https://app-staging.gompha.com</strong> like everyone else (<a href="sign-in.html">Sign-In</a>). Because you are
-    the owner, you land on <strong>Welcome</strong> — the setup screen — not on an ordinary home page.</p>
+    <p>You sign in at <strong>https://app-staging.gompha.com</strong> like everyone else (<a href="sign-in.html">Sign-In</a>). <strong>Until the
+    clinic setup is finished, you land on Welcome</strong> — the setup screen — not on an ordinary home page.</p>
+    <p>Once the clinic's details are saved, that stops: from then on you land where any doctor lands —
+    <strong>on your own treatment list</strong> until you have finished that once, and on the plain "You're signed
+    in" page after that. <a href="set-up-your-treatment-list.html">Set-Up-Your-Treatment-List</a>.</p>
     <p>Across the top: the Gompha mark on the left, a <strong>gear</strong> on the right. <strong>No menu down the side.</strong>
     Under that, three named boxes: <strong>Permissions</strong>, <strong>Rooms</strong>, <strong>Financials</strong> (dimmed, not built yet).</p>
     <p>Your whole day-one job is those first two boxes.</p>
@@ -670,8 +789,13 @@ data:
     <li><strong>Finish setup.</strong></li>
     </ol>
     <h2>Coming back later</h2>
-    <p>There is no menu item for setup. <strong>Open the plain clinic address and you land back on Welcome</strong>, with
-    everything you entered still there. That is how you add a person or change access next month.</p>
+    <p>There is no menu item for setup, and once the clinic's details are saved the plain address no
+    longer takes you there either.</p>
+    <p><strong>To get back to Welcome, add <code>/welcome</code> to the end of the clinic address</strong> — so
+    <code>https://app-staging.gompha.com/welcome</code>. Everything you entered is still there, and that is how
+    you add a person, mint a fresh link or change access next month. Bookmark it.</p>
+    <p><strong>⚠ verify</strong> — this is what the running version does. A button back into setup is owed; until it
+    exists, the address is the only way in, and it is worth writing on a card at the desk.</p>
     <h2>What you can do that nobody else can</h2>
     <ul>
     <li>Add people, and decide what each of them can see</li>
@@ -693,6 +817,8 @@ data:
       <a href="archive-a-person.html">Archive-a-Person</a> before you press it.</li>
     <li><strong>Change a person's role</strong>, or <strong>which doctor an assistant works under</strong>.</li>
     <li><strong>Read the record of who did what.</strong> It is being kept; there is no screen for it yet.</li>
+    <li><strong>Open another doctor's treatment list</strong> — not even to help him, and not even as the owner. Each
+      doctor's prices and times are his own (<a href="set-up-your-treatment-list.html">Set-Up-Your-Treatment-List</a>).</li>
     </ul>
     <p>Talk to us for any of those. None of them are lost causes — they simply have no screen in this
     version.</p>
@@ -700,11 +826,81 @@ data:
     <p>You can give another doctor the <strong>Admin doctor</strong> role. In this milestone that does <strong>not</strong> give them
     the setup screen: <strong>only the owner reaches Welcome</strong>, so in practice you remain the only person who
     can add people and rooms. Plan for that.</p>
+    <h2>You are also a doctor, and you have your own list</h2>
+    <p>If you treat patients, you have exactly the same treatment list as every other doctor — your
+    prices, your times, invisible to everybody else. Doing yours first is worth it: you will be the one
+    answering the others' questions about theirs. <a href="set-up-your-treatment-list.html">Set-Up-Your-Treatment-List</a>.</p>
     <h2>What is not here yet</h2>
     <p>No schedule, no patients, no money, no inventory. <a href="whats-not-here-yet.html">Whats-Not-Here-Yet</a> is the page to show anyone
     who goes looking.</p>
     <p>Next: <a href="set-up-your-clinic.html">Set-Up-Your-Clinic</a> · <a href="give-someone-a-new-link.html">Give-Someone-a-New-Link</a> · <a href="roles-and-access.html">Roles-and-Access</a> ·
     <a href="what-your-licence-covers.html">What-Your-Licence-Covers</a> · <a href="home.html">Home</a></p>
+    </div></body></html>
+  "delete-and-restore-a-treatment.html": |
+    <!doctype html><html lang="en"><head><meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Delete and Restore a Treatment · Gompha Manual</title>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;600&family=IBM+Plex+Sans+Arabic&display=swap" rel="stylesheet">
+    <style>
+    body{margin:0;background:#FAF8F4;color:#3D3A34;font:15px/1.65 "IBM Plex Sans","IBM Plex Sans Arabic",sans-serif}
+    .wrap{max-width:760px;margin:0 auto;padding:40px 24px 80px}
+    a{color:#2E5D51} .dead{color:#98917F;border-bottom:1px dashed #C9C2B2}
+    h1,h2,h3{line-height:1.3} h1{font-size:26px}
+    code{background:#F1EDE6;border-radius:5px;padding:2px 6px}
+    .crumb{font-size:13px;color:#98917F;margin-bottom:28px} .crumb a{color:#6B655A;text-decoration:none}
+    .draft{background:#F3EDDC;color:#6A5A32;border-radius:9px;padding:9px 14px;font-size:13px;margin-bottom:26px}
+    table{border-collapse:collapse} td,th{border:1px solid #E9E3D8;padding:7px 12px;text-align:left}
+    </style></head><body><div class="wrap">
+    <div class="crumb"><a href="index.html">Gompha Manual</a></div>
+    <div class="draft">Draft — this manual describes the upcoming version of Gompha.</div>
+    <hr />
+    <p>tags: [task, milestone-1, screen/services, doctor]
+    screen: Your treatments (delete, undo, recently deleted)</p>
+    <hr />
+    <h1>Delete and Restore a Treatment</h1>
+    <p><strong>For doctors only</strong>, on your own list (<a href="set-up-your-treatment-list.html">Set-Up-Your-Treatment-List</a>). Nothing on this page can
+    lose you anything permanently.</p>
+    <h2>Delete one</h2>
+    <ol>
+    <li>Press the <strong>⋮</strong> at the right of the line and choose <strong>Delete treatment</strong> — or open the treatment
+       and press <strong>Delete treatment</strong> at the bottom left (<a href="add-a-treatment.html">Add-a-Treatment</a>).</li>
+    <li>The line itself becomes the question: <em>Delete "…"? Reception can't book it after this.
+       Appointments already booked keep the name.</em></li>
+    <li>Press <strong>Delete</strong>. <strong>Keep it</strong> is the safe answer and is the one already selected — a stray
+       Enter never deletes anything.</li>
+    </ol>
+    <h2>Undo it</h2>
+    <p>Right after a delete, a strip appears above the list: <em>Deleted "…"</em> with <strong>Undo</strong>. Press it and the
+    treatment comes straight back, in its place.</p>
+    <p>The strip goes away after about twenty seconds. That is not your last chance.</p>
+    <h2>Get one back later</h2>
+    <p>At the bottom of the list is <strong>Recently deleted (N)</strong>. Press it. Every treatment you have deleted
+    is listed, newest first, with the date it went, and a <strong>Restore</strong> button on each.</p>
+    <ul>
+    <li>If you have since made a <strong>new</strong> treatment with the same name, the old one cannot come back under
+      it. Rename the new one first, then restore.</li>
+    <li>If your list was set up from a price sheet you gave us, the treatments you told us you no longer
+      offer are sitting here too. Restore any you still do.</li>
+    </ul>
+    <h2>What deleting does and does not do</h2>
+    <ul>
+    <li><strong>Reception cannot book it</strong> once booking exists.</li>
+    <li><strong>Appointments already booked keep the name they were booked with.</strong> Deleting a treatment never
+      reaches back into work already recorded.</li>
+    <li><strong>It is not erased.</strong> Every deleted treatment stays in <strong>Recently deleted</strong> with its price and
+      its times intact.</li>
+    <li><strong>Nobody else notices.</strong> It is your list; no other doctor's list changes.</li>
+    </ul>
+    <h2>Why it works this way</h2>
+    <p><strong>Nothing in Gompha is truly deleted.</strong> People are archived (<a href="archive-a-person.html">Archive-a-Person</a>), rooms are
+    archived, treatments are kept. A clinic that has lost something it cannot get back stops trusting
+    the software — and a medical record that quietly loses history is worse than an untidy list.</p>
+    <p><strong>The confirmation happens in the row, not in a box in the middle of the screen.</strong> You keep seeing
+    the treatment you are about to delete, in the list it lives in, while you decide.</p>
+    <p><strong>Undo comes first, confirmation second.</strong> One confirmation, then a real way back for twenty
+    seconds, then a permanent way back in <strong>Recently deleted</strong>. Chains of "are you sure?" boxes train
+    people to press <em>yes</em> without reading.</p>
+    <p>Next: <a href="set-up-your-treatment-list.html">Set-Up-Your-Treatment-List</a> · <a href="organise-your-treatment-list.html">Organise-Your-Treatment-List</a> · <a href="home.html">Home</a></p>
     </div></body></html>
   "doctor.html": |
     <!doctype html><html lang="en"><head><meta charset="utf-8">
@@ -735,16 +931,26 @@ data:
     <h2>When you sign in</h2>
     <ol>
     <li>Open <strong>https://app-staging.gompha.com</strong> and sign in (<a href="sign-in.html">Sign-In</a>).</li>
-    <li>The first time, you are taken to <strong>your own treatment list</strong> — the treatments you do, your
-       prices and how long each one takes. Afterwards you land on a short page headed <strong>"You're signed
-       in"</strong>, which tells you your role and lists the clinic's <strong>rooms</strong>.</li>
+    <li>You are taken to <strong>your own treatment list</strong> — the treatments you do, your prices and how long
+       each one takes. This keeps happening on every sign-in until you have worked through it once and
+       pressed <strong>Finish</strong>. <a href="set-up-your-treatment-list.html">Set-Up-Your-Treatment-List</a>.</li>
+    <li>After that you land on a short page headed <strong>"You're signed in"</strong>, which tells you your role and
+       lists the clinic's <strong>rooms</strong>. Your treatment list is then one press away: the <strong>gear</strong> at the top
+       right → <strong>Set up services &amp; timings</strong>.</li>
     </ol>
-    <p>At the top right is a <strong>gear</strong> for <a href="switch-to-dark-mode.html">Switch-to-Dark-Mode</a> and <strong>Sign out</strong>.</p>
-    <blockquote>
-    <p>⚠ <strong>Your treatment list has no page in this manual yet.</strong> It reached the software after this
-    manual's last full pass, so rather than describe it from memory we have left it out until it can
-    be written properly. Ask us while you are setting yours up.</p>
-    </blockquote>
+    <p>At the top right is a <strong>gear</strong> for <a href="switch-to-dark-mode.html">Switch-to-Dark-Mode</a>, your treatment list, and <strong>Sign out</strong>.</p>
+    <h2>Your treatment list is the work Milestone 1 asks of you</h2>
+    <p>It is the only screen in Gompha today that is yours rather than the clinic's, and it is what
+    reception will book from when the schedule arrives. Getting it right now is the whole job.</p>
+    <ul>
+    <li><a href="set-up-your-treatment-list.html">Set-Up-Your-Treatment-List</a> — where it is, what the list shows, and what to do about rows that
+      came from your own price sheet</li>
+    <li><a href="add-a-treatment.html">Add-a-Treatment</a> — name, price in dollars or dinar, chair and working time, multi-visit work</li>
+    <li><a href="organise-your-treatment-list.html">Organise-Your-Treatment-List</a> — categories and your own order</li>
+    <li><a href="delete-and-restore-a-treatment.html">Delete-and-Restore-a-Treatment</a> — nothing is lost, ever</li>
+    </ul>
+    <p><strong>No other doctor can see it, and neither can the owner.</strong> If something on your list needs
+    correcting, only you can do it.</p>
     <h2>What is coming for you, and is not here yet</h2>
     <p>No schedule, no patient list, no patient card, no tooth chart, no notes, no X-rays, no earnings.
     None of it exists — and none of it is a permission problem or a misconfiguration.
@@ -754,7 +960,9 @@ data:
     (<a href="set-what-each-person-can-see.html">Set-What-Each-Person-Can-See</a>):</p>
     <ul>
     <li><strong>Financial information</strong> — normally <strong>Own</strong>, so your own earnings are yours. Two doctors in the
-      same clinic are not automatically partners in each other's money.</li>
+      same clinic are not automatically partners in each other's money. This is the one setting that
+      already bites today: set to <strong>None</strong>, prices on your own treatment list show as <strong>Hidden</strong> behind
+      a padlock.</li>
     <li><strong>Schedule</strong> — normally <strong>All</strong>: doctors see the whole clinic's book.</li>
     <li><strong>Patients</strong> — an admin doctor normally sees <strong>All</strong>; an associate doctor normally sees <strong>Own</strong>.</li>
     </ul>
@@ -794,16 +1002,71 @@ data:
     <div class="crumb"><a href="index.html">Gompha Manual</a></div>
     <div class="draft">Draft — this manual describes the upcoming version of Gompha.</div>
     <hr />
-    <p>tags: [concept, not-built]
-    status: not-built</p>
-    <hr />
+    <h2>tags: [concept, milestone-1, screen/services]</h2>
     <h1>Money in Two Currencies</h1>
-    <p><strong>Not built.</strong> Gompha holds no money at all yet — no prices, no payments, no balances, no Income
-    and Expenses. Nothing about how two currencies will work can be described honestly, so nothing is
-    described here.</p>
-    <p>The one money-shaped thing that <em>is</em> live is the licence, and that is a different subject:
-    <a href="what-your-licence-covers.html">What-Your-Licence-Covers</a>.</p>
-    <p>See <a href="whats-not-here-yet.html">Whats-Not-Here-Yet</a> · <a href="roadmap.html">Roadmap</a> · <a href="home.html">Home</a></p>
+    <p>Gompha holds <strong>no payments, no balances and no Income and Expenses</strong> yet. The only money in the
+    software today is <strong>a price on a doctor's own treatment</strong> (<a href="add-a-treatment.html">Add-a-Treatment</a>) — and the way that
+    price is stored is the rule everything later will follow, so it is worth reading once.</p>
+    <h2>One side is typed, the other is worked out</h2>
+    <p>A price is set in <strong>US dollars</strong> or in <strong>Iraqi dinar</strong>. Never both.</p>
+    <ul>
+    <li>The side you typed carries a small <strong>padlock</strong> and the words <strong>Set by you</strong>. That is the figure
+      Gompha keeps.</li>
+    <li>The other side says <strong>Converted</strong> and is worked out from the day's rate. On the list it appears
+      faintly, after a <strong>≈</strong>.</li>
+    <li>Typing into the converted side moves the padlock to it — the padlock, the bold figure and the
+      words <strong>Set by you</strong> all move, and the change is announced aloud for anyone using a screen
+      reader. A price that silently changed currency is the kind of mistake nobody finds until the end
+      of the month.</li>
+    </ul>
+    <p><strong>A dinar figure you typed is kept exactly as you typed it.</strong> 47,300 stays 47,300. A dinar figure
+    <em>converted from dollars</em> is rounded up to the nearest 250, because nobody at a front desk in Erbil
+    hands back 30 dinar.</p>
+    <h2>Unknown, free and zero are three different things</h2>
+    <p>The price control has three buttons — <strong>Unknown · Free · Priced</strong> — and they are not interchangeable.</p>
+    <table>
+    <thead>
+    <tr>
+    <th></th>
+    <th>What it means</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+    <td><strong>Unknown</strong></td>
+    <td>Nobody has decided a price yet. The list shows <strong>Add price</strong>.</td>
+    </tr>
+    <tr>
+    <td><strong>Free</strong></td>
+    <td>Somebody decided: a line that appears on the bill at nothing.</td>
+    </tr>
+    <tr>
+    <td><strong>Zero</strong></td>
+    <td>Not possible. An empty box can never be saved as <code>0</code>.</td>
+    </tr>
+    </tbody>
+    </table>
+    <p>This is the reason a treatment can sit on a list for weeks with no price and nothing is broken.
+    It is an empty field, not a fault.</p>
+    <h2>⚠ No exchange rate has been set yet</h2>
+    <p><strong>There is no screen for setting the dollar–dinar rate in the software today</strong>, and no rate has
+    been recorded. Until there is one:</p>
+    <ul>
+    <li>Prices <strong>save perfectly well</strong> in whichever currency you type.</li>
+    <li>The converted side stays <strong>empty</strong>, and the screen says so rather than showing a made-up figure.</li>
+    <li>Nothing is lost. The converted figure is worked out fresh every time it is shown, so the day a
+      rate is set, every price already entered gets its second figure at once.</li>
+    </ul>
+    <h2>Why it works this way</h2>
+    <p><strong>Storing both figures would freeze today's rate into next year's prices.</strong> The dinar moves. A
+    price list that quietly kept the rate of the day each line was typed would drift line by line, and
+    nobody would be able to say which figure was the real one. Gompha keeps the one a human chose and
+    recalculates the other on the spot.</p>
+    <p><strong>The rate that was used is written down and never overwritten.</strong> When rates start being recorded,
+    each one is kept with its date, for good — money arithmetic has to be reproducible long after the
+    person who typed the rate has left the clinic.</p>
+    <p>Not built yet: patient balances, payments, receipts, Income and Expenses. See
+    <a href="whats-not-here-yet.html">Whats-Not-Here-Yet</a> · <a href="roadmap.html">Roadmap</a> · <a href="home.html">Home</a></p>
     </div></body></html>
   "error-codes.html": |
     <!doctype html><html lang="en"><head><meta charset="utf-8">
@@ -951,6 +1214,71 @@ data:
     <td>Deliberate slowing-down. Wait about a minute. Nothing is locked or damaged.</td>
     </tr>
     <tr>
+    <td><strong>GMP-1305</strong></td>
+    <td>Someone else changed this while you were editing. Reload to see the newest version, then make your change again.</td>
+    <td>Two devices on the same treatment. <a href="add-a-treatment.html">Add-a-Treatment</a></td>
+    </tr>
+    <tr>
+    <td><strong>GMP-1307</strong></td>
+    <td>A price needs a currency and an amount. Set the currency, or mark the treatment free.</td>
+    <td>Half a price. <a href="dual-currency-money.html">Dual-Currency-Money</a></td>
+    </tr>
+    <tr>
+    <td><strong>GMP-1308</strong></td>
+    <td>That time cannot be saved. It must be at least one minute, and the shortest time cannot be longer than the longest.</td>
+    <td>A chair or working time typed as 0, or a range the wrong way round. <a href="add-a-treatment.html">Add-a-Treatment</a></td>
+    </tr>
+    <tr>
+    <td><strong>GMP-1309</strong></td>
+    <td>A part cannot itself be a treatment that has parts. Pick a single-visit treatment.</td>
+    <td>Multi-visit work, one level deep. <a href="add-a-treatment.html">Add-a-Treatment</a></td>
+    </tr>
+    <tr>
+    <td><strong>GMP-1311</strong></td>
+    <td>You already have a treatment with that name. Open the one you have.</td>
+    <td>Only on <strong>your own</strong> list; another doctor's wording is irrelevant. <a href="add-a-treatment.html">Add-a-Treatment</a></td>
+    </tr>
+    <tr>
+    <td><strong>GMP-1312</strong></td>
+    <td>You already have a category with that name here.</td>
+    <td><a href="organise-your-treatment-list.html">Organise-Your-Treatment-List</a></td>
+    </tr>
+    <tr>
+    <td><strong>GMP-1313</strong></td>
+    <td>Categories go one level deep. A sub-category cannot hold its own sub-categories.</td>
+    <td><a href="organise-your-treatment-list.html">Organise-Your-Treatment-List</a></td>
+    </tr>
+    <tr>
+    <td><strong>GMP-1314</strong></td>
+    <td>The new order is out of date — it does not list everything you have. Reload, then arrange again.</td>
+    <td>Your list changed elsewhere while you were dragging. <a href="organise-your-treatment-list.html">Organise-Your-Treatment-List</a></td>
+    </tr>
+    <tr>
+    <td><strong>GMP-1315</strong></td>
+    <td>This list is full. Delete something you no longer use before adding more.</td>
+    <td>300 treatments for one doctor. Tell us if you meet it.</td>
+    </tr>
+    <tr>
+    <td><strong>GMP-1316</strong></td>
+    <td>That belongs to another doctor's catalogue, so you cannot change it.</td>
+    <td>Nobody edits another doctor's list. <a href="roles-and-access.html">Roles-and-Access</a></td>
+    </tr>
+    <tr>
+    <td><strong>GMP-1317</strong></td>
+    <td>You now have a live treatment with that name, so this deleted one cannot come back under it. Rename the other one first.</td>
+    <td><a href="delete-and-restore-a-treatment.html">Delete-and-Restore-a-Treatment</a></td>
+    </tr>
+    <tr>
+    <td><strong>GMP-1318</strong></td>
+    <td>That was already deleted.</td>
+    <td>Two presses, or two devices. Nothing went wrong.</td>
+    </tr>
+    <tr>
+    <td><strong>GMP-1319</strong></td>
+    <td>This app is out of date. Refresh the page to load the newest version.</td>
+    <td>The browser is still running an old copy. Refresh the page.</td>
+    </tr>
+    <tr>
     <td><strong>GMP-1401</strong></td>
     <td>The clinic server is not reachable right now.</td>
     <td>Tell us. Not the same as your internet being down — see <a href="working-offline.html">Working-Offline</a>.</td>
@@ -962,17 +1290,16 @@ data:
     </tr>
     </tbody>
     </table>
-    <h2>⚠ How refusals are labelled on this version</h2>
-    <p>On the version now running, Gompha labels a refusal from <strong>the kind of refusal it is</strong> rather than
-    from the specific reason behind it. In practice that means the codes you will actually meet are
-    <strong>GMP-1002, 1101, 1301, 1302, 1303, 1304</strong> — the more specific ones in the list above are defined
-    and reserved, and become visible as each screen learns to name its own reason.</p>
-    <p>The one to know about: <strong>a lapsed licence is reported under GMP-1101 today</strong>, not GMP-1201. You can
-    tell them apart instantly without the code, because a lapsed licence also puts a padlock box on the
-    screen saying <em>"The clinic is read-only."</em> Padlock means the licence; no padlock means access.
+    <h2>How refusals are labelled on this version</h2>
+    <p>Signing in, adding people, and everything on a doctor's treatment list now name <strong>their own</strong>
+    reason, so the code you are shown is the specific one from the table above. Screens built later
+    will do the same as they arrive; anywhere that has not been given a specific reason yet falls back
+    to the general one for that kind of refusal — <strong>GMP-1002, 1101, 1301, 1302, 1303, 1304</strong>.</p>
+    <p><strong>A lapsed licence reports GMP-1201</strong> and also puts a padlock box on the screen reading <em>"The
+    clinic is read-only."</em> Padlock means the licence; no padlock means access.
     <a href="what-your-licence-covers.html">What-Your-Licence-Covers</a>.</p>
-    <p><strong>⚠ verify</strong> — this is what the running code does; expect this note to disappear as screens start
-    naming their own reasons.</p>
+    <p><strong>⚠ verify</strong> — <code>GMP-1306</code> and <code>GMP-1310</code> are defined but belong to a design that was withdrawn, and
+    nothing on a screen produces them today. If one ever reaches you, send it: that is a bug in itself.</p>
     <h2>Why it works this way</h2>
     <p><strong>A code is not decoration.</strong> "Something went wrong" tells nobody anything, and a clinic that reads
     it ten times learns to ignore the eleventh. A code lets a receptionist tell a doctor, a doctor tell
@@ -1255,7 +1582,7 @@ data:
     <hr />
     <h2>tags: [home]</h2>
     <h1>Gompha Manual</h1>
-    <p><strong>Version: Milestone 1 · checked against image <code>clinic-v0.1.14</code> · Stamped 2026-08-20</strong></p>
+    <p><strong>Version: Milestone 1 · checked against image <code>clinic-v0.1.14</code> · Stamped 2026-08-20 (pass 2)</strong></p>
     <blockquote>
     <h3>This manual covers Milestone 1 only</h3>
     <p>Milestone 1 is <strong>sign-in, people and access, rooms</strong>, and <strong>a doctor's own treatment list</strong>.
@@ -1264,9 +1591,6 @@ data:
     Income and Expenses, no inventory and no X-rays yet</strong>. If you are looking for one of those,
     read <a href="whats-not-here-yet.html">Whats-Not-Here-Yet</a> first so nobody spends an afternoon hunting for a screen that
     has not been built.</p>
-    <p>⚠ <strong>One live screen is not written up yet:</strong> a doctor's <strong>Services &amp; Timings</strong> — his treatments,
-    his prices, his timings. It shipped after this manual's last full pass. Everything else on this
-    page has been checked against the running software. <a href="whats-not-here-yet.html">Whats-Not-Here-Yet</a>.</p>
     </blockquote>
     <p>This vault is the single onboarding source for everyone who uses Gompha. It describes the
     software <strong>exactly as it is right now</strong>. Anything decided but not built lives as one line in
@@ -1318,6 +1642,13 @@ data:
     <li><a href="choose-a-doctor-colour.html">Choose-a-Doctor-Colour</a> — the colour a doctor gets on the schedule later</li>
     <li><a href="add-the-clinic-rooms.html">Add-the-Clinic-Rooms</a> — name each surgery</li>
     </ul>
+    <p><strong>Your own treatments</strong> (each doctor, for himself)</p>
+    <ul>
+    <li><a href="set-up-your-treatment-list.html">Set-Up-Your-Treatment-List</a> — where it is, and what the list shows</li>
+    <li><a href="add-a-treatment.html">Add-a-Treatment</a> — the name, the price, the times, multi-visit work</li>
+    <li><a href="organise-your-treatment-list.html">Organise-Your-Treatment-List</a> — categories, your own order, searching</li>
+    <li><a href="delete-and-restore-a-treatment.html">Delete-and-Restore-a-Treatment</a> — deleting, undo, and <strong>Recently deleted</strong></li>
+    </ul>
     <p><strong>Fixing something on a person's card</strong> (the owner)</p>
     <ul>
     <li><a href="give-someone-a-new-link.html">Give-Someone-a-New-Link</a> — lost invite, or a forgotten password</li>
@@ -1344,7 +1675,7 @@ data:
     <li><a href="working-offline.html">Working-Offline</a> — read this before the first "the internet is down" phone call</li>
     <li><a href="error-codes.html">Error-Codes</a> — look up any <code>GMP-…</code> code you have been shown</li>
     <li><a href="what-your-licence-covers.html">What-Your-Licence-Covers</a> — doctor seats, and what read-only means</li>
-    <li><a href="dual-currency-money.html">Dual-Currency-Money</a> — not built yet</li>
+    <li><a href="dual-currency-money.html">Dual-Currency-Money</a> — dollars and dinar on a treatment price</li>
     </ul>
     <h2>What is coming</h2>
     <p><a href="roadmap.html">Roadmap</a> — one line each, no dates, no promises.</p>
@@ -1412,6 +1743,86 @@ data:
     reminders will need later. A clinic that skips this step discovers it the day a reminder does not
     arrive.</p>
     <p>Next: <a href="working-offline.html">Working-Offline</a> · <a href="switch-to-dark-mode.html">Switch-to-Dark-Mode</a> · <a href="home.html">Home</a></p>
+    </div></body></html>
+  "organise-your-treatment-list.html": |
+    <!doctype html><html lang="en"><head><meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Organise Your Treatment List · Gompha Manual</title>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;600&family=IBM+Plex+Sans+Arabic&display=swap" rel="stylesheet">
+    <style>
+    body{margin:0;background:#FAF8F4;color:#3D3A34;font:15px/1.65 "IBM Plex Sans","IBM Plex Sans Arabic",sans-serif}
+    .wrap{max-width:760px;margin:0 auto;padding:40px 24px 80px}
+    a{color:#2E5D51} .dead{color:#98917F;border-bottom:1px dashed #C9C2B2}
+    h1,h2,h3{line-height:1.3} h1{font-size:26px}
+    code{background:#F1EDE6;border-radius:5px;padding:2px 6px}
+    .crumb{font-size:13px;color:#98917F;margin-bottom:28px} .crumb a{color:#6B655A;text-decoration:none}
+    .draft{background:#F3EDDC;color:#6A5A32;border-radius:9px;padding:9px 14px;font-size:13px;margin-bottom:26px}
+    table{border-collapse:collapse} td,th{border:1px solid #E9E3D8;padding:7px 12px;text-align:left}
+    </style></head><body><div class="wrap">
+    <div class="crumb"><a href="index.html">Gompha Manual</a></div>
+    <div class="draft">Draft — this manual describes the upcoming version of Gompha.</div>
+    <hr />
+    <p>tags: [task, milestone-1, screen/services, doctor]
+    screen: Your treatments (categories, order, search)</p>
+    <hr />
+    <h1>Organise Your Treatment List</h1>
+    <p><strong>For doctors only</strong>, on your own list (<a href="set-up-your-treatment-list.html">Set-Up-Your-Treatment-List</a>). Your categories, your
+    order. Nobody else sees either.</p>
+    <h2>Find one treatment</h2>
+    <p>Type into the <strong>Search a name or a code</strong> box at the top. It searches names and codes, in Arabic and
+    Kurdish script as well as English. If nothing matches you get one line — <em>No treatment matches "…"</em>
+    — and <strong>Clear search</strong> puts the whole list back.</p>
+    <h2>Group them under headings</h2>
+    <ol>
+    <li>Press <strong>+ New category</strong>.</li>
+    <li>Type the name and press <strong>Save</strong> (or <strong>Enter</strong>).</li>
+    <li>Put treatments into it either from the treatment itself — open it and pick the <strong>Category</strong>
+       (<a href="add-a-treatment.html">Add-a-Treatment</a>) — or from the list: press the <strong>⋮</strong> at the right of a line and choose
+       <strong>Move to category…</strong>, then pick one.</li>
+    </ol>
+    <p>On a category heading, the <strong>⋮</strong> gives you <strong>Rename</strong>, <strong>Add a subcategory</strong>, <strong>Move up</strong>, <strong>Move
+    down</strong> and <strong>Delete category</strong>.</p>
+    <ul>
+    <li><strong>Categories go one level deep.</strong> A subcategory cannot hold subcategories of its own.</li>
+    <li><strong>Pressing the heading folds the group shut.</strong> That is only for your eyes, on that device — it is
+      not saved for anyone else and it changes nothing.</li>
+    <li><strong>Anything not filed sits at the bottom</strong> under <strong>Not in a category</strong>.</li>
+    <li><strong>Deleting a category never deletes treatments.</strong> They move to <em>Not in a category</em>, and the
+      screen says so before you confirm.</li>
+    </ul>
+    <h2>Put them in your own order</h2>
+    <p>Three ways, all doing the same thing:</p>
+    <ul>
+    <li><strong>Drag</strong> the <strong>⠿</strong> handle at the left of a line up or down.</li>
+    <li><strong>Keyboard:</strong> move onto the handle with Tab, press <strong>Space</strong>, use <strong>↑</strong> and <strong>↓</strong>, press
+      <strong>Space</strong> to drop or <strong>Escape</strong> to cancel. Each move is announced — <em>"Position 3 of 12"</em> — for
+      anyone working by keyboard or with a screen reader.</li>
+    <li><strong>The ⋮ menu:</strong> <strong>Move up</strong>, <strong>Move down</strong>, <strong>Move to top</strong>.</li>
+    </ul>
+    <p>While it saves, a small line says <em>Saving your order…</em>. If the save fails you get
+    <em>Couldn't save the new order. The list is back the way it was.</em> with <strong>Try again</strong> — the list on
+    your screen is never left in an order the server does not have.</p>
+    <p><strong>Dragging works within one group.</strong> To move a treatment into a different category, use <strong>Move to
+    category…</strong> from the <strong>⋮</strong> menu.</p>
+    <h2>What you cannot do</h2>
+    <ul>
+    <li><strong>You cannot sort by price or by name.</strong> The order is the one you set, and nothing re-sorts it
+      behind your back.</li>
+    <li><strong>300 treatments and 60 categories</strong> is the ceiling per doctor. The largest real list in the
+      clinic is around thirty; if you ever meet the limit, tell us.</li>
+    </ul>
+    <h2>Why it works this way</h2>
+    <p><strong>The order is a clinical judgement, not data.</strong> The treatments you do ten times a day belong at
+    the top of your list, and only you know which those are. An alphabetical list, or one sorted by
+    price, buries them — and this list exists to be picked from quickly at the desk once booking
+    arrives.</p>
+    <p><strong>Right-click and long-press open the same ⋮ menu.</strong> They are shortcuts. Everything in that menu is
+    also reachable by pressing a visible button, because a menu that is the only way to do something is
+    invisible to anyone who was not shown it.</p>
+    <p><strong>Nothing here is shared.</strong> Your categories are yours. Another doctor filing the same treatment
+    under a different heading changes nothing on your screen — the two lists never meet.</p>
+    <p>Next: <a href="set-up-your-treatment-list.html">Set-Up-Your-Treatment-List</a> · <a href="delete-and-restore-a-treatment.html">Delete-and-Restore-a-Treatment</a> · <a href="add-a-treatment.html">Add-a-Treatment</a> ·
+    <a href="home.html">Home</a></p>
     </div></body></html>
   "passwords-and-sessions.html": |
     <!doctype html><html lang="en"><head><meta charset="utf-8">
@@ -1564,6 +1975,11 @@ data:
     </ul>
     <p>If a doctor tells you that you should be able to see something and you cannot, that is a
     conversation with the owner, not a fault to report.</p>
+    <p><strong>Treatments and prices are not yours to hold.</strong> Each doctor keeps his own list of what he does,
+    what he charges and how long it takes (<a href="set-up-your-treatment-list.html">Set-Up-Your-Treatment-List</a>). You have no screen for it
+    in this version, and you will not be typing prices. When the schedule arrives, you will book from
+    those lists — which is why the doctors are being asked to get them right now. If a doctor says a
+    treatment of his is "missing", the answer is that he adds it himself, on his own sign-in.</p>
     <h2>The one page you should actually read now</h2>
     <p><a href="working-offline.html">Working-Offline</a>. When the schedule arrives you will be the person who notices the internet is
     down first, and you need to know two things by heart:</p>
@@ -1604,7 +2020,11 @@ data:
     status: not-built</p>
     <hr />
     <h1>Record a Treatment</h1>
-    <p><strong>Not built.</strong> Treatments and clinical notes do not exist in Gompha yet.</p>
+    <p><strong>Not built.</strong> Recording work on a patient — what was done, on which tooth, with a note — does not
+    exist in Gompha yet. There are no patients in the software.</p>
+    <p><strong>Do not confuse it with the list of treatments you offer.</strong> That one <em>is</em> live: each doctor keeps
+    his own treatments, prices and times, ready for the day booking arrives.
+    <a href="set-up-your-treatment-list.html">Set-Up-Your-Treatment-List</a>.</p>
     <p>See <a href="whats-not-here-yet.html">Whats-Not-Here-Yet</a> · <a href="roadmap.html">Roadmap</a> · <a href="home.html">Home</a></p>
     </div></body></html>
   "register-a-patient.html": |
@@ -1738,20 +2158,29 @@ data:
     <li>Bringing an archived person back (<a href="archive-a-person.html">Archive-a-Person</a>).</li>
     <li>Changing a person's role, and moving an assistant to a different doctor.</li>
     <li>A screen for reading the record of who did what, and the owner's choice of who may read it.</li>
-    <li>Screens naming their own reason for a refusal, so a lapsed licence reports GMP-1201 rather than
-      the general permission code (<a href="error-codes.html">Error-Codes</a>).</li>
+    <li>The screens that do not yet name their own reason for a refusal learning to, so every code is the
+      specific one (<a href="error-codes.html">Error-Codes</a>).</li>
     <li>A warning before the licence lapses, and quiet automatic renewal behind it
       (<a href="what-your-licence-covers.html">What-Your-Licence-Covers</a>).</li>
     <li>A copy of the schedule and a doctor's own patients kept on the device, readable when the link is
       down (<a href="working-offline.html">Working-Offline</a>).</li>
     <li>Room opening hours, and splitting a shared room between doctors, set on the schedule itself.</li>
+    <li>A way back into the clinic setup screen from inside the app, instead of typing the address
+      (<a href="clinic-admin.html">Clinic-Admin</a>).</li>
+    <li>A screen for setting the day's dollar–dinar rate, so a price shows its converted figure
+      (<a href="dual-currency-money.html">Dual-Currency-Money</a>).</li>
+    <li>The owner being able to look at another doctor's treatment list to help him with it
+      (<a href="set-up-your-treatment-list.html">Set-Up-Your-Treatment-List</a>).</li>
+    <li>A doctor's own materials and medicines, linked to his treatments — step 2 of a doctor's setup is
+      the placeholder for it today.</li>
     </ul>
     <h2>The modules themselves</h2>
     <ul>
     <li>The schedule and the day grid — reception's home screen.</li>
     <li>Patients: the patient card, search, the clinical record.</li>
     <li>The tooth chart.</li>
-    <li>Treatments and notes.</li>
+    <li>Recording treatments and notes <strong>on a patient</strong> — separate from the list of treatments a doctor
+      offers, which is already live (<a href="record-a-treatment.html">Record-a-Treatment</a>).</li>
     <li>Income and Expenses, patient balances and payments.</li>
     <li>Inventory.</li>
     <li>X-rays and photos.</li>
@@ -1838,8 +2267,9 @@ data:
     <ul>
     <li>is always an <strong>admin doctor</strong> as well,</li>
     <li>is created when the clinic is first set up, not invited like everyone else,</li>
-    <li>lands on the <strong>Welcome</strong> setup screen instead of the ordinary home screen
-      (<a href="set-up-your-clinic.html">Set-Up-Your-Clinic</a>),</li>
+    <li>lands on the <strong>Welcome</strong> setup screen instead of the ordinary home screen until the clinic's
+      details are saved, and like any doctor on <strong>his own treatment list</strong> after that
+      (<a href="set-up-your-clinic.html">Set-Up-Your-Clinic</a>, <a href="set-up-your-treatment-list.html">Set-Up-Your-Treatment-List</a>),</li>
     <li>cannot be deactivated while they are the only owner.</li>
     </ul>
     <p><strong>Root is the ownership relationship with Gompha</strong>, not a job title. It is who decides who the users
@@ -1866,6 +2296,18 @@ data:
     <h2>What each person can see</h2>
     <p>Five sections, each set to All, Own or None, per person. That is its own page:
     <a href="set-what-each-person-can-see.html">Set-What-Each-Person-Can-See</a>.</p>
+    <p><strong>One of the five already does something today.</strong> <strong>Financial information</strong> decides whether a
+    person sees prices on a treatment list. Set to <strong>None</strong> — which is the normal setting for reception
+    and for an assistant — a price shows as <strong>Hidden</strong> behind a small padlock, and cannot be typed. The
+    other four are recorded and take effect as their modules arrive.</p>
+    <h2>A doctor's treatment list is his own, and no setting opens it</h2>
+    <p>Prices, times and the treatments themselves belong to <strong>one named doctor</strong>
+    (<a href="set-up-your-treatment-list.html">Set-Up-Your-Treatment-List</a>). There is no access level — not All, not the owner's, not an
+    admin doctor's — that lets one doctor open another's list. It is not a permission that has been
+    left switched off; the screen does not exist and the server refuses the request
+    (<code>GMP-1316</code>, <a href="error-codes.html">Error-Codes</a>).</p>
+    <p>An assistant is the one exception in the design: what she may read follows her supervising doctor,
+    so the treatments in her reach are his. In this version she has no screen to reach them from.</p>
     <h2>One person, one account</h2>
     <p>A person is one account, however many devices they use. A doctor on his phone, on the chair-side
     tablet and at the front desk is <strong>one</strong> person and <strong>one</strong> licensed seat, not three
@@ -1964,18 +2406,21 @@ data:
     greeting.</p>
     <h2>Step 3 — rooms</h2>
     <p>The heading reads <strong>"Register the clinic's rooms"</strong>. See <a href="add-the-clinic-rooms.html">Add-the-Clinic-Rooms</a>.</p>
-    <p>Press <strong>Finish setup →</strong> at the bottom right. That takes you into the app, on the home screen
-    everyone else sees.</p>
+    <p>Press <strong>Finish setup →</strong> at the bottom right. That takes you into the app.</p>
     <p>Setup is never sealed shut. Come back whenever you need to — see below.</p>
     <h2>Where Finish setup takes you</h2>
-    <p>Onto the same short home page everyone else gets: <strong>"You're signed in"</strong>, your role, and the list
-    of rooms you just named. In Milestone 1 there is nothing else behind it yet
-    (<a href="whats-not-here-yet.html">Whats-Not-Here-Yet</a>).</p>
+    <p>Into the app as a doctor: <strong>your own treatment list</strong>, until you have worked through that once too
+    (<a href="set-up-your-treatment-list.html">Set-Up-Your-Treatment-List</a>). After that, the same short home page everyone else gets —
+    <strong>"You're signed in"</strong>, your role, and the list of rooms you just named. In Milestone 1 there is
+    nothing else behind it yet (<a href="whats-not-here-yet.html">Whats-Not-Here-Yet</a>).</p>
     <h2>Getting back to setup later</h2>
-    <p>There is no menu item for it. <strong>Open the plain clinic address —
-    https://app-staging.gompha.com — and as the owner you land back on Welcome</strong>, with everything you
-    already entered in place. Use that whenever you need to add a person, fix an email, issue somebody
-    a new link, change access, or add a room.</p>
+    <p>There is no menu item for it, and once the clinic's details are saved the plain address takes you
+    into the app rather than back to Welcome.</p>
+    <p><strong>Add <code>/welcome</code> to the end of the clinic address</strong> — <code>https://app-staging.gompha.com/welcome</code> —
+    and you land back on the setup screen with everything you already entered in place. Use that
+    whenever you need to add a person, fix an email, issue somebody a new link, change access, or add a
+    room. <strong>Bookmark it.</strong></p>
+    <p><strong>⚠ verify</strong> — this is what the running version does; a button back into setup is owed.</p>
     <h2>Why it works this way</h2>
     <p><strong>Setup is not the app with a form dropped into it.</strong> There is no side menu here because none of
     those destinations exist for you yet, and a menu full of dead links is how software teaches people
@@ -1988,6 +2433,116 @@ data:
     sent to the server the moment you make it, and if one fails you get a plain sentence saying so and
     the control goes back to what it was. Nothing waits in the browser to be lost.</p>
     <p>Next: <a href="add-a-staff-member.html">Add-a-Staff-Member</a> · <a href="clinic-admin.html">Clinic-Admin</a> · <a href="home.html">Home</a></p>
+    </div></body></html>
+  "set-up-your-treatment-list.html": |
+    <!doctype html><html lang="en"><head><meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Set Up Your Treatment List · Gompha Manual</title>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;600&family=IBM+Plex+Sans+Arabic&display=swap" rel="stylesheet">
+    <style>
+    body{margin:0;background:#FAF8F4;color:#3D3A34;font:15px/1.65 "IBM Plex Sans","IBM Plex Sans Arabic",sans-serif}
+    .wrap{max-width:760px;margin:0 auto;padding:40px 24px 80px}
+    a{color:#2E5D51} .dead{color:#98917F;border-bottom:1px dashed #C9C2B2}
+    h1,h2,h3{line-height:1.3} h1{font-size:26px}
+    code{background:#F1EDE6;border-radius:5px;padding:2px 6px}
+    .crumb{font-size:13px;color:#98917F;margin-bottom:28px} .crumb a{color:#6B655A;text-decoration:none}
+    .draft{background:#F3EDDC;color:#6A5A32;border-radius:9px;padding:9px 14px;font-size:13px;margin-bottom:26px}
+    table{border-collapse:collapse} td,th{border:1px solid #E9E3D8;padding:7px 12px;text-align:left}
+    </style></head><body><div class="wrap">
+    <div class="crumb"><a href="index.html">Gompha Manual</a></div>
+    <div class="draft">Draft — this manual describes the upcoming version of Gompha.</div>
+    <hr />
+    <p>tags: [task, milestone-1, screen/services, doctor]
+    screen: Your treatments (services &amp; timings)</p>
+    <hr />
+    <h1>Set Up Your Treatment List</h1>
+    <p><strong>For doctors only.</strong> This is your own list of the treatments you do, with your price and how long
+    each one takes. Nobody else's list is on it, and no other doctor can see yours
+    (<a href="roles-and-access.html">Roles-and-Access</a>).</p>
+    <h2>Where it is</h2>
+    <ul>
+    <li><strong>Until you have finished it once, it opens by itself every time you sign in.</strong> You do not have
+      to look for it.</li>
+    <li><strong>Afterwards:</strong> press the <strong>gear</strong> at the top right, and under <strong>Your work</strong> press
+      <strong>Set up services &amp; timings</strong>.</li>
+    </ul>
+    <p>"Finished once" means you reached the end and pressed <strong>Finish</strong>. Pressing <strong>Later</strong> does not count
+    — it lets you past for that sign-in, and the screen opens again next time.</p>
+    <p>Receptionists and assistants have no such screen and no button for it. That is correct.</p>
+    <h2>What you are looking at</h2>
+    <p>Across the top: <strong>1 · Your treatments</strong> and <strong>2 · Your materials</strong>. Two named steps, not a wizard
+    you are trapped in.</p>
+    <p>Under the greeting:</p>
+    <ul>
+    <li>a <strong>search box</strong> — <em>Search a name or a code</em></li>
+    <li><strong>+ Add a treatment</strong> and <strong>+ New category</strong></li>
+    <li><strong>your list</strong>, one treatment per line</li>
+    <li>at the bottom, <strong>Later</strong> and <strong>Continue →</strong></li>
+    </ul>
+    <p>Each line shows, left to right on a computer: the <strong>treatment name</strong>, the <strong>chair time</strong>, the
+    <strong>price</strong>, and a faint <strong>≈</strong> figure in the other currency. On a phone the same line wraps into two:
+    name and price on top, code and time underneath.</p>
+    <p>Where a price or a chair time has never been filled in, the line says <strong>Add price</strong> or <strong>Add chair
+    time</strong> instead, in the same size as a real figure. It is an empty field, not a mistake.</p>
+    <p>Above the list, if any are unpriced, one grey sentence counts them: <em>"5 treatments have no price
+    yet."</em></p>
+    <h2>Steps</h2>
+    <ol>
+    <li>Sign in. If the treatment list does not open by itself, press the <strong>gear</strong> → <strong>Set up services
+       &amp; timings</strong>.</li>
+    <li>Read down the list. Anything already there was typed in from the price sheet you gave us — see
+       below.</li>
+    <li>Press any line to open it and correct it. <a href="add-a-treatment.html">Add-a-Treatment</a>.</li>
+    <li>Press <strong>+ Add a treatment</strong> for anything you do that is missing.</li>
+    <li>Fill in every <strong>Add price</strong> and <strong>Add chair time</strong> you can see.</li>
+    <li>Press <strong>Continue →</strong>. Step 2, <strong>Your materials</strong>, has nothing to do today — it is a sentence
+       telling you what will live there when inventory arrives.</li>
+    <li>Press <strong>Finish</strong>. You land on the plain <strong>"You're signed in"</strong> page.</li>
+    </ol>
+    <p>Nothing here is final. You can change any of it, any day.</p>
+    <h2>If your list arrived already filled in</h2>
+    <p>Most doctors' lists are not empty on the first sign-in. Before the clinic went live we typed in the
+    price sheet each doctor gave us.</p>
+    <ul>
+    <li><strong>Open a line and look at the bottom of the box.</strong> A small grey note says where the row came
+      from, and <em>"Your sheet said: …"</em> — the original wording, kept so you can check we read it right.</li>
+    <li><strong>Blanks are deliberate.</strong> Where the sheet had no price, or no time, or something we could not
+      read, the field was left empty rather than guessed. That is what <strong>Add price</strong> and <strong>Add chair
+      time</strong> are marking. <strong>An empty price is not zero and not free.</strong></li>
+    <li><strong>Anything you have already changed yourself is never overwritten.</strong> If we load a corrected sheet
+      later, rows you have edited are left exactly as you left them.</li>
+    <li><strong>A treatment you do that is not on the list is yours to add.</strong> Where a sheet was unclear — the
+      same treatment written twice with two different prices, for instance — we deliberately did not
+      choose for you. Press <strong>+ Add a treatment</strong> and put in the one you actually use, with the price
+      you actually charge. <strong>This is not missing data and there is nothing for us to fix.</strong></li>
+    <li><strong>Treatments you told us you no longer offer are not gone.</strong> They are under <strong>Recently deleted</strong>
+      at the bottom of the list, and one press brings any of them back.
+      <a href="delete-and-restore-a-treatment.html">Delete-and-Restore-a-Treatment</a>.</li>
+    </ul>
+    <h2>What this list does not do yet</h2>
+    <ul>
+    <li><strong>Reception cannot book from it yet</strong>, because there is no schedule yet. The list is being built
+      now so that it is ready and correct on the day the schedule arrives.</li>
+    <li><strong>The owner cannot open another doctor's list</strong>, not even to help. Ask the doctor to open his own.</li>
+    <li><strong>Prices follow access.</strong> If someone's <strong>Financial information</strong> is set to <strong>None</strong>, they see the
+      word <strong>Hidden</strong> with a small padlock where a price would be, on any list they can reach
+      (<a href="set-what-each-person-can-see.html">Set-What-Each-Person-Can-See</a>).</li>
+    </ul>
+    <h2>Why it works this way</h2>
+    <p><strong>Your list, not the clinic's.</strong> Two doctors in one clinic charge different prices, work at
+    different speeds and call the same treatment by different names. An earlier design had one shared
+    clinic list; it was withdrawn because it forced doctors to agree on wording before anyone could
+    book. Nobody has to negotiate with a colleague to add a line to his own list.</p>
+    <p><strong>The screen keeps coming back until you finish it.</strong> <strong>Later</strong> is real and always works, but it
+    lasts for that sign-in only. There is deliberately no <em>"don't show this again"</em>: a doctor with no
+    treatments cannot be booked once the schedule lands, and a box he dismissed in his first week would
+    be a poor reason for that.</p>
+    <p><strong>We fill in what we can read, and stop there.</strong> Where a price sheet is ambiguous, guessing puts a
+    number in front of a patient that no one at the clinic chose. The doctor is the only person who can
+    settle it, so the blank is left for him — and it shows up as <strong>Add price</strong>, every time he opens the
+    screen, until he does.</p>
+    <p>Next: <a href="add-a-treatment.html">Add-a-Treatment</a> · <a href="organise-your-treatment-list.html">Organise-Your-Treatment-List</a> ·
+    <a href="delete-and-restore-a-treatment.html">Delete-and-Restore-a-Treatment</a> · <a href="doctor.html">Doctor</a> · <a href="home.html">Home</a></p>
     </div></body></html>
   "set-what-each-person-can-see.html": |
     <!doctype html><html lang="en"><head><meta charset="utf-8">
@@ -2192,9 +2747,14 @@ data:
     </ol>
     <p>Where you land depends on who you are:</p>
     <ul>
-    <li><strong>The owner (root)</strong> lands on the setup screen, <strong>Welcome</strong>. See <a href="set-up-your-clinic.html">Set-Up-Your-Clinic</a>.</li>
-    <li><strong>Everyone else</strong> lands on a short page that says <em>"You're signed in"</em>, names your role, and
-      lists the clinic's rooms. In Milestone 1 that is all there is. See <a href="whats-not-here-yet.html">Whats-Not-Here-Yet</a>.</li>
+    <li><strong>The owner (root)</strong>, before the clinic's details are saved, lands on the setup screen,
+      <strong>Welcome</strong>. See <a href="set-up-your-clinic.html">Set-Up-Your-Clinic</a>.</li>
+    <li><strong>Any doctor</strong>, including the owner once setup is done, lands on <strong>his own treatment list</strong> —
+      every sign-in, until he has worked through it once and pressed <strong>Finish</strong>.
+      See <a href="set-up-your-treatment-list.html">Set-Up-Your-Treatment-List</a>.</li>
+    <li><strong>Everyone else</strong>, and every doctor who has finished that, lands on a short page that says
+      <em>"You're signed in"</em>, names your role, and lists the clinic's rooms. In Milestone 1 that is all
+      there is. See <a href="whats-not-here-yet.html">Whats-Not-Here-Yet</a>.</li>
     </ul>
     <p>Both screens carry the Gompha mark top-left with <strong>powered by Steficzko</strong> beneath it, and the same
     credit again at the very bottom of the page. It is the maker's name, and pressing it opens their
@@ -2307,7 +2867,13 @@ data:
     <li>It survives closing the browser and signing out.</li>
     <li>It does <strong>not</strong> follow you to another device, and it does not change what anyone else sees.</li>
     </ul>
-    <p><strong>Sign out</strong> also lives at the bottom of this popup. See <a href="sign-in.html">Sign-In</a>.</p>
+    <h2>What else is in this popup</h2>
+    <ul>
+    <li><strong>Your work — Set up services &amp; timings.</strong> Doctors only. It re-opens your own treatment list
+      whenever you want it, however finished it is. <a href="set-up-your-treatment-list.html">Set-Up-Your-Treatment-List</a>.</li>
+    <li><strong>Sign out</strong>, at the bottom. See <a href="sign-in.html">Sign-In</a>.</li>
+    </ul>
+    <p>Reception and assistants see the two appearance switches and Sign out, and nothing else.</p>
     <h2>Why it works this way</h2>
     <p><strong>Density is a choice, not a guess about your screen.</strong> Screen width is a poor guide to how the
     device is actually used: a chair-side tablet lives on a bracket at arm's length and needs big
@@ -2438,18 +3004,23 @@ data:
     <p>The clinic licence has expired, so nothing can be saved right now. Everything already saved is
     safe.</p>
     </blockquote>
-    <p><strong>⚠ On the version now running, that refusal is labelled GMP-1101</strong> — the general "your access does
-    not cover this" code — because the screens do not yet name their own reason. <strong>The padlock box is
-    what tells you it is the licence and not your permissions.</strong> See <a href="error-codes.html">Error-Codes</a>.</p>
+    <p>That is the code the running version actually gives for it. The padlock box says the same thing in
+    words, so you can tell a licence refusal from a permission refusal without reading the number at
+    all. See <a href="error-codes.html">Error-Codes</a>.</p>
     <p><strong>Read-only is not the same as offline.</strong> Offline means this device cannot reach the server;
     read-only means the server is fine and is waiting on a renewal. The two look similar on purpose —
     both are calm, informational, never red — but they are told apart by the icon and the wording. See
     <a href="working-offline.html">Working-Offline</a>.</p>
-    <h2>⚠ In Milestone 1 there is no warning before it happens</h2>
-    <p>The reminder that a licence is about to expire, and the automatic quiet renewal behind it, are not
-    built yet. Today a lapse arrives without notice.</p>
-    <p><strong>Practical consequence: keep track of the renewal date outside the app.</strong> Speak to us before it
-    falls due.</p>
+    <h2>The only warning is a small date beside the Gompha mark</h2>
+    <p><strong>The owner — and only the owner — sees the expiry date</strong> beside the word <em>Gompha</em> at the top left
+    of every signed-in screen, next to the version number: <em>expires 31 Aug</em>. It is quiet grey most of the
+    year, turns to a warning colour with a small triangle <strong>inside the last 30 days</strong>, and to an error
+    colour once the date has passed. Everybody else sees the version number alone.</p>
+    <p>That chip is the whole of the warning. <strong>There is no message, no email and no reminder</strong>, and the
+    quiet automatic renewal behind it is not built yet.</p>
+    <p><strong>Practical consequence: keep track of the renewal date outside the app as well.</strong> Nobody except
+    the owner can see it, and he only sees it if he looks at the corner of the screen. Speak to us
+    before it falls due.</p>
     <p><strong>This is not hypothetical.</strong> The licence on the clinic now running at
     https://app-staging.gompha.com <strong>runs out on 31 August 2026</strong>. On that day, without a renewal, the
     padlock box appears and nothing further can be saved. Nothing is lost when it does.</p>
@@ -2496,7 +3067,8 @@ data:
     <p><strong>Gompha is being built in milestones. This manual, and the software behind it, is at
     Milestone 1.</strong></p>
     <p>Milestone 1 is deliberately small. It is the part everything else needs first: who the users
-    are, what each of them may see, and which rooms the clinic has.</p>
+    are, what each of them may see, which rooms the clinic has, and what each doctor treats and
+    charges.</p>
     <h2>What Milestone 1 gives you</h2>
     <ul>
     <li>Signing in and out, with your own password (<a href="sign-in.html">Sign-In</a>)</li>
@@ -2511,10 +3083,11 @@ data:
     <li>Dark mode and a display-density switch (<a href="switch-to-dark-mode.html">Switch-to-Dark-Mode</a>)</li>
     <li>An error code and a reference on failures, with a <strong>Report this</strong> link
       (<a href="when-something-goes-wrong.html">When-Something-Goes-Wrong</a>, <a href="error-codes.html">Error-Codes</a>)</li>
-    <li><strong>A doctor's own treatment list, with his prices and his timings</strong> — the <strong>Services &amp; Timings</strong>
-      screen. ⚠ This shipped after the last full pass of this manual and <strong>has no page here yet</strong>; a
-      doctor setting his list up should ask us rather than guess. It is the reason a doctor signing in
-      now lands on his own setup screen instead of the plain "You're signed in" page.</li>
+    <li><strong>A doctor's own treatment list, with his prices and his timings</strong> — his treatments in his own
+      order, priced in dollars or dinar, with chair and working times and multi-visit work
+      (<a href="set-up-your-treatment-list.html">Set-Up-Your-Treatment-List</a>, <a href="add-a-treatment.html">Add-a-Treatment</a>, <a href="organise-your-treatment-list.html">Organise-Your-Treatment-List</a>,
+      <a href="delete-and-restore-a-treatment.html">Delete-and-Restore-a-Treatment</a>). It is the reason a doctor signing in lands on his own setup
+      screen rather than the plain "You're signed in" page.</li>
     </ul>
     <h2>What it does not give you</h2>
     <p>None of the following exists in the software today. Not hidden, not behind a permission, not
@@ -2568,6 +3141,22 @@ data:
     <td>Not built</td>
     </tr>
     <tr>
+    <td>Booking a patient onto a treatment from a doctor's list</td>
+    <td>Not built — the list is ready first, the schedule follows (<a href="set-up-your-treatment-list.html">Set-Up-Your-Treatment-List</a>)</td>
+    </tr>
+    <tr>
+    <td>The owner opening another doctor's treatment list, even to help</td>
+    <td>Not built — each doctor's list is his own (<a href="roles-and-access.html">Roles-and-Access</a>)</td>
+    </tr>
+    <tr>
+    <td>A screen for setting the dollar–dinar exchange rate</td>
+    <td>Not built — until it exists, a price saves in the currency you typed and no converted figure is shown (<a href="dual-currency-money.html">Dual-Currency-Money</a>)</td>
+    </tr>
+    <tr>
+    <td>A doctor's own materials and medicines</td>
+    <td>Not built — step 2 of a doctor's setup says so and asks nothing of him</td>
+    </tr>
+    <tr>
     <td>Email from Gompha — invites and password links arrive by hand</td>
     <td><strong>Deliberately off</strong> (<a href="give-someone-a-new-link.html">Give-Someone-a-New-Link</a>)</td>
     </tr>
@@ -2592,15 +3181,18 @@ data:
     <p><strong>A receptionist or an assistant who signs in today sees one screen</strong>: a short "You're signed in"
     page that names your role and lists the clinic's rooms. That is correct behaviour, not a fault, and
     not a permission problem. See <a href="receptionist.html">Receptionist</a> and <a href="assistant.html">Assistant</a>.</p>
-    <p><strong>A doctor sees that page too, plus his own Services &amp; Timings</strong> — his treatment list, his prices,
-    his timings. Nothing patient-facing hangs off it yet. See <a href="doctor.html">Doctor</a>.</p>
+    <p><strong>A doctor sees that page too, plus his own treatment list</strong> — his treatments, his prices, his
+    timings, which is the one piece of real work Milestone 1 asks of him. Nothing patient-facing hangs
+    off it yet. See <a href="doctor.html">Doctor</a> and <a href="set-up-your-treatment-list.html">Set-Up-Your-Treatment-List</a>.</p>
     <h2>Why the access settings are there before the screens are</h2>
     <p>The five sections you set in Milestone 1 (<a href="set-what-each-person-can-see.html">Set-What-Each-Person-Can-See</a>) are recorded now and
     govern each module <strong>as it arrives</strong>. Getting them decided before there is a patient record to
     guard is deliberate: retrofitting access to a system that already holds clinical data is how
     clinics end up with everyone seeing everything.</p>
-    <p>So today, setting a section to <code>None</code> has nothing yet to hide. It will, the moment the module it
-    covers ships.</p>
+    <p>Most of them have nothing to hide yet, and will the moment the module they cover ships. <strong>One
+    already works:</strong> <strong>Financial information</strong> set to <code>None</code> hides the prices on a doctor's own
+    treatment list — he sees the word <strong>Hidden</strong> behind a small padlock where a price would be, and
+    cannot set one. That is the access setting doing its job, not a fault.</p>
     <h2>Two things to tell staff on day one</h2>
     <ol>
     <li><strong>Do not go looking for the schedule.</strong> It is not there. Nobody has misconfigured anything.</li>
@@ -2658,6 +3250,8 @@ data:
     </ol>
     <p>If <strong>Report this</strong> does not appear, the server did not give a code. Press <strong>Retry</strong>, and if it
     keeps failing, tell us which screen you were on and roughly when.</p>
+    <p><strong>If we ask which version you are on</strong>, it is the small grey number beside the word <em>Gompha</em> at the
+    top left of the screen, for example <code>v0.1.14</code>. Everybody can see it.</p>
     <h2>What the email contains, and what it does not</h2>
     <p>The message carries <strong>four identifiers and nothing else</strong>:</p>
     <table>
@@ -2767,8 +3361,17 @@ data:
     <blockquote>
     <p>No connection — adding a person needs the clinic link.</p>
     </blockquote>
-    <p>There is no half-saved person, no queue, and nothing to clean up afterwards. Do it again when the
-    connection is back.</p>
+    <p>Saving a treatment offline says:</p>
+    <blockquote>
+    <p><strong>No connection — this can't be saved yet.</strong> Your entries are still here; try again when the link
+    is back.</p>
+    </blockquote>
+    <p>And it means it: what you typed stays on the screen, so when the link returns you press <strong>Save</strong>
+    once and it goes in (<a href="add-a-treatment.html">Add-a-Treatment</a>). On the treatment list itself, the buttons that write —
+    <strong>+ Add a treatment</strong>, <strong>+ New category</strong>, the drag handle, the actions in the <strong>⋮</strong> menu — go grey
+    while the link is down, and hovering one says <em>"Needs the clinic link."</em></p>
+    <p>There is no half-saved person, no half-saved treatment, no queue, and nothing to clean up
+    afterwards. Do it again when the connection is back.</p>
     <h2>What being offline does <em>not</em> do</h2>
     <ul>
     <li><strong>It does not sign you out.</strong> A dropped link is not a sign-out. Your session survives; you carry
