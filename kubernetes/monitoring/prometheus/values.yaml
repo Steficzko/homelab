@@ -49,6 +49,19 @@ prometheus:
   prometheusSpec:
     retention: 7d
     retentionSize: 8GiB
+    # Added 2026-08-20 after Prometheus was OOM-killed (exit 137) on k3s-prg-w2.
+    # It ran with no requests/limits at all, which meant two things: the scheduler
+    # counted it as consuming nothing when placing pods, and under node memory
+    # pressure the kernel picked it first (BestEffort dies before Burstable).
+    # Steady state measured 2776Mi. requests drive scheduling; the limit is
+    # deliberately generous because WAL replay after a restart spikes well above
+    # steady state — too tight a limit turns one OOM into a crash-loop.
+    resources:
+      requests:
+        memory: 3Gi
+        cpu: 200m
+      limits:
+        memory: 6Gi
     storageSpec:
       volumeClaimTemplate:
         spec:
