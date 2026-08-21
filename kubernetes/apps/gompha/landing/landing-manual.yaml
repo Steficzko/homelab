@@ -149,12 +149,57 @@ data:
     <li><strong>Role</strong> — pick one of four: <strong>Admin doctor</strong>, <strong>Associate doctor</strong>, <strong>Receptionist</strong>,
        <strong>Assistant</strong>. The box starts on <em>Associate doctor</em>. <a href="roles-and-access.html">Roles-and-Access</a> explains the
        difference.</li>
+    <li><strong>How he works with the clinic</strong> — this field appears <strong>only for a doctor</strong> (either kind), and
+       it is required. See the section below.</li>
     <li><strong>Supervising doctor</strong> — this field appears <strong>only when you pick Assistant</strong>, and it is
        required. Choose the doctor she works under. If you have not added any doctors yet the field is
        greyed out and says <em>"Add a doctor first — an assistant works under one."</em> So <strong>add the doctors
        before the assistants.</strong></li>
     <li>Press <strong>Create invite</strong>.</li>
     </ol>
+    <h2>For a doctor: how he works with the clinic</h2>
+    <p>This is the one question you must be ready to answer before you invite a doctor. The field starts
+    empty, reading <strong>Choose one…</strong>, and under it: <em>"Asked once, now — it decides how his money is
+    settled and what his access starts at. There is no default."</em></p>
+    <p>Open it and each choice carries its own meaning underneath:</p>
+    <table>
+    <thead>
+    <tr>
+    <th>Choice</th>
+    <th>What it means</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+    <td><strong>Co-owner</strong></td>
+    <td>Owns a share of the clinic. He sees the house's numbers as well as his own.</td>
+    </tr>
+    <tr>
+    <td><strong>Rents a chair</strong></td>
+    <td>Keeps his own patients and his own earnings, and pays rent to the clinic.</td>
+    </tr>
+    <tr>
+    <td><strong>Salaried</strong></td>
+    <td>Paid a salary by the clinic. His patients are the clinic's and his production is clinic revenue.</td>
+    </tr>
+    <tr>
+    <td><strong>Percentage</strong></td>
+    <td>Keeps an agreed share of what he produces; the rest is the clinic's.</td>
+    </tr>
+    </tbody>
+    </table>
+    <p>Pick the one that describes the real arrangement. If you are not sure, <strong>ask him before you send
+    the invite</strong> — do not guess.</p>
+    <p>Choosing <strong>Salaried</strong> adds one more line under the field: <em>"Because his patients are the clinic's,
+    his starting access is set clinic-wide rather than to his own list. You can change any of it in the
+    grid."</em> That is the only choice that moves his starting access, and you can change any of it
+    afterwards (<a href="set-what-each-person-can-see.html">Set-What-Each-Person-Can-See</a>).</p>
+    <p><strong>You cannot send a doctor's invite without answering it.</strong> Leave it empty and pressing <strong>Create
+    invite</strong> shows <em>"Choose how this doctor works with the clinic."</em> and nothing is sent.</p>
+    <p><strong>It is asked once and does not appear again.</strong> It is not shown on his card, and there is no screen
+    to change it afterwards — a doctor's terms are between him and the owner, not something the rest of
+    the staff read off a screen. If an arrangement really changes, that is a call to us for now.</p>
+    <p><strong>Reception and assistants are never asked this.</strong> Their invite is exactly as it was.</p>
     <h2>Then: send the link, or the person cannot get in</h2>
     <p>The popup does not just close. It changes to <strong>Invite created</strong> and shows:</p>
     <ul>
@@ -208,6 +253,11 @@ data:
     <td>Contact support. Reception and assistants can still be added.</td>
     </tr>
     <tr>
+    <td><strong>Choose how this doctor works with the clinic.</strong></td>
+    <td>You are inviting a doctor and left the working arrangement empty.</td>
+    <td>Pick one of the four. There is no default on purpose.</td>
+    </tr>
+    <tr>
     <td><strong>Choose the supervising doctor.</strong></td>
     <td>You picked Assistant and left the doctor blank.</td>
     <td>Pick the doctor.</td>
@@ -250,14 +300,24 @@ data:
     </tr>
     </tbody>
     </table>
-    <p><strong>The one thing you still cannot change is which doctor an assistant works under.</strong> Choose it
-    correctly here — it has no button yet, and it moves everything she can see at once.</p>
+    <p><strong>Two things you still cannot change</strong>, so get them right at the invite:</p>
+    <ul>
+    <li><strong>Which doctor an assistant works under.</strong> It has no button yet, and it moves everything she can
+      see at once.</li>
+    <li><strong>How a doctor works with the clinic.</strong> It has no button either, and it is what his money will be
+      settled from later.</li>
+    </ul>
     <h2>Why it works this way</h2>
     <p><strong>The owner creates people; people create their own passwords.</strong> No shared first password ever
     circulates, and there is no moment when someone else knows your password.</p>
     <p><strong>Reception and assistants are not counted against your licence; doctors are.</strong> Doctors are what a
     dental practice is sized by, and capping receptionists would only push a clinic into sharing one
     front-desk login — which destroys the record of who did what. See <a href="what-your-licence-covers.html">What-Your-Licence-Covers</a>.</p>
+    <p><strong>A doctor's arrangement is asked at the invite, and it has no default.</strong> It is the one moment when
+    the person who knows the answer is sitting in front of the question. A pre-selected value would be
+    worse than no value: in the first version of Gompha every doctor quietly counted as an owner
+    because that is what the box happened to say, and nobody noticed until the money did not add up.
+    An empty box that refuses to go forward is honest; a plausible-looking wrong one is not.</p>
     <p><strong>An assistant must have exactly one supervising doctor, and nobody else has one.</strong> Half of an
     assistant's access is defined by the words "her doctor's" — her doctor's patients, her doctor's
     schedule. Without a named doctor those permissions have no meaning, so the app refuses to create
@@ -599,17 +659,20 @@ data:
     <h2>You are attached to one doctor, and that matters</h2>
     <p>Every assistant is created <strong>under one named doctor</strong>. On the owner's screen your card reads
     <em>"Assistant · under Dr …"</em>.</p>
-    <p>That doctor decides the meaning of almost everything you can see. Your access is set to <strong>Own</strong> in
-    most sections, and for you <strong>"own" means your doctor's</strong>
+    <p>That doctor decides the meaning of almost everything you can see
     (<a href="set-what-each-person-can-see.html">Set-What-Each-Person-Can-See</a>):</p>
     <ul>
     <li><strong>His patients</strong>, as contacts and as clinical records — not the whole clinic's</li>
     <li><strong>His schedule</strong> — not the whole clinic's book</li>
-    <li><strong>What his patients owe</strong></li>
     </ul>
-    <p>One section starts at <strong>None</strong>: <strong>Financial information</strong>. For you that would mean <em>your doctor's
-    earnings</em>, which is not something the software hands over by default. The owner can grant it, and
-    that has to be a choice somebody makes on purpose.</p>
+    <p><strong>You never see more than he does.</strong> On those three sections what the owner sets on your card is a
+    <strong>ceiling</strong>, not a grant: it can hold you <em>below</em> your doctor, never above him. Your card says so
+    under each of them — <em>"This is a ceiling: she never sees more than <his name> does."</em> So if his
+    access changes, yours moves with it on the same day, with nobody touching your card.</p>
+    <p>Two sections are yours rather than his, and both start at <strong>None</strong>: <strong>Financial information</strong> and
+    <strong>Patient financial record</strong>. For you the first would mean <em>your doctor's earnings</em>, which is not
+    something the software hands over by default. The owner can grant either, and that has to be a
+    choice somebody makes on purpose.</p>
     <p><strong>His treatment list is his alone.</strong> Each doctor keeps his own treatments, prices and times
     (<a href="set-up-your-treatment-list.html">Set-Up-Your-Treatment-List</a>). In this version there is no screen for you to open it — no button
     in your gear menu, and nothing on your home page. If he asks you to fix a price for him, he has to
@@ -719,8 +782,8 @@ data:
     </ul>
     <p><strong>A doctor's colour also tints his own card.</strong> The five access controls on that card take his
     colour, so with a dozen cards on screen you can see at a glance whose settings you are changing.
-    The words <strong>All / Own / None</strong> and their small monochrome gauge carry the setting itself — the
-    colour only says <em>whose card this is</em>.</p>
+    The words <strong>All / Clinic / Own / None</strong> and their small monochrome squares carry the setting itself
+    — the colour only says <em>whose card this is</em>.</p>
     <h2>Why it works this way</h2>
     <p><strong>Twelve chosen colours, not a colour wheel.</strong> They are picked to stay readable side by side, in
     light and in dark mode, on the old tablets as well as a new phone. A free colour picker produces
@@ -773,7 +836,9 @@ data:
     <ol>
     <li><strong>Read the greeting and check your own card.</strong> Your name, your email, a green ROOT badge.
        Collect the emails it asks you for before you go further — each doctor's, reception's, and each
-       assistant's along with which doctor she works under.</li>
+       assistant's along with which doctor she works under. <strong>For each doctor you will also be asked
+       how he works with the clinic</strong> — co-owner, rents a chair, salaried or percentage — so settle
+       that with him beforehand. There is no default and the invite will not send without it.</li>
     <li><strong>Add the doctors first.</strong> <a href="add-a-staff-member.html">Add-a-Staff-Member</a>. Assistants cannot be created until a doctor
        exists to attach them to.</li>
     <li><strong>Add reception and the assistants.</strong></li>
@@ -815,7 +880,8 @@ data:
     <ul>
     <li><strong>Bring an archived person back.</strong> Archiving is one-way in this version — read
       <a href="archive-a-person.html">Archive-a-Person</a> before you press it.</li>
-    <li><strong>Change a person's role</strong>, or <strong>which doctor an assistant works under</strong>.</li>
+    <li><strong>Change a person's role</strong>, <strong>which doctor an assistant works under</strong>, or <strong>how a doctor works
+      with the clinic</strong> — the last one is asked once, at the invite, and has no screen afterwards.</li>
     <li><strong>Read the record of who did what.</strong> It is being kept; there is no screen for it yet.</li>
     <li><strong>Open another doctor's treatment list</strong> — not even to help him, and not even as the owner. Each
       doctor's prices and times are his own (<a href="set-up-your-treatment-list.html">Set-Up-Your-Treatment-List</a>).</li>
@@ -957,17 +1023,25 @@ data:
     <a href="whats-not-here-yet.html">Whats-Not-Here-Yet</a>.</p>
     <h2>What has already been decided about your access</h2>
     <p>The owner has set five things for you, and they take effect as each module arrives
-    (<a href="set-what-each-person-can-see.html">Set-What-Each-Person-Can-See</a>):</p>
+    (<a href="set-what-each-person-can-see.html">Set-What-Each-Person-Can-See</a>). Each is one of four levels — <strong>All</strong>, <strong>Clinic</strong>, <strong>Own</strong> or
+    <strong>None</strong> — where <strong>Clinic</strong> means <em>the house's plus your own, and never a colleague's personal
+    book</em>.</p>
     <ul>
-    <li><strong>Financial information</strong> — normally <strong>Own</strong>, so your own earnings are yours. Two doctors in the
-      same clinic are not automatically partners in each other's money. This is the one setting that
-      already bites today: set to <strong>None</strong>, prices on your own treatment list show as <strong>Hidden</strong> behind
-      a padlock.</li>
+    <li><strong>Financial information</strong> — an <strong>admin doctor</strong> normally starts on <strong>Clinic</strong>: the house's
+      numbers and his own, not another doctor's earnings. An <strong>associate doctor</strong> normally starts on
+      <strong>Own</strong>. This is the one setting that already bites today: set to <strong>None</strong>, prices on your own
+      treatment list show as <strong>Hidden</strong> behind a padlock.</li>
     <li><strong>Schedule</strong> — normally <strong>All</strong>: doctors see the whole clinic's book.</li>
-    <li><strong>Patients</strong> — an admin doctor normally sees <strong>All</strong>; an associate doctor normally sees <strong>Own</strong>.</li>
+    <li><strong>Patients</strong>, as contacts and as clinical records — an <strong>admin doctor</strong> normally starts on
+      <strong>Clinic</strong>; an <strong>associate doctor</strong> on <strong>Own</strong>, unless he is salaried, in which case the clinic's
+      patients are his work and he starts on <strong>Clinic</strong> too.</li>
     </ul>
     <p>If any of that is wrong for how this clinic works, ask the owner. It is one press on a card, and it
     takes effect immediately.</p>
+    <p><strong>You were invited with a working arrangement</strong> — co-owner, rents a chair, salaried or percentage.
+    The owner answered it once when he created your account. It decides how your money is settled once
+    the money screens exist, and it is why a salaried doctor starts wider than a renting one. It is not
+    displayed anywhere in the app, and changing it needs a call to us (<a href="add-a-staff-member.html">Add-a-Staff-Member</a>).</p>
     <h2>Practical things worth knowing now</h2>
     <ul>
     <li><strong>Install it on your phone.</strong> You will be working from your phone once the schedule lands, and the
@@ -1582,7 +1656,7 @@ data:
     <hr />
     <h2>tags: [home]</h2>
     <h1>Gompha Manual</h1>
-    <p><strong>Version: Milestone 1 · checked against image <code>clinic-v0.1.14</code> · Stamped 2026-08-21 (pass 3)</strong></p>
+    <p><strong>Version: Milestone 1 · checked against image <code>clinic-v0.1.15</code> · Stamped 2026-08-22 (pass 4)</strong></p>
     <blockquote>
     <h3>This manual covers Milestone 1 only</h3>
     <p>Milestone 1 is <strong>sign-in, people and access, rooms</strong>, and <strong>a doctor's own treatment list</strong>.
@@ -1638,7 +1712,7 @@ data:
     <ul>
     <li><a href="set-up-your-clinic.html">Set-Up-Your-Clinic</a> — the three-step Welcome</li>
     <li><a href="add-a-staff-member.html">Add-a-Staff-Member</a> — add a person and send them their invite</li>
-    <li><a href="set-what-each-person-can-see.html">Set-What-Each-Person-Can-See</a> — the five access sections</li>
+    <li><a href="set-what-each-person-can-see.html">Set-What-Each-Person-Can-See</a> — the five access sections and their four levels</li>
     <li><a href="choose-a-doctor-colour.html">Choose-a-Doctor-Colour</a> — the colour a doctor gets on the schedule later</li>
     <li><a href="add-the-clinic-rooms.html">Add-the-Clinic-Rooms</a> — name each surgery</li>
     </ul>
@@ -1971,7 +2045,9 @@ data:
       not a restriction on you personally: a name and a phone number are one thing, a medical record is
       another.</li>
     <li><strong>Financial information — None.</strong> The clinic's and the doctors' own earnings are not front-desk
-      information.</li>
+      information. This one cannot be opened all the way even if somebody wants to: <strong>the widest
+      setting on that section is reserved for admin doctors</strong>, because salaries will be read through it
+      (<a href="set-what-each-person-can-see.html">Set-What-Each-Person-Can-See</a>).</li>
     </ul>
     <p>If a doctor tells you that you should be able to see something and you cannot, that is a
     conversation with the owner, not a fault to report.</p>
@@ -2156,7 +2232,10 @@ data:
       mail address, switched on only after a test message actually arrives. Until then links are
       hand-delivered (<a href="give-someone-a-new-link.html">Give-Someone-a-New-Link</a>).</li>
     <li>Bringing an archived person back (<a href="archive-a-person.html">Archive-a-Person</a>).</li>
-    <li>Changing a person's role, and moving an assistant to a different doctor.</li>
+    <li>Changing a person's role, moving an assistant to a different doctor, and changing how a doctor
+      works with the clinic after his invite (<a href="add-a-staff-member.html">Add-a-Staff-Member</a>).</li>
+    <li>A screen any member of staff can open to read what each access level means and who currently
+      holds it — levels only, never which patients (<a href="set-what-each-person-can-see.html">Set-What-Each-Person-Can-See</a>).</li>
     <li>A screen for reading the record of who did what, and the owner's choice of who may read it.</li>
     <li>The screens that do not yet name their own reason for a refusal learning to, so every code is the
       specific one (<a href="error-codes.html">Error-Codes</a>).</li>
@@ -2295,9 +2374,29 @@ data:
     </ul>
     <p>If a new assistant reports that she "can't see anything", check her doctor's card first. That is
     almost always the answer.</p>
+    <p><strong>Her clinical settings are a ceiling, not a grant.</strong> On <strong>Schedule</strong>, <strong>Patients as contacts</strong> and
+    <strong>Patients as medical</strong>, what her card holds is <em>the most</em> she may see — she never sees more than
+    her doctor does, whatever the card says. Her card says so under each of those three controls. Her
+    two money sections work the ordinary way and start at <strong>None</strong>.</p>
+    <h2>Every doctor is invited with a working arrangement</h2>
+    <p>When the owner invites a doctor, he must say how that doctor works with the clinic: <strong>co-owner</strong>,
+    <strong>rents a chair</strong>, <strong>salaried</strong> or <strong>percentage</strong> (<a href="add-a-staff-member.html">Add-a-Staff-Member</a>). There is no default —
+    the invite will not send without an answer.</p>
+    <p>It does two things. It is what the doctor's money will be settled from when the money screens
+    arrive, and it sets where his access starts: a <strong>salaried</strong> doctor's patients are the clinic's, so
+    he starts clinic-wide rather than on his own list.</p>
+    <p><strong>It is asked once and shown nowhere afterwards.</strong> It is not on his card and not in the access
+    grid. A doctor's terms with the clinic are between him and the owner; the software is not the place
+    colleagues read them off. There is no screen to change it in this version.</p>
     <h2>What each person can see</h2>
-    <p>Five sections, each set to All, Own or None, per person. That is its own page:
-    <a href="set-what-each-person-can-see.html">Set-What-Each-Person-Can-See</a>.</p>
+    <p>Five sections, each set to <strong>All</strong>, <strong>Clinic</strong>, <strong>Own</strong> or <strong>None</strong>, per person. That is its own
+    page: <a href="set-what-each-person-can-see.html">Set-What-Each-Person-Can-See</a>.</p>
+    <p>The four levels contain each other — <strong>None ⊂ Own ⊂ Clinic ⊂ All</strong>. <strong>Clinic</strong> is the one worth
+    learning: it means <em>the house's plus my own, and never a colleague's personal book</em>. It is what an
+    admin doctor starts on, so he can run the clinic without reading another doctor's earnings.</p>
+    <p><strong>One level is reserved: Financial information set to All can only be given to an admin doctor.</strong>
+    Salaries will be read through it. On anyone else's card the button is faded and the database
+    refuses the setting outright.</p>
     <p><strong>One of the five already does something today.</strong> <strong>Financial information</strong> decides whether a
     person sees prices on a treatment list. Set to <strong>None</strong> — which is the normal setting for reception
     and for an assistant — a price shows as <strong>Hidden</strong> behind a small padlock, and cannot be typed. The
@@ -2393,6 +2492,9 @@ data:
     </ul>
     <p>Collect those before you press the button. Adding people is much faster with the list in front of
     you.</p>
+    <p><strong>One thing the card does not list, and you will be asked for it:</strong> for every doctor, how he works
+    with the clinic — co-owner, rents a chair, salaried or percentage. Settle it with each doctor
+    first; the invite will not send without an answer (<a href="add-a-staff-member.html">Add-a-Staff-Member</a>).</p>
     <p>Press <strong>Start — add the team →</strong> at the bottom.</p>
     <h2>Step 2 — people and access</h2>
     <p>The heading reads <strong>"Who works here, and what can each see?"</strong> This is the main work of Milestone 1
@@ -2574,7 +2676,7 @@ data:
     <h1>Set What Each Person Can See</h1>
     <p><strong>For the owner only.</strong> The <strong>people and access</strong> step of <a href="set-up-your-clinic.html">Set-Up-Your-Clinic</a>.</p>
     <p>Every person in the clinic gets one card. On each card there are <strong>five sections</strong>, and each
-    section is set to <strong>All</strong>, <strong>Own</strong> or <strong>None</strong>.</p>
+    section is set to <strong>All</strong>, <strong>Clinic</strong>, <strong>Own</strong> or <strong>None</strong>.</p>
     <h2>What a card shows</h2>
     <p>Reading down a card:</p>
     <ul>
@@ -2584,14 +2686,15 @@ data:
     <li><strong>A green ROOT badge</strong> on the owner's own card.</li>
     <li><strong>An Invited badge</strong> on anyone who has not set their password yet, plus a <strong>Copy invite link</strong>
       button while it is still available (<a href="add-a-staff-member.html">Add-a-Staff-Member</a>).</li>
-    <li><strong>The five sections</strong>, each with its own <strong>All / Own / None</strong> control.</li>
+    <li><strong>The five sections</strong>, each with its own <strong>All / Clinic / Own / None</strong> control, and <strong>one line
+      underneath in plain words</strong> saying what the chosen setting gives that person.</li>
     <li><strong>Doctor colour</strong>, on doctors only (<a href="choose-a-doctor-colour.html">Choose-a-Doctor-Colour</a>).</li>
     </ul>
     <h2>Steps</h2>
     <ol>
     <li>Find the person's card in the grid.</li>
     <li>Find the section you want to change.</li>
-    <li>Press <strong>All</strong>, <strong>Own</strong> or <strong>None</strong>.</li>
+    <li>Press <strong>All</strong>, <strong>Clinic</strong>, <strong>Own</strong> or <strong>None</strong>.</li>
     </ol>
     <p>That is the whole action. <strong>There is no Save button</strong> — the change is sent to the server as you
     press it. The line at the bottom of the step reads <em>"Changes save as you go"</em>.</p>
@@ -2629,16 +2732,89 @@ data:
     </tr>
     </tbody>
     </table>
-    <h2>What All, Own and None mean</h2>
+    <h2>The four levels</h2>
+    <p>The four buttons run widest to narrowest, left to right: <strong>All · Clinic · Own · None</strong>. Beside each
+    word are three small squares that fill up — three for <strong>All</strong>, two for <strong>Clinic</strong>, one for <strong>Own</strong>,
+    none for <strong>None</strong>. <strong>The squares, not the colour, tell you how much access it is.</strong> That is
+    deliberate: the buttons take the doctor's own colour, and a setting this important must still read
+    on a coloured card and to someone who cannot separate two colours.</p>
+    <p>Each level contains the one below it. Somebody on <strong>Clinic</strong> also has everything <strong>Own</strong> would have
+    given him.</p>
+    <p><strong>Under the control, Gompha writes out the meaning of the level that is actually selected.</strong> The
+    wording differs between the two money sections and the other three, because "the clinic's" means a
+    different thing for money than it does for patients.</p>
+    <p><strong>Financial information</strong> and <strong>Patient financial record</strong>:</p>
+    <table>
+    <thead>
+    <tr>
+    <th>Setting</th>
+    <th>The line under the control</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+    <td><strong>All</strong></td>
+    <td>Everything.</td>
+    </tr>
+    <tr>
+    <td><strong>Clinic</strong></td>
+    <td>The clinic's money and your own — never another doctor's personal book.</td>
+    </tr>
+    <tr>
+    <td><strong>Own</strong></td>
+    <td>Only your own.</td>
+    </tr>
+    <tr>
+    <td><strong>None</strong></td>
+    <td>Nothing.</td>
+    </tr>
+    </tbody>
+    </table>
+    <p><strong>Schedule</strong>, <strong>Patients as contacts</strong> and <strong>Patients as medical</strong>:</p>
+    <table>
+    <thead>
+    <tr>
+    <th>Setting</th>
+    <th>The line under the control</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+    <td><strong>All</strong></td>
+    <td>Everything.</td>
+    </tr>
+    <tr>
+    <td><strong>Clinic</strong></td>
+    <td>Your patients, plus every patient the house still owns — which is most of them until the house releases one.</td>
+    </tr>
+    <tr>
+    <td><strong>Own</strong></td>
+    <td>Only your own patients.</td>
+    </tr>
+    <tr>
+    <td><strong>None</strong></td>
+    <td>Nothing.</td>
+    </tr>
+    </tbody>
+    </table>
+    <p><strong>"Own" is worth being precise about:</strong></p>
     <ul>
-    <li><strong>All</strong> — everyone's.</li>
-    <li><strong>None</strong> — nothing at all.</li>
-    <li><strong>Own</strong> — <em>their doctor's</em>, and this is the one worth being precise about:</li>
     <li>for a <strong>doctor</strong>, "own" means his own,</li>
     <li>for an <strong>assistant</strong>, "own" means the doctor she works under,</li>
-    <li>for a <strong>receptionist</strong>, "own" means <strong>nothing</strong>, because she is attached to no doctor. Do not
-        use <strong>Own</strong> for reception. Use <strong>All</strong> or <strong>None</strong>.</li>
+    <li>for a <strong>receptionist</strong>, "own" means <strong>nothing</strong>, because she is attached to no doctor. Do not use
+      <strong>Own</strong> for reception. Use <strong>All</strong>, <strong>Clinic</strong> or <strong>None</strong>.</li>
     </ul>
+    <h2>Two limits the grid holds for you</h2>
+    <p><strong>Financial information set to All is for admin doctors only.</strong> On anybody else's card that one
+    button is faded and cannot be pressed, and the line under the control says <em>"All: Only an admin
+    doctor can be given everything here — salaries sit behind this level."</em> Salaries will be read
+    through that setting once wages are in the software, so it is not something to hand to reception or
+    to an assistant. The server refuses it as well, not only the screen — see <em>Why it works this way</em>.</p>
+    <p><strong>On an assistant, the three clinical sections are a ceiling, not a grant.</strong> Under <strong>Schedule</strong>,
+    <strong>Patients as contacts</strong> and <strong>Patients as medical</strong> her card adds: <em>"This is a ceiling: she never
+    sees more than <her doctor> does."</em> So <strong>All</strong> on her card does not mean she sees the whole clinic.
+    It means <em>do not hold her below her doctor</em> — whatever he can see, she can, and nothing more. Move
+    it to <strong>Clinic</strong>, <strong>Own</strong> or <strong>None</strong> when you want her held below him.</p>
     <h2>The starting point per role</h2>
     <p>Picking a role fills the five sections in for you. These are sensible starting values, not rules:
     change any of them.</p>
@@ -2656,11 +2832,11 @@ data:
     <tbody>
     <tr>
     <td><strong>Admin doctor</strong></td>
-    <td>Own</td>
+    <td>Clinic</td>
+    <td>Clinic</td>
     <td>All</td>
-    <td>All</td>
-    <td>All</td>
-    <td>All</td>
+    <td>Clinic</td>
+    <td>Clinic</td>
     </tr>
     <tr>
     <td><strong>Associate doctor</strong></td>
@@ -2669,6 +2845,14 @@ data:
     <td>All</td>
     <td>Own</td>
     <td>Own</td>
+    </tr>
+    <tr>
+    <td><strong>Associate doctor, salaried</strong></td>
+    <td>Own</td>
+    <td>Clinic</td>
+    <td>All</td>
+    <td>Clinic</td>
+    <td>Clinic</td>
     </tr>
     <tr>
     <td><strong>Receptionist</strong></td>
@@ -2681,35 +2865,55 @@ data:
     <tr>
     <td><strong>Assistant</strong></td>
     <td>None</td>
-    <td>Own</td>
-    <td>Own</td>
-    <td>Own</td>
-    <td>Own</td>
+    <td>None</td>
+    <td>All <em>(ceiling)</em></td>
+    <td>All <em>(ceiling)</em></td>
+    <td>All <em>(ceiling)</em></td>
     </tr>
     </tbody>
     </table>
-    <p><strong>When you change one away from its starting value, the button is underlined and carries a small
-    coloured dot</strong>, and hovering it says <em>"Changed from the default"</em>. The legend under the grid spells
+    <p><strong>An associate doctor gets one of two starting rows</strong>, depending on the working arrangement you
+    chose when you invited him (<a href="add-a-staff-member.html">Add-a-Staff-Member</a>). A salaried doctor's patients are the clinic's,
+    so starting him on <em>his own</em> would open an empty list. Both rows count as normal here — the grid
+    never marks one of them as a change.</p>
+    <p><strong>When you change a setting away from its starting value, the button is underlined and carries a
+    small dot</strong>, and hovering it says <em>"Changed from the default"</em>. The legend under the grid spells
     this out. It means you can scan a whole clinic's worth of cards and see instantly where this clinic
     does something unusual.</p>
+    <h2>Some cards moved when this version was installed</h2>
+    <p>Two one-off corrections were applied to the clinic's existing settings when this version arrived.
+    Both narrowed access; nothing was widened.</p>
+    <ul>
+    <li><strong>Admin doctors who were on All</strong> for <strong>Patient financial record</strong>, <strong>Patients as contacts</strong> or
+      <strong>Patients as medical</strong> were moved down to <strong>Clinic</strong>. <strong>The owner's own card was left alone.</strong></li>
+    <li><strong>Anybody who is not an admin doctor and had been given Financial information = All</strong> was moved
+      back to the starting value for their role.</li>
+    </ul>
+    <p>If an admin doctor says he "used to see everything", this is why. It is not a fault, and for the
+    first three sections one press puts it back if that is genuinely how this clinic works.</p>
     <h2>What these settings do today</h2>
     <p><strong>They are recorded, and they take effect on each screen as that screen ships.</strong> In Milestone 1
-    there is no schedule and no patient record, so there is nothing yet for <strong>None</strong> to hide.
-    <a href="whats-not-here-yet.html">Whats-Not-Here-Yet</a> explains the sequence. Setting them now is not busywork: the later modules
-    read these values from the start rather than having access bolted on afterwards.</p>
+    there is no schedule and no patient record, so there is nothing yet for <strong>None</strong> or <strong>Clinic</strong> to
+    hide. <a href="whats-not-here-yet.html">Whats-Not-Here-Yet</a> explains the sequence. Setting them now is not busywork: the later
+    modules read these values from the start rather than having access bolted on afterwards.</p>
     <h2>Why it works this way</h2>
     <p><strong>Five sections, not one "can see patients" switch.</strong> A receptionist must ring a patient to confirm
     tomorrow's appointment, and must never read his clinical notes. A name and a phone number are a
     different thing from a medical record, and one switch cannot separate them. Splitting money the
     same way is the other half: what a patient owes is front-desk work; what the clinic earns is not.</p>
-    <p><strong>An admin doctor's own money defaults to Own, not All.</strong> Two admin doctors are equals, not
-    partners in each other's earnings. Personal takings stay personal unless the owner decides
-    otherwise.</p>
-    <p><strong>An assistant's Financial information starts at None.</strong> For her, "own" would mean <em>her doctor's</em>
-    earnings. That may be exactly right in some clinics, but it must be a decision the owner makes on
-    purpose, never a default that quietly hands it over.</p>
-    <p><strong>The same word governs money and clinical data.</strong> One rule for what "own" means, applied to all
-    five sections, so nobody has to remember an exception.</p>
+    <p><strong>Four levels, because "everything or only mine" was too blunt.</strong> A doctor who helps run the clinic
+    needs the clinic's picture — the house's patients, the house's money — without reading a colleague's
+    personal book. That is exactly what <strong>Clinic</strong> is, and before it existed the only way to give
+    someone the clinic's view was to give them everyone's.</p>
+    <p><strong>An admin doctor starts at Clinic, not All.</strong> Two admin doctors are equals, not partners in each
+    other's earnings. He sees the house and his own; another doctor's personal takings stay that
+    doctor's unless the owner decides otherwise.</p>
+    <p><strong>An assistant's money sections start at None.</strong> For her, "own" would mean <em>her doctor's</em> earnings.
+    That may be exactly right in some clinics, but it must be a decision the owner makes on purpose,
+    never a default that quietly hands it over.</p>
+    <p><strong>Only admin doctors read salaries.</strong> That is a clinic rule, not a screen preference, so it is not
+    enforced by hiding a button. The database itself refuses to store <strong>Financial information = All</strong>
+    on anyone who is not an admin doctor, whatever asks it to.</p>
     <p><strong>A hidden button is not access control.</strong> Access is decided on the server on every request, never
     by which buttons a screen happens to draw. Someone who tampers with the page in their browser gains
     nothing, because the screen was never what was stopping them. As each module arrives, the same
