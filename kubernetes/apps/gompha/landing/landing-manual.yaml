@@ -1582,7 +1582,7 @@ data:
     <hr />
     <h2>tags: [home]</h2>
     <h1>Gompha Manual</h1>
-    <p><strong>Version: Milestone 1 · checked against image <code>clinic-v0.1.14</code> · Stamped 2026-08-20 (pass 2)</strong></p>
+    <p><strong>Version: Milestone 1 · checked against image <code>clinic-v0.1.14</code> · Stamped 2026-08-21 (pass 3)</strong></p>
     <blockquote>
     <h3>This manual covers Milestone 1 only</h3>
     <p>Milestone 1 is <strong>sign-in, people and access, rooms</strong>, and <strong>a doctor's own treatment list</strong>.
@@ -2171,6 +2171,8 @@ data:
       (<a href="dual-currency-money.html">Dual-Currency-Money</a>).</li>
     <li>The owner being able to look at another doctor's treatment list to help him with it
       (<a href="set-up-your-treatment-list.html">Set-Up-Your-Treatment-List</a>).</li>
+    <li>A clinic treatment list, shared by the admins in its own tab, alongside the list each doctor keeps
+      for himself (<a href="set-up-your-treatment-list.html">Set-Up-Your-Treatment-List</a>).</li>
     <li>A doctor's own materials and medicines, linked to his treatments — step 2 of a doctor's setup is
       the placeholder for it today.</li>
     </ul>
