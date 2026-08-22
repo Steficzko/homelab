@@ -1,0 +1,31 @@
+# Resource floor for the pods the plane-ce chart does NOT let us size.
+#
+# The chart exposes memoryRequest/memoryLimit knobs for its seven app deployments
+# (web, space, admin, live, api, worker, beat-worker) but NOT for postgres, redis,
+# rabbitmq, minio or the migrator Job — the `resources:` blocks in those templates
+# are volumeClaimTemplates storage requests, not container resources. As shipped,
+# Postgres therefore runs BestEffort: the first QoS class the kernel OOM-kills.
+#
+# That is exactly what took Penpot down on 2026-08-20 — pods the scheduler counted
+# as consuming nothing got packed onto w2, and when w2 exhausted memory the OOM
+# killer took the BestEffort pods first (load hit 455, kubelet went unreachable).
+#
+# A LimitRange is the native fix: defaultRequest/default apply ONLY to containers
+# that omit their own values, so the seven sized deployments are untouched and the
+# five unsized workloads get a floor. It also covers any future chart pod that
+# forgets its requests — chosen over forking the chart, which would re-break on
+# every version bump.
+apiVersion: v1
+kind: LimitRange
+metadata:
+  name: plane-defaults
+  namespace: plane
+spec:
+  limits:
+    - type: Container
+      defaultRequest:
+        memory: 256Mi
+        cpu: 100m
+      default:
+        memory: 1Gi
+        cpu: "1"

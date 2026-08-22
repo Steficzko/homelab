@@ -1,0 +1,59 @@
+# Plane namespace isolation.
+#
+# Every pod the chart renders carries `app.kubernetes.io/instance: plane`, so one
+# policy selects the whole app. Selecting a pod for Ingress denies all ingress the
+# policy does not name, which is the point: only ingress-nginx, the app's own pods,
+# and the backup job may reach it.
+#
+# The backup CronJob deliberately runs OUTSIDE this selector (app: postgres-backup)
+# so its egress to Unraid MinIO is unrestricted; it is allowed in explicitly below.
+#
+# NOTE: K3s admits freshly-created pods into NetworkPolicy ~30-45s late. Short-lived
+# Jobs in this namespace must wait for their dependency rather than assume it is
+# reachable — this has already produced silent empty dumps once (dental backup).
+# The backup CronJob carries a pg_isready retry loop for exactly this reason.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: plane
+  namespace: plane
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/instance: plane
+  policyTypes: [Ingress, Egress]
+  ingress:
+    # public surface, via the cluster ingress controller only
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: ingress-nginx
+      ports:
+        - { port: 3000, protocol: TCP }   # web / space / admin / live
+        - { port: 8000, protocol: TCP }   # api  (/api, /auth)
+        - { port: 9000, protocol: TCP }   # minio bucket path (attachments)
+    # intra-app: api/worker/beat <-> pgdb/redis/rabbitmq/minio
+    - from:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/instance: plane
+    # logical backups reaching Postgres
+    - from:
+        - podSelector:
+            matchLabels:
+              app: postgres-backup
+      ports:
+        - { port: 5432, protocol: TCP }
+  egress:
+    # DNS
+    - ports:
+        - { port: 53, protocol: UDP }
+        - { port: 53, protocol: TCP }
+    # intra-app
+    - to:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/instance: plane
+    # outbound HTTPS — avatars, OIDC discovery, unfurls
+    - ports:
+        - { port: 443, protocol: TCP }

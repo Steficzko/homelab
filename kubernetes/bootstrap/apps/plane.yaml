@@ -1,0 +1,168 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: plane
+  namespace: argocd
+spec:
+  project: default
+  # Plane CE — self-hosted issue tracker at plane.kostikidis.net.
+  # Turns Dr. Ali's and Stefanos's voice notes + forwarded reels into tracked,
+  # tagged tickets. Four identities (two humans as reporters, two Claude service
+  # accounts) so every ticket shows who raised it and who acted on it.
+  # Projects: Gompha, Ronya.
+  #
+  # Deployed the Penpot way: raw stateful bits from this repo, app services from
+  # the official chart. Secrets are SOPS-encrypted and applied out-of-band —
+  # the chart's own defaults are a PUBLISHED SECRET_KEY, plane/plane for Postgres
+  # and RabbitMQ, and admin/password for MinIO, none of which may reach a public repo.
+  sources:
+    # namespace, LimitRange, NetworkPolicy, backup CronJob (secrets excluded)
+    - repoURL: https://github.com/Steficzko/homelab.git
+      targetRevision: HEAD
+      path: kubernetes/apps/plane
+      directory:
+        recurse: true
+        exclude: '*.sops.yaml'
+    # the 11 Plane workloads via the official chart
+    - repoURL: https://helm.plane.so
+      chart: plane-ce
+      targetRevision: 1.6.3
+      helm:
+        releaseName: plane
+        valuesObject:
+          planeVersion: v1.4.1
+
+          # Every secret group comes from a SOPS-encrypted Secret in this repo.
+          # NOTE: owning app_env means the chart no longer templates DATABASE_URL /
+          # AMQP_URL / REDIS_URL — they are built inside plane-app-secret and must
+          # stay consistent with the pgdb and rabbitmq secrets. A mismatch shows up
+          # as an opaque api CrashLoop, not a clear error.
+          external_secrets:
+            app_env_existingSecret: plane-app-secret
+            pgdb_existingSecret: plane-pgdb-secret
+            rabbitmq_existingSecret: plane-rabbitmq-secret
+            doc_store_existingSecret: plane-docstore-secret
+            live_env_existingSecret: plane-live-secret
+
+          ingress:
+            enabled: true
+            appHost: plane.kostikidis.net
+            ingressClass: nginx
+            # Left empty deliberately: setting either publishes an admin console
+            # through the tunnel. RabbitMQ management and the MinIO console stay
+            # in-cluster, reachable only by port-forward.
+            minioHost: ""
+            rabbitmqHost: ""
+            ingress_annotations:
+              cert-manager.io/cluster-issuer: letsencrypt-prod
+              nginx.ingress.kubernetes.io/ssl-redirect: "false"
+              nginx.ingress.kubernetes.io/proxy-body-size: "0"
+          ssl:
+            tls_secret_name: plane-tls   # cert-manager owns the cert, not the chart
+            createIssuer: false
+            generateCerts: false
+
+          # Storage. The class is spelled out on every volume ON PURPOSE: this
+          # cluster currently has TWO StorageClasses marked default (local-path and
+          # longhorn), so any PVC omitting it is ambiguous. Chart defaults here are
+          # 1Gi/1Gi/100Mi/100Mi, which is unusable.
+          postgres:
+            local_setup: true
+            storageClass: longhorn
+            volumeSize: 10Gi
+          minio:
+            local_setup: true
+            storageClass: longhorn
+            volumeSize: 20Gi          # raw transcripts attached to issues
+          rabbitmq:
+            local_setup: true
+            storageClass: longhorn
+            volumeSize: 1Gi
+          redis:
+            local_setup: true
+            storageClass: longhorn
+            volumeSize: 1Gi
+
+          # Resource requests. The chart defaults to memoryRequest 50Mi across all
+          # seven app pods — the same under-requesting that caused the 2026-08-20
+          # Penpot outage, where the scheduler counted the pods as consuming nothing,
+          # packed them onto w2, and the OOM killer took them once w2 ran out (load
+          # 455, kubelet unreachable). Requests are the important half.
+          #
+          # These are ESTIMATES. Re-tune from measured steady state ~1 week in,
+          # exactly as Penpot needed.
+          #
+          # The four stateful pods and the migrator Job expose no resource knobs at
+          # all — they are covered by the LimitRange in kubernetes/apps/plane.
+          api:
+            memoryRequest: 512Mi
+            memoryLimit: 1536Mi
+            cpuRequest: 200m
+            cpuLimit: "1"
+          worker:
+            memoryRequest: 384Mi
+            memoryLimit: 1Gi
+            cpuRequest: 150m
+            cpuLimit: 500m
+          beatworker:
+            memoryRequest: 128Mi
+            memoryLimit: 512Mi
+            cpuRequest: 50m
+            cpuLimit: 500m
+          web:
+            memoryRequest: 256Mi
+            memoryLimit: 768Mi
+            cpuRequest: 100m
+            cpuLimit: 500m
+          space:
+            memoryRequest: 128Mi
+            memoryLimit: 512Mi
+            cpuRequest: 50m
+            cpuLimit: 500m
+          admin:
+            memoryRequest: 128Mi
+            memoryLimit: 512Mi
+            cpuRequest: 50m
+            cpuLimit: 500m
+          live:
+            memoryRequest: 192Mi
+            memoryLimit: 512Mi
+            cpuRequest: 100m
+            cpuLimit: 500m
+
+          env:
+            docstore_bucket: uploads
+            api_key_rate_limit: 60/minute
+            sentry_dsn: ""
+            sentry_environment: ""
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: plane
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      # required for the ignoreDifferences below to also be honoured on sync,
+      # not just on the diff — otherwise selfHeal re-writes the ignored field.
+      - RespectIgnoreDifferences=true
+  ignoreDifferences:
+    # plane-ce stamps `timestamp: {{ now }}` onto the pod template of all seven
+    # deployments AND the migrator Job. ArgoCD re-renders the chart on every
+    # refresh, so that value changes every time: without this the app is
+    # permanently OutOfSync and selfHeal rolls all seven deployments every few
+    # minutes, forever.
+    - group: apps
+      kind: Deployment
+      jsonPointers:
+        - /spec/template/metadata/annotations/timestamp
+    - group: batch
+      kind: Job
+      jsonPointers:
+        - /spec/template/metadata/annotations/timestamp
+    # Longhorn reports actual size back onto the claim
+    - group: ""
+      kind: PersistentVolumeClaim
+      jsonPointers:
+        - /spec/resources/requests/storage

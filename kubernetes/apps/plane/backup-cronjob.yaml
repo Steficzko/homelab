@@ -1,0 +1,94 @@
+# Logical (pg_dump) backup of the Plane Postgres DB -> MinIO object storage.
+# Complements the block-level Longhorn snapshots with a portable, version-restorable
+# dump. Plane holds the live decision frontier (replacing docs/FOG.md), so ticket
+# state between snapshots is worth real point-in-time recovery even though the raw
+# transcripts remain source of truth on disk.
+#
+# Restore:  pg_restore -h plane-pgdb -U <user> -d <db> --clean <file>.dump
+#
+# Adapted from kubernetes/apps/bjj/postgres/backup-cronjob.yaml. Image is pinned to
+# postgres:15-alpine to match the server version plane-ce pins (15.7).
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: postgres-backup
+  namespace: plane
+spec:
+  schedule: "0 * * * *"            # hourly at :00
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      ttlSecondsAfterFinished: 10800   # auto-clean finished jobs (stops one-off failures re-alerting forever)
+      backoffLimit: 2
+      activeDeadlineSeconds: 1800
+      template:
+        metadata:
+          labels:
+            app: postgres-backup      # deliberately NOT app.kubernetes.io/instance: plane —
+                                      # keeps this pod out of the namespace NetworkPolicy so it
+                                      # can reach Unraid MinIO; allowed into pgdb explicitly.
+        spec:
+          restartPolicy: Never
+          affinity:                       # co-locate with postgres (cross-node net is unreliable)
+            podAffinity:
+              requiredDuringSchedulingIgnoredDuringExecution:
+                - labelSelector:
+                    matchLabels:
+                      app.name: plane-plane-pgdb
+                  topologyKey: kubernetes.io/hostname
+          securityContext:
+            runAsUser: 1000
+            runAsGroup: 1000
+            fsGroup: 1000
+          initContainers:
+            - name: copy-mc
+              image: minio/mc@sha256:a7fe349ef4bd8521fb8497f55c6042871b2ae640607cf99d9bede5e9bdf11727
+              securityContext:
+                runAsUser: 0                  # mc is 0711 root-owned; need root to read+copy it
+              command: ["/bin/sh", "-c", "cp /usr/bin/mc /tools/mc && chmod 0755 /tools/mc"]
+              volumeMounts:
+                - { name: tools, mountPath: /tools }
+          containers:
+            - name: dump
+              image: postgres:15-alpine
+              envFrom:
+                - secretRef: { name: plane-pgdb-secret }    # POSTGRES_USER / POSTGRES_DB / POSTGRES_PASSWORD
+                - secretRef: { name: backup-s3-secret }     # AWS_ACCESS_KEY_ID / AWS_SECRET_ACCESS_KEY / AWS_ENDPOINTS
+              env:
+                - { name: HOME,      value: /work }
+                - { name: PGHOST,    value: plane-pgdb }
+                - { name: BUCKET,    value: app-backups }
+                - { name: PREFIX,    value: plane-postgres }
+                - { name: RETENTION, value: "7d" }    # 7d of hourly dumps = 168 restore points
+              command:
+                - /bin/sh
+                - -c
+                - |
+                  set -eu
+                  export PGPASSWORD="$POSTGRES_PASSWORD"
+                  TS=$(date +%Y%m%d-%H%M%S)
+                  FILE="${POSTGRES_DB}-${TS}.dump"
+                  echo "==> Waiting for ${PGHOST}:5432 (tolerates kube-router NetworkPolicy propagation delay) ..."
+                  ok=0
+                  for i in $(seq 1 30); do
+                    if pg_isready -h "$PGHOST" -U "$POSTGRES_USER" -d "$POSTGRES_DB" -t 3 >/dev/null 2>&1; then ok=1; echo "    reachable (try ${i})"; break; fi
+                    sleep 3
+                  done
+                  [ "$ok" = 1 ] || { echo "ERROR: postgres unreachable after retries"; exit 1; }
+                  echo "==> Dumping ${POSTGRES_DB} from ${PGHOST} ..."
+                  pg_dump -h "$PGHOST" -U "$POSTGRES_USER" -d "$POSTGRES_DB" -Fc -Z6 -f "/work/${FILE}"
+                  echo "==> Uploading ${FILE} ..."
+                  /tools/mc alias set s3 "$AWS_ENDPOINTS" "$AWS_ACCESS_KEY_ID" "$AWS_SECRET_ACCESS_KEY"
+                  /tools/mc mb --ignore-existing "s3/${BUCKET}"
+                  /tools/mc cp "/work/${FILE}" "s3/${BUCKET}/${PREFIX}/${FILE}"
+                  echo "==> Pruning > ${RETENTION} old ..."
+                  /tools/mc rm --recursive --force --older-than "$RETENTION" "s3/${BUCKET}/${PREFIX}/" || true
+                  echo "==> Done: s3://${BUCKET}/${PREFIX}/${FILE}"
+              volumeMounts:
+                - { name: tools, mountPath: /tools }
+                - { name: work,  mountPath: /work }
+          volumes:
+            - { name: tools, emptyDir: {} }
+            - { name: work,  emptyDir: {} }
