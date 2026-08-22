@@ -99,13 +99,16 @@ spec:
             memoryLimit: 1536Mi
             cpuRequest: 200m
             cpuLimit: "1"
+          # worker measured 530Mi at IDLE on first boot — already above the 384Mi
+          # this originally requested, which is the under-counting this whole block
+          # exists to avoid. Raised 2026-08-22 from measurement, not guesswork.
           worker:
-            memoryRequest: 384Mi
-            memoryLimit: 1Gi
+            memoryRequest: 640Mi
+            memoryLimit: 1536Mi
             cpuRequest: 150m
             cpuLimit: 500m
           beatworker:
-            memoryRequest: 128Mi
+            memoryRequest: 192Mi   # measured 147Mi idle
             memoryLimit: 512Mi
             cpuRequest: 50m
             cpuLimit: 500m
@@ -115,7 +118,7 @@ spec:
             cpuRequest: 100m
             cpuLimit: 500m
           space:
-            memoryRequest: 128Mi
+            memoryRequest: 192Mi   # measured 142Mi idle
             memoryLimit: 512Mi
             cpuRequest: 50m
             cpuLimit: 500m

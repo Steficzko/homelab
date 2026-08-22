@@ -81,7 +81,11 @@ spec:
                   pg_dump -h "$PGHOST" -U "$POSTGRES_USER" -d "$POSTGRES_DB" -Fc -Z6 -f "/work/${FILE}"
                   echo "==> Uploading ${FILE} ..."
                   /tools/mc alias set s3 "$AWS_ENDPOINTS" "$AWS_ACCESS_KEY_ID" "$AWS_SECRET_ACCESS_KEY"
-                  /tools/mc mb --ignore-existing "s3/${BUCKET}"
+                  # No `mc mb` here. app-backups is a SHARED, pre-existing bucket and this user is
+                  # scoped to its own prefix with no s3:CreateBucket — `mc mb --ignore-existing`
+                  # still issues CreateBucket and dies with "Access Denied", which failed the very
+                  # first run. Creating the bucket is not this job's business; if it ever went
+                  # missing the cp below fails loudly, which is what we want.
                   /tools/mc cp "/work/${FILE}" "s3/${BUCKET}/${PREFIX}/${FILE}"
                   echo "==> Pruning > ${RETENTION} old ..."
                   /tools/mc rm --recursive --force --older-than "$RETENTION" "s3/${BUCKET}/${PREFIX}/" || true
