@@ -57,6 +57,22 @@ spec:
               cert-manager.io/cluster-issuer: letsencrypt-prod
               nginx.ingress.kubernetes.io/ssl-redirect: "false"
               nginx.ingress.kubernetes.io/proxy-body-size: "0"
+              # The admin container's nginx does an ABSOLUTE redirect for a
+              # directory path, so GET /god-mode returned
+              #   Location: http://plane.kostikidis.net:3000/god-mode/
+              # — its own listen port, over http. Unreachable from outside (only
+              # 80/443 are proxied), so /god-mode simply hung in the browser while
+              # /god-mode/ with the trailing slash served 200. Rewrite the Location
+              # header back to the public origin. /spaces was unaffected (it emits a
+              # relative redirect, so it was fine).
+              #
+              # Literal host, NOT $host: ingress-nginx v1.15.1's annotation validator
+              # rejects any value containing `$` ("contains invalid value"), and it
+              # does so as a WARNING in the controller log while still accepting the
+              # Ingress — so the rule silently never renders. Verified in the
+              # generated nginx.conf and by the Location header.
+              nginx.ingress.kubernetes.io/proxy-redirect-from: "http://plane.kostikidis.net:3000/"
+              nginx.ingress.kubernetes.io/proxy-redirect-to: "https://plane.kostikidis.net/"
           ssl:
             tls_secret_name: plane-tls   # cert-manager owns the cert, not the chart
             createIssuer: false
