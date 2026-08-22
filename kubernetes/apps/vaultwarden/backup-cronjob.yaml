@@ -1,0 +1,159 @@
+# Vaultwarden backup -> MinIO.
+#
+# REPLACES a job that did not exist in this repo and no longer existed in the
+# cluster. Its output at /mnt/user/vaultwarden-backups-kostikidis/ is 19 files of
+# ZERO BYTES going back to 2026-05-12: it ran on schedule producing nothing for
+# 17 days, then stopped entirely, and nothing noticed for three months. The
+# password manager was the only app with no working backup.
+#
+# Two design rules follow directly from that failure:
+#   1. sqlite3 .backup, not a file copy. Vaultwarden runs SQLite in WAL mode, so
+#      copying db.sqlite3 while the app writes can capture a torn page. .backup
+#      uses SQLite's own online-backup API and is consistent.
+#   2. VERIFY, then upload. Every step checks its output is non-empty and the
+#      archive is readable before anything is sent, and the job exits non-zero if
+#      not. A backup job that cannot fail loudly is how you get 19 empty files.
+#
+# Restore: mc cp the archive down, `tar xzf`, stop vaultwarden, replace /data
+# contents, start. rsa_key.pem MUST be restored — it signs auth tokens; without
+# it every client is logged out.
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: vaultwarden-backup
+  namespace: vaultwarden
+spec:
+  schedule: "15 3 * * *"          # nightly, offset from the 03:00 Longhorn window
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      ttlSecondsAfterFinished: 10800
+      backoffLimit: 2
+      activeDeadlineSeconds: 1800
+      template:
+        metadata:
+          labels:
+            app: vaultwarden-backup   # deliberately NOT app: vaultwarden — that
+                                      # label is selected by the namespace
+                                      # NetworkPolicy, whose egress allows only
+                                      # 53 and 587. This pod needs 443 (apk) and
+                                      # 9100 (MinIO), so it stays unselected.
+        spec:
+          restartPolicy: Never
+          # The data PVC is ReadWriteOnce on Longhorn, so this pod must land on
+          # the node currently running vaultwarden or it will never attach.
+          affinity:
+            podAffinity:
+              requiredDuringSchedulingIgnoredDuringExecution:
+                - labelSelector:
+                    matchLabels:
+                      app: vaultwarden
+                  topologyKey: kubernetes.io/hostname
+          securityContext:
+            runAsUser: 1000
+            runAsGroup: 1000
+            fsGroup: 1000
+          initContainers:
+            - name: copy-mc
+              image: minio/mc@sha256:a7fe349ef4bd8521fb8497f55c6042871b2ae640607cf99d9bede5e9bdf11727
+              securityContext:
+                runAsUser: 0                  # mc is 0711 root-owned
+              command: ["/bin/sh", "-c", "cp /usr/bin/mc /tools/mc && chmod 0755 /tools/mc"]
+              volumeMounts:
+                - { name: tools, mountPath: /tools }
+          containers:
+            - name: backup
+              image: alpine:3.20
+              securityContext:
+                # root ONLY because `apk add sqlite` needs to write the apk db.
+                # Safe here: /data is mounted readOnly below, so this container
+                # physically cannot alter Vaultwarden's data, and /work is an
+                # emptyDir that dies with the pod.
+                runAsUser: 0
+                runAsGroup: 0
+              envFrom:
+                - secretRef: { name: backup-s3-secret }   # AWS_ACCESS_KEY_ID / AWS_SECRET_ACCESS_KEY / AWS_ENDPOINTS
+              env:
+                - { name: BUCKET,    value: app-backups }
+                - { name: PREFIX,    value: vaultwarden }
+                - { name: RETENTION, value: "30d" }
+              command:
+                - /bin/sh
+                - -c
+                - |
+                  set -eu
+                  apk add --no-cache sqlite >/dev/null
+                  TS=$(date +%Y%m%d-%H%M%S)
+                  OUT=/work/vaultwarden-${TS}
+                  mkdir -p "$OUT"
+
+                  echo "==> staging the SQLite files"
+                  # /data is mounted readOnly on purpose. SQLite cannot open a WAL
+                  # database without writing its -shm file, so we cannot run
+                  # .backup against /data directly — stage the three files first,
+                  # then snapshot from the writable copy.
+                  mkdir -p /work/stage
+                  cp /data/db.sqlite3 /work/stage/
+                  cp /data/db.sqlite3-wal /work/stage/ 2>/dev/null || true
+                  cp /data/db.sqlite3-shm /work/stage/ 2>/dev/null || true
+
+                  echo "==> verifying the staged copy"
+                  # Catches a torn copy: if vaultwarden wrote mid-cp, this fails
+                  # and the job exits non-zero instead of shipping a bad backup.
+                  sqlite3 /work/stage/db.sqlite3 "pragma integrity_check;" | grep -qx ok \
+                    || { echo "ERROR: staged copy failed integrity_check"; exit 1; }
+
+                  echo "==> compacting into a clean single-file snapshot"
+                  # VACUUM INTO applies the WAL and writes one self-contained file.
+                  sqlite3 /work/stage/db.sqlite3 "VACUUM INTO '${OUT}/db.sqlite3'"
+                  [ -s "${OUT}/db.sqlite3" ] || { echo "ERROR: db snapshot is empty"; exit 1; }
+                  sqlite3 "${OUT}/db.sqlite3" "pragma integrity_check;" | grep -qx ok \
+                    || { echo "ERROR: snapshot failed integrity_check"; exit 1; }
+                  USERS=$(sqlite3 "${OUT}/db.sqlite3" 'select count(*) from users;')
+                  [ "$USERS" -ge 1 ] || { echo "ERROR: snapshot has no users"; exit 1; }
+                  echo "    users in snapshot: ${USERS}"
+                  rm -rf /work/stage
+
+                  echo "==> collecting the rest of /data"
+                  # rsa_key.pem signs auth tokens; attachments and sends are user
+                  # data; config.json holds runtime settings. icon_cache and tmp
+                  # are caches and are deliberately skipped.
+                  cp /data/rsa_key.pem "$OUT/" 2>/dev/null || { echo "ERROR: rsa_key.pem missing"; exit 1; }
+                  cp /data/config.json "$OUT/" 2>/dev/null || echo "    (no config.json — ok)"
+                  cp -r /data/attachments "$OUT/" 2>/dev/null || true
+                  cp -r /data/sends       "$OUT/" 2>/dev/null || true
+
+                  ARCHIVE=/work/vaultwarden-${TS}.tar.gz
+                  tar czf "$ARCHIVE" -C /work "vaultwarden-${TS}"
+                  [ -s "$ARCHIVE" ] || { echo "ERROR: archive is empty"; exit 1; }
+                  tar tzf "$ARCHIVE" >/dev/null || { echo "ERROR: archive is unreadable"; exit 1; }
+                  SIZE=$(wc -c < "$ARCHIVE")
+                  [ "$SIZE" -gt 10240 ] || { echo "ERROR: archive suspiciously small (${SIZE}B)"; exit 1; }
+                  echo "    archive ${SIZE} bytes, contents verified"
+
+                  echo "==> uploading"
+                  /tools/mc alias set s3 "$AWS_ENDPOINTS" "$AWS_ACCESS_KEY_ID" "$AWS_SECRET_ACCESS_KEY"
+                  /tools/mc cp "$ARCHIVE" "s3/${BUCKET}/${PREFIX}/"
+                  # confirm it actually landed, at the right size
+                  REMOTE=$(/tools/mc stat "s3/${BUCKET}/${PREFIX}/vaultwarden-${TS}.tar.gz" --json | grep -o '"size":[0-9]*' | cut -d: -f2)
+                  [ "$REMOTE" = "$SIZE" ] || { echo "ERROR: uploaded size ${REMOTE} != local ${SIZE}"; exit 1; }
+
+                  echo "==> pruning > ${RETENTION}"
+                  /tools/mc rm --recursive --force --older-than "$RETENTION" "s3/${BUCKET}/${PREFIX}/" || true
+                  echo "==> done: s3://${BUCKET}/${PREFIX}/vaultwarden-${TS}.tar.gz (${SIZE}B)"
+              volumeMounts:
+                - { name: tools, mountPath: /tools }
+                - { name: work,  mountPath: /work }
+                # subPath: data MUST match the Deployment's own mount. Without it
+                # this lands on the PVC root and sees only `data/` and
+                # `lost+found/` — which is how a backup job ends up silently
+                # producing nothing.
+                - { name: data,  mountPath: /data, subPath: data, readOnly: true }
+          volumes:
+            - { name: tools, emptyDir: {} }
+            - { name: work,  emptyDir: {} }
+            - name: data
+              persistentVolumeClaim:
+                claimName: vaultwarden-data-pvc

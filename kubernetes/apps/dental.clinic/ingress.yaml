@@ -43,7 +43,34 @@ spec:
               service: {name: clinic-spa, port: {number: 80}}
     # STAGING (2026-08-02): kostikidis.net hosts hit the -staging pair, which
     # carries the newer image tag. Production gompha.com stays on clinic-spa.
-    - host: "*.kostikidis.net"
+    #
+    # NARROWED 2026-08-22 — was `*.kostikidis.net`. The wildcard meant EVERY
+    # unclaimed name on the personal domain served a client's staging build:
+    # `nonsense.kostikidis.net` returned the Clinic SPA. Not a public leak (the
+    # Cloudflare Access wildcard challenges anonymous visitors first) but wrong,
+    # and it made the personal domain a catch-all for someone else's product.
+    #
+    # Tenant onboarding is UNAFFECTED: real tenants live on *.gompha.com, whose
+    # wildcard is untouched below, so "adding a clinic = INSERT a tenant row"
+    # still holds where it matters. Only the kostikidis.net STAGING surface is
+    # enumerated, and only these slugs exist (tenants table, verified 2026-08-22).
+    # Adding a staging slug now needs a line here — deliberate, they are few.
+    # `blanca` is omitted: RETIRED, merged into blankadental 2026-08-05.
+    - host: "demo.kostikidis.net"
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service: {name: clinic-spa-staging, port: {number: 80}}
+    - host: "demodental.kostikidis.net"
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service: {name: clinic-spa-staging, port: {number: 80}}
+    - host: "demosolo.kostikidis.net"
       http:
         paths:
           - path: /
