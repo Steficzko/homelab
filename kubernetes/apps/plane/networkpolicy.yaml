@@ -57,3 +57,9 @@ spec:
     # outbound HTTPS — avatars, OIDC discovery, unfurls
     - ports:
         - { port: 443, protocol: TCP }
+    # SMTP submission — invites, password resets and notifications via Gmail.
+    # Without this the api pod cannot reach smtp.gmail.com:587 and mail fails as
+    # "Connection refused" on IPv4 (kube-router's denial) or "Network unreachable"
+    # on IPv6 — neither of which reads as a policy problem.
+    - ports:
+        - { port: 587, protocol: TCP }
