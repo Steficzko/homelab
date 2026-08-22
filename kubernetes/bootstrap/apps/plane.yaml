@@ -90,6 +90,20 @@ spec:
             local_setup: true
             storageClass: longhorn
             volumeSize: 20Gi          # raw transcripts attached to issues
+            env:
+              # Forces presigned upload URLs to https. Without it, storage.py falls
+              # back to `request.scheme`, and although Plane sets
+              # SECURE_PROXY_SSL_HEADER, ingress-nginx OVERWRITES X-Forwarded-Proto
+              # with the scheme it received — and the Cloudflare tunnel delivers to
+              # it over plain http. So Django saw "http", handed the browser an
+              # http:// presigned URL on an https:// page, and the browser blocked
+              # it as mixed content: "failed to upload cover image". The asset call
+              # itself returned 200, which is why nothing showed up in the API log.
+              #
+              # Fixed here rather than by setting use-forwarded-headers on
+              # ingress-nginx: that is a cluster-wide change affecting every app and
+              # means trusting client-supplied X-Forwarded-* headers.
+              minio_endpoint_ssl: true
           rabbitmq:
             local_setup: true
             storageClass: longhorn
