@@ -5,6 +5,12 @@ kind: ConfigMap
 metadata:
   name: landing-manual
   namespace: gompha
+  annotations:
+    # Server-side apply: the vault (~230KB) exceeds the 256KB client-side
+    # last-applied-configuration annotation ceiling, which failed the gompha
+    # ArgoCD sync (2026-08-22). SSA writes no such annotation. Matches
+    # landing/configmap.yaml's own fix.
+    argocd.argoproj.io/sync-options: ServerSideApply=true
 data:
   "activate-your-account.html": |
     <!doctype html><html lang="en"><head><meta charset="utf-8">
@@ -1656,7 +1662,7 @@ data:
     <hr />
     <h2>tags: [home]</h2>
     <h1>Gompha Manual</h1>
-    <p><strong>Version: Milestone 1 · checked against image <code>clinic-v0.1.15</code> · Stamped 2026-08-22 (pass 4)</strong></p>
+    <p><strong>Version: Milestone 1 · checked against image <code>clinic-v0.1.16</code> · Stamped 2026-08-22 (pass 5)</strong></p>
     <blockquote>
     <h3>This manual covers Milestone 1 only</h3>
     <p>Milestone 1 is <strong>sign-in, people and access, rooms</strong>, and <strong>a doctor's own treatment list</strong>.
@@ -3461,7 +3467,7 @@ data:
     <p>If <strong>Report this</strong> does not appear, the server did not give a code. Press <strong>Retry</strong>, and if it
     keeps failing, tell us which screen you were on and roughly when.</p>
     <p><strong>If we ask which version you are on</strong>, it is the small grey number beside the word <em>Gompha</em> at the
-    top left of the screen, for example <code>v0.1.14</code>. Everybody can see it.</p>
+    top left of the screen, for example <code>v0.1.16</code>. Everybody can see it.</p>
     <h2>What the email contains, and what it does not</h2>
     <p>The message carries <strong>four identifiers and nothing else</strong>:</p>
     <table>
