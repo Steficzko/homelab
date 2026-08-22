@@ -71,7 +71,7 @@ spec:
               # that only the size assertion below caught. Client and server major
               # move together now, and the tag matches the app release so a
               # Postgres upgrade cannot silently outrun its own backup.
-              image: ghcr.io/steficzko/gompha-backup:clinic-v0.1.15
+              image: ghcr.io/steficzko/gompha-backup:clinic-v0.1.16
               command: ["/bin/sh", "-ec"]
               args:
                 - |
