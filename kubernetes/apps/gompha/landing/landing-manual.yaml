@@ -118,6 +118,134 @@ data:
     chat thread.</p>
     <p>Next: <a href="sign-in.html">Sign-In</a> · <a href="passwords-and-sessions.html">Passwords-and-Sessions</a> · <a href="give-someone-a-new-link.html">Give-Someone-a-New-Link</a> · <a href="home.html">Home</a></p>
     </div></body></html>
+  "add-a-material.html": |
+    <!doctype html><html lang="en"><head><meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Add a Material · Gompha Manual</title>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;600&family=IBM+Plex+Sans+Arabic&display=swap" rel="stylesheet">
+    <style>
+    body{margin:0;background:#FAF8F4;color:#3D3A34;font:15px/1.65 "IBM Plex Sans","IBM Plex Sans Arabic",sans-serif}
+    .wrap{max-width:760px;margin:0 auto;padding:40px 24px 80px}
+    a{color:#2E5D51} .dead{color:#98917F;border-bottom:1px dashed #C9C2B2}
+    h1,h2,h3{line-height:1.3} h1{font-size:26px}
+    code{background:#F1EDE6;border-radius:5px;padding:2px 6px}
+    .crumb{font-size:13px;color:#98917F;margin-bottom:28px} .crumb a{color:#6B655A;text-decoration:none}
+    .draft{background:#F3EDDC;color:#6A5A32;border-radius:9px;padding:9px 14px;font-size:13px;margin-bottom:26px}
+    table{border-collapse:collapse} td,th{border:1px solid #E9E3D8;padding:7px 12px;text-align:left}
+    </style></head><body><div class="wrap">
+    <div class="crumb"><a href="index.html">Gompha Manual</a></div>
+    <div class="draft">Draft — this manual describes the upcoming version of Gompha.</div>
+    <hr />
+    <p>tags: [task, milestone-1, screen/inventory, inventory]
+    screen: Inventory → Materials → Add a material</p>
+    <hr />
+    <h1>Add a Material</h1>
+    <p>Materials can now be added by hand — your own on your own tab, the house's on
+    <a href="use-the-clinics-stock-tab.html">Use-the-Clinics-Stock-Tab</a>. Before this version the list was filled for you; now the shelf is
+    yours to fill.</p>
+    <p>The same form also <strong>edits</strong> an existing material: its name, its box, its numbers, its supplier.</p>
+    <h2>Where it is</h2>
+    <p><strong>On the clinic's tab</strong> — the house's shelf, the front desk's usual place (<a href="use-the-clinics-stock-tab.html">Use-the-Clinics-Stock-Tab</a>).</p>
+    <p><strong>On your own tab</strong> — a doctor's own drawer:</p>
+    <ol>
+    <li>Open <strong>Inventory</strong> from the <strong>Go to</strong> boxes on the home page (<a href="find-a-material.html">Find-a-Material</a>).</li>
+    <li>Press <strong>+ Add material</strong>, at the right of the row with the search box.</li>
+    </ol>
+    <p>Either way, if the shelf is empty the button sits inside the dashed empty box instead and reads
+    <strong>+ Add the first material</strong> (the clinic's tab) or <strong>+ Add your first item</strong> (your own).</p>
+    <p><strong>Whose shelf it lands on is decided by the tab you are on</strong> — there is no owner to pick. On the
+    clinic's tab the material is the house's from the moment it is saved; on your own tab it is yours.
+    A salaried doctor has no shelf of his own — his additions land on the house's shelf.</p>
+    <h2>What you are looking at</h2>
+    <p>A window headed <strong>Add a material</strong>. Top to bottom:</p>
+    <ul>
+    <li><strong>What is it</strong> — the name. The only thing you must type.</li>
+    <li><strong>Counted in</strong> — the unit you count it in: <em>piece</em>, <em>box</em>, <em>capsule</em>. If the clinic has no units
+      yet, this is a typing box and the words under it say <em>"Typing it creates it"</em> — type <em>box</em> and
+      <em>box</em> exists from then on, for everybody.</li>
+    <li><strong>Category</strong> — optional free text.</li>
+    <li><strong>Bought as a box</strong> and <strong>How many in it</strong> — name a box and how many pieces are in it, and the
+      prices below become <strong>per box</strong>. Leave both empty and prices are <strong>per piece</strong>. Both or neither
+      — the line under the two boxes says so, and it names the unit the price is per.</li>
+    <li><strong>You buy it for</strong> — what it costs. <strong>This box is simply not drawn for a person who may not read
+      that shelf's costs</strong> (<a href="find-a-material.html">Find-a-Material</a>). On the clinic's tab the front desk does see it: the
+      house's own costs are the front desk's to keep.</li>
+    <li><strong>You charge</strong> — what it sells or is charged at. Optional; a material can be saved with no price
+      at all.</li>
+    <li><strong>Who you buy it from</strong> — the supplier, if it has one (<a href="assign-a-supplier-to-a-material.html">Assign-a-Supplier-to-a-Material</a>).</li>
+    <li><strong>Notes</strong> — optional.</li>
+    </ul>
+    <p>The buttons are <strong>Add it</strong> and <strong>Cancel</strong>.</p>
+    <h2>Steps — add one</h2>
+    <ol>
+    <li>Get to the right tab first (<a href="use-the-clinics-stock-tab.html">Use-the-Clinics-Stock-Tab</a>): the clinic's tab for the house's
+       materials, your own tab for yours.</li>
+    <li>Press <strong>+ Add material</strong>.</li>
+    <li>Type the <strong>name</strong>.</li>
+    <li>Pick what it is <strong>Counted in</strong>, or type a new unit when the clinic has none.</li>
+    <li>Name a <strong>box</strong> if it is bought as one, and <strong>how many</strong> are in it.</li>
+    <li>Fill <strong>You buy it for</strong> and <strong>You charge</strong> if you know them. Both are fine to leave empty.</li>
+    <li>Press <strong>Add it</strong>.</li>
+    </ol>
+    <p>The window closes and the material appears in the list.</p>
+    <p><strong>A price is a plain number</strong> — <code>12.00</code> in dollars, <code>17400</code> in dinar. Pick the side you know; the
+    converted figure appears faintly beside it only once a rate has been set
+    (<a href="dual-currency-money.html">Dual-Currency-Money</a>). <strong>Name a box and type its price, and a line under the box spells the
+    arithmetic out</strong> — <em>$40.00 a box ÷ 20 = $2.00 a capsule</em> — so nobody reads a box figure as a piece
+    figure.</p>
+    <h2>Steps — correct one</h2>
+    <ol>
+    <li>Open the material's row (<a href="find-a-material.html">Find-a-Material</a>).</li>
+    <li>Press <strong>Edit this material</strong>, at the top of the window, next to the name.</li>
+    <li>The same form opens, filled in, with <strong>Save</strong> where <strong>Add it</strong> was.</li>
+    <li>Change what is wrong and press <strong>Save</strong>.</li>
+    </ol>
+    <p>Editing replaces what is on the form. Clearing a box really does clear it.</p>
+    <p><strong>There is no Archive button on a material.</strong> Deciding the house stops stocking something is the
+    owner's decision alone, and no screen for it exists yet (<a href="use-the-clinics-stock-tab.html">Use-the-Clinics-Stock-Tab</a>).</p>
+    <h2>When it refuses</h2>
+    <table>
+    <thead>
+    <tr>
+    <th>What you see</th>
+    <th>What it means</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+    <td><em>A price is a plain number — 12.00 in dollars, 17400 in dinar.</em></td>
+    <td>Something other than a number is in a money box</td>
+    </tr>
+    <tr>
+    <td><em>You cannot change prices on this item.</em></td>
+    <td>The material's cost is not yours to read — on the house's shelf the front desk may, a doctor's own material only its owner may (<a href="roles-and-access.html">Roles-and-Access</a>)</td>
+    </tr>
+    <tr>
+    <td><em>No connection — viewing cached data, read-only.</em></td>
+    <td>Adding needs the clinic link. The button stays grey until it is back (<a href="working-offline.html">Working-Offline</a>)</td>
+    </tr>
+    <tr>
+    <td>The clinic is read-only, with a padlock</td>
+    <td>The licence needs renewing (<a href="what-your-licence-covers.html">What-Your-Licence-Covers</a>)</td>
+    </tr>
+    </tbody>
+    </table>
+    <h2>Why it works this way</h2>
+    <p><strong>The unit is created by typing because a brand-new clinic has none.</strong> Somebody has to type the
+    first <em>box</em> and the first <em>piece</em>, and stopping every material on an empty unit list is the wrong
+    moment to ask about it.</p>
+    <p><strong>The cost box is absent, not greyed out.</strong> A box you can see but not use asks "why not?"; a box
+    that is not there says the same thing without the question. Narrowing, not decoration
+    (<a href="roles-and-access.html">Roles-and-Access</a>).</p>
+    <p><strong>Box prices are typed as bought, and the division is shown, not hidden.</strong> You buy a box of
+    gloves, so you type the box's price — and the per-piece line underneath is the number everybody
+    actually argues about, worked out in front of you.</p>
+    <p>⚠ <strong>On a completely empty shelf the cost box may not appear on the very first material.</strong> The form
+    learns what to show from the rows already on screen, and an empty shelf has nothing to learn from.
+    The second material onwards shows it. Known rough edge, reported.</p>
+    <p>Next: <a href="use-the-clinics-stock-tab.html">Use-the-Clinics-Stock-Tab</a> · <a href="find-a-material.html">Find-a-Material</a> · <a href="assign-a-supplier-to-a-material.html">Assign-a-Supplier-to-a-Material</a> ·
+    <a href="dual-currency-money.html">Dual-Currency-Money</a> · <a href="home.html">Home</a></p>
+    </div></body></html>
   "add-a-staff-member.html": |
     <!doctype html><html lang="en"><head><meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -335,6 +463,141 @@ data:
     <p>Next: <a href="give-someone-a-new-link.html">Give-Someone-a-New-Link</a> · <a href="set-what-each-person-can-see.html">Set-What-Each-Person-Can-See</a> · <a href="choose-a-doctor-colour.html">Choose-a-Doctor-Colour</a> ·
     <a href="roles-and-access.html">Roles-and-Access</a></p>
     </div></body></html>
+  "add-a-supplier.html": |
+    <!doctype html><html lang="en"><head><meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Add a Supplier · Gompha Manual</title>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;600&family=IBM+Plex+Sans+Arabic&display=swap" rel="stylesheet">
+    <style>
+    body{margin:0;background:#FAF8F4;color:#3D3A34;font:15px/1.65 "IBM Plex Sans","IBM Plex Sans Arabic",sans-serif}
+    .wrap{max-width:760px;margin:0 auto;padding:40px 24px 80px}
+    a{color:#2E5D51} .dead{color:#98917F;border-bottom:1px dashed #C9C2B2}
+    h1,h2,h3{line-height:1.3} h1{font-size:26px}
+    code{background:#F1EDE6;border-radius:5px;padding:2px 6px}
+    .crumb{font-size:13px;color:#98917F;margin-bottom:28px} .crumb a{color:#6B655A;text-decoration:none}
+    .draft{background:#F3EDDC;color:#6A5A32;border-radius:9px;padding:9px 14px;font-size:13px;margin-bottom:26px}
+    table{border-collapse:collapse} td,th{border:1px solid #E9E3D8;padding:7px 12px;text-align:left}
+    </style></head><body><div class="wrap">
+    <div class="crumb"><a href="index.html">Gompha Manual</a></div>
+    <div class="draft">Draft — this manual describes the upcoming version of Gompha.</div>
+    <hr />
+    <p>tags: [task, milestone-1, screen/inventory, inventory]
+    screen: Inventory → Suppliers</p>
+    <hr />
+    <h1>Add a Supplier</h1>
+    <p>A <strong>supplier</strong> is anyone the clinic buys from — a materials company, a dental lab, or both. The
+    list lives beside the materials list, and it is the clinic's, not one doctor's.</p>
+    <h2>Where it is</h2>
+    <ol>
+    <li>Sign in and open <strong>Inventory</strong> from the <strong>Go to</strong> boxes on the home page (<a href="find-a-material.html">Find-a-Material</a>).</li>
+    <li>Press the <strong>Suppliers</strong> button at the top, next to <strong>Materials</strong>.</li>
+    </ol>
+    <h2>What you are looking at</h2>
+    <p>A grid of cards, two across on a computer and one across on a phone. Each card shows:</p>
+    <ul>
+    <li>the <strong>name</strong>, with the <strong>short code</strong> as a small tag beside it</li>
+    <li>the <strong>kind</strong> on the right — <em>Materials</em>, <em>Lab</em> or <em>Materials &amp; lab</em></li>
+    <li>the <strong>location</strong>, if one was entered</li>
+    <li>the <strong>phone numbers</strong>, each with its note in brackets</li>
+    <li>how many materials point at it, e.g. <em>"7 items"</em></li>
+    <li><strong>Merge…</strong> and <strong>Edit</strong> at the bottom of the card</li>
+    </ul>
+    <p>Above the grid, on the left a <strong>Show archived</strong> switch, and on the right the button <strong>+ Add a
+    supplier</strong>.</p>
+    <h2>Steps — add one</h2>
+    <ol>
+    <li>Press <strong>+ Add a supplier</strong>. A window opens headed <strong>Add a supplier</strong>.</li>
+    <li><strong>Name</strong> — type it the way you say it. Arabic or Kurdish is fine. This is the only required
+       field; everything else can be left empty.</li>
+    <li><strong>Short code</strong> — this <strong>fills itself in as you type the name</strong> and stops the moment you touch it.
+       <em>Acme Dental</em> suggests <strong>AD</strong>. An Arabic-only name suggests nothing, which is deliberate: a code
+       you cannot read back is worse than no code.</li>
+    <li>A code is <strong>2 to 8 letters or numbers, no spaces</strong>. It is typed in capitals for you.</li>
+    <li>It is optional. Leave it blank and the material list shows a small dashed <strong>no code</strong> tag.</li>
+    <li><strong>Kind</strong> — <em>Materials</em>, <em>Lab</em>, or <em>Materials &amp; lab</em>. A lab is a supplier with its kind set; it is
+       the same list, not a second one.</li>
+    <li><strong>Location</strong> — optional, free text.</li>
+    <li><strong>Phones — to reorder.</strong> Each row is a <strong>number</strong> and a short <strong>note</strong>. The note is its own field
+       — write <em>store</em>, or the name of the person who answers — so the number itself stays clean enough
+       to dial. Press <strong>+ Add another number</strong> for as many as you need; press the <strong>×</strong> to remove a row.</li>
+    <li>Press <strong>Add</strong>.</li>
+    </ol>
+    <p>The window closes and the new card appears in the list.</p>
+    <p><strong>Type a number however you have it written.</strong> <code>0750 123 4567</code>, <code>00964 750 123 4567</code> and
+    <code>+964 750 123 4567</code> are all understood and all shown back in the same tidy shape. Nothing you typed
+    is thrown away.</p>
+    <h2>Steps — correct one</h2>
+    <ol>
+    <li>Press <strong>Edit</strong> at the bottom of the card.</li>
+    <li>The same window opens, headed <strong>Edit supplier</strong>, with everything filled in.</li>
+    <li>Change what is wrong and press <strong>Save</strong>.</li>
+    </ol>
+    <p><strong>Editing replaces the whole record.</strong> Clearing the location field really does clear the location.
+    It is not a merge of what you typed with what was there.</p>
+    <h2>Steps — archive one you no longer use</h2>
+    <ol>
+    <li>Press <strong>Edit</strong> on the card.</li>
+    <li>Press <strong>Archive</strong>, at the bottom left of the window.</li>
+    <li>A grey box asks you to confirm: <em>"Its items and purchases keep pointing at it — nothing is
+       deleted, it just stops appearing in the active list."</em></li>
+    <li>Press <strong>Archive supplier</strong>, or <strong>Keep it</strong> to change your mind.</li>
+    </ol>
+    <p><strong>Nothing is ever deleted in Gompha</strong>, suppliers included. Old purchases must keep naming the company
+    they were actually bought from, so the row stays and simply steps out of the way.</p>
+    <p>An archived supplier <strong>drops out of the list</strong>. To see it again, turn on the <strong>Show archived</strong>
+    switch above the grid: archived cards come back with the word <strong>archived</strong> after the kind. You can
+    still open and edit one, and saving an ordinary edit does not bring it back to life.</p>
+    <p><strong>An archived supplier cannot be given to a material.</strong> It does not appear in the assign list at
+    all (<a href="assign-a-supplier-to-a-material.html">Assign-a-Supplier-to-a-Material</a>).</p>
+    <h2>When it refuses</h2>
+    <p>The message lands on the field it is about, not as a pop-up afterwards.</p>
+    <table>
+    <thead>
+    <tr>
+    <th>What you see</th>
+    <th>What to do</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+    <td><em>A code is 2–8 letters or numbers, no spaces (e.g. CRN).</em></td>
+    <td>Shorten it, or take out the space or the punctuation</td>
+    </tr>
+    <tr>
+    <td><em>CRN is already used by <name>. Pick another.</em></td>
+    <td>Two suppliers cannot share a code. It names the one that has it</td>
+    </tr>
+    <tr>
+    <td><em>Couldn't save that. Nothing was lost. Only the clinic's own list can be changed by you.</em></td>
+    <td>Your access covers reading inventory but not changing the clinic's shared lists. See below</td>
+    </tr>
+    <tr>
+    <td><em>No connection — viewing cached data, read-only.</em></td>
+    <td>The window still reads; <strong>Save</strong> waits for the link. The footer says <strong>Needs the connection</strong> (<a href="working-offline.html">Working-Offline</a>)</td>
+    </tr>
+    </tbody>
+    </table>
+    <p><strong>Who may add and edit suppliers.</strong> The supplier list is shared clinic property, so writing to it
+    needs inventory access at the <strong>Clinic</strong> level or wider. Out of the box that is <strong>everybody</strong> —
+    admin doctors, every associate whatever his arrangement, reception and assistants — because the
+    house's shelf is open to the whole staff. Only somebody deliberately set down to <strong>Own</strong>, or
+    locked out of inventory altogether, cannot; nobody starts there.</p>
+    <p>⚠ <strong>The buttons do not grey out for a person who cannot save.</strong> Somebody set below the <strong>Clinic</strong>
+    level still sees <strong>+ Add a supplier</strong>, <strong>Edit</strong> and <strong>Merge…</strong>, and only finds out when he presses
+    Save and reads the refusal. Nothing is half-saved; it is a wasted minute, not a risk. Reported.</p>
+    <h2>Why it works this way</h2>
+    <p><strong>One supplier list for the clinic, not one per doctor.</strong> Everybody buys from the same handful of
+    companies. A list per doctor would mean the same lab entered five times, five phone numbers to keep
+    current, and no way to see what the clinic actually spends with anyone.</p>
+    <p><strong>The short code exists for the materials list.</strong> A materials table with a full company name in
+    every row is unreadable on a phone; <strong>CRN</strong> in a small tag is not. That is why the code is suggested
+    automatically but never forced — you are the one who has to recognise it later.</p>
+    <p><strong>A phone number is structured, not a line of text.</strong> The number is stored so it can be dialled and
+    compared; the note is stored separately so it can be read. Keeping them apart is what lets Gompha
+    notice that two supplier cards are the same company, which is the whole of
+    <a href="merge-two-suppliers.html">Merge-Two-Suppliers</a>.</p>
+    <p>Next: <a href="merge-two-suppliers.html">Merge-Two-Suppliers</a> · <a href="assign-a-supplier-to-a-material.html">Assign-a-Supplier-to-a-Material</a> · <a href="find-a-material.html">Find-a-Material</a> · <a href="home.html">Home</a></p>
+    </div></body></html>
   "add-a-treatment.html": |
     <!doctype html><html lang="en"><head><meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -438,8 +701,8 @@ data:
     today's rate into next year's price list, so Gompha stores the one you set and works the other one
     out fresh each time you look. A dinar figure you typed is kept exactly as typed;
     <a href="dual-currency-money.html">Dual-Currency-Money</a>.</p>
-    <p><strong>Hours and minutes, not a box of minutes.</strong> In Dr Ali's words: <em>easier just to choose two hours
-    instead of 120 minutes.</em> Doctors who think in minutes are not punished for it — <code>90</code> becomes
+    <p><strong>Hours and minutes, not a box of minutes.</strong> In the clinic's own words: <em>easier just to choose two
+    hours instead of 120 minutes.</em> Doctors who think in minutes are not punished for it — <code>90</code> becomes
     <code>1h 30m</code> by itself.</p>
     <p><strong>A name is yours, not the clinic's.</strong> There is no shared clinic list to match against, and no
     "adopt the existing name" prompt. Two doctors describing the same work differently is normal, and
@@ -629,6 +892,99 @@ data:
     action that hands somebody their access back.</p>
     <p>Next: <a href="give-someone-a-new-link.html">Give-Someone-a-New-Link</a> · <a href="fix-a-persons-details.html">Fix-a-Persons-Details</a> · <a href="roles-and-access.html">Roles-and-Access</a> · <a href="home.html">Home</a></p>
     </div></body></html>
+  "assign-a-supplier-to-a-material.html": |
+    <!doctype html><html lang="en"><head><meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Assign a Supplier to a Material · Gompha Manual</title>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;600&family=IBM+Plex+Sans+Arabic&display=swap" rel="stylesheet">
+    <style>
+    body{margin:0;background:#FAF8F4;color:#3D3A34;font:15px/1.65 "IBM Plex Sans","IBM Plex Sans Arabic",sans-serif}
+    .wrap{max-width:760px;margin:0 auto;padding:40px 24px 80px}
+    a{color:#2E5D51} .dead{color:#98917F;border-bottom:1px dashed #C9C2B2}
+    h1,h2,h3{line-height:1.3} h1{font-size:26px}
+    code{background:#F1EDE6;border-radius:5px;padding:2px 6px}
+    .crumb{font-size:13px;color:#98917F;margin-bottom:28px} .crumb a{color:#6B655A;text-decoration:none}
+    .draft{background:#F3EDDC;color:#6A5A32;border-radius:9px;padding:9px 14px;font-size:13px;margin-bottom:26px}
+    table{border-collapse:collapse} td,th{border:1px solid #E9E3D8;padding:7px 12px;text-align:left}
+    </style></head><body><div class="wrap">
+    <div class="crumb"><a href="index.html">Gompha Manual</a></div>
+    <div class="draft">Draft — this manual describes the upcoming version of Gompha.</div>
+    <hr />
+    <p>tags: [task, milestone-1, screen/inventory, inventory]
+    screen: Inventory → Material → Assign supplier</p>
+    <hr />
+    <h1>Assign a Supplier to a Material</h1>
+    <p>Most materials arrive in Gompha without a supplier on them. The <strong>Supplier</strong> column then shows a
+    small dashed tag reading <strong>unassigned</strong>. Filling those in is what makes a reorder call possible from
+    the screen instead of from memory.</p>
+    <h2>Where it is</h2>
+    <ol>
+    <li>Open <strong>Inventory</strong> and find the material (<a href="find-a-material.html">Find-a-Material</a>).</li>
+    <li>Press the row to open the <strong>Material</strong> window.</li>
+    <li>On the <strong>Supplier</strong> line, press <strong>Assign</strong> — or <strong>Change</strong> if it already has one.</li>
+    </ol>
+    <p>The material window closes and the <strong>Assign supplier</strong> window takes its place. Two windows are never
+    stacked on top of each other in Gompha; one replaces the other.</p>
+    <h2>Steps</h2>
+    <ol>
+    <li>At the top the window names the material, and either the supplier it has now or <em>"no supplier
+       assigned yet"</em>.</li>
+    <li>Type into the box marked <strong>Type a code or a name</strong>. It searches as you type, with no waiting —
+       the whole supplier list is already on the device.</li>
+    <li>Type <strong>CRN</strong> to match a short code.</li>
+    <li>Type <strong>acme</strong> to match a name. Arabic and Kurdish names match too.</li>
+    <li>The part that matched is highlighted in the row, so you can see <em>why</em> it came up.</li>
+    <li>Press the supplier you want. It is assigned immediately and the window closes.</li>
+    <li>The material list refreshes underneath with the new tag in the Supplier column.</li>
+    </ol>
+    <p><strong>Archived and merged-away suppliers never appear in this list.</strong> You cannot point a material at a
+    supplier that is no longer in use.</p>
+    <h2>If the supplier is not on the list yet</h2>
+    <p>At the bottom of the results is a button reading <strong>+ New supplier "acme"</strong> — with whatever you
+    typed already in it.</p>
+    <ol>
+    <li>Press it. The <strong>Add a supplier</strong> window opens with the name filled in and a short code suggested.</li>
+    <li>Fill it in and press <strong>Add</strong> (<a href="add-a-supplier.html">Add-a-Supplier</a>).</li>
+    <li>The new supplier is <strong>assigned to the material straight away</strong>. You do not have to go back and
+       pick it.</li>
+    </ol>
+    <h2>To take a supplier off a material</h2>
+    <p>Press <strong>Clear</strong>, at the bottom left of the <strong>Assign supplier</strong> window. The material goes back to
+    <strong>unassigned</strong>. Nothing else about it changes.</p>
+    <h2>When it refuses</h2>
+    <table>
+    <thead>
+    <tr>
+    <th>What you see</th>
+    <th>What it means</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+    <td><em>This item changed while you were assigning. Re-open it and try again.</em></td>
+    <td>Somebody else changed that material in the seconds you had the window open. Close it, open it again, and redo it. Nothing was saved twice</td>
+    </tr>
+    <tr>
+    <td><em>Couldn't assign that.</em> followed by a sentence</td>
+    <td>The reason is in the sentence. If it mentions your access, see <a href="roles-and-access.html">Roles-and-Access</a></td>
+    </tr>
+    <tr>
+    <td><strong>No connection — viewing cached data, read-only.</strong></td>
+    <td>Assigning needs the clinic link. Nothing is queued and nothing is lost (<a href="working-offline.html">Working-Offline</a>)</td>
+    </tr>
+    </tbody>
+    </table>
+    <h2>Why it works this way</h2>
+    <p><strong>The blank Supplier column is the problem this exists to remove.</strong> A material with no supplier is a
+    phone call to somebody's memory. It is also why an unassigned material is <em>drawn</em> — a dashed
+    <strong>unassigned</strong> tag — rather than left as an empty cell that reads like a broken screen.</p>
+    <p><strong>Searching happens on the device, not on the server.</strong> A clinic has a handful of suppliers, so the
+    whole list is fetched once and matched as you type. No waiting between keystrokes on a slow link.</p>
+    <p><strong>Creating one never loses your place.</strong> Reaching for a supplier that does not exist yet is the
+    normal case while a clinic is being set up, so the add form opens in the same window and hands the
+    new vendor straight back to the material.</p>
+    <p>Next: <a href="add-a-supplier.html">Add-a-Supplier</a> · <a href="find-a-material.html">Find-a-Material</a> · <a href="merge-two-suppliers.html">Merge-Two-Suppliers</a> · <a href="home.html">Home</a></p>
+    </div></body></html>
   "assistant.html": |
     <!doctype html><html lang="en"><head><meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -650,18 +1006,45 @@ data:
     <h2>tags: [role, milestone-1]</h2>
     <h1>Assistant</h1>
     <h2>Read this first</h2>
-    <p><strong>Milestone 1 has no schedule and no patients</strong>, so there is nothing for you to do in Gompha yet
-    beyond getting your account working. <a href="whats-not-here-yet.html">Whats-Not-Here-Yet</a>.</p>
+    <p><strong>Milestone 1 has no schedule and no patients.</strong> What there is for you is the <strong>inventory
+    section</strong> — your doctor's shelf and the clinic's, and the supplier list, which you can change.
+    Everything else waits for a later milestone. <a href="whats-not-here-yet.html">Whats-Not-Here-Yet</a>.</p>
     <h2>Set your account up</h2>
     <p>The owner will send you a link — WhatsApp, SMS or in person, <strong>not email</strong>. Open it and choose your
     own password. <a href="activate-your-account.html">Activate-Your-Account</a> · <a href="passwords-and-sessions.html">Passwords-and-Sessions</a>.</p>
     <h2>When you sign in</h2>
     <ol>
     <li>Open <strong>https://app-staging.gompha.com</strong> and sign in (<a href="sign-in.html">Sign-In</a>).</li>
-    <li>You get a short page headed <strong>"You're signed in"</strong> which names your role and lists the clinic's
-       <strong>rooms</strong>.</li>
+    <li>You get a short page headed <strong>"You're signed in"</strong> which names your role, offers two <strong>Go to</strong>
+       boxes, and lists the clinic's <strong>rooms</strong>.</li>
     </ol>
     <p>The <strong>gear</strong> at the top right gives you <a href="switch-to-dark-mode.html">Switch-to-Dark-Mode</a> and <strong>Sign out</strong>.</p>
+    <h2>The inventory section is real work you can do</h2>
+    <p>Press the <strong>Inventory</strong> box under <strong>Go to</strong>. At the top of the screen, beside the clinic's name,
+    the switch <strong>Mine / The clinic</strong> moves you between the materials list and the house's own shelf.</p>
+    <ul>
+    <li><strong>Materials</strong> — the shelf. Search it; <strong>Needs attention</strong> shows what needs reordering, which is
+      what to check before the day starts. <a href="find-a-material.html">Find-a-Material</a>.</li>
+    <li><strong>The clinic's tab</strong> — the house's shelf. You may add materials to it and keep the house's
+      numbers right (<a href="use-the-clinics-stock-tab.html">Use-the-Clinics-Stock-Tab</a>, <a href="add-a-material.html">Add-a-Material</a>).</li>
+    <li><strong>Suppliers</strong> — you may add one, correct a phone number, archive one, and merge two cards for
+      the same company (<a href="add-a-supplier.html">Add-a-Supplier</a>, <a href="merge-two-suppliers.html">Merge-Two-Suppliers</a>). You may also say which supplier a
+      material comes from (<a href="assign-a-supplier-to-a-material.html">Assign-a-Supplier-to-a-Material</a>).</li>
+    </ul>
+    <p>One thing it will not show you, by design:</p>
+    <ul>
+    <li><strong>Costs read Hidden.</strong> You start with no price sight, so where a cost would be you see the word
+      <strong>Hidden</strong> — including on the house's shelf, which the front desk <em>can</em> read because reordering
+      is her job (<a href="roles-and-access.html">Roles-and-Access</a>). Your price sight is your doctor's to give and can never rise
+      above his; until it is granted, and until a screen exists for him to grant it from
+      (<a href="roadmap.html">Roadmap</a>), everything money reads <strong>Hidden</strong> to you.</li>
+    </ul>
+    <p><strong>You cannot record a count or enter a purchase yet.</strong> Those screens are not built.</p>
+    <p><strong>Unlike your clinical sections, inventory does not follow your doctor.</strong> You reach the house's
+    common shelf as well as his, because keeping the house's shelf is part of the job and half the
+    doctors in a clinic have no shelf of their own to lend you.</p>
+    <p><strong>The other Go to box, Services &amp; timings, is a doctor's own list, not yours.</strong> Press it and you
+    get a red message saying you do not have one. ⚠ Rough edge, already reported.</p>
     <h2>You are attached to one doctor, and that matters</h2>
     <p>Every assistant is created <strong>under one named doctor</strong>. On the owner's screen your card reads
     <em>"Assistant · under Dr …"</em>.</p>
@@ -671,14 +1054,17 @@ data:
     <li><strong>His patients</strong>, as contacts and as clinical records — not the whole clinic's</li>
     <li><strong>His schedule</strong> — not the whole clinic's book</li>
     </ul>
-    <p><strong>You never see more than he does.</strong> On those three sections what the owner sets on your card is a
-    <strong>ceiling</strong>, not a grant: it can hold you <em>below</em> your doctor, never above him. Your card says so
-    under each of them — <em>"This is a ceiling: she never sees more than <his name> does."</em> So if his
-    access changes, yours moves with it on the same day, with nobody touching your card.</p>
-    <p>Two sections are yours rather than his, and both start at <strong>None</strong>: <strong>Financial information</strong> and
-    <strong>Patient financial record</strong>. For you the first would mean <em>your doctor's earnings</em>, which is not
-    something the software hands over by default. The owner can grant either, and that has to be a
-    choice somebody makes on purpose.</p>
+    <p><strong>You never see more than he does.</strong> On his patients, his schedule and — now — <strong>prices</strong> too,
+    what the owner sets on your card is a <strong>ceiling</strong>, not a grant: it can hold you <em>below</em> your
+    doctor, never above him. Your card says so under each of the three clinical controls — <em>"This is
+    a ceiling: she never sees more than <his name> does."</em> So if his access changes, yours moves with
+    it on the same day, with nobody touching your card. ⚠ The ceiling note does not appear under
+    <strong>Financial information</strong> yet, but the rule holds there anyway: if you are granted more price
+    sight than he has, what you actually see stops at his level.</p>
+    <p>Two sections are yours rather than his: <strong>Financial information</strong> and <strong>Patient financial record</strong>,
+    and both start at <strong>None</strong>. The first would mean <em>seeing what things cost, up to what your doctor
+    sees</em> — not something the software hands over by default. The owner can grant either, and that has
+    to be a choice somebody makes on purpose.</p>
     <p><strong>His treatment list is his alone.</strong> Each doctor keeps his own treatments, prices and times
     (<a href="set-up-your-treatment-list.html">Set-Up-Your-Treatment-List</a>). In this version there is no screen for you to open it — no button
     in your gear menu, and nothing on your home page. If he asks you to fix a price for him, he has to
@@ -706,7 +1092,8 @@ data:
       gets you a fresh link. <a href="reset-your-password.html">Reset-Your-Password</a>.</li>
     <li><a href="when-something-goes-wrong.html">When-Something-Goes-Wrong</a> — if a red box shows a code, press <strong>Report this</strong>.</li>
     </ul>
-    <p>Next: <a href="sign-in.html">Sign-In</a> · <a href="roles-and-access.html">Roles-and-Access</a> · <a href="whats-not-here-yet.html">Whats-Not-Here-Yet</a> · <a href="home.html">Home</a></p>
+    <p>Next: <a href="find-a-material.html">Find-a-Material</a> · <a href="add-a-supplier.html">Add-a-Supplier</a> · <a href="roles-and-access.html">Roles-and-Access</a> · <a href="whats-not-here-yet.html">Whats-Not-Here-Yet</a> ·
+    <a href="home.html">Home</a></p>
     </div></body></html>
   "book-an-appointment.html": |
     <!doctype html><html lang="en"><head><meta charset="utf-8">
@@ -902,9 +1289,30 @@ data:
     <p>If you treat patients, you have exactly the same treatment list as every other doctor — your
     prices, your times, invisible to everybody else. Doing yours first is worth it: you will be the one
     answering the others' questions about theirs. <a href="set-up-your-treatment-list.html">Set-Up-Your-Treatment-List</a>.</p>
+    <h2>The inventory section, and who you should point at it</h2>
+    <p>Once the clinic is set up, the "You're signed in" page carries a <strong>Go to</strong> box marked <strong>Inventory</strong>.
+    Inside it are the materials, the supplier list, and — one switch further, at the top of the screen —
+    <strong>the clinic's own tab</strong>: the house's shelf, on its own screen (<a href="find-a-material.html">Find-a-Material</a>,
+    <a href="use-the-clinics-stock-tab.html">Use-the-Clinics-Stock-Tab</a>).</p>
+    <p><strong>Point reception at it.</strong> Keeping the house's shelf right — materials on it, numbers correct
+    (<a href="add-a-material.html">Add-a-Material</a>) — and the supplier list tidy (<a href="add-a-supplier.html">Add-a-Supplier</a>) is real work she can do
+    today and it is the front desk's natural job. Assistants and every doctor can do the same.</p>
+    <p>Three things to know before somebody asks you:</p>
+    <ul>
+    <li><strong>Inventory access is a sixth setting that is not on anybody's card.</strong> It comes from the person's
+      role at invite and there is no screen to change it. Out of the box everybody gets the clinic's
+      shelf — the house's is open to every doctor, whatever his arrangement
+      (<a href="roles-and-access.html">Roles-and-Access</a>).</li>
+    <li><strong>Taking a material off the house's shelf is your decision alone.</strong> Reception and the assistants
+      fill the shelf in and keep its numbers right; nobody else decides what the clinic stocks at all.
+      There is no archive button on a material yet — the rule is already how it works underneath.</li>
+    <li><strong>Merging two suppliers can only be undone from the box that appears straight after it.</strong> There
+      is no list of past merges in this version, so if someone merges the wrong pair and dismisses that
+      box, it is a call to us (<a href="merge-two-suppliers.html">Merge-Two-Suppliers</a>).</li>
+    </ul>
     <h2>What is not here yet</h2>
-    <p>No schedule, no patients, no money, no inventory. <a href="whats-not-here-yet.html">Whats-Not-Here-Yet</a> is the page to show anyone
-    who goes looking.</p>
+    <p>No schedule, no patients, no money. In inventory, counting stock, entering purchases and receiving
+    deliveries are not built. <a href="whats-not-here-yet.html">Whats-Not-Here-Yet</a> is the page to show anyone who goes looking.</p>
     <p>Next: <a href="set-up-your-clinic.html">Set-Up-Your-Clinic</a> · <a href="give-someone-a-new-link.html">Give-Someone-a-New-Link</a> · <a href="roles-and-access.html">Roles-and-Access</a> ·
     <a href="what-your-licence-covers.html">What-Your-Licence-Covers</a> · <a href="home.html">Home</a></p>
     </div></body></html>
@@ -1006,11 +1414,32 @@ data:
     <li>You are taken to <strong>your own treatment list</strong> — the treatments you do, your prices and how long
        each one takes. This keeps happening on every sign-in until you have worked through it once and
        pressed <strong>Finish</strong>. <a href="set-up-your-treatment-list.html">Set-Up-Your-Treatment-List</a>.</li>
-    <li>After that you land on a short page headed <strong>"You're signed in"</strong>, which tells you your role and
-       lists the clinic's <strong>rooms</strong>. Your treatment list is then one press away: the <strong>gear</strong> at the top
-       right → <strong>Set up services &amp; timings</strong>.</li>
+    <li>After that you land on a short page headed <strong>"You're signed in"</strong>, which tells you your role,
+       offers two <strong>Go to</strong> boxes — <strong>Services &amp; timings</strong> and <strong>Inventory</strong> — and lists the clinic's
+       <strong>rooms</strong>. Your treatment list is also one press away from the <strong>gear</strong> at the top right →
+       <strong>Set up services &amp; timings</strong>.</li>
     </ol>
-    <p>At the top right is a <strong>gear</strong> for <a href="switch-to-dark-mode.html">Switch-to-Dark-Mode</a>, your treatment list, and <strong>Sign out</strong>.</p>
+    <p>At the top right is a <strong>gear</strong> for <a href="switch-to-dark-mode.html">Switch-to-Dark-Mode</a>, your treatment list, and <strong>Sign out</strong>.
+    Inventory is not in the gear; it is the <strong>Go to</strong> box.</p>
+    <h2>The inventory section</h2>
+    <p>Press <strong>Inventory</strong>. At the very top of the screen, beside the clinic's name, there is a switch:
+    <strong>Mine</strong> and <strong>The clinic</strong>.</p>
+    <ul>
+    <li><strong>Mine</strong> is the materials list you already know, with a <strong>My materials / All</strong> switch that only
+      doctors have — <em>My materials</em> is your own shelf. <a href="find-a-material.html">Find-a-Material</a>.</li>
+    <li><strong>The clinic</strong> is the house's own shelf on its own screen — the gloves and the anaesthetic that
+      belong to no single doctor. You may look, and you may use what is on it freely: <strong>no permission
+      is ever asked for the house's materials</strong>. What is never open to you is another doctor's own
+      materials. <a href="use-the-clinics-stock-tab.html">Use-the-Clinics-Stock-Tab</a>.</li>
+    </ul>
+    <p>Every doctor may keep the clinic's supplier list — add, correct, archive and merge
+    (<a href="add-a-supplier.html">Add-a-Supplier</a>, <a href="merge-two-suppliers.html">Merge-Two-Suppliers</a>) — and every doctor may add materials: his own on
+    <strong>Mine</strong>, the house's on <strong>The clinic</strong> (<a href="add-a-material.html">Add-a-Material</a>).</p>
+    <p><strong>Costs you may not read say Hidden.</strong> Another doctor's material shows you that a cost exists and
+    that it is not yours; the house's own figures are the front desk's to keep
+    (<a href="roles-and-access.html">Roles-and-Access</a>).</p>
+    <p><strong>You cannot yet record a count, enter a purchase, or link materials to your treatments.</strong> Step 2
+    of your setup flow is the placeholder for that last one and asks nothing of you today.</p>
     <h2>Your treatment list is the work Milestone 1 asks of you</h2>
     <p>It is the only screen in Gompha today that is yours rather than the clinic's, and it is what
     reception will book from when the schedule arrives. Getting it right now is the whole job.</p>
@@ -1041,6 +1470,9 @@ data:
     <li><strong>Patients</strong>, as contacts and as clinical records — an <strong>admin doctor</strong> normally starts on
       <strong>Clinic</strong>; an <strong>associate doctor</strong> on <strong>Own</strong>, unless he is salaried, in which case the clinic's
       patients are his work and he starts on <strong>Clinic</strong> too.</li>
+    <li><strong>Inventory</strong> — a sixth setting that is live today but is <strong>not shown on your card</strong>. Every
+      doctor starts on <strong>Clinic</strong>: the house's shelf is open to all of you, whoever you work for. It
+      is what decides whether you can change the clinic's supplier list (<a href="roles-and-access.html">Roles-and-Access</a>).</li>
     </ul>
     <p>If any of that is wrong for how this clinic works, ask the owner. It is one press on a card, and it
     takes effect immediately.</p>
@@ -1062,7 +1494,7 @@ data:
     <li><strong>If a screen shows a code like <code>GMP-1304</code>, press Report this.</strong> It takes thirty seconds and it
       is the only way a problem reaches anyone who can fix it. <a href="when-something-goes-wrong.html">When-Something-Goes-Wrong</a>.</li>
     </ul>
-    <p>Next: <a href="sign-in.html">Sign-In</a> · <a href="working-offline.html">Working-Offline</a> · <a href="roles-and-access.html">Roles-and-Access</a> · <a href="home.html">Home</a></p>
+    <p>Next: <a href="sign-in.html">Sign-In</a> · <a href="find-a-material.html">Find-a-Material</a> · <a href="working-offline.html">Working-Offline</a> · <a href="roles-and-access.html">Roles-and-Access</a> · <a href="home.html">Home</a></p>
     </div></body></html>
   "dual-currency-money.html": |
     <!doctype html><html lang="en"><head><meta charset="utf-8">
@@ -1084,9 +1516,10 @@ data:
     <hr />
     <h2>tags: [concept, milestone-1, screen/services]</h2>
     <h1>Money in Two Currencies</h1>
-    <p>Gompha holds <strong>no payments, no balances and no Income and Expenses</strong> yet. The only money in the
-    software today is <strong>a price on a doctor's own treatment</strong> (<a href="add-a-treatment.html">Add-a-Treatment</a>) — and the way that
-    price is stored is the rule everything later will follow, so it is worth reading once.</p>
+    <p>Gompha holds <strong>no payments, no balances and no Income and Expenses</strong> yet. The money in the software
+    today is <strong>a price on a doctor's own treatment</strong> (<a href="add-a-treatment.html">Add-a-Treatment</a>) and <strong>the price, cost and
+    margin of a material</strong> (<a href="find-a-material.html">Find-a-Material</a>) — and the way those figures are stored is the rule
+    everything later will follow, so it is worth reading once.</p>
     <h2>One side is typed, the other is worked out</h2>
     <p>A price is set in <strong>US dollars</strong> or in <strong>Iraqi dinar</strong>. Never both.</p>
     <ul>
@@ -1100,7 +1533,7 @@ data:
       of the month.</li>
     </ul>
     <p><strong>A dinar figure you typed is kept exactly as you typed it.</strong> 47,300 stays 47,300. A dinar figure
-    <em>converted from dollars</em> is rounded up to the nearest 250, because nobody at a front desk in Erbil
+    <em>converted from dollars</em> is rounded up to the nearest 250, because nobody at a front desk here
     hands back 30 dinar.</p>
     <h2>Unknown, free and zero are three different things</h2>
     <p>The price control has three buttons — <strong>Unknown · Free · Priced</strong> — and they are not interchangeable.</p>
@@ -1137,6 +1570,9 @@ data:
     <li>Nothing is lost. The converted figure is worked out fresh every time it is shown, so the day a
       rate is set, every price already entered gets its second figure at once.</li>
     </ul>
+    <p>The same is true on a material: its <strong>Price</strong>, <strong>Cost basis</strong> and <strong>Margin</strong> each show one real
+    figure in the currency it was bought or priced in, and the faint <strong>≈</strong> line under it appears only
+    once a rate exists (<a href="find-a-material.html">Find-a-Material</a>).</p>
     <h2>Why it works this way</h2>
     <p><strong>Storing both figures would freeze today's rate into next year's prices.</strong> The dinar moves. A
     price list that quietly kept the rate of the day each line was typed would drift line by line, and
@@ -1209,6 +1645,11 @@ data:
     <td><strong>14xx</strong></td>
     <td>Our machinery</td>
     <td>Us</td>
+    </tr>
+    <tr>
+    <td><strong>16xx</strong></td>
+    <td>Materials and suppliers</td>
+    <td>You, usually</td>
     </tr>
     <tr>
     <td><strong>19xx</strong></td>
@@ -1380,6 +1821,12 @@ data:
     <a href="what-your-licence-covers.html">What-Your-Licence-Covers</a>.</p>
     <p><strong>⚠ verify</strong> — <code>GMP-1306</code> and <code>GMP-1310</code> are defined but belong to a design that was withdrawn, and
     nothing on a screen produces them today. If one ever reaches you, send it: that is a bug in itself.</p>
+    <p><strong>The 16xx codes are not listed here yet.</strong> They come from the materials and suppliers screens
+    (<a href="find-a-material.html">Find-a-Material</a>), and on those screens you almost always get a <strong>plain sentence on the field
+    itself</strong> rather than a number — <em>"A code is 2–8 letters or numbers"</em>, <em>"CRN is already used by …"</em>,
+    <em>"The 30-day window to undo this merge has passed."</em> Their numbers are still being settled, and this
+    page does not publish a number until it is permanent. If one does reach you in a red box, send it
+    with <strong>Report this</strong> and we will tell you what it was.</p>
     <h2>Why it works this way</h2>
     <p><strong>A code is not decoration.</strong> "Something went wrong" tells nobody anything, and a clinic that reads
     it ten times learns to ignore the eleventh. A code lets a receptionist tell a doctor, a doctor tell
@@ -1391,6 +1838,228 @@ data:
     look before you have read the sentence — which is the difference between a code being useful at the
     front desk and being a number somebody copies out.</p>
     <p>Next: <a href="when-something-goes-wrong.html">When-Something-Goes-Wrong</a> · <a href="working-offline.html">Working-Offline</a> · <a href="what-your-licence-covers.html">What-Your-Licence-Covers</a> · <a href="home.html">Home</a></p>
+    </div></body></html>
+  "find-a-material.html": |
+    <!doctype html><html lang="en"><head><meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Find a Material · Gompha Manual</title>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;600&family=IBM+Plex+Sans+Arabic&display=swap" rel="stylesheet">
+    <style>
+    body{margin:0;background:#FAF8F4;color:#3D3A34;font:15px/1.65 "IBM Plex Sans","IBM Plex Sans Arabic",sans-serif}
+    .wrap{max-width:760px;margin:0 auto;padding:40px 24px 80px}
+    a{color:#2E5D51} .dead{color:#98917F;border-bottom:1px dashed #C9C2B2}
+    h1,h2,h3{line-height:1.3} h1{font-size:26px}
+    code{background:#F1EDE6;border-radius:5px;padding:2px 6px}
+    .crumb{font-size:13px;color:#98917F;margin-bottom:28px} .crumb a{color:#6B655A;text-decoration:none}
+    .draft{background:#F3EDDC;color:#6A5A32;border-radius:9px;padding:9px 14px;font-size:13px;margin-bottom:26px}
+    table{border-collapse:collapse} td,th{border:1px solid #E9E3D8;padding:7px 12px;text-align:left}
+    </style></head><body><div class="wrap">
+    <div class="crumb"><a href="index.html">Gompha Manual</a></div>
+    <div class="draft">Draft — this manual describes the upcoming version of Gompha.</div>
+    <hr />
+    <p>tags: [task, milestone-1, screen/inventory, inventory]
+    screen: Inventory → Materials</p>
+    <hr />
+    <h1>Find a Material</h1>
+    <p>The <strong>Inventory</strong> section is the clinic's shelf on screen: what is in stock, what has run out, who
+    owns it and who it is bought from. The house's materials live on their own screen now — the switch
+    at the top of the screen, <strong>Mine / The clinic</strong>, moves you between the two (<a href="use-the-clinics-stock-tab.html">Use-the-Clinics-Stock-Tab</a>).</p>
+    <p><strong>In this version inventory reads the shelf and fills it in.</strong> You can look anything up, you can
+    add a material and correct its numbers (<a href="add-a-material.html">Add-a-Material</a>), and you can fix which supplier a
+    material comes from (<a href="assign-a-supplier-to-a-material.html">Assign-a-Supplier-to-a-Material</a>, <a href="add-a-supplier.html">Add-a-Supplier</a>). You cannot yet
+    record a count, enter a purchase, or receive a delivery — see <em>What you cannot do here yet</em> at the
+    bottom.</p>
+    <h2>Where it is</h2>
+    <ol>
+    <li>Sign in (<a href="sign-in.html">Sign-In</a>).</li>
+    <li>You land on the page headed <strong>"You're signed in"</strong>.</li>
+    <li>Under the heading <strong>Go to</strong>, press the box labelled <strong>Inventory</strong> — <em>"Materials on the shelf"</em>.</li>
+    </ol>
+    <p>It is <strong>not</strong> in the gear menu. The gear is still only dark mode, a doctor's own treatment list,
+    and Sign out.</p>
+    <p><strong>A doctor signing in for the first few times lands on his treatment list instead.</strong> Finish it, or
+    press <strong>Later</strong>, and you arrive at the same "You're signed in" page with the <strong>Go to</strong> boxes on it
+    (<a href="set-up-your-treatment-list.html">Set-Up-Your-Treatment-List</a>).</p>
+    <p><strong>If the section is not part of your access</strong> you get a calm box reading <em>"Inventory isn't part of
+    your access"</em>. That is a setting, not a fault — see <a href="roles-and-access.html">Roles-and-Access</a>.</p>
+    <h2>What you are looking at</h2>
+    <p>At the very top of the screen, in the bar beside the clinic's name, the switch <strong>Mine / The
+    clinic</strong>. <em>Mine</em> is this screen; <em>The clinic</em> is the house's own shelf, on its own screen
+    (<a href="use-the-clinics-stock-tab.html">Use-the-Clinics-Stock-Tab</a>).</p>
+    <p>Under the heading <strong>Inventory</strong>, two buttons: <strong>Materials</strong> and <strong>Suppliers</strong>. Materials is
+    the one you start on.</p>
+    <p>Under those:</p>
+    <ul>
+    <li>a <strong>search box</strong> — <em>Search a material by name</em></li>
+    <li>a <strong>My materials / All</strong> switch (<strong>doctors only</strong> — reception and assistants see only <em>All</em>,
+      because they own no shelf of their own)</li>
+    <li>a <strong>Customize</strong> button</li>
+    <li>the button <strong>+ Add material</strong> (<a href="add-a-material.html">Add-a-Material</a>)</li>
+    <li>a row of filter buttons: <strong>All · Needs attention · In stock · None left · Not being tracked ·
+      No count yet</strong></li>
+    <li>a faint count of what is loaded, e.g. <em>"50+ materials"</em></li>
+    <li>the list itself</li>
+    </ul>
+    <p><strong>What <em>All</em> shows is everything you may see</strong> — for a doctor, his own materials and the house's;
+    for the front desk, the house's shelf. Another doctor's own materials never appear in it: his
+    drawer is his, and no switch on this screen opens it.</p>
+    <p>On a computer the list is a <strong>table</strong>. On a phone the same rows become <strong>cards</strong>, one material per
+    card, each line labelled. If you would rather have the table on a tablet, switch that device to
+    <strong>Compact</strong> (<a href="switch-to-dark-mode.html">Switch-to-Dark-Mode</a>) — compact forces the table view whatever the screen size.</p>
+    <h2>The Stock column, in words</h2>
+    <p>The stock cell is a <strong>word first</strong>, with a small shape beside it and the number after it. The word
+    is the meaning; nobody should have to read a colour.</p>
+    <table>
+    <thead>
+    <tr>
+    <th>It says</th>
+    <th>It means</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+    <td><strong>In stock</strong></td>
+    <td>Counted, and there is some left</td>
+    </tr>
+    <tr>
+    <td><strong>Low stock</strong></td>
+    <td>Counted, and running near the end — fewer than 5 left of something bought as a box, fewer than 3 of something counted one at a time</td>
+    </tr>
+    <tr>
+    <td><strong>None left</strong></td>
+    <td>Counted, and there is none</td>
+    </tr>
+    <tr>
+    <td><strong>Not being tracked</strong></td>
+    <td>It was counted once and somebody stopped counting it — a deliberate stop, typed as a minus</td>
+    </tr>
+    <tr>
+    <td><strong>No count yet</strong></td>
+    <td>Nobody has ever counted it. Normal for things nobody wants to count</td>
+    </tr>
+    </tbody>
+    </table>
+    <p><strong>Nothing in Gompha is ever blocked because of a count.</strong> A material at zero still behaves exactly
+    like any other. The app tells you; it never stops you.</p>
+    <p><strong>Needs attention</strong> is the reorder view: press it and you get the materials with <strong>none left</strong> and
+    the ones <strong>no longer being tracked</strong>. This is the filter to use before a supplier call.</p>
+    <h2>Steps — look something up</h2>
+    <ol>
+    <li>Type part of the name into <strong>Search a material by name</strong>. Arabic and Kurdish names match too.</li>
+    <li>Or press a filter button — <strong>Needs attention</strong> before ordering, <strong>No count yet</strong> to see what
+       nobody has ever counted.</li>
+    <li>Press a row (on a phone, a card) to open it.</li>
+    <li>A window opens headed <strong>Material</strong> with everything the record holds.</li>
+    <li>Close it with the <strong>×</strong> or by pressing outside it.</li>
+    </ol>
+    <p>If the list ends with a <strong>Load more</strong> button, there is more to see. The list is deliberately fetched
+    in pages of fifty rather than all at once, so the screen paints quickly on an old tablet.</p>
+    <p><strong>If nothing matches</strong>, you get the sentence <em>"No materials match these filters"</em> and a <strong>Clear
+    filters</strong> link. That is not the same as an empty shelf: an empty shelf says <em>"No materials yet"</em> in
+    a dashed box. Two different states, two different messages — deliberately.</p>
+    <h2>What one material shows</h2>
+    <p>The <strong>Material</strong> window shows, in order:</p>
+    <ul>
+    <li>the <strong>name</strong>, and under it the <strong>owner</strong>, the category, and the word <strong>Archived</strong> if it is one</li>
+    <li><strong>Edit this material</strong>, a small button beside the name — the way to correct anything on it
+      (<a href="add-a-material.html">Add-a-Material</a>)</li>
+    <li><strong>Stock</strong> — the same word as in the list, plus the date it was last counted</li>
+    <li><strong>Unit / pack</strong> — e.g. <em>tube · 100 per box</em></li>
+    <li><strong>Price</strong> — what the clinic sells or charges it at</li>
+    <li><strong>Cost basis</strong> — what it costs</li>
+    <li><strong>Margin</strong> — the difference, with a percentage</li>
+    <li><strong>Supplier</strong> — with an <strong>Assign</strong> or <strong>Change</strong> button (<a href="assign-a-supplier-to-a-material.html">Assign-a-Supplier-to-a-Material</a>)</li>
+    <li><strong>Arriving</strong> — a quantity on order, with an expected date</li>
+    <li><strong>Notes</strong></li>
+    <li><strong>Recent purchases</strong> — the last few, each with a date, the supplier and the unit price</li>
+    </ul>
+    <p>Some of those lines only appear when there is something to show. A material with nothing on order
+    has no <strong>Arriving</strong> line at all.</p>
+    <h2>Why some prices say Hidden</h2>
+    <p>Where a cost or a margin would be, you may see the word <strong>Hidden</strong> in faint italics.</p>
+    <p><strong>That is the access setting called Financial information doing its job</strong> (<a href="set-what-each-person-can-see.html">Set-What-Each-Person-Can-See</a>).
+    Costs belong to whoever owns that material. If it is not your money, you see that a figure exists
+    and that it is not yours to read — you never see a zero, and you never see a blank cell that looks
+    like a bug. The one exception is the house's own shelf: the front desk reads <strong>the clinic's</strong>
+    costs there, because reordering is the front desk's job (<a href="use-the-clinics-stock-tab.html">Use-the-Clinics-Stock-Tab</a>).</p>
+    <p>It follows that <strong>the Cost and Margin columns are only offered at all</strong> when at least one material
+    on screen has a cost you may read. If they are missing from <strong>Customize</strong>, that is why, and the
+    window says so in a small grey line.</p>
+    <p>Two more things this affects: <strong>Recent purchases</strong> appears only for materials whose cost you may
+    see, and the detail window can then tell <strong>"No cost recorded yet"</strong> apart from <strong>Hidden</strong>. In the
+    list alone the two look the same.</p>
+    <h2>Customize what you see</h2>
+    <p>Press <strong>Customize</strong>. A window opens headed <strong>Customize what you see</strong>, with three parts:</p>
+    <ol>
+    <li><strong>Only items in use</strong> — a switch. On, it hides archived materials and shows just the live list.</li>
+    <li><strong>Columns</strong> — tick what you want: <strong>Stock, Price, Cost, Margin, Owner, Supplier, Category,
+       Unit / pack, Arriving, Updated</strong>. The material's <strong>name</strong> is always shown and is not in the list.</li>
+    <li><strong>Sort by</strong> — a plain dropdown: Name, Stock level, Recently updated, Supplier, Price, and
+       Cost / Margin / Last purchased where you are allowed to see cost.</li>
+    </ol>
+    <p><strong>Your choices are remembered on that device only.</strong> The front-desk computer and your phone each
+    keep their own. Nothing is sent to the server and nothing is shared with a colleague — set the desk
+    up the way the desk needs it.</p>
+    <h2>What you cannot do here yet</h2>
+    <table>
+    <thead>
+    <tr>
+    <th>You are looking for</th>
+    <th>Status</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+    <td>Adding a new material</td>
+    <td><strong>Built</strong> — <a href="add-a-material.html">Add-a-Material</a></td>
+    </tr>
+    <tr>
+    <td>Recording a count or a stocktake</td>
+    <td>Not built</td>
+    </tr>
+    <tr>
+    <td>Entering a purchase, or receiving a delivery</td>
+    <td>Not built</td>
+    </tr>
+    <tr>
+    <td>Archiving a material</td>
+    <td>Not built — no button exists; when one does, the house's shelf will be the owner's call alone (<a href="use-the-clinics-stock-tab.html">Use-the-Clinics-Stock-Tab</a>)</td>
+    </tr>
+    <tr>
+    <td>Marking material used on a patient</td>
+    <td>Not built</td>
+    </tr>
+    <tr>
+    <td>Changing which doctor owns a material</td>
+    <td>Not built</td>
+    </tr>
+    <tr>
+    <td>Linking materials to your treatments</td>
+    <td>Not built — step 2 of a doctor's setup is the placeholder (<a href="set-up-your-treatment-list.html">Set-Up-Your-Treatment-List</a>)</td>
+    </tr>
+    </tbody>
+    </table>
+    <p><strong>A brand-new clinic starts with an empty shelf</strong> — <em>"No materials yet"</em> on your own tab, <em>"The
+    house's shelf is empty"</em> on the clinic's — each with its own faded example of what belongs there
+    and its own <strong>add</strong> button. Filling them in is done by hand now, from the clinic itself
+    (<a href="add-a-material.html">Add-a-Material</a>).</p>
+    <h2>Why it works this way</h2>
+    <p><strong>The clinic is several small businesses under one roof.</strong> Every material belongs to a named
+    owner — a doctor, or <strong>The Clinic</strong> for the house's common shelf, which now has a screen of its
+    own (<a href="use-the-clinics-stock-tab.html">Use-the-Clinics-Stock-Tab</a>). A doctor who rents a chair keeps his own stock, and his
+    colleague does not read his costs. That is why every row names an owner, why doctors get a
+    <strong>My materials</strong> switch, and why cost can be hidden on a row you are otherwise allowed to see.</p>
+    <p><strong>The house's shelf is open to every doctor.</strong> Using the clinic's own materials never asks
+    permission — what each doctor uses is sorted out in the money, afterwards. What no permission
+    ever opens is another doctor's own materials.</p>
+    <p><strong>A count never blocks anything.</strong> The clinic was explicit: the app warns, it does not stop the
+    clinic working. A wrong number on a shelf must never be the reason a patient is not treated — so a
+    material with <strong>None left</strong> is still fully usable, and a minus on the count is information for
+    whoever does the ordering.</p>
+    <p><strong>Fifty rows at a time, not everything.</strong> A clinic has hundreds of materials and some of the devices
+    in it are old. Paging is what keeps the first screen fast.</p>
+    <p>Next: <a href="add-a-material.html">Add-a-Material</a> · <a href="use-the-clinics-stock-tab.html">Use-the-Clinics-Stock-Tab</a> · <a href="assign-a-supplier-to-a-material.html">Assign-a-Supplier-to-a-Material</a> ·
+    <a href="add-a-supplier.html">Add-a-Supplier</a> · <a href="roles-and-access.html">Roles-and-Access</a> · <a href="working-offline.html">Working-Offline</a> · <a href="home.html">Home</a></p>
     </div></body></html>
   "fix-a-persons-details.html": |
     <!doctype html><html lang="en"><head><meta charset="utf-8">
@@ -1662,15 +2331,18 @@ data:
     <hr />
     <h2>tags: [home]</h2>
     <h1>Gompha Manual</h1>
-    <p><strong>Version: Milestone 1 · checked against image <code>clinic-v0.1.16</code> · Stamped 2026-08-22 (pass 5)</strong></p>
+    <p><strong>Version: Milestone 1 · checked against image <code>clinic-v0.1.22</code> · Stamped 2026-08-24 (pass 7)</strong></p>
     <blockquote>
     <h3>This manual covers Milestone 1 only</h3>
-    <p>Milestone 1 is <strong>sign-in, people and access, rooms</strong>, and <strong>a doctor's own treatment list</strong>.
-    That is the whole of the live software today, at <strong>https://app-staging.gompha.com</strong>.</p>
+    <p>Milestone 1 is <strong>sign-in, people and access, rooms</strong>, <strong>a doctor's own treatment list</strong>, and
+    <strong>the inventory section — materials and suppliers, including the clinic's own stock tab</strong>. That
+    is the whole of the live software today, at <strong>https://app-staging.gompha.com</strong>.</p>
     <p>There is <strong>no schedule, no patients, no patient card, no tooth chart, no appointments, no
-    Income and Expenses, no inventory and no X-rays yet</strong>. If you are looking for one of those,
-    read <a href="whats-not-here-yet.html">Whats-Not-Here-Yet</a> first so nobody spends an afternoon hunting for a screen that
-    has not been built.</p>
+    Income and Expenses and no X-rays yet</strong>. In inventory you can now <strong>add materials and keep
+    their numbers right</strong>, on your own tab and on the clinic's — but you cannot yet count stock,
+    enter a purchase or receive a delivery. If you are looking for one of those, read
+    <a href="whats-not-here-yet.html">Whats-Not-Here-Yet</a> first so nobody spends an afternoon hunting for
+    a screen that has not been built.</p>
     </blockquote>
     <p>This vault is the single onboarding source for everyone who uses Gompha. It describes the
     software <strong>exactly as it is right now</strong>. Anything decided but not built lives as one line in
@@ -1693,17 +2365,17 @@ data:
     <tr>
     <td>A doctor</td>
     <td><a href="doctor.html">Doctor</a></td>
-    <td>Yes — you set up your own treatment list</td>
+    <td>Yes — your own treatment list, and the inventory section</td>
     </tr>
     <tr>
     <td>Front desk</td>
     <td><a href="receptionist.html">Receptionist</a></td>
-    <td>Sign in only</td>
+    <td>Yes — the inventory section and the supplier list</td>
     </tr>
     <tr>
     <td>An assistant</td>
     <td><a href="assistant.html">Assistant</a></td>
-    <td>Sign in only</td>
+    <td>Yes — the inventory section and the supplier list</td>
     </tr>
     </tbody>
     </table>
@@ -1718,7 +2390,7 @@ data:
     <ul>
     <li><a href="set-up-your-clinic.html">Set-Up-Your-Clinic</a> — the three-step Welcome</li>
     <li><a href="add-a-staff-member.html">Add-a-Staff-Member</a> — add a person and send them their invite</li>
-    <li><a href="set-what-each-person-can-see.html">Set-What-Each-Person-Can-See</a> — the five access sections and their four levels</li>
+    <li><a href="set-what-each-person-can-see.html">Set-What-Each-Person-Can-See</a> — the five access sections on a card, and their four levels</li>
     <li><a href="choose-a-doctor-colour.html">Choose-a-Doctor-Colour</a> — the colour a doctor gets on the schedule later</li>
     <li><a href="add-the-clinic-rooms.html">Add-the-Clinic-Rooms</a> — name each surgery</li>
     </ul>
@@ -1728,6 +2400,15 @@ data:
     <li><a href="add-a-treatment.html">Add-a-Treatment</a> — the name, the price, the times, multi-visit work</li>
     <li><a href="organise-your-treatment-list.html">Organise-Your-Treatment-List</a> — categories, your own order, searching</li>
     <li><a href="delete-and-restore-a-treatment.html">Delete-and-Restore-a-Treatment</a> — deleting, undo, and <strong>Recently deleted</strong></li>
+    </ul>
+    <p><strong>Materials and suppliers</strong> (reception, assistants, doctors, the owner)</p>
+    <ul>
+    <li><a href="find-a-material.html">Find-a-Material</a> — the inventory section, searching it, and what a material's page shows</li>
+    <li><a href="add-a-material.html">Add-a-Material</a> — put a material on the shelf, yours or the house's, and correct one</li>
+    <li><a href="use-the-clinics-stock-tab.html">Use-the-Clinics-Stock-Tab</a> — the house's own shelf: who fills it, who may use it</li>
+    <li><a href="add-a-supplier.html">Add-a-Supplier</a> — add, correct or archive a supplier, and the short code</li>
+    <li><a href="assign-a-supplier-to-a-material.html">Assign-a-Supplier-to-a-Material</a> — fill in the blank <strong>unassigned</strong> column</li>
+    <li><a href="merge-two-suppliers.html">Merge-Two-Suppliers</a> — the same company entered twice</li>
     </ul>
     <p><strong>Fixing something on a person's card</strong> (the owner)</p>
     <ul>
@@ -1750,7 +2431,7 @@ data:
     <h2>Things worth understanding</h2>
     <ul>
     <li><a href="whats-not-here-yet.html">Whats-Not-Here-Yet</a> — what Milestone 1 does and does not include</li>
-    <li><a href="roles-and-access.html">Roles-and-Access</a> — the four roles and the five access sections</li>
+    <li><a href="roles-and-access.html">Roles-and-Access</a> — the four roles, and everything access decides</li>
     <li><a href="passwords-and-sessions.html">Passwords-and-Sessions</a> — password rules, and why you are signed out after a while</li>
     <li><a href="working-offline.html">Working-Offline</a> — read this before the first "the internet is down" phone call</li>
     <li><a href="error-codes.html">Error-Codes</a> — look up any <code>GMP-…</code> code you have been shown</li>
@@ -1823,6 +2504,165 @@ data:
     reminders will need later. A clinic that skips this step discovers it the day a reminder does not
     arrive.</p>
     <p>Next: <a href="working-offline.html">Working-Offline</a> · <a href="switch-to-dark-mode.html">Switch-to-Dark-Mode</a> · <a href="home.html">Home</a></p>
+    </div></body></html>
+  "merge-two-suppliers.html": |
+    <!doctype html><html lang="en"><head><meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Merge Two Suppliers · Gompha Manual</title>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;600&family=IBM+Plex+Sans+Arabic&display=swap" rel="stylesheet">
+    <style>
+    body{margin:0;background:#FAF8F4;color:#3D3A34;font:15px/1.65 "IBM Plex Sans","IBM Plex Sans Arabic",sans-serif}
+    .wrap{max-width:760px;margin:0 auto;padding:40px 24px 80px}
+    a{color:#2E5D51} .dead{color:#98917F;border-bottom:1px dashed #C9C2B2}
+    h1,h2,h3{line-height:1.3} h1{font-size:26px}
+    code{background:#F1EDE6;border-radius:5px;padding:2px 6px}
+    .crumb{font-size:13px;color:#98917F;margin-bottom:28px} .crumb a{color:#6B655A;text-decoration:none}
+    .draft{background:#F3EDDC;color:#6A5A32;border-radius:9px;padding:9px 14px;font-size:13px;margin-bottom:26px}
+    table{border-collapse:collapse} td,th{border:1px solid #E9E3D8;padding:7px 12px;text-align:left}
+    </style></head><body><div class="wrap">
+    <div class="crumb"><a href="index.html">Gompha Manual</a></div>
+    <div class="draft">Draft — this manual describes the upcoming version of Gompha.</div>
+    <hr />
+    <p>tags: [task, milestone-1, screen/inventory, inventory]
+    screen: Inventory → Suppliers → Merge two suppliers</p>
+    <hr />
+    <h1>Merge Two Suppliers</h1>
+    <p>The same company is often in the list twice — entered once by one person and once by another, with
+    the spelling slightly different. <strong>Merging</strong> folds the two cards into one without losing anything.</p>
+    <p><strong>Nothing is ever merged automatically.</strong> Gompha can point at a likely pair; a person decides.</p>
+    <h2>Where it is</h2>
+    <p>Open <strong>Inventory → Suppliers</strong> (<a href="add-a-supplier.html">Add-a-Supplier</a>). There are two ways in.</p>
+    <p><strong>Gompha noticed the pair.</strong> At the top of the supplier list, an amber box:</p>
+    <blockquote>
+    <p><strong>Possible duplicate</strong> — <em>Acme Dental</em> and <em>Acme Dental Co</em> both list <strong>0770 627 5313</strong>. Nothing
+    has been merged; a human decides.</p>
+    </blockquote>
+    <p>Press <strong>Review duplicate</strong>.</p>
+    <p><strong>You noticed the pair.</strong> Press <strong>Merge…</strong> at the bottom of either card. You choose the other one
+    yourself.</p>
+    <p><strong>What pairs them is a shared phone number, not a similar name.</strong> Two cards are only flagged when
+    one of their numbers is the same number, however it was typed — <code>0770 627 5313</code> and
+    <code>+964 770 627 5313</code> count as the same. Similar spellings are never enough on their own: half the
+    suppliers in a clinic have similar names.</p>
+    <h2>Steps</h2>
+    <ol>
+    <li>A window opens headed <strong>Merge two suppliers</strong>.</li>
+    <li><strong>If you started from Merge…</strong>, pick the other supplier first. Type a code or a name and press
+       the row you want. A grey note reminds you that no shared phone flagged these — you are pairing
+       them yourself, and the same checks apply.</li>
+    <li><strong>If Gompha flagged them</strong>, an amber line at the top names the shared number and asks you to
+       confirm it really is the same phone before going on. This is the moment to actually check.</li>
+    <li><strong>Choose which name survives.</strong> Two cards side by side, each with its item count and how many
+       phone numbers it holds. The one with more history is chosen for you; press the other to change
+       it. The chosen card reads <strong>Keep this one</strong>, the other <strong>Merge into the other</strong>.</li>
+    <li>Read the panel headed <strong>What moves onto <name></strong>:</li>
+    <li><strong>Items repointed</strong> — how many materials will now show the surviving supplier</li>
+    <li><strong>Purchase history</strong> — moves</li>
+    <li><strong>After merge</strong> — the other name is archived, with a link back, and it is reversible</li>
+    <li>Tick the sentence at the bottom. It says, in your own case, that these are one vendor and names
+       what will be repointed. The <strong>Merge</strong> button stays dead until it is ticked.</li>
+    <li>Press <strong>Merge</strong>.</li>
+    </ol>
+    <h2>After the merge</h2>
+    <p>A box appears at the top of the supplier list:</p>
+    <blockquote>
+    <p><strong>Merged.</strong> The duplicate is now part of <em>Acme Dental</em> (AD) — 12 items, matched on
+    0770 627 5313. It's in the log and reversible for 30 days.</p>
+    </blockquote>
+    <p>with two buttons, <strong>Undo</strong> and <strong>Dismiss</strong>.</p>
+    <p>The duplicate card is gone from the list. The surviving card now carries both sets of materials.</p>
+    <blockquote>
+    <p>⚠ <strong>Undo it from that box while it is on the screen.</strong> The 30-day reversal is real and it is
+    recorded, but <strong>there is no screen in this version for reading the list of merges</strong>. Once you
+    press <strong>Dismiss</strong>, reload the page or walk away, there is no button anywhere that undoes it —
+    reversing it then needs a call to us. If you are not sure, undo it now and merge again when you
+    are.</p>
+    </blockquote>
+    <p><strong>Undo</strong> may answer instead of working:</p>
+    <table>
+    <thead>
+    <tr>
+    <th>What you see</th>
+    <th>What it means</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+    <td><em>The 30-day window to undo this merge has passed.</em></td>
+    <td>Too late. The merge stands</td>
+    </tr>
+    <tr>
+    <td><em>This merge was already reversed.</em></td>
+    <td>Somebody has already undone it</td>
+    </tr>
+    <tr>
+    <td><em>The freed-up name is now taken — undo isn't possible.</em></td>
+    <td>A new supplier has since been created with that name or that code, so the old one cannot come back under it</td>
+    </tr>
+    </tbody>
+    </table>
+    <p><strong>Who may undo one:</strong> an <strong>admin doctor</strong>, or <strong>the person who did the merge</strong>. Not anybody else,
+    even with the same access.</p>
+    <h2>What a merge actually changes, and what it does not</h2>
+    <ul>
+    <li><strong>The materials.</strong> Every material that pointed at the duplicate now shows the surviving supplier
+      in its <strong>Supplier</strong> column, and the surviving card's item count includes them.</li>
+    <li><strong>The purchases.</strong> The money is untouched. Not one figure is rewritten, and nobody's money moves
+      to anybody else.</li>
+    <li><strong>The duplicate card.</strong> It is archived and holds a pointer to where it went. It disappears from
+      the supplier list — note that the <strong>Show archived</strong> switch does <strong>not</strong> bring a merged card back,
+      because merged is not the same as archived (<a href="add-a-supplier.html">Add-a-Supplier</a>).</li>
+    <li><strong>Old purchase lines keep the name they were bought under.</strong> Open a material and look at <strong>Recent
+      purchases</strong>: a line from before the merge still shows the old spelling. That is not a leftover to
+      clean up — it is the honest record of who you actually bought from that day, and it is meant to
+      stay.</li>
+    </ul>
+    <h2>Who may merge</h2>
+    <p>Merging needs inventory access at the <strong>Clinic</strong> level or wider — the same as adding a supplier.
+    Out of the box that is everybody: admin doctors, every associate, reception and assistants.
+    Only somebody deliberately set below <strong>Clinic</strong> cannot, and he will see a refusal after pressing
+    Merge rather than a greyed-out button (<a href="add-a-supplier.html">Add-a-Supplier</a>).</p>
+    <h2>When it refuses</h2>
+    <table>
+    <thead>
+    <tr>
+    <th>What you see</th>
+    <th>What it means</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+    <td><em>These can't be merged into each other. Pick two different suppliers.</em></td>
+    <td>The same card is on both sides</td>
+    </tr>
+    <tr>
+    <td><em>One of these was already merged. Refresh the list and check again.</em></td>
+    <td>Somebody merged one of them while your window was open. Merges are one hop only — a merged card cannot be merged again</td>
+    </tr>
+    <tr>
+    <td><em>One of these changed while you were here. Re-open and try again.</em></td>
+    <td>The card was edited underneath you. Nothing was merged</td>
+    </tr>
+    <tr>
+    <td><em>One of these suppliers is no longer available.</em></td>
+    <td>It has since been archived or merged away</td>
+    </tr>
+    </tbody>
+    </table>
+    <h2>Why it works this way</h2>
+    <p><strong>A bad merge in a clinic system is not a duplicate-row nuisance.</strong> It is one record silently
+    attached to the wrong thing. Gompha treats merging a supplier with the same weight it will treat
+    merging two patients: never automatic, never on a single matching field alone, always a person's
+    decision, always reversible, always recorded.</p>
+    <p><strong>A shared phone number is the evidence, because a name is not.</strong> <em>Acme Dental</em> and <em>Acme Dental Co</em>
+    might be one company or two branches with separate accounts. The same phone number answering both
+    is a much stronger sign, and it is the one the clinic itself recognises.</p>
+    <p><strong>Nothing is rewritten, so nothing can be half-rewritten.</strong> Rather than editing hundreds of rows —
+    some of which the person merging is not even allowed to see, because another doctor's stock is
+    private — the losing card simply learns where it went, and every screen follows the pointer. There
+    is no state where half the materials moved and half did not, and that is exactly why the undo can be
+    a single button.</p>
+    <p>Next: <a href="add-a-supplier.html">Add-a-Supplier</a> · <a href="assign-a-supplier-to-a-material.html">Assign-a-Supplier-to-a-Material</a> · <a href="find-a-material.html">Find-a-Material</a> · <a href="home.html">Home</a></p>
     </div></body></html>
   "organise-your-treatment-list.html": |
     <!doctype html><html lang="en"><head><meta charset="utf-8">
@@ -2025,8 +2865,10 @@ data:
     <h2>tags: [role, milestone-1]</h2>
     <h1>Receptionist</h1>
     <h2>Read this first</h2>
-    <p><strong>Milestone 1 has no schedule and no patients.</strong> There is nothing for the front desk to do in Gompha
-    yet. Signing in and knowing your way to the sign-in screen is the whole of it for now.</p>
+    <p><strong>Milestone 1 has no schedule and no patients.</strong> The day grid you will live in is not built yet.</p>
+    <p><strong>There is one real job for the front desk today: the inventory section.</strong> The materials on the
+    shelf, and the clinic's supplier list — which is yours to keep right. See
+    <em>Inventory is your work today</em> below.</p>
     <p>That is deliberate, not an oversight. <a href="whats-not-here-yet.html">Whats-Not-Here-Yet</a>.</p>
     <h2>Set your account up</h2>
     <p>The owner will send you a link — WhatsApp, SMS or in person, <strong>not email</strong>. Open it and choose your
@@ -2034,12 +2876,36 @@ data:
     <h2>When you sign in</h2>
     <ol>
     <li>Open <strong>https://app-staging.gompha.com</strong> and sign in (<a href="sign-in.html">Sign-In</a>).</li>
-    <li>You get a short page headed <strong>"You're signed in"</strong> which names your role and lists the clinic's
-       <strong>rooms</strong>.</li>
+    <li>You get a short page headed <strong>"You're signed in"</strong> which names your role, offers two <strong>Go to</strong>
+       boxes, and lists the clinic's <strong>rooms</strong>.</li>
     </ol>
     <p>The <strong>gear</strong> at the top right gives you <a href="switch-to-dark-mode.html">Switch-to-Dark-Mode</a> and <strong>Sign out</strong>.</p>
     <p><strong>Set the front desk machine to Compact.</strong> It fits more on the screen, which is what you will want
-    the day the day-grid arrives.</p>
+    the day the day-grid arrives — and it is what puts the materials list into a proper table rather
+    than a stack of cards.</p>
+    <h2>Inventory is your work today</h2>
+    <p>Press the <strong>Inventory</strong> box under <strong>Go to</strong>. Three things live there.</p>
+    <ul>
+    <li><strong>Materials</strong> — everything on the shelf. Search it, and press <strong>Needs attention</strong> to see what
+      needs reordering before you make an order call. <a href="find-a-material.html">Find-a-Material</a>.</li>
+    <li><strong>The clinic's tab</strong> — the house's own shelf, switched to at the very top of the screen with
+      <strong>The clinic</strong>. <strong>This is your writing job</strong>: add the house's materials and keep what the house
+      paid and charges right on them (<a href="use-the-clinics-stock-tab.html">Use-the-Clinics-Stock-Tab</a>, <a href="add-a-material.html">Add-a-Material</a>).</li>
+    <li><strong>Suppliers</strong> — the clinic's list of who it buys from. <strong>This one is yours to keep tidy</strong>, and
+      you can change it: add a supplier, correct a number, archive one nobody uses
+      (<a href="add-a-supplier.html">Add-a-Supplier</a>), say which supplier a material comes from
+      (<a href="assign-a-supplier-to-a-material.html">Assign-a-Supplier-to-a-Material</a>), and fold two cards for the same company into one
+      (<a href="merge-two-suppliers.html">Merge-Two-Suppliers</a>).</li>
+    </ul>
+    <p><strong>On the house's shelf you can see what the house paid.</strong> The cost is right there on the clinic's
+    tab, because reordering is your job and a price is what you reorder against. What you still do
+    not see is a <strong>doctor's</strong> own costs — those stay <strong>Hidden</strong> to you, and that is not a fault on
+    your account (<a href="roles-and-access.html">Roles-and-Access</a>).</p>
+    <p><strong>You cannot yet record a count or enter a purchase.</strong> Those screens are not built — the numbers
+    you can change are the ones on a material itself.</p>
+    <p><strong>The other Go to box, Services &amp; timings, is not yours.</strong> It is each doctor's own treatment list.
+    Press it and you get a red message saying you do not have one. ⚠ Rough edge, already reported —
+    nothing is wrong with your account.</p>
     <h2>What the front desk will and will not be able to see</h2>
     <p>The owner has already set this, and it takes effect as each module ships
     (<a href="set-what-each-person-can-see.html">Set-What-Each-Person-Can-See</a>):</p>
@@ -2050,10 +2916,13 @@ data:
     <li><strong>Patients as medical — None.</strong> You will not see clinical notes or treatments. That is the design,
       not a restriction on you personally: a name and a phone number are one thing, a medical record is
       another.</li>
-    <li><strong>Financial information — None.</strong> The clinic's and the doctors' own earnings are not front-desk
-      information. This one cannot be opened all the way even if somebody wants to: <strong>the widest
-      setting on that section is reserved for admin doctors</strong>, because salaries will be read through it
-      (<a href="set-what-each-person-can-see.html">Set-What-Each-Person-Can-See</a>).</li>
+    <li><strong>Financial information — Clinic.</strong> Wide enough to read what <strong>the house</strong> pays for its own
+      materials — which is what you reorder against — and no wider. A doctor's own figures stay
+      <strong>Hidden</strong> to you, and the widest setting on that section is reserved for admin doctors besides,
+      because salaries will be read through it (<a href="set-what-each-person-can-see.html">Set-What-Each-Person-Can-See</a>).</li>
+    <li><strong>Inventory — Clinic.</strong> This one is live now. The house's shelf — to look at, to fill in, to
+      keep the numbers right — and the right to change the clinic's supplier list. It is not shown on
+      your card (<a href="roles-and-access.html">Roles-and-Access</a>).</li>
     </ul>
     <p>If a doctor tells you that you should be able to see something and you cannot, that is a
     conversation with the owner, not a fault to report.</p>
@@ -2077,8 +2946,8 @@ data:
       about what you were doing, send. You will be the person who sees most of these.
       <a href="when-something-goes-wrong.html">When-Something-Goes-Wrong</a>.</li>
     </ul>
-    <p>Next: <a href="sign-in.html">Sign-In</a> · <a href="working-offline.html">Working-Offline</a> · <a href="when-something-goes-wrong.html">When-Something-Goes-Wrong</a> · <a href="whats-not-here-yet.html">Whats-Not-Here-Yet</a> ·
-    <a href="home.html">Home</a></p>
+    <p>Next: <a href="use-the-clinics-stock-tab.html">Use-the-Clinics-Stock-Tab</a> · <a href="add-a-material.html">Add-a-Material</a> · <a href="find-a-material.html">Find-a-Material</a> · <a href="add-a-supplier.html">Add-a-Supplier</a> ·
+    <a href="working-offline.html">Working-Offline</a> · <a href="when-something-goes-wrong.html">When-Something-Goes-Wrong</a> · <a href="whats-not-here-yet.html">Whats-Not-Here-Yet</a> · <a href="home.html">Home</a></p>
     </div></body></html>
   "record-a-treatment.html": |
     <!doctype html><html lang="en"><head><meta charset="utf-8">
@@ -2260,6 +3129,18 @@ data:
       for himself (<a href="set-up-your-treatment-list.html">Set-Up-Your-Treatment-List</a>).</li>
     <li>A doctor's own materials and medicines, linked to his treatments — step 2 of a doctor's setup is
       the placeholder for it today.</li>
+    <li>Recording a count, entering a purchase and receiving a delivery — materials can now be added by
+      hand (<a href="add-a-material.html">Add-a-Material</a>); counting and buying are not built.</li>
+    <li>Marking material used on a patient, and moving a material to a different owner.</li>
+    <li>Procedures and recipes finding their place on the clinic's tab — it is stock only today
+      (<a href="use-the-clinics-stock-tab.html">Use-the-Clinics-Stock-Tab</a>).</li>
+    <li>A doctor letting his own assistant see prices, from his own sign-in — he decides, for his
+      assistant only, and she never sees more than he does. Today the owner sets it on her card
+      instead (<a href="roles-and-access.html">Roles-and-Access</a>).</li>
+    <li>A screen listing the supplier merges, so one can be undone after the confirmation box has gone
+      (<a href="merge-two-suppliers.html">Merge-Two-Suppliers</a>).</li>
+    <li>Inventory access appearing on a person's card as a sixth section, so the owner can set it
+      (<a href="roles-and-access.html">Roles-and-Access</a>).</li>
     </ul>
     <h2>The modules themselves</h2>
     <ul>
@@ -2269,7 +3150,6 @@ data:
     <li>Recording treatments and notes <strong>on a patient</strong> — separate from the list of treatments a doctor
       offers, which is already live (<a href="record-a-treatment.html">Record-a-Treatment</a>).</li>
     <li>Income and Expenses, patient balances and payments.</li>
-    <li>Inventory.</li>
     <li>X-rays and photos.</li>
     </ul>
     <h2>Settled ways of working, already true underneath</h2>
@@ -2282,7 +3162,10 @@ data:
       (<a href="what-your-licence-covers.html">What-Your-Licence-Covers</a>).</li>
     <li>Doctor seats are counted per role; reception and assistants are not counted.</li>
     <li>A seat is a person, not a device.</li>
-    <li>Nobody and nothing is truly deleted — people and rooms are archived (<a href="archive-a-person.html">Archive-a-Person</a>).</li>
+    <li>Nobody and nothing is truly deleted — people, rooms and suppliers are archived
+      (<a href="archive-a-person.html">Archive-a-Person</a>, <a href="add-a-supplier.html">Add-a-Supplier</a>).</li>
+    <li>A merge is never automatic and never final: a person decides it, it is recorded, and it can be
+      reversed (<a href="merge-two-suppliers.html">Merge-Two-Suppliers</a>).</li>
     <li>Every refusal carries a code that never changes its meaning (<a href="error-codes.html">Error-Codes</a>).</li>
     <li>What a clinic may do is carried in its own licence, so a bespoke arrangement never needs a new
       version of the software.</li>
@@ -2380,10 +3263,11 @@ data:
     </ul>
     <p>If a new assistant reports that she "can't see anything", check her doctor's card first. That is
     almost always the answer.</p>
-    <p><strong>Her clinical settings are a ceiling, not a grant.</strong> On <strong>Schedule</strong>, <strong>Patients as contacts</strong> and
-    <strong>Patients as medical</strong>, what her card holds is <em>the most</em> she may see — she never sees more than
-    her doctor does, whatever the card says. Her card says so under each of those three controls. Her
-    two money sections work the ordinary way and start at <strong>None</strong>.</p>
+    <p><strong>Her clinical settings are a ceiling, not a grant.</strong> On <strong>Schedule</strong>, <strong>Patients as contacts</strong>,
+    <strong>Patients as medical</strong> and now <strong>prices</strong> too — what her card holds is <em>the most</em> she may see —
+    she never sees more than her doctor does, whatever the card says. Her card says so under each of
+    the three clinical controls. Her <strong>Patient financial record</strong> works the ordinary way and starts at
+    <strong>None</strong>, and so does her price sight until somebody grants it.</p>
     <h2>Every doctor is invited with a working arrangement</h2>
     <p>When the owner invites a doctor, he must say how that doctor works with the clinic: <strong>co-owner</strong>,
     <strong>rents a chair</strong>, <strong>salaried</strong> or <strong>percentage</strong> (<a href="add-a-staff-member.html">Add-a-Staff-Member</a>). There is no default —
@@ -2395,8 +3279,9 @@ data:
     grid. A doctor's terms with the clinic are between him and the owner; the software is not the place
     colleagues read them off. There is no screen to change it in this version.</p>
     <h2>What each person can see</h2>
-    <p>Five sections, each set to <strong>All</strong>, <strong>Clinic</strong>, <strong>Own</strong> or <strong>None</strong>, per person. That is its own
-    page: <a href="set-what-each-person-can-see.html">Set-What-Each-Person-Can-See</a>.</p>
+    <p>Five sections on the card, each set to <strong>All</strong>, <strong>Clinic</strong>, <strong>Own</strong> or <strong>None</strong>, per person. That
+    is its own page: <a href="set-what-each-person-can-see.html">Set-What-Each-Person-Can-See</a>. A sixth — inventory — governs today but is not
+    on the card yet; it is further down this page.</p>
     <p>The four levels contain each other — <strong>None ⊂ Own ⊂ Clinic ⊂ All</strong>. <strong>Clinic</strong> is the one worth
     learning: it means <em>the house's plus my own, and never a colleague's personal book</em>. It is what an
     admin doctor starts on, so he can run the clinic without reading another doctor's earnings.</p>
@@ -2404,9 +3289,86 @@ data:
     Salaries will be read through it. On anyone else's card the button is faded and the database
     refuses the setting outright.</p>
     <p><strong>One of the five already does something today.</strong> <strong>Financial information</strong> decides whether a
-    person sees prices on a treatment list. Set to <strong>None</strong> — which is the normal setting for reception
-    and for an assistant — a price shows as <strong>Hidden</strong> behind a small padlock, and cannot be typed. The
-    other four are recorded and take effect as their modules arrive.</p>
+    person sees prices on a treatment list. Set to <strong>None</strong> — the normal starting point for an
+    assistant — a price shows as <strong>Hidden</strong> behind a small padlock, and cannot be typed. The same
+    setting decides who may read what a <strong>material costs</strong> in inventory: a cost that is not yours to
+    read says <strong>Hidden</strong> (<a href="find-a-material.html">Find-a-Material</a>). The front desk starts at <strong>Clinic</strong> on this one, which
+    buys exactly the house's own purchase prices and nothing wider — what a doctor's material cost is
+    still none of the front desk's business. The other four are recorded and take effect as their
+    modules arrive.</p>
+    <h2>There is a sixth section, and it is not on the card</h2>
+    <p><strong>Inventory access</strong> is a real section with the same four levels, and it is live today. It is <strong>not
+    shown on a person's card in this version</strong> — it is set from their role when they are invited, and
+    there is no screen to adjust it. It decides two things:</p>
+    <table>
+    <thead>
+    <tr>
+    <th>Level</th>
+    <th>What it means for inventory</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+    <td><strong>None</strong></td>
+    <td>The <strong>Inventory</strong> box opens onto <em>"Inventory isn't part of your access"</em>. Nothing is visible</td>
+    </tr>
+    <tr>
+    <td><strong>Own</strong></td>
+    <td>The doctor's own shelf. He can read, but he <strong>cannot change the clinic's supplier list</strong></td>
+    </tr>
+    <tr>
+    <td><strong>Clinic</strong></td>
+    <td>His own plus the house's common shelf — <strong>and he may add, edit, archive and merge suppliers</strong></td>
+    </tr>
+    <tr>
+    <td><strong>All</strong></td>
+    <td>Everything in the clinic</td>
+    </tr>
+    </tbody>
+    </table>
+    <p>Where each role starts, as Gompha is set up out of the box:</p>
+    <table>
+    <thead>
+    <tr>
+    <th>Role</th>
+    <th>Starts at</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+    <td>Admin doctor</td>
+    <td><strong>Clinic</strong></td>
+    </tr>
+    <tr>
+    <td>Associate doctor, any arrangement</td>
+    <td><strong>Clinic</strong> — the house's shelf is open to every doctor</td>
+    </tr>
+    <tr>
+    <td>Receptionist</td>
+    <td><strong>Clinic</strong> — she keeps the shelf and reorders</td>
+    </tr>
+    <tr>
+    <td>Assistant</td>
+    <td><strong>Clinic</strong> — her doctor's shelf plus the house's</td>
+    </tr>
+    </tbody>
+    </table>
+    <p>Two things worth knowing about that table:</p>
+    <ul>
+    <li><strong>Reception reads the house's costs; an assistant does not.</strong> Inventory access lets them look
+      up, add materials and keep the supplier list; the <strong>Financial information</strong> setting is what
+      lets a person read a price back, and there the two part company. The front desk starts at
+      <strong>Clinic</strong> — the house's own figures, for reordering. An assistant starts at <strong>None</strong>: costs
+      read <strong>Hidden</strong> for her until somebody grants her price sight, and she never sees more than her
+      doctor does (<a href="roadmap.html">Roadmap</a> has what is coming there).</li>
+    <li><strong>An assistant's inventory level is a grant, not a ceiling</strong> — unlike her clinical sections. It
+      does not follow her doctor, because keeping the house's shelf is part of the job and no version
+      of "her doctor's shelf alone" adds up to it.</li>
+    </ul>
+    <p>⚠ <strong>A doctor hand-set down to Own still sees the buttons that need Clinic.</strong> He can press <strong>+
+    Add a supplier</strong> or <strong>Merge…</strong>, and finds out only when he saves (<a href="add-a-supplier.html">Add-a-Supplier</a>). Nothing is
+    half-written. Out of the box nobody starts at Own any more — it takes a deliberate change on a
+    card.</p>
     <h2>A doctor's treatment list is his own, and no setting opens it</h2>
     <p>Prices, times and the treatments themselves belong to <strong>one named doctor</strong>
     (<a href="set-up-your-treatment-list.html">Set-Up-Your-Treatment-List</a>). There is no access level — not All, not the owner's, not an
@@ -2444,7 +3406,8 @@ data:
     <p><strong>Nobody is locked out permanently by accident.</strong> The owner can mint anyone a fresh link at any
     time (<a href="give-someone-a-new-link.html">Give-Someone-a-New-Link</a>) and can correct a wrong email
     (<a href="fix-a-persons-details.html">Fix-a-Persons-Details</a>). Losing access to an account has to be a decision, never a typo.</p>
-    <p>Next: <a href="set-what-each-person-can-see.html">Set-What-Each-Person-Can-See</a> · <a href="add-a-staff-member.html">Add-a-Staff-Member</a> · <a href="clinic-admin.html">Clinic-Admin</a> · <a href="home.html">Home</a></p>
+    <p>Next: <a href="set-what-each-person-can-see.html">Set-What-Each-Person-Can-See</a> · <a href="add-a-staff-member.html">Add-a-Staff-Member</a> · <a href="find-a-material.html">Find-a-Material</a> ·
+    <a href="clinic-admin.html">Clinic-Admin</a> · <a href="home.html">Home</a></p>
     </div></body></html>
   "set-up-your-clinic.html": |
     <!doctype html><html lang="en"><head><meta charset="utf-8">
@@ -2521,8 +3484,9 @@ data:
     <h2>Where Finish setup takes you</h2>
     <p>Into the app as a doctor: <strong>your own treatment list</strong>, until you have worked through that once too
     (<a href="set-up-your-treatment-list.html">Set-Up-Your-Treatment-List</a>). After that, the same short home page everyone else gets —
-    <strong>"You're signed in"</strong>, your role, and the list of rooms you just named. In Milestone 1 there is
-    nothing else behind it yet (<a href="whats-not-here-yet.html">Whats-Not-Here-Yet</a>).</p>
+    <strong>"You're signed in"</strong>, your role, two <strong>Go to</strong> boxes (<strong>Services &amp; timings</strong> and <strong>Inventory</strong>,
+    <a href="find-a-material.html">Find-a-Material</a>), and the list of rooms you just named. In Milestone 1 there is nothing else
+    behind it yet (<a href="whats-not-here-yet.html">Whats-Not-Here-Yet</a>).</p>
     <h2>Getting back to setup later</h2>
     <p>There is no menu item for it, and once the clinic's details are saved the plain address takes you
     into the app rather than back to Welcome.</p>
@@ -2573,12 +3537,18 @@ data:
     <ul>
     <li><strong>Until you have finished it once, it opens by itself every time you sign in.</strong> You do not have
       to look for it.</li>
-    <li><strong>Afterwards:</strong> press the <strong>gear</strong> at the top right, and under <strong>Your work</strong> press
-      <strong>Set up services &amp; timings</strong>.</li>
+    <li><strong>Afterwards, two ways back in:</strong></li>
+    <li>the <strong>gear</strong> at the top right, then under <strong>Your work</strong>, <strong>Set up services &amp; timings</strong> — this
+        reopens the same two-step setup screen;</li>
+    <li>the <strong>Services &amp; timings</strong> box under <strong>Go to</strong> on the "You're signed in" page — this opens
+        <strong>just your list</strong>, headed <em>Services &amp; timings</em>, with <strong>+ Add a treatment</strong> in the bar at the
+        top. No steps, no <strong>Continue</strong> and no <strong>Finish</strong>. It is the quicker door once the setup is done.</li>
     </ul>
     <p>"Finished once" means you reached the end and pressed <strong>Finish</strong>. Pressing <strong>Later</strong> does not count
     — it lets you past for that sign-in, and the screen opens again next time.</p>
-    <p>Receptionists and assistants have no such screen and no button for it. That is correct.</p>
+    <p>Receptionists and assistants have no list of their own. ⚠ They <strong>can</strong> see and press the <strong>Services
+    &amp; timings</strong> box, and get a red message reading <em>"You do not have a catalogue."</em> That is a rough edge
+    in this version, not a fault on their account, and it is reported.</p>
     <h2>What you are looking at</h2>
     <p>Across the top: <strong>1 · Your treatments</strong> and <strong>2 · Your materials</strong>. Two named steps, not a wizard
     you are trapped in.</p>
@@ -2610,7 +3580,9 @@ data:
     <li>Press <strong>+ Add a treatment</strong> for anything you do that is missing.</li>
     <li>Fill in every <strong>Add price</strong> and <strong>Add chair time</strong> you can see.</li>
     <li>Press <strong>Continue →</strong>. Step 2, <strong>Your materials</strong>, has nothing to do today — it is a sentence
-       telling you what will live there when inventory arrives.</li>
+       telling you what will live there when your materials can be linked to your treatments. (The
+       clinic's inventory itself <strong>does</strong> exist and is reached separately, from the <strong>Go to</strong> boxes on
+       the home page — <a href="find-a-material.html">Find-a-Material</a>.)</li>
     <li>Press <strong>Finish</strong>. You land on the plain <strong>"You're signed in"</strong> page.</li>
     </ol>
     <p>Nothing here is final. You can change any of it, any day.</p>
@@ -2683,6 +3655,10 @@ data:
     <p><strong>For the owner only.</strong> The <strong>people and access</strong> step of <a href="set-up-your-clinic.html">Set-Up-Your-Clinic</a>.</p>
     <p>Every person in the clinic gets one card. On each card there are <strong>five sections</strong>, and each
     section is set to <strong>All</strong>, <strong>Clinic</strong>, <strong>Own</strong> or <strong>None</strong>.</p>
+    <p>⚠ <strong>There is a sixth section — inventory — and it is not on the card.</strong> It is live today and it
+    decides who may open the Inventory box and who may change the clinic's supplier list. It is set
+    from the person's role when they are invited, and <strong>there is no screen to adjust it in this
+    version</strong>. What each role gets is listed in <a href="roles-and-access.html">Roles-and-Access</a>.</p>
     <h2>What a card shows</h2>
     <p>Reading down a card:</p>
     <ul>
@@ -2718,7 +3694,7 @@ data:
     <tbody>
     <tr>
     <td><strong>Financial information</strong></td>
-    <td>The clinic's and a doctor's own money — takings, profit and loss</td>
+    <td>The clinic's and a doctor's own money — takings, profit and loss. Also decides who reads a treatment's price and a <strong>material's cost</strong> (<a href="find-a-material.html">Find-a-Material</a>)</td>
     </tr>
     <tr>
     <td><strong>Patient financial record</strong></td>
@@ -2816,11 +3792,14 @@ data:
     doctor can be given everything here — salaries sit behind this level."</em> Salaries will be read
     through that setting once wages are in the software, so it is not something to hand to reception or
     to an assistant. The server refuses it as well, not only the screen — see <em>Why it works this way</em>.</p>
-    <p><strong>On an assistant, the three clinical sections are a ceiling, not a grant.</strong> Under <strong>Schedule</strong>,
-    <strong>Patients as contacts</strong> and <strong>Patients as medical</strong> her card adds: <em>"This is a ceiling: she never
-    sees more than <her doctor> does."</em> So <strong>All</strong> on her card does not mean she sees the whole clinic.
-    It means <em>do not hold her below her doctor</em> — whatever he can see, she can, and nothing more. Move
-    it to <strong>Clinic</strong>, <strong>Own</strong> or <strong>None</strong> when you want her held below him.</p>
+    <p><strong>On an assistant, three clinical sections and prices are a ceiling, not a grant.</strong> Under
+    <strong>Schedule</strong>, <strong>Patients as contacts</strong> and <strong>Patients as medical</strong> her card adds: <em>"This is a
+    ceiling: she never sees more than <her doctor> does."</em> So <strong>All</strong> on her card does not mean she
+    sees the whole clinic. It means <em>do not hold her below her doctor</em> — whatever he can see, she can,
+    and nothing more. Move it to <strong>Clinic</strong>, <strong>Own</strong> or <strong>None</strong> when you want her held below him.
+    <strong>Financial information</strong> follows the same rule now — her price sight can never rise above her
+    doctor's — ⚠ but the ceiling note is not printed under that one control yet, so the card does not
+    say so there.</p>
     <h2>The starting point per role</h2>
     <p>Picking a role fills the five sections in for you. These are sensible starting values, not rules:
     change any of them.</p>
@@ -2862,7 +3841,7 @@ data:
     </tr>
     <tr>
     <td><strong>Receptionist</strong></td>
-    <td>None</td>
+    <td>Clinic — the house's own purchase prices, no doctor's</td>
     <td>All</td>
     <td>All</td>
     <td>All</td>
@@ -2887,16 +3866,24 @@ data:
     this out. It means you can scan a whole clinic's worth of cards and see instantly where this clinic
     does something unusual.</p>
     <h2>Some cards moved when this version was installed</h2>
-    <p>Two one-off corrections were applied to the clinic's existing settings when this version arrived.
-    Both narrowed access; nothing was widened.</p>
+    <p>Four one-off corrections were applied to the clinic's existing settings when this version arrived.
+    All of them widened access to the house's shared shelf or its prices; none of them widened
+    anybody's sight of a colleague's figures, and none touched a person whose card had been changed
+    by hand.</p>
     <ul>
     <li><strong>Admin doctors who were on All</strong> for <strong>Patient financial record</strong>, <strong>Patients as contacts</strong> or
       <strong>Patients as medical</strong> were moved down to <strong>Clinic</strong>. <strong>The owner's own card was left alone.</strong></li>
     <li><strong>Anybody who is not an admin doctor and had been given Financial information = All</strong> was moved
       back to the starting value for their role.</li>
+    <li><strong>Doctors sitting at Own for inventory</strong> were moved up to <strong>Clinic</strong> — the house's shelf is open
+      to every doctor now. A doctor whose card you had deliberately changed in any other way was left
+      exactly as he was.</li>
+    <li><strong>Receptionists sitting at None for Financial information</strong> were moved up to <strong>Clinic</strong> — enough
+      to read what the house pays for its own materials and nothing wider. The same hands-off rule
+      applied: a card you had deliberately changed was not touched.</li>
     </ul>
-    <p>If an admin doctor says he "used to see everything", this is why. It is not a fault, and for the
-    first three sections one press puts it back if that is genuinely how this clinic works.</p>
+    <p>If an admin doctor says he "used to see everything", the first of those is why. It is not a fault,
+    and for the first three sections one press puts it back if that is genuinely how this clinic works.</p>
     <h2>What these settings do today</h2>
     <p><strong>They are recorded, and they take effect on each screen as that screen ships.</strong> In Milestone 1
     there is no schedule and no patient record, so there is nothing yet for <strong>None</strong> or <strong>Clinic</strong> to
@@ -2969,7 +3956,8 @@ data:
       every sign-in, until he has worked through it once and pressed <strong>Finish</strong>.
       See <a href="set-up-your-treatment-list.html">Set-Up-Your-Treatment-List</a>.</li>
     <li><strong>Everyone else</strong>, and every doctor who has finished that, lands on a short page that says
-      <em>"You're signed in"</em>, names your role, and lists the clinic's rooms. In Milestone 1 that is all
+      <em>"You're signed in"</em>, names your role, offers two <strong>Go to</strong> boxes — <strong>Services &amp; timings</strong> and
+      <strong>Inventory</strong> (<a href="find-a-material.html">Find-a-Material</a>) — and lists the clinic's rooms. In Milestone 1 that is all
       there is. See <a href="whats-not-here-yet.html">Whats-Not-Here-Yet</a>.</li>
     </ul>
     <p>Both screens carry the Gompha mark top-left with <strong>powered by Steficzko</strong> beneath it, and the same
@@ -3127,6 +4115,82 @@ data:
     <p><strong>Not built.</strong> Gompha records no money yet — no payments, no patient balances, no Income and
     Expenses.</p>
     <p>See <a href="whats-not-here-yet.html">Whats-Not-Here-Yet</a> · <a href="dual-currency-money.html">Dual-Currency-Money</a> · <a href="roadmap.html">Roadmap</a> · <a href="home.html">Home</a></p>
+    </div></body></html>
+  "use-the-clinics-stock-tab.html": |
+    <!doctype html><html lang="en"><head><meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Use the Clinics Stock Tab · Gompha Manual</title>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;600&family=IBM+Plex+Sans+Arabic&display=swap" rel="stylesheet">
+    <style>
+    body{margin:0;background:#FAF8F4;color:#3D3A34;font:15px/1.65 "IBM Plex Sans","IBM Plex Sans Arabic",sans-serif}
+    .wrap{max-width:760px;margin:0 auto;padding:40px 24px 80px}
+    a{color:#2E5D51} .dead{color:#98917F;border-bottom:1px dashed #C9C2B2}
+    h1,h2,h3{line-height:1.3} h1{font-size:26px}
+    code{background:#F1EDE6;border-radius:5px;padding:2px 6px}
+    .crumb{font-size:13px;color:#98917F;margin-bottom:28px} .crumb a{color:#6B655A;text-decoration:none}
+    .draft{background:#F3EDDC;color:#6A5A32;border-radius:9px;padding:9px 14px;font-size:13px;margin-bottom:26px}
+    table{border-collapse:collapse} td,th{border:1px solid #E9E3D8;padding:7px 12px;text-align:left}
+    </style></head><body><div class="wrap">
+    <div class="crumb"><a href="index.html">Gompha Manual</a></div>
+    <div class="draft">Draft — this manual describes the upcoming version of Gompha.</div>
+    <hr />
+    <p>tags: [task, milestone-1, screen/inventory, inventory]
+    screen: The clinic → Stock</p>
+    <hr />
+    <h1>Use the Clinic's Stock Tab</h1>
+    <p>The clinic has a tab of its own for <strong>the house's materials</strong> — what the clinic buys that everyone
+    uses: gloves, anaesthetic, the things no single doctor owns.</p>
+    <p>It is a <strong>separate screen</strong>, not a filter on the materials list. Whose surface you are on is said
+    by the switch at the very top of the screen, in the bar beside the clinic's name: <strong>Mine</strong> and
+    <strong>The clinic</strong>.</p>
+    <h2>Where it is</h2>
+    <ol>
+    <li>Open <strong>Inventory</strong> from the <strong>Go to</strong> boxes on the home page (<a href="find-a-material.html">Find-a-Material</a>).</li>
+    <li>At the top of the screen, in the bar beside the clinic's name, press <strong>The clinic</strong>.</li>
+    </ol>
+    <p>You are on a screen headed <strong>Stock</strong>, with a small badge under the heading reading
+    <strong>◆ The clinic's — not yours</strong>, and a line saying what lives here: <em>"What the house buys and
+    everyone uses. Your own materials are on your own tab."</em></p>
+    <p>Press <strong>Mine</strong> to go back. The switch is there for everybody — reception and assistants too, not
+    only doctors.</p>
+    <h2>What you are looking at</h2>
+    <p>The house's materials, and the same tools as the materials list you already know
+    (<a href="find-a-material.html">Find-a-Material</a>):</p>
+    <ul>
+    <li>a <strong>search box</strong> — <em>"Search the house's materials"</em></li>
+    <li>the same filter buttons — <strong>All · Needs attention · In stock · None left · Not being tracked ·
+      No count yet</strong></li>
+    <li><strong>Customize</strong>, <strong>+ Add material</strong>, and the list itself</li>
+    </ul>
+    <p>What is <strong>not</strong> here: the <strong>My materials / All</strong> switch. On the house's screen there is nothing to
+    widen — this list is the clinic's, and only the clinic's. And what is not here yet: <strong>procedures
+    and recipes</strong>. This screen is stock only; they get their own place here when they exist
+    (<a href="roadmap.html">Roadmap</a>).</p>
+    <h2>Who does what here</h2>
+    <ul>
+    <li><strong>Everybody may look.</strong> Out of the box the house's shelf is open to the whole staff.</li>
+    <li><strong>The front desk keeps it.</strong> Reception adds materials to the house's shelf and corrects what the
+      house paid and charges — the money boxes are hers to type here (<a href="add-a-material.html">Add-a-Material</a>).</li>
+    <li><strong>Every doctor may use the clinic's materials freely.</strong> Nobody has to ask permission before
+      taking the house's gloves or anaesthetic. What each doctor uses is worked out in the money
+      afterwards, where a person can check it — the shelf never stops a doctor at the chair.</li>
+    <li><strong>Another doctor's own materials are never available to you.</strong> Not with permission, not as a
+      favour, not at all. A doctor's own drawer is his (<a href="find-a-material.html">Find-a-Material</a>).</li>
+    <li><strong>Taking a material off the house's shelf is the owner's decision alone</strong> — deciding what the
+      clinic stocks at all is the house's policy, not the front desk's and not another admin doctor's.
+      There is no archive button here today; the rule is stated so nobody expects one at the desk.</li>
+    </ul>
+    <h2>Why it works this way</h2>
+    <p><strong>Gloves belong to nobody singly.</strong> A clinic buys some things for everyone, and pretending every
+    box has a personal owner would bury the shelf under questions that have no answer. So the house
+    has its own shelf, on its own screen, in the house's words.</p>
+    <p><strong>The shelf is open because the chair matters more than the arithmetic.</strong> A doctor mid-treatment
+    must not be stopped by a permission question about a pair of gloves. The correction happens in the
+    money, afterwards — where a person can look at it, question it and fix it.</p>
+    <p><strong>Your own materials stay yours.</strong> A doctor's own tab is exactly this screen's twin, and nobody
+    else sees what is on it — which is why the badge says <em>The clinic's — not yours</em> and the two tabs
+    are separate screens rather than one list with a filter.</p>
+    <p>Next: <a href="add-a-material.html">Add-a-Material</a> · <a href="find-a-material.html">Find-a-Material</a> · <a href="roles-and-access.html">Roles-and-Access</a> · <a href="home.html">Home</a></p>
     </div></body></html>
   "use-the-tooth-chart.html": |
     <!doctype html><html lang="en"><head><meta charset="utf-8">
@@ -3304,6 +4368,14 @@ data:
       (<a href="set-up-your-treatment-list.html">Set-Up-Your-Treatment-List</a>, <a href="add-a-treatment.html">Add-a-Treatment</a>, <a href="organise-your-treatment-list.html">Organise-Your-Treatment-List</a>,
       <a href="delete-and-restore-a-treatment.html">Delete-and-Restore-a-Treatment</a>). It is the reason a doctor signing in lands on his own setup
       screen rather than the plain "You're signed in" page.</li>
+    <li><strong>The inventory section — the materials on the shelf, and the supplier list.</strong> Search the
+      clinic's materials, see what needs reordering, and open any one of them (<a href="find-a-material.html">Find-a-Material</a>).
+      Add materials and keep their numbers right — your own on your own tab, the house's on
+      <a href="use-the-clinics-stock-tab.html">Use-the-Clinics-Stock-Tab</a> (<a href="add-a-material.html">Add-a-Material</a>). Keep the supplier list right: add, correct
+      and archive suppliers (<a href="add-a-supplier.html">Add-a-Supplier</a>), say which supplier a material comes from
+      (<a href="assign-a-supplier-to-a-material.html">Assign-a-Supplier-to-a-Material</a>), and fold two cards for the same company into one
+      (<a href="merge-two-suppliers.html">Merge-Two-Suppliers</a>). It is reached from the <strong>Go to</strong> boxes on the "You're signed in"
+      page.</li>
     </ul>
     <h2>What it does not give you</h2>
     <p>None of the following exists in the software today. Not hidden, not behind a permission, not
@@ -3345,8 +4417,16 @@ data:
     <td>Not built</td>
     </tr>
     <tr>
-    <td>Inventory</td>
+    <td>Recording a count or stocktake, entering a purchase, receiving a delivery</td>
+    <td>Not built — materials themselves are added by hand (<a href="add-a-material.html">Add-a-Material</a>)</td>
+    </tr>
+    <tr>
+    <td>Marking material used on a patient, or changing which doctor owns a material</td>
     <td>Not built</td>
+    </tr>
+    <tr>
+    <td>A screen listing the supplier merges, so an old one can be undone</td>
+    <td>Not built — the <strong>Undo</strong> button on the confirmation box is the only one (<a href="merge-two-suppliers.html">Merge-Two-Suppliers</a>)</td>
     </tr>
     <tr>
     <td>X-rays and photos</td>
@@ -3369,7 +4449,7 @@ data:
     <td>Not built — until it exists, a price saves in the currency you typed and no converted figure is shown (<a href="dual-currency-money.html">Dual-Currency-Money</a>)</td>
     </tr>
     <tr>
-    <td>A doctor's own materials and medicines</td>
+    <td>Linking a doctor's materials to his treatments</td>
     <td>Not built — step 2 of a doctor's setup says so and asks nothing of him</td>
     </tr>
     <tr>
@@ -3394,24 +4474,40 @@ data:
     </tr>
     </tbody>
     </table>
-    <p><strong>A receptionist or an assistant who signs in today sees one screen</strong>: a short "You're signed in"
-    page that names your role and lists the clinic's rooms. That is correct behaviour, not a fault, and
-    not a permission problem. See <a href="receptionist.html">Receptionist</a> and <a href="assistant.html">Assistant</a>.</p>
-    <p><strong>A doctor sees that page too, plus his own treatment list</strong> — his treatments, his prices, his
-    timings, which is the one piece of real work Milestone 1 asks of him. Nothing patient-facing hangs
-    off it yet. See <a href="doctor.html">Doctor</a> and <a href="set-up-your-treatment-list.html">Set-Up-Your-Treatment-List</a>.</p>
+    <p><strong>A receptionist or an assistant who signs in today sees two screens</strong>: a short "You're signed in"
+    page that names your role and lists the clinic's rooms, and — from the <strong>Go to</strong> box on it — the
+    <strong>Inventory</strong> section, where the house's shelf and the supplier list are real work she can do
+    today (<a href="find-a-material.html">Find-a-Material</a>, <a href="use-the-clinics-stock-tab.html">Use-the-Clinics-Stock-Tab</a>, <a href="add-a-supplier.html">Add-a-Supplier</a>). Everything else is
+    genuinely absent, not hidden behind a permission. See <a href="receptionist.html">Receptionist</a> and <a href="assistant.html">Assistant</a>.</p>
+    <p><strong>A doctor sees those too, plus his own treatment list</strong> — his treatments, his prices, his
+    timings, which is the piece of work Milestone 1 asks of him. Nothing patient-facing hangs off it
+    yet. See <a href="doctor.html">Doctor</a> and <a href="set-up-your-treatment-list.html">Set-Up-Your-Treatment-List</a>.</p>
+    <p><strong>The second box on that page, Services &amp; timings, is a doctor's own list.</strong> Reception and
+    assistants can see the box and press it, and get a red message reading <em>"You do not have a
+    catalogue."</em> with a code. ⚠ That is a rough edge, not a fault on the account, and it is reported.</p>
     <h2>Why the access settings are there before the screens are</h2>
     <p>The five sections you set in Milestone 1 (<a href="set-what-each-person-can-see.html">Set-What-Each-Person-Can-See</a>) are recorded now and
     govern each module <strong>as it arrives</strong>. Getting them decided before there is a patient record to
     guard is deliberate: retrofitting access to a system that already holds clinical data is how
     clinics end up with everyone seeing everything.</p>
-    <p>Most of them have nothing to hide yet, and will the moment the module they cover ships. <strong>One
-    already works:</strong> <strong>Financial information</strong> set to <code>None</code> hides the prices on a doctor's own
-    treatment list — he sees the word <strong>Hidden</strong> behind a small padlock where a price would be, and
-    cannot set one. That is the access setting doing its job, not a fault.</p>
+    <p>Most of them have nothing to hide yet, and will the moment the module they cover ships. <strong>One of
+    the five already works, and there is a sixth you cannot see on the card:</strong></p>
+    <ul>
+    <li><strong>Financial information</strong> set to <code>None</code> hides the prices on a doctor's own treatment list — he
+      sees the word <strong>Hidden</strong> behind a small padlock where a price would be, and cannot set one. The
+      same setting decides who may read a <strong>cost</strong> in inventory (<a href="find-a-material.html">Find-a-Material</a>). An assistant
+      starts at <code>None</code>; the front desk starts one step up, at <strong>Clinic</strong> — enough to read what <strong>the
+      house</strong> pays for its own materials, and never a doctor's figures.</li>
+    <li><strong>Inventory access is a sixth section</strong>, and it decides whether the Inventory box on the home
+      page opens at all and who may change the clinic's supplier list. ⚠ <strong>It is not on the person's
+      card yet</strong> — it is set from the person's role when they are invited, and cannot be adjusted on
+      screen in this version. <a href="roles-and-access.html">Roles-and-Access</a> says what each role starts with.</li>
+    </ul>
+    <p>That is the access settings doing their job, not a fault.</p>
     <h2>Two things to tell staff on day one</h2>
     <ol>
-    <li><strong>Do not go looking for the schedule.</strong> It is not there. Nobody has misconfigured anything.</li>
+    <li><strong>Do not go looking for the schedule.</strong> It is not there. Nobody has misconfigured anything.
+       <strong>Inventory is</strong> — under <strong>Go to</strong> on the page you land on.</li>
     <li><strong>The setup you do now is not throwaway.</strong> People, access and rooms are the real records the
        later modules attach to. Nothing here is re-entered later.</li>
     </ol>
@@ -3586,8 +4682,18 @@ data:
     once and it goes in (<a href="add-a-treatment.html">Add-a-Treatment</a>). On the treatment list itself, the buttons that write —
     <strong>+ Add a treatment</strong>, <strong>+ New category</strong>, the drag handle, the actions in the <strong>⋮</strong> menu — go grey
     while the link is down, and hovering one says <em>"Needs the clinic link."</em></p>
-    <p>There is no half-saved person, no half-saved treatment, no queue, and nothing to clean up
-    afterwards. Do it again when the connection is back.</p>
+    <p>In <strong>Inventory</strong>, the same rule with the same words. The <strong>+ Add material</strong> (<a href="add-a-material.html">Add-a-Material</a>),
+    <strong>+ Add a supplier</strong>, <strong>Edit</strong> and <strong>Merge…</strong> buttons go grey, the supplier window opens and reads
+    perfectly, and its footer says <strong>Needs the connection</strong> where the Save button would be
+    (<a href="add-a-supplier.html">Add-a-Supplier</a>).</p>
+    <p>There is no half-saved person, no half-saved treatment, no half-merged supplier, no queue, and
+    nothing to clean up afterwards. Do it again when the connection is back.</p>
+    <h2>Inventory offline shows you nothing, and that is not a fault</h2>
+    <p>The materials and supplier lists are <strong>not kept on the device</strong> in this version. Open Inventory with
+    the link down and you get the grey <strong>No connection</strong> box and an empty screen underneath — not a
+    stale list, and not an empty shelf.</p>
+    <p>Keeping a copy on the device for reading is on the list of things to come, along with the schedule
+    and a doctor's own patients (<a href="roadmap.html">Roadmap</a>). Until then: no link, no list.</p>
     <h2>What being offline does <em>not</em> do</h2>
     <ul>
     <li><strong>It does not sign you out.</strong> A dropped link is not a sign-out. Your session survives; you carry
