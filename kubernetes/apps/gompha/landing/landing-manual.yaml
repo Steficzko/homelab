@@ -2122,6 +2122,11 @@ data:
     <em>"The 30-day window to undo this merge has passed."</em> Their numbers are still being settled, and this
     page does not publish a number until it is permanent. If one does reach you in a red box, send it
     with <strong>Report this</strong> and we will tell you what it was.</p>
+    <p><strong>One 16xx has become ordinary to meet.</strong> Saving a recipe that carries a material from a shelf the
+    owner has closed is refused with a sentence about <em>another doctor's</em> property — written before
+    closed shelves existed, so read it as <em>"this material is closed to you"</em>. Take the material off the
+    recipe, choose another, and tell the owner which shelf it was
+    (<a href="choose-who-uses-each-shelf.html">Choose-Who-Uses-Each-Shelf</a>).</p>
     <h2>Why it works this way</h2>
     <p><strong>A code is not decoration.</strong> "Something went wrong" tells nobody anything, and a clinic that reads
     it ten times learns to ignore the eleventh. A code lets a receptionist tell a doctor, a doctor tell
@@ -2627,7 +2632,7 @@ data:
     <hr />
     <h2>tags: [home]</h2>
     <h1>Gompha Manual</h1>
-    <p><strong>Version: Milestone 1 · checked against image <code>clinic-v0.1.29</code> · Stamped 2026-08-25 (pass 8)</strong></p>
+    <p><strong>Version: Milestone 1 · checked against image <code>clinic-v0.1.29</code> · Stamped 2026-08-25 (pass 9)</strong></p>
     <blockquote>
     <h3>This manual covers Milestone 1 only</h3>
     <p>Milestone 1 is <strong>sign-in, people and access, rooms</strong>, <strong>a doctor's own treatment list</strong>, <strong>the
