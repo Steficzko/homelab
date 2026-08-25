@@ -118,6 +118,71 @@ data:
     chat thread.</p>
     <p>Next: <a href="sign-in.html">Sign-In</a> · <a href="passwords-and-sessions.html">Passwords-and-Sessions</a> · <a href="give-someone-a-new-link.html">Give-Someone-a-New-Link</a> · <a href="home.html">Home</a></p>
     </div></body></html>
+  "add-a-material-from-a-recipe.html": |
+    <!doctype html><html lang="en"><head><meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Add a Material From a Recipe · Gompha Manual</title>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;600&family=IBM+Plex+Sans+Arabic&display=swap" rel="stylesheet">
+    <style>
+    body{margin:0;background:#FAF8F4;color:#3D3A34;font:15px/1.65 "IBM Plex Sans","IBM Plex Sans Arabic",sans-serif}
+    .wrap{max-width:760px;margin:0 auto;padding:40px 24px 80px}
+    a{color:#2E5D51} .dead{color:#98917F;border-bottom:1px dashed #C9C2B2}
+    h1,h2,h3{line-height:1.3} h1{font-size:26px}
+    code{background:#F1EDE6;border-radius:5px;padding:2px 6px}
+    .crumb{font-size:13px;color:#98917F;margin-bottom:28px} .crumb a{color:#6B655A;text-decoration:none}
+    .draft{background:#F3EDDC;color:#6A5A32;border-radius:9px;padding:9px 14px;font-size:13px;margin-bottom:26px}
+    table{border-collapse:collapse} td,th{border:1px solid #E9E3D8;padding:7px 12px;text-align:left}
+    </style></head><body><div class="wrap">
+    <div class="crumb"><a href="index.html">Gompha Manual</a></div>
+    <div class="draft">Draft — this manual describes the upcoming version of Gompha.</div>
+    <hr />
+    <p>tags: [task, milestone-1, screen/recipes, screen/inventory, inventory, recipes]
+    screen: Recipes → Build a recipe → Search your stock</p>
+    <hr />
+    <h1>Add a Material From a Recipe</h1>
+    <p>You are building a recipe, you type the name of a material in the search box, and the shelf does
+    not have it. <strong>You do not have to leave the recipe.</strong> The screen itself offers:</p>
+    <blockquote>
+    <p><strong>+ Add "what you typed" to my stock</strong></p>
+    </blockquote>
+    <p>On one of the house's recipes the button says <strong>to the clinic's shelf</strong> instead — the shelf the
+    material will actually land on is named on the button, so it cannot mislead
+    (<a href="use-the-clinics-recipe-tab.html">Use-the-Clinics-Recipe-Tab</a>).</p>
+    <p>The offer appears whenever what you typed matches nothing on the shelf — not only when the shelf
+    is empty. Typing <em>tem</em> against three cements that still are not the one in your hand is the same
+    dead end as typing into an empty shelf.</p>
+    <h2>Steps</h2>
+    <ol>
+    <li>While building or editing a recipe, press <strong>+ Add a material</strong>
+       (<a href="build-a-recipe.html">Build-a-Recipe</a>).</li>
+    <li>Type the name into <strong>Search your stock</strong>. Nothing matches.</li>
+    <li>Press <strong>+ Add "…" to my stock</strong>. A small form opens, headed <strong>Add to my stock</strong>, with the name
+       already in it.</li>
+    <li><strong>What it is</strong> — the name, already typed; correct it if you like.</li>
+    <li><strong>Counted in</strong> — the unit, in <strong>your own word</strong>: pieces, grams, ml, ampules, tubes, kits. A
+       word the clinic has never used before simply creates itself as you type it; words the clinic
+       already uses are offered as you type.</li>
+    <li><strong>What you charge, per piece</strong> — optional. Leave it empty and the material carries no price
+       for now.</li>
+    <li>Press <strong>Add it and use it here</strong>.</li>
+    </ol>
+    <p>The form closes, the material exists on your shelf, and <strong>it is already on the recipe as a
+    line</strong> — with its quantity and its <strong>Charge the patient</strong> tick, exactly as if it had been on the
+    shelf all along.</p>
+    <h2>What is deliberately not on this form</h2>
+    <p>Everything else a material can carry — its category, its supplier, the box it is bought as —
+    waits for the inventory screen (<a href="add-a-material.html">Add-a-Material</a>). "You never have to fill in the rest of the
+    item" means exactly that: the door asks for the three things the recipe needs and nothing else.</p>
+    <p>The door is not offered while the connection is down — it needs the clinic link, like every
+    write (<a href="working-offline.html">Working-Offline</a>).</p>
+    <h2>Why it works this way</h2>
+    <p><strong>A doctor with an empty shelf must still finish his recipe.</strong> On day one every doctor's shelf
+    is empty, and a composer that answered "nothing here is invented on the fly" would stop him
+    mid-thought and send him to another screen. The door keeps the whole visit on one screen.</p>
+    <p><strong>The unit is your own word because units are the clinic's vocabulary.</strong> Nobody ships a list of
+    units to Erbil. You type <em>ampule</em>, and <em>ampule</em> exists from then on, for everybody.</p>
+    <p>Next: <a href="build-a-recipe.html">Build-a-Recipe</a> · <a href="add-a-material.html">Add-a-Material</a> · <a href="find-a-material.html">Find-a-Material</a> · <a href="home.html">Home</a></p>
+    </div></body></html>
   "add-a-material.html": |
     <!doctype html><html lang="en"><head><meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -144,6 +209,8 @@ data:
     <a href="use-the-clinics-stock-tab.html">Use-the-Clinics-Stock-Tab</a>. Before this version the list was filled for you; now the shelf is
     yours to fill.</p>
     <p>The same form also <strong>edits</strong> an existing material: its name, its box, its numbers, its supplier.</p>
+    <p>There is also a quicker door from inside a recipe — three fields, no leaving the screen, and the
+    material lands on the recipe as a line: <a href="add-a-material-from-a-recipe.html">Add-a-Material-From-a-Recipe</a>.</p>
     <h2>Where it is</h2>
     <p><strong>On the clinic's tab</strong> — the house's shelf, the front desk's usual place (<a href="use-the-clinics-stock-tab.html">Use-the-Clinics-Stock-Tab</a>).</p>
     <p><strong>On your own tab</strong> — a doctor's own drawer:</p>
@@ -163,7 +230,10 @@ data:
     <li><strong>Counted in</strong> — the unit you count it in: <em>piece</em>, <em>box</em>, <em>capsule</em>. If the clinic has no units
       yet, this is a typing box and the words under it say <em>"Typing it creates it"</em> — type <em>box</em> and
       <em>box</em> exists from then on, for everybody.</li>
-    <li><strong>Category</strong> — optional free text.</li>
+    <li><strong>Category</strong> — optional free text. The word you type is the shelf's name in the owner's
+      <strong>Who can use each shelf</strong> box: same word, same shelf — <em>Implants</em>, <em>Consumables</em>, whatever
+      the clinic uses. A new word simply creates a new shelf there, open like everything else
+      (<a href="choose-who-uses-each-shelf.html">Choose-Who-Uses-Each-Shelf</a>).</li>
     <li><strong>Bought as a box</strong> and <strong>How many in it</strong> — name a box and how many pieces are in it, and the
       prices below become <strong>per box</strong>. Leave both empty and prices are <strong>per piece</strong>. Both or neither
       — the line under the two boxes says so, and it names the unit the price is per.</li>
@@ -1015,7 +1085,7 @@ data:
     <h2>When you sign in</h2>
     <ol>
     <li>Open <strong>https://app-staging.gompha.com</strong> and sign in (<a href="sign-in.html">Sign-In</a>).</li>
-    <li>You get a short page headed <strong>"You're signed in"</strong> which names your role, offers two <strong>Go to</strong>
+    <li>You get a short page headed <strong>"You're signed in"</strong> which names your role, offers three <strong>Go to</strong>
        boxes, and lists the clinic's <strong>rooms</strong>.</li>
     </ol>
     <p>The <strong>gear</strong> at the top right gives you <a href="switch-to-dark-mode.html">Switch-to-Dark-Mode</a> and <strong>Sign out</strong>.</p>
@@ -1043,8 +1113,10 @@ data:
     <p><strong>Unlike your clinical sections, inventory does not follow your doctor.</strong> You reach the house's
     common shelf as well as his, because keeping the house's shelf is part of the job and half the
     doctors in a clinic have no shelf of their own to lend you.</p>
-    <p><strong>The other Go to box, Services &amp; timings, is a doctor's own list, not yours.</strong> Press it and you
-    get a red message saying you do not have one. ⚠ Rough edge, already reported.</p>
+    <p><strong>The other two Go to boxes, Services &amp; timings and Recipes, are doctors' own lists, not yours.</strong>
+    The first is each doctor's own treatment list; the second is his visits composed and priced
+    (<a href="build-a-recipe.html">Build-a-Recipe</a>). Press Services &amp; timings and you get a red message saying you do not have
+    one. ⚠ Rough edge, already reported.</p>
     <h2>You are attached to one doctor, and that matters</h2>
     <p>Every assistant is created <strong>under one named doctor</strong>. On the owner's screen your card reads
     <em>"Assistant · under Dr …"</em>.</p>
@@ -1123,6 +1195,111 @@ data:
     (<a href="choose-a-doctor-colour.html">Choose-a-Doctor-Colour</a>) are what the schedule will be built on.</p>
     <p>See <a href="whats-not-here-yet.html">Whats-Not-Here-Yet</a> · <a href="roadmap.html">Roadmap</a> · <a href="home.html">Home</a></p>
     </div></body></html>
+  "build-a-recipe.html": |
+    <!doctype html><html lang="en"><head><meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Build a Recipe · Gompha Manual</title>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;600&family=IBM+Plex+Sans+Arabic&display=swap" rel="stylesheet">
+    <style>
+    body{margin:0;background:#FAF8F4;color:#3D3A34;font:15px/1.65 "IBM Plex Sans","IBM Plex Sans Arabic",sans-serif}
+    .wrap{max-width:760px;margin:0 auto;padding:40px 24px 80px}
+    a{color:#2E5D51} .dead{color:#98917F;border-bottom:1px dashed #C9C2B2}
+    h1,h2,h3{line-height:1.3} h1{font-size:26px}
+    code{background:#F1EDE6;border-radius:5px;padding:2px 6px}
+    .crumb{font-size:13px;color:#98917F;margin-bottom:28px} .crumb a{color:#6B655A;text-decoration:none}
+    .draft{background:#F3EDDC;color:#6A5A32;border-radius:9px;padding:9px 14px;font-size:13px;margin-bottom:26px}
+    table{border-collapse:collapse} td,th{border:1px solid #E9E3D8;padding:7px 12px;text-align:left}
+    </style></head><body><div class="wrap">
+    <div class="crumb"><a href="index.html">Gompha Manual</a></div>
+    <div class="draft">Draft — this manual describes the upcoming version of Gompha.</div>
+    <hr />
+    <p>tags: [task, milestone-1, screen/recipes, recipes]
+    screen: Recipes → Build a recipe</p>
+    <hr />
+    <h1>Build a Recipe</h1>
+    <p><strong>For every doctor — and the owner, who is also a doctor.</strong> A recipe is one visit written down:
+    the treatments you will do, the materials you will use, the lab if there is one, and anything you
+    want to type yourself. Reception will book the time it adds up to, and the patient's price is
+    composed from it every time you open it.</p>
+    <p>Your recipes are yours. You own them, you edit them — and nobody builds a recipe for another
+    doctor. The house's recipes are a separate thing, on the clinic's tab
+    (<a href="use-the-clinics-recipe-tab.html">Use-the-Clinics-Recipe-Tab</a>).</p>
+    <h2>Where it is</h2>
+    <ol>
+    <li>From the home page, press the <strong>Go to</strong> box labelled <strong>Recipes</strong> — <em>"Your visits, priced and
+       timed"</em>.</li>
+    <li>The screen is headed <strong>Recipes</strong>, with the line <em>"Your recipes. You own them, you edit
+       them — a visit composed once, priced every time you open it."</em></li>
+    <li>Press <strong>Build a recipe</strong> (top right; on an empty list the button reads <strong>Build your first
+       recipe</strong> and sits in the middle of the screen).</li>
+    </ol>
+    <p>Pressing any recipe in the list opens the same window, filled in, headed <strong>Edit recipe</strong>.</p>
+    <p><strong>A recipe is built out of your treatments.</strong> If you have no treatments yet, the empty list says
+    so and offers <strong>Set up a treatment first</strong> instead of a build button
+    (<a href="set-up-your-treatment-list.html">Set-Up-Your-Treatment-List</a>).</p>
+    <h2>What you are looking at</h2>
+    <p>A window headed <strong>Build a recipe</strong>, with a <strong>Name</strong> at the top and then <strong>four blocks, in the
+    order you think in</strong>:</p>
+    <ol>
+    <li><strong>Treatments</strong> — <em>chair time</em>. Chosen from your own treatment list. Each line shows its chair
+       time, asks <strong>How many times</strong>, and removes with one tap on the <strong>✕</strong>.</li>
+    <li><strong>Materials — from your stock</strong> — <em>per piece</em>. Chosen from your own drawer and the house's
+       shelf — never a colleague's. Each line asks <strong>How much</strong> and has a <strong>Charge the patient</strong> tick
+       you can clear if the patient is not billed for it.</li>
+    <li><strong>Labs</strong> — <em>turnaround</em>. Typed: what the lab does, which lab, what the patient pays and what
+       you pay the lab, and the window of days the work comes back in. A tick, <strong>Tell reception when
+       it is sent</strong>, is on by default.</li>
+    <li><strong>Your own lines</strong> — <em>typed by you</em>. Anything else you charge for: what it is, how many, and
+       what you charge.</li>
+    </ol>
+    <p>Every line in every block removes with <strong>one tap</strong> on its <strong>✕</strong> — adding and removing with no
+    effort was the whole ask. The buttons under the window are <strong>Cancel</strong>, <strong>Add it</strong> (then <strong>Save</strong>
+    once the recipe exists), and — on a saved recipe — <strong>What the patient pays</strong>
+    (<a href="read-what-the-patient-pays.html">Read-What-the-Patient-Pays</a>).</p>
+    <h2>Steps — build one</h2>
+    <ol>
+    <li>Press <strong>Build a recipe</strong>.</li>
+    <li>Type the <strong>Name</strong>. It is the only thing a recipe cannot live without.</li>
+    <li>In <strong>Treatments</strong>, press <strong>+ Add a treatment</strong>. A search box opens over your own treatment
+       list — pick one, and it lands on the recipe with its chair time already on it. If nothing
+       matches, the screen says so and reminds you treatments live on your <strong>Services &amp; timings</strong>
+       screen.</li>
+    <li>In <strong>Materials — from your stock</strong>, press <strong>+ Add a material</strong>. The search box offers your own
+       drawer and the house's shelf. Type a name nothing matches and you are offered a way to add it
+       on the spot (<a href="add-a-material-from-a-recipe.html">Add-a-Material-From-a-Recipe</a>).</li>
+    <li>Add a <strong>lab</strong> line if a lab is involved, and any <strong>line of your own</strong>.</li>
+    <li>Press <strong>Add it</strong>.</li>
+    </ol>
+    <h2>When your stock is empty</h2>
+    <p>If you have no materials at all, the Materials block does not pretend to be broken. It says:</p>
+    <blockquote>
+    <p><strong>Your stock is empty.</strong>
+    This recipe works without materials — the time and the treatment price are already correct.
+    Add materials when you are ready.</p>
+    </blockquote>
+    <p>with two buttons: <strong>Add materials</strong> and <strong>Leave it for now</strong>. The recipe is complete without a
+    single material — the chair time and the treatment price stand on their own, and you can come
+    back to it any day.</p>
+    <h2>Saving needs the connection</h2>
+    <p>With the link down, the footer says <strong>Needs the connection</strong> and the save button waits. Nothing
+    is half-saved; what you have typed stays on the screen (<a href="working-offline.html">Working-Offline</a>).</p>
+    <h2>Why it works this way</h2>
+    <p><strong>Four blocks, in your order.</strong> The block order is what you actually think when you plan a
+    visit — what I do, what I use, who else is involved, what I type myself — not the order the
+    database keeps them in.</p>
+    <p><strong>No figure is composed on this screen.</strong> The composer shows what you chose and what you typed,
+    nothing more. The price is composed in one place only, when the recipe is opened
+    (<a href="read-what-the-patient-pays.html">Read-What-the-Patient-Pays</a>) — so there is never a second, slightly different total argued
+    over at the desk.</p>
+    <p><strong>The recipe works with an empty shelf because it must.</strong> Not every doctor will keep his stock
+    counted, and the plan he writes down is still correct without it — the time and the treatment
+    price were never the materials' to carry.</p>
+    <p><strong>Nobody builds a recipe for another doctor.</strong> Each doctor composes his own visits, in his own
+    words, at his own prices. The clinic's templates are the one exception, they belong to the
+    owner, and they live on their own tab (<a href="use-the-clinics-recipe-tab.html">Use-the-Clinics-Recipe-Tab</a>).</p>
+    <p>Next: <a href="read-what-the-patient-pays.html">Read-What-the-Patient-Pays</a> · <a href="add-a-material-from-a-recipe.html">Add-a-Material-From-a-Recipe</a> ·
+    <a href="use-the-clinics-recipe-tab.html">Use-the-Clinics-Recipe-Tab</a> · <a href="set-up-your-treatment-list.html">Set-Up-Your-Treatment-List</a> · <a href="working-offline.html">Working-Offline</a> · <a href="home.html">Home</a></p>
+    </div></body></html>
   "choose-a-doctor-colour.html": |
     <!doctype html><html lang="en"><head><meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -1194,6 +1371,95 @@ data:
     light and dark mode.</p>
     <p>Next: <a href="set-what-each-person-can-see.html">Set-What-Each-Person-Can-See</a> · <a href="add-the-clinic-rooms.html">Add-the-Clinic-Rooms</a> · <a href="home.html">Home</a></p>
     </div></body></html>
+  "choose-who-uses-each-shelf.html": |
+    <!doctype html><html lang="en"><head><meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Choose Who Uses Each Shelf · Gompha Manual</title>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;600&family=IBM+Plex+Sans+Arabic&display=swap" rel="stylesheet">
+    <style>
+    body{margin:0;background:#FAF8F4;color:#3D3A34;font:15px/1.65 "IBM Plex Sans","IBM Plex Sans Arabic",sans-serif}
+    .wrap{max-width:760px;margin:0 auto;padding:40px 24px 80px}
+    a{color:#2E5D51} .dead{color:#98917F;border-bottom:1px dashed #C9C2B2}
+    h1,h2,h3{line-height:1.3} h1{font-size:26px}
+    code{background:#F1EDE6;border-radius:5px;padding:2px 6px}
+    .crumb{font-size:13px;color:#98917F;margin-bottom:28px} .crumb a{color:#6B655A;text-decoration:none}
+    .draft{background:#F3EDDC;color:#6A5A32;border-radius:9px;padding:9px 14px;font-size:13px;margin-bottom:26px}
+    table{border-collapse:collapse} td,th{border:1px solid #E9E3D8;padding:7px 12px;text-align:left}
+    </style></head><body><div class="wrap">
+    <div class="crumb"><a href="index.html">Gompha Manual</a></div>
+    <div class="draft">Draft — this manual describes the upcoming version of Gompha.</div>
+    <hr />
+    <p>tags: [task, milestone-1, screen/clinic, screen/inventory, root, inventory]
+    screen: The clinic → Stock → Who can use each shelf</p>
+    <hr />
+    <h1>Choose Who Uses Each Shelf</h1>
+    <p><strong>For the owner.</strong> On the clinic's Stock tab, above the materials list, there is a box headed
+    <strong>Who can use each shelf</strong>. It is the owner's answer to <em>"who may use what the house bought"</em> —
+    decided per category of material, not per material.</p>
+    <p>Everyone can read the box. Only the owner sees the buttons on it.</p>
+    <h2>What it says when you arrive</h2>
+    <blockquote>
+    <p>The house's materials are open to every doctor unless you say otherwise. Close a shelf and
+    only the doctors you name can draw from it — the rest simply never see it, so nobody is
+    stopped mid-treatment.</p>
+    </blockquote>
+    <p>Below that, one row per <strong>category</strong> the clinic uses, each saying how many materials it holds
+    and who may draw from it today: <strong>every doctor</strong>, a count of named doctors, or <strong>nobody yet</strong>.</p>
+    <p><strong>Everything starts open.</strong> A clinic that never touches this box behaves exactly as it always
+    did — the screen changes nobody's mind by existing. If the clinic has no categories yet, the box
+    says so: <em>"No categories yet — give materials a category and you can choose who uses each
+    one."</em> (<a href="add-a-material.html">Add-a-Material</a> is where a category is typed.)</p>
+    <h2>Steps — close a shelf to named doctors</h2>
+    <ol>
+    <li>Open <strong>Inventory</strong> from the home page, press <strong>The clinic</strong> at the top, and stay on the
+       <strong>Stock</strong> tab (<a href="use-the-clinics-stock-tab.html">Use-the-Clinics-Stock-Tab</a>).</li>
+    <li>In <strong>Who can use each shelf</strong>, find the category — <em>Implants</em>, <em>Anaesthetics</em>, whatever the
+       clinic typed.</li>
+    <li>Press <strong>Choose who</strong> (it reads <strong>Change who</strong> once the shelf is closed).</li>
+    <li>Tick each doctor who may draw from that shelf.</li>
+    <li>Press <strong>Only these doctors</strong>.</li>
+    </ol>
+    <p>The row updates at once. <strong>Open to every doctor</strong>, always one tap away beside it, is the way
+    back — a control that can only narrow would be a trap.</p>
+    <p>If you close a shelf and name nobody, the screen warns you before you walk away:</p>
+    <blockquote>
+    <p><strong>Nobody can draw from this shelf.</strong> It is closed, and it stays closed to everyone until you
+    name someone.</p>
+    </blockquote>
+    <h2>What a closed shelf does — and what it never does</h2>
+    <p>A doctor who is not named <strong>cannot put that shelf's materials on a recipe</strong>: when he saves, the
+    screen refuses with <em>"That belongs to another doctor. Use your own, or the clinic's."</em> — a
+    sentence written for the rarer refusal, so read it as <em>"this material is closed to you"</em>. The
+    fix is to take the material off the recipe, or ask the owner to name you
+    (<a href="build-a-recipe.html">Build-a-Recipe</a>, <a href="error-codes.html">Error-Codes</a>).</p>
+    <p>The refusal happens in the composer, while the recipe is being written. It never happens at the
+    chair — recording what was used on a patient is not built yet — and the shelf itself still
+    reads on the clinic's Stock tab for everyone, including him.</p>
+    <p>One step is still ahead of the running version: the box above promises a closed shelf's
+    materials <em>"simply never see"</em> an unnamed doctor, and the material search in the recipe builder
+    is being taught exactly that — leave the material out, so there is nothing to refuse
+    (<a href="roadmap.html">Roadmap</a>).</p>
+    <p>What each doctor uses is still worked out in the money afterwards — closing a shelf decides who
+    may draw, not who pays.</p>
+    <h2>Why it works this way</h2>
+    <p><strong>The owner asked for exactly this.</strong> <em>"Runs the place — where I choose who uses this."</em> The
+    house's shelf is the house's policy, and policy at a clinic is set by one person, deliberately,
+    in writing.</p>
+    <p><strong>The refusal is never a stop at the chair.</strong> A doctor reaching for the house's gloves with a
+    patient in the chair must not meet a permission question — that was true before this screen and
+    it is still true. A closed shelf is answered earlier, while the recipe is being written, and the
+    design's promise is that the material never reaches the list at all.</p>
+    <p><strong>Per category, because per material would be a second job.</strong> Clinics think in shelves — the
+    implant shelf, the anaesthetics — not in four hundred rows. The category was typed by the clinic
+    in its own words, and this is the decision it was waiting to carry.</p>
+    <p><strong>Two rules underneath, so the shelf never closes by accident.</strong> A material with <strong>no category
+    at all is always open</strong> — most of a clinic's rows carry none, and a new word typed by reception
+    must not lock anybody out of anything. And a single material <em>may</em> carry its own rule that wins
+    over its category's — the exception exists in the arrangement, though no screen sets it today;
+    it is there for the odd material that must differ from its shelf.</p>
+    <p>Next: <a href="use-the-clinics-stock-tab.html">Use-the-Clinics-Stock-Tab</a> · <a href="use-the-clinics-recipe-tab.html">Use-the-Clinics-Recipe-Tab</a> · <a href="add-a-material.html">Add-a-Material</a> ·
+    <a href="roles-and-access.html">Roles-and-Access</a> · <a href="clinic-admin.html">Clinic-Admin</a> · <a href="home.html">Home</a></p>
+    </div></body></html>
   "clinic-admin.html": |
     <!doctype html><html lang="en"><head><meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -1261,6 +1527,10 @@ data:
       (<a href="give-someone-a-new-link.html">Give-Someone-a-New-Link</a>)</li>
     <li><strong>Correct a name or an email</strong>, including your own (<a href="fix-a-persons-details.html">Fix-a-Persons-Details</a>)</li>
     <li><strong>Archive somebody who has left</strong> (<a href="archive-a-person.html">Archive-a-Person</a>)</li>
+    <li><strong>Build the house's recipes and decide which doctors may use each one</strong>
+      (<a href="use-the-clinics-recipe-tab.html">Use-the-Clinics-Recipe-Tab</a>)</li>
+    <li><strong>Close a shelf of the house's stock to the doctors you name</strong> — per category, and everything
+      starts open (<a href="choose-who-uses-each-shelf.html">Choose-Who-Uses-Each-Shelf</a>)</li>
     <li>Add and rename rooms</li>
     <li>Give a doctor their schedule colour</li>
     <li>Reach the setup screen at all</li>
@@ -1284,7 +1554,9 @@ data:
     <h2>A second admin doctor is not a second owner</h2>
     <p>You can give another doctor the <strong>Admin doctor</strong> role. In this milestone that does <strong>not</strong> give them
     the setup screen: <strong>only the owner reaches Welcome</strong>, so in practice you remain the only person who
-    can add people and rooms. Plan for that.</p>
+    can add people and rooms. The same is true of the house's recipes and the shelf policy — building
+    the clinic's recipes, naming who may use them, and closing a shelf are the owner's alone
+    (<a href="use-the-clinics-recipe-tab.html">Use-the-Clinics-Recipe-Tab</a>, <a href="choose-who-uses-each-shelf.html">Choose-Who-Uses-Each-Shelf</a>). Plan for that.</p>
     <h2>You are also a doctor, and you have your own list</h2>
     <p>If you treat patients, you have exactly the same treatment list as every other doctor — your
     prices, your times, invisible to everybody else. Doing yours first is worth it: you will be the one
@@ -1292,17 +1564,22 @@ data:
     <h2>The inventory section, and who you should point at it</h2>
     <p>Once the clinic is set up, the "You're signed in" page carries a <strong>Go to</strong> box marked <strong>Inventory</strong>.
     Inside it are the materials, the supplier list, and — one switch further, at the top of the screen —
-    <strong>the clinic's own tab</strong>: the house's shelf, on its own screen (<a href="find-a-material.html">Find-a-Material</a>,
-    <a href="use-the-clinics-stock-tab.html">Use-the-Clinics-Stock-Tab</a>).</p>
-    <p><strong>Point reception at it.</strong> Keeping the house's shelf right — materials on it, numbers correct
-    (<a href="add-a-material.html">Add-a-Material</a>) — and the supplier list tidy (<a href="add-a-supplier.html">Add-a-Supplier</a>) is real work she can do
-    today and it is the front desk's natural job. Assistants and every doctor can do the same.</p>
+    <strong>the clinic's own surface</strong>, now carrying two tabs: <strong>Stock</strong> and <strong>Recipes</strong>
+    (<a href="find-a-material.html">Find-a-Material</a>, <a href="use-the-clinics-stock-tab.html">Use-the-Clinics-Stock-Tab</a>, <a href="use-the-clinics-recipe-tab.html">Use-the-Clinics-Recipe-Tab</a>).</p>
+    <p><strong>Point reception at the Stock tab.</strong> Keeping the house's shelf right — materials on it, numbers
+    correct (<a href="add-a-material.html">Add-a-Material</a>) — and the supplier list tidy (<a href="add-a-supplier.html">Add-a-Supplier</a>) is real work she
+    can do today and it is the front desk's natural job. Assistants and every doctor can do the same.</p>
     <p>Three things to know before somebody asks you:</p>
     <ul>
     <li><strong>Inventory access is a sixth setting that is not on anybody's card.</strong> It comes from the person's
       role at invite and there is no screen to change it. Out of the box everybody gets the clinic's
       shelf — the house's is open to every doctor, whatever his arrangement
       (<a href="roles-and-access.html">Roles-and-Access</a>).</li>
+    <li><strong>The house's recipes and the house's shelf policy are yours alone.</strong> You build the clinic's
+      recipes and name, per recipe, which doctors may use them; you close a shelf of the house's
+      stock to named doctors, per category — a clinic recipe starts closed and a shelf starts open,
+      both by design (<a href="use-the-clinics-recipe-tab.html">Use-the-Clinics-Recipe-Tab</a>, <a href="choose-who-uses-each-shelf.html">Choose-Who-Uses-Each-Shelf</a>). Not another
+      admin doctor's, and not a named doctor's.</li>
     <li><strong>Taking a material off the house's shelf is your decision alone.</strong> Reception and the assistants
       fill the shelf in and keep its numbers right; nobody else decides what the clinic stocks at all.
       There is no archive button on a material yet — the rule is already how it works underneath.</li>
@@ -1415,9 +1692,9 @@ data:
        each one takes. This keeps happening on every sign-in until you have worked through it once and
        pressed <strong>Finish</strong>. <a href="set-up-your-treatment-list.html">Set-Up-Your-Treatment-List</a>.</li>
     <li>After that you land on a short page headed <strong>"You're signed in"</strong>, which tells you your role,
-       offers two <strong>Go to</strong> boxes — <strong>Services &amp; timings</strong> and <strong>Inventory</strong> — and lists the clinic's
-       <strong>rooms</strong>. Your treatment list is also one press away from the <strong>gear</strong> at the top right →
-       <strong>Set up services &amp; timings</strong>.</li>
+       offers three <strong>Go to</strong> boxes — <strong>Services &amp; timings</strong>, <strong>Inventory</strong> and <strong>Recipes</strong> — and
+       lists the clinic's <strong>rooms</strong>. Your treatment list is also one press away from the <strong>gear</strong> at
+       the top right → <strong>Set up services &amp; timings</strong>.</li>
     </ol>
     <p>At the top right is a <strong>gear</strong> for <a href="switch-to-dark-mode.html">Switch-to-Dark-Mode</a>, your treatment list, and <strong>Sign out</strong>.
     Inventory is not in the gear; it is the <strong>Go to</strong> box.</p>
@@ -1427,10 +1704,13 @@ data:
     <ul>
     <li><strong>Mine</strong> is the materials list you already know, with a <strong>My materials / All</strong> switch that only
       doctors have — <em>My materials</em> is your own shelf. <a href="find-a-material.html">Find-a-Material</a>.</li>
-    <li><strong>The clinic</strong> is the house's own shelf on its own screen — the gloves and the anaesthetic that
-      belong to no single doctor. You may look, and you may use what is on it freely: <strong>no permission
-      is ever asked for the house's materials</strong>. What is never open to you is another doctor's own
-      materials. <a href="use-the-clinics-stock-tab.html">Use-the-Clinics-Stock-Tab</a>.</li>
+    <li><strong>The clinic</strong> is the house's own surface, on its own screen and now carrying two tabs:
+      <strong>Stock</strong> and <strong>Recipes</strong>. On the house's shelf — the gloves and the anaesthetic that belong
+      to no single doctor — you may look, and you may draw from it freely: <strong>no permission is ever
+      asked of a doctor at the chair</strong>. The owner may close a shelf of it to the doctors he names
+      (<a href="choose-who-uses-each-shelf.html">Choose-Who-Uses-Each-Shelf</a>); if a material from a closed shelf finds its way onto your
+      recipe, the save is refused — in the composer, never at the chair. What is never open to you
+      is another doctor's own materials (<a href="use-the-clinics-stock-tab.html">Use-the-Clinics-Stock-Tab</a>).</li>
     </ul>
     <p>Every doctor may keep the clinic's supplier list — add, correct, archive and merge
     (<a href="add-a-supplier.html">Add-a-Supplier</a>, <a href="merge-two-suppliers.html">Merge-Two-Suppliers</a>) — and every doctor may add materials: his own on
@@ -1438,11 +1718,24 @@ data:
     <p><strong>Costs you may not read say Hidden.</strong> Another doctor's material shows you that a cost exists and
     that it is not yours; the house's own figures are the front desk's to keep
     (<a href="roles-and-access.html">Roles-and-Access</a>).</p>
-    <p><strong>You cannot yet record a count, enter a purchase, or link materials to your treatments.</strong> Step 2
-    of your setup flow is the placeholder for that last one and asks nothing of you today.</p>
-    <h2>Your treatment list is the work Milestone 1 asks of you</h2>
-    <p>It is the only screen in Gompha today that is yours rather than the clinic's, and it is what
-    reception will book from when the schedule arrives. Getting it right now is the whole job.</p>
+    <p><strong>You cannot yet record a count, enter a purchase, or mark material used on a patient.</strong> Step 2
+    of your setup flow now opens your real materials list — the same one as the Inventory section —
+    and your treatments and your materials meet each other in a recipe (<a href="build-a-recipe.html">Build-a-Recipe</a>).</p>
+    <h2>Your recipes</h2>
+    <p>A recipe is one visit written down: the treatments you will do, the materials you will use, the
+    lab if there is one, and your own typed lines — composed once, priced every time you open it.
+    They are yours, like your treatment list: nobody builds a recipe for another doctor, and nobody
+    else edits yours.</p>
+    <ul>
+    <li><a href="build-a-recipe.html">Build-a-Recipe</a> — the four blocks, in the order you think in</li>
+    <li><a href="read-what-the-patient-pays.html">Read-What-the-Patient-Pays</a> — the priced view, the only place a recipe's price is composed</li>
+    <li><a href="add-a-material-from-a-recipe.html">Add-a-Material-From-a-Recipe</a> — missing material? Add it without leaving the recipe</li>
+    <li><a href="use-the-clinics-recipe-tab.html">Use-the-Clinics-Recipe-Tab</a> — the house's recipes, which the owner may let you use</li>
+    </ul>
+    <h2>Your treatment list is the first work Milestone 1 asks of you</h2>
+    <p>It is yours rather than the clinic's — like your recipes — and it is what reception will book
+    from when the schedule arrives. Getting it right now is the whole job. A recipe is built out of
+    it, so a missing treatment is a missing recipe line.</p>
     <ul>
     <li><a href="set-up-your-treatment-list.html">Set-Up-Your-Treatment-List</a> — where it is, what the list shows, and what to do about rows that
       came from your own price sheet</li>
@@ -1471,8 +1764,10 @@ data:
       <strong>Clinic</strong>; an <strong>associate doctor</strong> on <strong>Own</strong>, unless he is salaried, in which case the clinic's
       patients are his work and he starts on <strong>Clinic</strong> too.</li>
     <li><strong>Inventory</strong> — a sixth setting that is live today but is <strong>not shown on your card</strong>. Every
-      doctor starts on <strong>Clinic</strong>: the house's shelf is open to all of you, whoever you work for. It
-      is what decides whether you can change the clinic's supplier list (<a href="roles-and-access.html">Roles-and-Access</a>).</li>
+      doctor starts on <strong>Clinic</strong>: the house's shelf is open to all of you, whoever you work for —
+      unless the owner closes a shelf of it to doctors he names, and even a closed shelf refuses a
+      recipe save, never a doctor at the chair (<a href="choose-who-uses-each-shelf.html">Choose-Who-Uses-Each-Shelf</a>). It is what decides
+      whether you can change the clinic's supplier list (<a href="roles-and-access.html">Roles-and-Access</a>).</li>
     </ul>
     <p>If any of that is wrong for how this clinic works, ask the owner. It is one press on a card, and it
     takes effect immediately.</p>
@@ -2034,8 +2329,8 @@ data:
     <td>Not built</td>
     </tr>
     <tr>
-    <td>Linking materials to your treatments</td>
-    <td>Not built — step 2 of a doctor's setup is the placeholder (<a href="set-up-your-treatment-list.html">Set-Up-Your-Treatment-List</a>)</td>
+    <td>Treatments and materials together</td>
+    <td><strong>Built, through recipes</strong> — a recipe holds your treatments and your materials on one visit (<a href="build-a-recipe.html">Build-a-Recipe</a>)</td>
     </tr>
     </tbody>
     </table>
@@ -2050,8 +2345,9 @@ data:
     colleague does not read his costs. That is why every row names an owner, why doctors get a
     <strong>My materials</strong> switch, and why cost can be hidden on a row you are otherwise allowed to see.</p>
     <p><strong>The house's shelf is open to every doctor.</strong> Using the clinic's own materials never asks
-    permission — what each doctor uses is sorted out in the money, afterwards. What no permission
-    ever opens is another doctor's own materials.</p>
+    permission — what each doctor uses is sorted out in the money, afterwards. The owner may close a
+    shelf of it to the doctors he names, per category (<a href="choose-who-uses-each-shelf.html">Choose-Who-Uses-Each-Shelf</a>). What no
+    permission ever opens is another doctor's own materials.</p>
     <p><strong>A count never blocks anything.</strong> The clinic was explicit: the app warns, it does not stop the
     clinic working. A wrong number on a shelf must never be the reason a patient is not treated — so a
     material with <strong>None left</strong> is still fully usable, and a minus on the count is information for
@@ -2331,12 +2627,13 @@ data:
     <hr />
     <h2>tags: [home]</h2>
     <h1>Gompha Manual</h1>
-    <p><strong>Version: Milestone 1 · checked against image <code>clinic-v0.1.22</code> · Stamped 2026-08-24 (pass 7)</strong></p>
+    <p><strong>Version: Milestone 1 · checked against image <code>clinic-v0.1.29</code> · Stamped 2026-08-25 (pass 8)</strong></p>
     <blockquote>
     <h3>This manual covers Milestone 1 only</h3>
-    <p>Milestone 1 is <strong>sign-in, people and access, rooms</strong>, <strong>a doctor's own treatment list</strong>, and
-    <strong>the inventory section — materials and suppliers, including the clinic's own stock tab</strong>. That
-    is the whole of the live software today, at <strong>https://app-staging.gompha.com</strong>.</p>
+    <p>Milestone 1 is <strong>sign-in, people and access, rooms</strong>, <strong>a doctor's own treatment list</strong>, <strong>the
+    inventory section — materials and suppliers, including the clinic's own stock tab</strong>, and
+    <strong>recipes — a visit composed once, priced every time you open it</strong>. That is the whole of the
+    live software today, at <strong>https://app-staging.gompha.com</strong>.</p>
     <p>There is <strong>no schedule, no patients, no patient card, no tooth chart, no appointments, no
     Income and Expenses and no X-rays yet</strong>. In inventory you can now <strong>add materials and keep
     their numbers right</strong>, on your own tab and on the clinic's — but you cannot yet count stock,
@@ -2360,12 +2657,12 @@ data:
     <tr>
     <td>The owner (root)</td>
     <td><a href="clinic-admin.html">Clinic-Admin</a></td>
-    <td>Yes — you set the clinic up</td>
+    <td>Yes — you set the clinic up, and the house's recipes and shelves are yours</td>
     </tr>
     <tr>
     <td>A doctor</td>
     <td><a href="doctor.html">Doctor</a></td>
-    <td>Yes — your own treatment list, and the inventory section</td>
+    <td>Yes — your own treatment list, your recipes, and the inventory section</td>
     </tr>
     <tr>
     <td>Front desk</td>
@@ -2401,14 +2698,25 @@ data:
     <li><a href="organise-your-treatment-list.html">Organise-Your-Treatment-List</a> — categories, your own order, searching</li>
     <li><a href="delete-and-restore-a-treatment.html">Delete-and-Restore-a-Treatment</a> — deleting, undo, and <strong>Recently deleted</strong></li>
     </ul>
+    <p><strong>Your recipes</strong> (each doctor, for himself)</p>
+    <ul>
+    <li><a href="build-a-recipe.html">Build-a-Recipe</a> — one visit written down: treatments, materials, labs, your own lines</li>
+    <li><a href="read-what-the-patient-pays.html">Read-What-the-Patient-Pays</a> — the priced view, where a recipe's price is composed</li>
+    <li><a href="add-a-material-from-a-recipe.html">Add-a-Material-From-a-Recipe</a> — the material you are missing, added without leaving the recipe</li>
+    </ul>
     <p><strong>Materials and suppliers</strong> (reception, assistants, doctors, the owner)</p>
     <ul>
     <li><a href="find-a-material.html">Find-a-Material</a> — the inventory section, searching it, and what a material's page shows</li>
     <li><a href="add-a-material.html">Add-a-Material</a> — put a material on the shelf, yours or the house's, and correct one</li>
     <li><a href="use-the-clinics-stock-tab.html">Use-the-Clinics-Stock-Tab</a> — the house's own shelf: who fills it, who may use it</li>
+    <li><a href="choose-who-uses-each-shelf.html">Choose-Who-Uses-Each-Shelf</a> — the owner's choice, per category, of who may draw from the house's shelf</li>
     <li><a href="add-a-supplier.html">Add-a-Supplier</a> — add, correct or archive a supplier, and the short code</li>
     <li><a href="assign-a-supplier-to-a-material.html">Assign-a-Supplier-to-a-Material</a> — fill in the blank <strong>unassigned</strong> column</li>
     <li><a href="merge-two-suppliers.html">Merge-Two-Suppliers</a> — the same company entered twice</li>
+    </ul>
+    <p><strong>The house's recipes</strong> (the owner)</p>
+    <ul>
+    <li><a href="use-the-clinics-recipe-tab.html">Use-the-Clinics-Recipe-Tab</a> — the clinic's own recipes, and <strong>Who can use this</strong></li>
     </ul>
     <p><strong>Fixing something on a person's card</strong> (the owner)</p>
     <ul>
@@ -2844,6 +3152,82 @@ data:
     exist yet. In Milestone 1 the front desk sees only a short signed-in page (<a href="receptionist.html">Receptionist</a>).</p>
     <p>See <a href="whats-not-here-yet.html">Whats-Not-Here-Yet</a> · <a href="roadmap.html">Roadmap</a> · <a href="home.html">Home</a></p>
     </div></body></html>
+  "read-what-the-patient-pays.html": |
+    <!doctype html><html lang="en"><head><meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Read What the Patient Pays · Gompha Manual</title>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;600&family=IBM+Plex+Sans+Arabic&display=swap" rel="stylesheet">
+    <style>
+    body{margin:0;background:#FAF8F4;color:#3D3A34;font:15px/1.65 "IBM Plex Sans","IBM Plex Sans Arabic",sans-serif}
+    .wrap{max-width:760px;margin:0 auto;padding:40px 24px 80px}
+    a{color:#2E5D51} .dead{color:#98917F;border-bottom:1px dashed #C9C2B2}
+    h1,h2,h3{line-height:1.3} h1{font-size:26px}
+    code{background:#F1EDE6;border-radius:5px;padding:2px 6px}
+    .crumb{font-size:13px;color:#98917F;margin-bottom:28px} .crumb a{color:#6B655A;text-decoration:none}
+    .draft{background:#F3EDDC;color:#6A5A32;border-radius:9px;padding:9px 14px;font-size:13px;margin-bottom:26px}
+    table{border-collapse:collapse} td,th{border:1px solid #E9E3D8;padding:7px 12px;text-align:left}
+    </style></head><body><div class="wrap">
+    <div class="crumb"><a href="index.html">Gompha Manual</a></div>
+    <div class="draft">Draft — this manual describes the upcoming version of Gompha.</div>
+    <hr />
+    <p>tags: [task, milestone-1, screen/recipes, recipes]
+    screen: Recipes → the priced view</p>
+    <hr />
+    <h1>Read What the Patient Pays</h1>
+    <p>The priced view is what opens when you open a recipe. It is <strong>the only place in Gompha where a
+    recipe's price is composed</strong> — treatments from your catalogue, materials at their per-piece
+    price, labs and your own lines as typed. No other screen adds these up.</p>
+    <h2>Where it is</h2>
+    <p>One door, two steps:</p>
+    <ol>
+    <li>Press any recipe in the list — your own (<a href="build-a-recipe.html">Build-a-Recipe</a>) or the clinic's
+       (<a href="use-the-clinics-recipe-tab.html">Use-the-Clinics-Recipe-Tab</a>). The edit window opens, filled in.</li>
+    <li>Press <strong>What the patient pays</strong>, at the bottom of the window.</li>
+    </ol>
+    <p>That button is the only way in: pressing a recipe always opens the editor, and the price lives
+    behind this one button.</p>
+    <h2>What you are looking at</h2>
+    <p>A window headed with the recipe's name. At the top, a line saying <strong>Priced as of</strong> the day, with
+    the dollar–dinar rate beside it when one is set (<a href="dual-currency-money.html">Dual-Currency-Money</a>).</p>
+    <p>Then the sections, in order, one line per item:</p>
+    <ul>
+    <li><strong>Treatments</strong> — each with how many times and its chair time, and its price. A treatment you
+      marked as free says <strong>Free — appears on the bill</strong>; one with no price yet says <strong>Not priced</strong>.</li>
+    <li><strong>Materials — from your stock</strong> — each with how much and its unit, and what it charges at. A
+      material you unticked <strong>Charge the patient</strong> on says <strong>not charged</strong> in words and shows <em>no</em>
+      figure at all — nobody decided it was free, the patient is simply not billed for it. Beside
+      each, a small chip with the shelf's count: <strong>80 on the shelf</strong>, <strong>None on the shelf</strong>,
+      <strong>Counting stopped</strong>, or <strong>No count yet</strong>. The chip is information, never a stop.</li>
+    <li><strong>Lab</strong> — what the lab does, which lab, how many days it takes, and its charge.</li>
+    <li><strong>Your own line — typed by you</strong> — with what it charges. Own lines add no chair time; they are
+      a charge, not a duration.</li>
+    </ul>
+    <p>Under the sections, a highlighted box: <strong>The patient pays</strong>, with the total and, faintly under
+    it, the converted figure at the day's rate. If some lines have no price yet, the total carries a
+    <strong>+</strong> and the box says so: <em>"Some lines have no price yet, so this is not the final figure."</em></p>
+    <p>Then three numbers: <strong>Chair</strong>, <strong>Working</strong>, and <strong>Next visit</strong> — how long the visit books for and
+    how soon the follow-up should be. A time that is only partly known says <strong>partly unknown</strong>
+    rather than pretending.</p>
+    <p>If anything deserves a thought before you quote — a price that has gone stale, a shelf that is
+    empty — it sits in an amber block at the bottom headed <strong>Before you use this recipe</strong>. Amber,
+    never red: it is advice to read, not an alarm.</p>
+    <h2>What is deliberately not here</h2>
+    <p><strong>No cost and no margin, anywhere, for anyone.</strong> Not even for the doctor who owns the material.
+    A recipe answers one question — what the patient pays — and the piece price after markup is all
+    it shows.</p>
+    <h2>Why it works this way</h2>
+    <p><strong>One place composes the price.</strong> If two screens could add up the same visit, they would
+    eventually disagree, and the disagreement would surface at the desk with a patient in front of
+    it. So the composing happens once, when the recipe is opened, from today's prices — which is
+    also why an old quote never silently survives a price change.</p>
+    <p><strong>A missing time is never counted as zero.</strong> A treatment with no working time recorded would
+    book as no time at all — which is how a schedule ends up double-booked. Missing durations are
+    named, and the total says it is incomplete.</p>
+    <p><strong>The count never blocks.</strong> A material with none on the shelf still shows its price and still
+    works in the recipe. The app tells you; it does not stop you.</p>
+    <p>Next: <a href="build-a-recipe.html">Build-a-Recipe</a> · <a href="use-the-clinics-recipe-tab.html">Use-the-Clinics-Recipe-Tab</a> · <a href="dual-currency-money.html">Dual-Currency-Money</a> ·
+    <a href="working-offline.html">Working-Offline</a> · <a href="home.html">Home</a></p>
+    </div></body></html>
   "receptionist.html": |
     <!doctype html><html lang="en"><head><meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -2876,7 +3260,7 @@ data:
     <h2>When you sign in</h2>
     <ol>
     <li>Open <strong>https://app-staging.gompha.com</strong> and sign in (<a href="sign-in.html">Sign-In</a>).</li>
-    <li>You get a short page headed <strong>"You're signed in"</strong> which names your role, offers two <strong>Go to</strong>
+    <li>You get a short page headed <strong>"You're signed in"</strong> which names your role, offers three <strong>Go to</strong>
        boxes, and lists the clinic's <strong>rooms</strong>.</li>
     </ol>
     <p>The <strong>gear</strong> at the top right gives you <a href="switch-to-dark-mode.html">Switch-to-Dark-Mode</a> and <strong>Sign out</strong>.</p>
@@ -2903,9 +3287,11 @@ data:
     your account (<a href="roles-and-access.html">Roles-and-Access</a>).</p>
     <p><strong>You cannot yet record a count or enter a purchase.</strong> Those screens are not built — the numbers
     you can change are the ones on a material itself.</p>
-    <p><strong>The other Go to box, Services &amp; timings, is not yours.</strong> It is each doctor's own treatment list.
-    Press it and you get a red message saying you do not have one. ⚠ Rough edge, already reported —
-    nothing is wrong with your account.</p>
+    <p><strong>The other two Go to boxes, Services &amp; timings and Recipes, are not yours.</strong> The first is each
+    doctor's own treatment list; the second is a doctor's own visits composed and priced
+    (<a href="build-a-recipe.html">Build-a-Recipe</a>) — and a recipe is built out of his treatments, which you do not have. Press
+    Services &amp; timings and you get a red message saying you do not have one. ⚠ Rough edge, already
+    reported — nothing is wrong with your account.</p>
     <h2>What the front desk will and will not be able to see</h2>
     <p>The owner has already set this, and it takes effect as each module ships
     (<a href="set-what-each-person-can-see.html">Set-What-Each-Person-Can-See</a>):</p>
@@ -3127,12 +3513,13 @@ data:
       (<a href="set-up-your-treatment-list.html">Set-Up-Your-Treatment-List</a>).</li>
     <li>A clinic treatment list, shared by the admins in its own tab, alongside the list each doctor keeps
       for himself (<a href="set-up-your-treatment-list.html">Set-Up-Your-Treatment-List</a>).</li>
-    <li>A doctor's own materials and medicines, linked to his treatments — step 2 of a doctor's setup is
-      the placeholder for it today.</li>
     <li>Recording a count, entering a purchase and receiving a delivery — materials can now be added by
       hand (<a href="add-a-material.html">Add-a-Material</a>); counting and buying are not built.</li>
     <li>Marking material used on a patient, and moving a material to a different owner.</li>
-    <li>Procedures and recipes finding their place on the clinic's tab — it is stock only today
+    <li>The recipe builder's material search learning to leave out what a closed shelf refuses — today
+      the material can still be listed and it is the save that refuses
+      (<a href="choose-who-uses-each-shelf.html">Choose-Who-Uses-Each-Shelf</a>).</li>
+    <li>Procedures finding their place on the clinic's tab — stock and recipes are there today
       (<a href="use-the-clinics-stock-tab.html">Use-the-Clinics-Stock-Tab</a>).</li>
     <li>A doctor letting his own assistant see prices, from his own sign-in — he decides, for his
       assistant only, and she never sees more than he does. Today the owner sets it on her card
@@ -3353,6 +3740,9 @@ data:
     </tr>
     </tbody>
     </table>
+    <p>One owner decision sits above this table, not in it: the owner may <strong>close a shelf of the house's
+    stock to the doctors he names</strong>, per category — a policy set on the clinic's Stock tab, not an
+    access level on a card, and it starts open (<a href="choose-who-uses-each-shelf.html">Choose-Who-Uses-Each-Shelf</a>).</p>
     <p>Two things worth knowing about that table:</p>
     <ul>
     <li><strong>Reception reads the house's costs; an assistant does not.</strong> Inventory access lets them look
@@ -3484,9 +3874,9 @@ data:
     <h2>Where Finish setup takes you</h2>
     <p>Into the app as a doctor: <strong>your own treatment list</strong>, until you have worked through that once too
     (<a href="set-up-your-treatment-list.html">Set-Up-Your-Treatment-List</a>). After that, the same short home page everyone else gets —
-    <strong>"You're signed in"</strong>, your role, two <strong>Go to</strong> boxes (<strong>Services &amp; timings</strong> and <strong>Inventory</strong>,
-    <a href="find-a-material.html">Find-a-Material</a>), and the list of rooms you just named. In Milestone 1 there is nothing else
-    behind it yet (<a href="whats-not-here-yet.html">Whats-Not-Here-Yet</a>).</p>
+    <strong>"You're signed in"</strong>, your role, three <strong>Go to</strong> boxes (<strong>Services &amp; timings</strong>, <strong>Inventory</strong>
+    and <strong>Recipes</strong>, <a href="find-a-material.html">Find-a-Material</a>, <a href="build-a-recipe.html">Build-a-Recipe</a>), and the list of rooms you just named.
+    In Milestone 1 there is nothing else behind it yet (<a href="whats-not-here-yet.html">Whats-Not-Here-Yet</a>).</p>
     <h2>Getting back to setup later</h2>
     <p>There is no menu item for it, and once the clinic's details are saved the plain address takes you
     into the app rather than back to Welcome.</p>
@@ -3579,10 +3969,10 @@ data:
     <li>Press any line to open it and correct it. <a href="add-a-treatment.html">Add-a-Treatment</a>.</li>
     <li>Press <strong>+ Add a treatment</strong> for anything you do that is missing.</li>
     <li>Fill in every <strong>Add price</strong> and <strong>Add chair time</strong> you can see.</li>
-    <li>Press <strong>Continue →</strong>. Step 2, <strong>Your materials</strong>, has nothing to do today — it is a sentence
-       telling you what will live there when your materials can be linked to your treatments. (The
-       clinic's inventory itself <strong>does</strong> exist and is reached separately, from the <strong>Go to</strong> boxes on
-       the home page — <a href="find-a-material.html">Find-a-Material</a>.)</li>
+    <li>Press <strong>Continue →</strong>. Step 2, <strong>Your materials</strong>, is your real stock list — the same one as
+       the Inventory section. Add a material or two if you like (<a href="add-a-material.html">Add-a-Material</a>); this is also
+       the shelf your recipes will draw from (<a href="build-a-recipe.html">Build-a-Recipe</a>). (The owner's step 2 says so too:
+       his own medicines and materials, <strong>and the clinic's stock as well, since he runs it</strong>.)</li>
     <li>Press <strong>Finish</strong>. You land on the plain <strong>"You're signed in"</strong> page.</li>
     </ol>
     <p>Nothing here is final. You can change any of it, any day.</p>
@@ -3956,9 +4346,9 @@ data:
       every sign-in, until he has worked through it once and pressed <strong>Finish</strong>.
       See <a href="set-up-your-treatment-list.html">Set-Up-Your-Treatment-List</a>.</li>
     <li><strong>Everyone else</strong>, and every doctor who has finished that, lands on a short page that says
-      <em>"You're signed in"</em>, names your role, offers two <strong>Go to</strong> boxes — <strong>Services &amp; timings</strong> and
-      <strong>Inventory</strong> (<a href="find-a-material.html">Find-a-Material</a>) — and lists the clinic's rooms. In Milestone 1 that is all
-      there is. See <a href="whats-not-here-yet.html">Whats-Not-Here-Yet</a>.</li>
+      <em>"You're signed in"</em>, names your role, offers three <strong>Go to</strong> boxes — <strong>Services &amp; timings</strong>,
+      <strong>Inventory</strong> (<a href="find-a-material.html">Find-a-Material</a>) and <strong>Recipes</strong> (<a href="build-a-recipe.html">Build-a-Recipe</a>) — and lists the
+      clinic's rooms. In Milestone 1 that is all there is. See <a href="whats-not-here-yet.html">Whats-Not-Here-Yet</a>.</li>
     </ul>
     <p>Both screens carry the Gompha mark top-left with <strong>powered by Steficzko</strong> beneath it, and the same
     credit again at the very bottom of the page. It is the maker's name, and pressing it opens their
@@ -4116,6 +4506,93 @@ data:
     Expenses.</p>
     <p>See <a href="whats-not-here-yet.html">Whats-Not-Here-Yet</a> · <a href="dual-currency-money.html">Dual-Currency-Money</a> · <a href="roadmap.html">Roadmap</a> · <a href="home.html">Home</a></p>
     </div></body></html>
+  "use-the-clinics-recipe-tab.html": |
+    <!doctype html><html lang="en"><head><meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Use the Clinics Recipe Tab · Gompha Manual</title>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;600&family=IBM+Plex+Sans+Arabic&display=swap" rel="stylesheet">
+    <style>
+    body{margin:0;background:#FAF8F4;color:#3D3A34;font:15px/1.65 "IBM Plex Sans","IBM Plex Sans Arabic",sans-serif}
+    .wrap{max-width:760px;margin:0 auto;padding:40px 24px 80px}
+    a{color:#2E5D51} .dead{color:#98917F;border-bottom:1px dashed #C9C2B2}
+    h1,h2,h3{line-height:1.3} h1{font-size:26px}
+    code{background:#F1EDE6;border-radius:5px;padding:2px 6px}
+    .crumb{font-size:13px;color:#98917F;margin-bottom:28px} .crumb a{color:#6B655A;text-decoration:none}
+    .draft{background:#F3EDDC;color:#6A5A32;border-radius:9px;padding:9px 14px;font-size:13px;margin-bottom:26px}
+    table{border-collapse:collapse} td,th{border:1px solid #E9E3D8;padding:7px 12px;text-align:left}
+    </style></head><body><div class="wrap">
+    <div class="crumb"><a href="index.html">Gompha Manual</a></div>
+    <div class="draft">Draft — this manual describes the upcoming version of Gompha.</div>
+    <hr />
+    <p>tags: [task, milestone-1, screen/recipes, screen/clinic, root, recipes]
+    screen: The clinic → Recipes</p>
+    <hr />
+    <h1>Use the Clinic's Recipe Tab</h1>
+    <p>The clinic's screen carries two tabs: <strong>Stock</strong> and <strong>Recipes</strong>. The Recipes tab holds <strong>the
+    house's recipes</strong> — the visits the clinic composes once and the salaried doctors work from. The
+    owner's own recipes stay on his own tab (<a href="build-a-recipe.html">Build-a-Recipe</a>).</p>
+    <h2>Where it is</h2>
+    <ol>
+    <li>Open <strong>Inventory</strong> from the <strong>Go to</strong> boxes on the home page (<a href="find-a-material.html">Find-a-Material</a>).</li>
+    <li>At the top of the screen, in the bar beside the clinic's name, press <strong>The clinic</strong>.</li>
+    <li>Press the <strong>Recipes</strong> tab.</li>
+    </ol>
+    <p>You are on a screen headed <strong>Recipes</strong>, with the badge <strong>◆ The clinic's — not yours</strong> under the
+    heading, and the line: <em>"What the house composes once, and the salaried doctors work from. Your
+    own recipes are on your own tab."</em></p>
+    <p>The badge is not decoration. The owner is also a doctor whose own recipe tab looks exactly like
+    this one — the badge is the only thing that says whose recipes you are looking at.</p>
+    <h2>Who does what here</h2>
+    <ul>
+    <li><strong>The owner builds and edits the house's recipes.</strong> The button reads <strong>Build a clinic recipe</strong>
+      (and <strong>Build a clinic recipe</strong> in the empty state, beside a faded example of what a recipe
+      looks like). Editing them is the owner's alone — not another admin doctor's, and not a named
+      doctor's.</li>
+    <li><strong>A doctor the owner has named can open one and read it.</strong> Opening it shows the edit window
+      with the recipe filled in; <strong>What the patient pays</strong> at the bottom shows its priced
+      composition (<a href="read-what-the-patient-pays.html">Read-What-the-Patient-Pays</a>). Saving changes to it is the owner's alone.</li>
+    <li><strong>A doctor the owner has not named sees nothing here of it.</strong> Not a locked row — the recipe is
+      simply not on his list. He is never stopped by it.</li>
+    </ul>
+    <p><strong>One rule about materials:</strong> a clinic recipe is built from <strong>the house's shelf only</strong> — never
+    the writer's own drawer. A recipe the whole clinic works from cannot quietly carry one doctor's
+    own billable materials.</p>
+    <h2>Who can use this — the owner's choice, per recipe</h2>
+    <p>A clinic recipe is <strong>closed by default</strong>: nobody can open it until the owner names who may. The
+    owner is told this at the moment he writes it, on the edit window itself, in a box headed:</p>
+    <blockquote>
+    <p><strong>Who can use this</strong>
+    A doctor you add here can open this recipe and draw the clinic's materials inside it. Nobody is
+    added by default.</p>
+    </blockquote>
+    <p>While nobody is on the list, a warning says so plainly:</p>
+    <blockquote>
+    <p><strong>No doctor can open this recipe yet.</strong> It is saved, and it reaches nobody until you add
+    someone here.</p>
+    </blockquote>
+    <h3>Steps — let doctors use a house recipe</h3>
+    <ol>
+    <li>Open the recipe from the clinic's Recipes tab (<a href="build-a-recipe.html">Build-a-Recipe</a> for the composer itself).</li>
+    <li>In <strong>Who can use this</strong>, tick each doctor who may use it.</li>
+    <li>Press <strong>Save who can use it</strong>. The line under it confirms — <em>"Saved — 3 doctors."</em>, or
+       <em>"Saved — nobody yet."</em> if the list is empty.</li>
+    </ol>
+    <p>An empty list is a real state, and it is said out loud rather than left to be discovered on
+    somebody else's screen.</p>
+    <h2>Why it works this way</h2>
+    <p><strong>Seeing a house recipe is being allowed to spend the house's money.</strong> A doctor who can open a
+    clinic recipe can draw the clinic's materials inside it — so opening is a grant, and grants are
+    given deliberately, one doctor at a time, by the person who runs the place. Not by them, and not
+    by a default.</p>
+    <p><strong>Closed by default, so the policy is an act.</strong> If house recipes were open by default, the first
+    one written would reach every doctor before anyone decided it should. The clinic does the
+    policy.</p>
+    <p><strong>The warning while nobody can open it exists because the failure is silent otherwise.</strong> A
+    recipe that reaches nobody looks exactly like a recipe on somebody's screen — an empty list on
+    another doctor's tab is not a signal. So the owner is told, where he writes it.</p>
+    <p>Next: <a href="build-a-recipe.html">Build-a-Recipe</a> · <a href="read-what-the-patient-pays.html">Read-What-the-Patient-Pays</a> · <a href="choose-who-uses-each-shelf.html">Choose-Who-Uses-Each-Shelf</a> ·
+    <a href="use-the-clinics-stock-tab.html">Use-the-Clinics-Stock-Tab</a> · <a href="clinic-admin.html">Clinic-Admin</a> · <a href="home.html">Home</a></p>
+    </div></body></html>
   "use-the-clinics-stock-tab.html": |
     <!doctype html><html lang="en"><head><meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -4162,18 +4639,22 @@ data:
       No count yet</strong></li>
     <li><strong>Customize</strong>, <strong>+ Add material</strong>, and the list itself</li>
     </ul>
+    <p>Above the list sits the box headed <strong>Who can use each shelf</strong> — the owner's choice, per
+    category, of which doctors may draw from the house's shelf (<a href="choose-who-uses-each-shelf.html">Choose-Who-Uses-Each-Shelf</a>).</p>
     <p>What is <strong>not</strong> here: the <strong>My materials / All</strong> switch. On the house's screen there is nothing to
-    widen — this list is the clinic's, and only the clinic's. And what is not here yet: <strong>procedures
-    and recipes</strong>. This screen is stock only; they get their own place here when they exist
-    (<a href="roadmap.html">Roadmap</a>).</p>
+    widen — this list is the clinic's, and only the clinic's. The clinic's screen now carries <strong>two
+    tabs — Stock and Recipes</strong> — and this page is the Stock one; the house's recipes are beside it
+    (<a href="use-the-clinics-recipe-tab.html">Use-the-Clinics-Recipe-Tab</a>). Procedures are not built yet (<a href="roadmap.html">Roadmap</a>).</p>
     <h2>Who does what here</h2>
     <ul>
     <li><strong>Everybody may look.</strong> Out of the box the house's shelf is open to the whole staff.</li>
     <li><strong>The front desk keeps it.</strong> Reception adds materials to the house's shelf and corrects what the
       house paid and charges — the money boxes are hers to type here (<a href="add-a-material.html">Add-a-Material</a>).</li>
-    <li><strong>Every doctor may use the clinic's materials freely.</strong> Nobody has to ask permission before
-      taking the house's gloves or anaesthetic. What each doctor uses is worked out in the money
-      afterwards, where a person can check it — the shelf never stops a doctor at the chair.</li>
+    <li><strong>Every doctor may draw from the clinic's shelf freely.</strong> Nobody has to ask permission before
+      taking the house's gloves or anaesthetic. The owner <em>may</em> close a shelf to the doctors he
+      names (<a href="choose-who-uses-each-shelf.html">Choose-Who-Uses-Each-Shelf</a>); a doctor who is not named cannot put its materials on
+      a recipe — the save is refused, in the composer, never at the chair. What each doctor uses is
+      worked out in the money afterwards, where a person can check it.</li>
     <li><strong>Another doctor's own materials are never available to you.</strong> Not with permission, not as a
       favour, not at all. A doctor's own drawer is his (<a href="find-a-material.html">Find-a-Material</a>).</li>
     <li><strong>Taking a material off the house's shelf is the owner's decision alone</strong> — deciding what the
@@ -4185,8 +4666,12 @@ data:
     box has a personal owner would bury the shelf under questions that have no answer. So the house
     has its own shelf, on its own screen, in the house's words.</p>
     <p><strong>The shelf is open because the chair matters more than the arithmetic.</strong> A doctor mid-treatment
-    must not be stopped by a permission question about a pair of gloves. The correction happens in the
-    money, afterwards — where a person can look at it, question it and fix it.</p>
+    must not be stopped by a permission question about a pair of gloves. The correction happens in
+    the money, afterwards — where a person can look at it, question it and fix it. When the owner
+    does close a shelf, the closure obeys the same principle: it refuses the save in the composer,
+    never the doctor at the chair — and the material search in the recipe builder is being taught to
+    leave closed-shelf materials out altogether, so the refusal moves off the screen too
+    (<a href="choose-who-uses-each-shelf.html">Choose-Who-Uses-Each-Shelf</a>, <a href="roadmap.html">Roadmap</a>).</p>
     <p><strong>Your own materials stay yours.</strong> A doctor's own tab is exactly this screen's twin, and nobody
     else sees what is on it — which is why the badge says <em>The clinic's — not yours</em> and the two tabs
     are separate screens rather than one list with a filter.</p>
@@ -4368,14 +4853,20 @@ data:
       (<a href="set-up-your-treatment-list.html">Set-Up-Your-Treatment-List</a>, <a href="add-a-treatment.html">Add-a-Treatment</a>, <a href="organise-your-treatment-list.html">Organise-Your-Treatment-List</a>,
       <a href="delete-and-restore-a-treatment.html">Delete-and-Restore-a-Treatment</a>). It is the reason a doctor signing in lands on his own setup
       screen rather than the plain "You're signed in" page.</li>
+    <li><strong>A doctor's own recipes</strong> — one visit written down: treatments, materials, labs and his own
+      typed lines, composed once and priced every time it is opened
+      (<a href="build-a-recipe.html">Build-a-Recipe</a>, <a href="read-what-the-patient-pays.html">Read-What-the-Patient-Pays</a>, <a href="add-a-material-from-a-recipe.html">Add-a-Material-From-a-Recipe</a>). The
+      house's recipes, and the owner's choice of who may use them, live on the clinic's tab
+      (<a href="use-the-clinics-recipe-tab.html">Use-the-Clinics-Recipe-Tab</a>).</li>
     <li><strong>The inventory section — the materials on the shelf, and the supplier list.</strong> Search the
       clinic's materials, see what needs reordering, and open any one of them (<a href="find-a-material.html">Find-a-Material</a>).
       Add materials and keep their numbers right — your own on your own tab, the house's on
       <a href="use-the-clinics-stock-tab.html">Use-the-Clinics-Stock-Tab</a> (<a href="add-a-material.html">Add-a-Material</a>). Keep the supplier list right: add, correct
       and archive suppliers (<a href="add-a-supplier.html">Add-a-Supplier</a>), say which supplier a material comes from
       (<a href="assign-a-supplier-to-a-material.html">Assign-a-Supplier-to-a-Material</a>), and fold two cards for the same company into one
-      (<a href="merge-two-suppliers.html">Merge-Two-Suppliers</a>). It is reached from the <strong>Go to</strong> boxes on the "You're signed in"
-      page.</li>
+      (<a href="merge-two-suppliers.html">Merge-Two-Suppliers</a>). The owner may also close a shelf of the house's stock to named
+      doctors, per category (<a href="choose-who-uses-each-shelf.html">Choose-Who-Uses-Each-Shelf</a>). It is reached from the <strong>Go to</strong> boxes
+      on the "You're signed in" page.</li>
     </ul>
     <h2>What it does not give you</h2>
     <p>None of the following exists in the software today. Not hidden, not behind a permission, not
@@ -4425,6 +4916,10 @@ data:
     <td>Not built</td>
     </tr>
     <tr>
+    <td>Procedures, on the clinic's tab</td>
+    <td>Not built — stock and recipes are the two tabs there today (<a href="use-the-clinics-stock-tab.html">Use-the-Clinics-Stock-Tab</a>)</td>
+    </tr>
+    <tr>
     <td>A screen listing the supplier merges, so an old one can be undone</td>
     <td>Not built — the <strong>Undo</strong> button on the confirmation box is the only one (<a href="merge-two-suppliers.html">Merge-Two-Suppliers</a>)</td>
     </tr>
@@ -4449,10 +4944,6 @@ data:
     <td>Not built — until it exists, a price saves in the currency you typed and no converted figure is shown (<a href="dual-currency-money.html">Dual-Currency-Money</a>)</td>
     </tr>
     <tr>
-    <td>Linking a doctor's materials to his treatments</td>
-    <td>Not built — step 2 of a doctor's setup says so and asks nothing of him</td>
-    </tr>
-    <tr>
     <td>Email from Gompha — invites and password links arrive by hand</td>
     <td><strong>Deliberately off</strong> (<a href="give-someone-a-new-link.html">Give-Someone-a-New-Link</a>)</td>
     </tr>
@@ -4474,14 +4965,22 @@ data:
     </tr>
     </tbody>
     </table>
-    <p><strong>A receptionist or an assistant who signs in today sees two screens</strong>: a short "You're signed in"
-    page that names your role and lists the clinic's rooms, and — from the <strong>Go to</strong> box on it — the
-    <strong>Inventory</strong> section, where the house's shelf and the supplier list are real work she can do
-    today (<a href="find-a-material.html">Find-a-Material</a>, <a href="use-the-clinics-stock-tab.html">Use-the-Clinics-Stock-Tab</a>, <a href="add-a-supplier.html">Add-a-Supplier</a>). Everything else is
-    genuinely absent, not hidden behind a permission. See <a href="receptionist.html">Receptionist</a> and <a href="assistant.html">Assistant</a>.</p>
-    <p><strong>A doctor sees those too, plus his own treatment list</strong> — his treatments, his prices, his
-    timings, which is the piece of work Milestone 1 asks of him. Nothing patient-facing hangs off it
-    yet. See <a href="doctor.html">Doctor</a> and <a href="set-up-your-treatment-list.html">Set-Up-Your-Treatment-List</a>.</p>
+    <p><strong>A receptionist or an assistant who signs in today sees two working screens</strong>: a short "You're
+    signed in" page that names your role and lists the clinic's rooms, and — from the <strong>Go to</strong> box
+    on it — the <strong>Inventory</strong> section, where the house's shelf and the supplier list are real work
+    she can do today (<a href="find-a-material.html">Find-a-Material</a>, <a href="use-the-clinics-stock-tab.html">Use-the-Clinics-Stock-Tab</a>, <a href="add-a-supplier.html">Add-a-Supplier</a>).
+    Everything else is genuinely absent, not hidden behind a permission. See <a href="receptionist.html">Receptionist</a> and
+    <a href="assistant.html">Assistant</a>.</p>
+    <p>The home page also carries <strong>Recipes</strong> and <strong>Services &amp; timings</strong> boxes, and both are doctor's
+    surfaces. Pressing <strong>Services &amp; timings</strong> as reception gets a red message reading <em>"You do not
+    have a catalogue."</em> with a code. <strong>Recipes</strong> is the same story: a recipe is built out of a
+    doctor's own treatments, and you have none — ⚠ verify the exact wording shown to a
+    receptionist there; it is the same class of rough edge, not a fault on the account, and it is
+    reported.</p>
+    <p><strong>A doctor sees those too, plus his own treatment list and his own recipes</strong> — his treatments,
+    his prices, his timings, and his visits composed and priced. The treatment list is the piece of
+    work Milestone 1 asks of him. Nothing patient-facing hangs off any of it yet. See <a href="doctor.html">Doctor</a>,
+    <a href="set-up-your-treatment-list.html">Set-Up-Your-Treatment-List</a> and <a href="build-a-recipe.html">Build-a-Recipe</a>.</p>
     <p><strong>The second box on that page, Services &amp; timings, is a doctor's own list.</strong> Reception and
     assistants can see the box and press it, and get a red message reading <em>"You do not have a
     catalogue."</em> with a code. ⚠ That is a rough edge, not a fault on the account, and it is reported.</p>
@@ -4683,11 +5182,15 @@ data:
     <strong>+ Add a treatment</strong>, <strong>+ New category</strong>, the drag handle, the actions in the <strong>⋮</strong> menu — go grey
     while the link is down, and hovering one says <em>"Needs the clinic link."</em></p>
     <p>In <strong>Inventory</strong>, the same rule with the same words. The <strong>+ Add material</strong> (<a href="add-a-material.html">Add-a-Material</a>),
-    <strong>+ Add a supplier</strong>, <strong>Edit</strong> and <strong>Merge…</strong> buttons go grey, the supplier window opens and reads
+    <strong>+ Add supplier</strong>, <strong>Edit</strong> and <strong>Merge…</strong> buttons go grey, the supplier window opens and reads
     perfectly, and its footer says <strong>Needs the connection</strong> where the Save button would be
     (<a href="add-a-supplier.html">Add-a-Supplier</a>).</p>
-    <p>There is no half-saved person, no half-saved treatment, no half-merged supplier, no queue, and
-    nothing to clean up afterwards. Do it again when the connection is back.</p>
+    <p>In <strong>Recipes</strong>, the same. Open the section with the link down and the list is replaced by the
+    calm sentence <em>"No connection — recipes cannot be loaded right now."</em> A recipe already open in
+    the composer still reads, and its footer says <strong>Needs the connection</strong> where the save button
+    would be — what you have typed stays on the screen (<a href="build-a-recipe.html">Build-a-Recipe</a>).</p>
+    <p>There is no half-saved person, no half-saved treatment, no half-saved recipe, no half-merged
+    supplier, no queue, and nothing to clean up afterwards. Do it again when the connection is back.</p>
     <h2>Inventory offline shows you nothing, and that is not a fault</h2>
     <p>The materials and supplier lists are <strong>not kept on the device</strong> in this version. Open Inventory with
     the link down and you get the grey <strong>No connection</strong> box and an empty screen underneath — not a
