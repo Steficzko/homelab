@@ -1,0 +1,52 @@
+# Thin pool exhaustion is not a graceful failure: at 100% every thin volume in the
+# pool fails writes simultaneously. pve has 0G free in the VG, so the pool cannot
+# auto-extend — the only mitigation is reclaiming space, which needs lead time.
+# Hence warning at 80% and critical at 90%, well before the cliff.
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: pve-alerts
+  namespace: monitoring
+  labels:
+    release: kube-prometheus-stack   # required by the Prometheus ruleSelector
+spec:
+  groups:
+    - name: pve-storage
+      rules:
+        - alert: PVEThinPoolFillingUp
+          expr: >-
+            100 * pve_disk_usage_bytes{id="storage/pve/local-lvm"}
+            / pve_disk_size_bytes{id="storage/pve/local-lvm"} > 80
+          for: 15m
+          labels:
+            severity: warning
+          annotations:
+            summary: "pve thin pool local-lvm at {{ $value | printf \"%.1f\" }}%"
+            description: >-
+              The VG has no free extents, so the pool cannot auto-extend. Reclaim with
+              `fstrim` inside the LXCs (they mount with mountoptions=discard), or free
+              space in a container. At 100% ALL thin volumes fail writes at once.
+
+        - alert: PVEThinPoolCritical
+          expr: >-
+            100 * pve_disk_usage_bytes{id="storage/pve/local-lvm"}
+            / pve_disk_size_bytes{id="storage/pve/local-lvm"} > 90
+          for: 5m
+          labels:
+            severity: critical
+          annotations:
+            summary: "pve thin pool local-lvm CRITICAL at {{ $value | printf \"%.1f\" }}%"
+            description: >-
+              Act now — at 100% every LXC/VM on local-lvm loses write access together
+              and filesystems can corrupt. Free space or stop a container.
+
+        - alert: PVEExporterDown
+          expr: up{job="pve-exporter"} == 0
+          for: 15m
+          labels:
+            severity: warning
+          annotations:
+            summary: "pve-exporter is down — pve is unmonitored again"
+            description: >-
+              Without this exporter nothing watches the thin pool. That blind spot is
+              how it reached 92.6% unnoticed.

@@ -1,0 +1,92 @@
+# Proxmox (192.168.1.122) was invisible to Prometheus: no node_exporter, no scrape
+# target, nothing. Its LVM thin pool silently reached 92.6% with zero alerts — at
+# 100% every thin volume fails writes at once and all three ML LXCs corrupt together.
+# The volume group has 0G free, so thin_pool_autoextend cannot be a safety net; this
+# alert is the only line of defence.
+#
+# NOTE: the API token Secret is NOT in this directory on purpose. ArgoCD applies every
+# manifest under extras/ verbatim and has no ksops plugin, so a *.sops.yaml here would be
+# pushed as an encrypted, invalid Secret. It lives at ../pve-exporter-secret.sops.yaml and
+# is applied by hand:  sops -d kubernetes/monitoring/pve-exporter-secret.sops.yaml | kubectl apply -f -
+#
+# The exporter runs HERE, not on pve — it reads the PVE API remotely with a read-only
+# PVEAuditor token, so nothing is installed on the hypervisor.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pve-exporter
+  namespace: monitoring
+spec:
+  replicas: 1
+  selector:
+    matchLabels: { app: pve-exporter }
+  template:
+    metadata:
+      labels: { app: pve-exporter }
+    spec:
+      containers:
+        - name: pve-exporter
+          image: prompve/prometheus-pve-exporter:3.10.0
+          ports:
+            - name: http
+              containerPort: 9221
+          env:
+            - name: PVE_VERIFY_SSL
+              value: "false"          # pve uses a self-signed cert
+          envFrom:
+            - secretRef:
+                name: pve-exporter
+          resources:
+            requests: { cpu: 10m, memory: 64Mi }
+            limits: { memory: 192Mi }
+          # this image serves only /pve (metrics); it has no /healthz, so probe the
+          # listener itself rather than an endpoint that returns 404
+          startupProbe:
+            tcpSocket: { port: http }
+            failureThreshold: 30
+            periodSeconds: 2
+          readinessProbe:
+            tcpSocket: { port: http }
+            periodSeconds: 10
+          livenessProbe:
+            tcpSocket: { port: http }
+            periodSeconds: 30
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 1000
+            allowPrivilegeEscalation: false
+            capabilities: { drop: ["ALL"] }
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: pve-exporter
+  namespace: monitoring
+  labels: { app: pve-exporter }
+spec:
+  selector: { app: pve-exporter }
+  ports:
+    - name: http
+      port: 9221
+      targetPort: http
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: pve-exporter
+  namespace: monitoring
+  labels:
+    release: kube-prometheus-stack   # required by the Prometheus serviceMonitorSelector
+spec:
+  selector:
+    matchLabels: { app: pve-exporter }
+  endpoints:
+    - port: http
+      path: /pve
+      interval: 60s
+      scrapeTimeout: 30s
+      params:
+        target: ["192.168.1.122"]    # the exporter proxies to this PVE host
+      relabelings:
+        - targetLabel: instance
+          replacement: pve
