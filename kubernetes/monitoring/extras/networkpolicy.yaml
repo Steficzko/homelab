@@ -24,3 +24,29 @@ spec:
               kubernetes.io/metadata.name: homepage
       ports:
         - port: 9090
+    # Unraid syslog -> promtail:1514.
+    # kube-proxy's KUBE-EXT chain MASQUERADEs external traffic, so promtail sees the
+    # NODE ip as the source, never the NAS ip — allowlisting 192.168.1.100 /
+    # 100.85.129.88 alone silently rejects every packet (RST, not a timeout).
+    # Hence the node IPs below; the NAS blocks are kept in case externalTrafficPolicy
+    # is ever set to Local, which would preserve the real client address.
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: kube-system
+        - ipBlock:
+            cidr: 192.168.1.201/32   # k3s-prg-r1
+        - ipBlock:
+            cidr: 192.168.1.202/32   # k3s-prg-g2
+        - ipBlock:
+            cidr: 192.168.1.203/32   # k3s-prg-b3
+        - ipBlock:
+            cidr: 192.168.1.204/32   # k3s-prg-w1
+        - ipBlock:
+            cidr: 192.168.1.205/32   # k3s-prg-w2
+        - ipBlock:
+            cidr: 192.168.1.100/32   # Prague Unraid
+        - ipBlock:
+            cidr: 100.85.129.88/32   # Greece Unraid (over tailnet)
+      ports:
+        - port: 1514

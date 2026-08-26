@@ -37,3 +37,8 @@ extraPorts:
     service:
       type: LoadBalancer
       port: 1514
+      # Local preserves the real client IP. With the default (Cluster) kube-proxy
+      # MASQUERADEs to the node IP, which the monitoring netpol would then have to
+      # allowlist instead of the actual NAS addresses. Safe here: promtail is a
+      # DaemonSet, so every node has a local endpoint to serve the connection.
+      externalTrafficPolicy: Local
