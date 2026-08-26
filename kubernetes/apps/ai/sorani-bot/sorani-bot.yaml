@@ -71,7 +71,7 @@ spec:
     spec:
       containers:
         - name: bot
-          image: python:3.11-slim
+          image: python:3.14-slim
           command: ["/bin/sh", "-ec"]
           args: ["pip install --no-cache-dir -q requests && exec python /app/bot.py"]
           envFrom:

@@ -65,7 +65,7 @@ spec:
                 - { name: tools, mountPath: /tools }
           containers:
             - name: backup
-              image: alpine:3.20
+              image: alpine:3.24
               securityContext:
                 # root ONLY because `apk add sqlite` needs to write the apk db.
                 # Safe here: /data is mounted readOnly below, so this container

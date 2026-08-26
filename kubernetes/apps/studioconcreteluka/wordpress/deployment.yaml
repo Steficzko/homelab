@@ -20,7 +20,7 @@ spec:
           type: RuntimeDefault
       containers:
         - name: wordpress
-          image: wordpress:7.0-apache
+          image: wordpress:7.1-apache
           # Least-privilege (#2): drop ALL caps, re-add only what apache needs to
           # bind :80 and drop its workers to www-data. Removes NET_RAW, SYS_*, etc.
           # that aid container escape / lateral movement. Pod still starts as root

@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: erin
-          image: mosswill/erin:1.21.0@sha256:68512cae7544516b2f0be128abff894e7d3c3907eead9a6c8c442526216665bb
+          image: mosswill/erin:1.22.0@sha256:648fc42dbcde22528c60141e7f289d817b3a3082afb23157a38b2087479d114a
           env:
             # PUBLIC_URL IS THE CADDY SITE ADDRESS (docker/Caddyfile line 34 is
             # literally `{$PUBLIC_URL} {`). It MUST stay http:// even though the
