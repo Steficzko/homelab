@@ -1395,7 +1395,7 @@ data:
     <h1>Choose Who Uses Each Shelf</h1>
     <p><strong>For the owner.</strong> On the clinic's Stock tab, above the materials list, there is a box headed
     <strong>Who can use each shelf</strong>. It is the owner's answer to <em>"who may use what the house bought"</em> —
-    decided per category of material, not per material.</p>
+    decided per category of material, with the odd single material allowed to differ.</p>
     <p>Everyone can read the box. Only the owner sees the buttons on it.</p>
     <h2>What it says when you arrive</h2>
     <blockquote>
@@ -1427,18 +1427,16 @@ data:
     name someone.</p>
     </blockquote>
     <h2>What a closed shelf does — and what it never does</h2>
-    <p>A doctor who is not named <strong>cannot put that shelf's materials on a recipe</strong>: when he saves, the
-    screen refuses with <em>"That belongs to another doctor. Use your own, or the clinic's."</em> — a
-    sentence written for the rarer refusal, so read it as <em>"this material is closed to you"</em>. The
-    fix is to take the material off the recipe, or ask the owner to name you
-    (<a href="build-a-recipe.html">Build-a-Recipe</a>, <a href="error-codes.html">Error-Codes</a>).</p>
-    <p>The refusal happens in the composer, while the recipe is being written. It never happens at the
+    <p>A doctor who is not named <strong>never meets that shelf's materials in the recipe builder</strong>: the
+    material search leaves them out, so there is nothing to choose and nothing to be refused. The
+    sentence <em>"That belongs to another doctor. Use your own, or the clinic's."</em> still exists — it
+    was written for the rarer refusal, so read it as <em>"this material is closed to you"</em> — and the
+    one ordinary way to meet it now is saving a recipe that already carries a material the owner
+    closed after it was chosen. The fix is to take the material off the recipe, or ask the owner to
+    name you (<a href="build-a-recipe.html">Build-a-Recipe</a>, <a href="error-codes.html">Error-Codes</a>).</p>
+    <p>All of it happens in the composer, while the recipe is being written. It never happens at the
     chair — recording what was used on a patient is not built yet — and the shelf itself still
     reads on the clinic's Stock tab for everyone, including him.</p>
-    <p>One step is still ahead of the running version: the box above promises a closed shelf's
-    materials <em>"simply never see"</em> an unnamed doctor, and the material search in the recipe builder
-    is being taught exactly that — leave the material out, so there is nothing to refuse
-    (<a href="roadmap.html">Roadmap</a>).</p>
     <p>What each doctor uses is still worked out in the money afterwards — closing a shelf decides who
     may draw, not who pays.</p>
     <h2>Why it works this way</h2>
@@ -1447,16 +1445,28 @@ data:
     in writing.</p>
     <p><strong>The refusal is never a stop at the chair.</strong> A doctor reaching for the house's gloves with a
     patient in the chair must not meet a permission question — that was true before this screen and
-    it is still true. A closed shelf is answered earlier, while the recipe is being written, and the
-    design's promise is that the material never reaches the list at all.</p>
+    it is still true. A closed shelf is answered earlier, while the recipe is being written: the
+    material never reaches the search list at all.</p>
     <p><strong>Per category, because per material would be a second job.</strong> Clinics think in shelves — the
     implant shelf, the anaesthetics — not in four hundred rows. The category was typed by the clinic
     in its own words, and this is the decision it was waiting to carry.</p>
     <p><strong>Two rules underneath, so the shelf never closes by accident.</strong> A material with <strong>no category
     at all is always open</strong> — most of a clinic's rows carry none, and a new word typed by reception
     must not lock anybody out of anything. And a single material <em>may</em> carry its own rule that wins
-    over its category's — the exception exists in the arrangement, though no screen sets it today;
-    it is there for the odd material that must differ from its shelf.</p>
+    over its category's, for the odd material that must differ from its shelf.</p>
+    <h3>The one material that must differ — set on the material itself</h3>
+    <p>Open the material on the clinic's Stock tab. Under <strong>Edit this material</strong>, the owner — and only
+    the owner — sees a part of the window headed <strong>Who can use this material</strong>. It opens by saying
+    what is true today, in one sentence: <em>"Every doctor can use it — from Implants."</em> Then:</p>
+    <ol>
+    <li>Tick each doctor who may use this one material.</li>
+    <li>Press <strong>Only these doctors</strong>.</li>
+    </ol>
+    <p><strong>Every doctor</strong>, beside it, reopens the material to all. <strong>Follow Implants again</strong> — the button
+    carries the category's own name, and appears only once the material carries its own rule —
+    hands it back to its shelf, so an exception is always one tap from undone. A material closed to
+    nobody is said out loud, like a shelf closed to nobody: <em>"Nobody can use this material. It
+    stays that way until you name someone, or hand it back to its category."</em> (<a href="find-a-material.html">Find-a-Material</a>).</p>
     <p>Next: <a href="use-the-clinics-stock-tab.html">Use-the-Clinics-Stock-Tab</a> · <a href="use-the-clinics-recipe-tab.html">Use-the-Clinics-Recipe-Tab</a> · <a href="add-a-material.html">Add-a-Material</a> ·
     <a href="roles-and-access.html">Roles-and-Access</a> · <a href="clinic-admin.html">Clinic-Admin</a> · <a href="home.html">Home</a></p>
     </div></body></html>
@@ -2122,11 +2132,12 @@ data:
     <em>"The 30-day window to undo this merge has passed."</em> Their numbers are still being settled, and this
     page does not publish a number until it is permanent. If one does reach you in a red box, send it
     with <strong>Report this</strong> and we will tell you what it was.</p>
-    <p><strong>One 16xx has become ordinary to meet.</strong> Saving a recipe that carries a material from a shelf the
-    owner has closed is refused with a sentence about <em>another doctor's</em> property — written before
-    closed shelves existed, so read it as <em>"this material is closed to you"</em>. Take the material off the
-    recipe, choose another, and tell the owner which shelf it was
-    (<a href="choose-who-uses-each-shelf.html">Choose-Who-Uses-Each-Shelf</a>).</p>
+    <p><strong>One 16xx you may still meet.</strong> The recipe builder's material search leaves out everything from
+    a shelf the owner has closed, so the meeting is rare: it happens when a recipe already carries a
+    material whose shelf was closed after it was chosen. Saving is refused with a sentence about
+    <em>another doctor's</em> property — written before closed shelves existed, so read it as <em>"this
+    material is closed to you"</em>. Take the material off the recipe, choose another, and tell the
+    owner which shelf it was (<a href="choose-who-uses-each-shelf.html">Choose-Who-Uses-Each-Shelf</a>).</p>
     <h2>Why it works this way</h2>
     <p><strong>A code is not decoration.</strong> "Something went wrong" tells nobody anything, and a clinic that reads
     it ten times learns to ignore the eleventh. A code lets a receptionist tell a doctor, a doctor tell
@@ -2263,6 +2274,9 @@ data:
     <li>the <strong>name</strong>, and under it the <strong>owner</strong>, the category, and the word <strong>Archived</strong> if it is one</li>
     <li><strong>Edit this material</strong>, a small button beside the name — the way to correct anything on it
       (<a href="add-a-material.html">Add-a-Material</a>)</li>
+    <li><strong>Who can use this material</strong> — the owner only, and only on the house's materials: the one
+      material's own rule, where it differs from its shelf's
+      (<a href="choose-who-uses-each-shelf.html">Choose-Who-Uses-Each-Shelf</a>)</li>
     <li><strong>Stock</strong> — the same word as in the list, plus the date it was last counted</li>
     <li><strong>Unit / pack</strong> — e.g. <em>tube · 100 per box</em></li>
     <li><strong>Price</strong> — what the clinic sells or charges it at</li>
@@ -2351,8 +2365,9 @@ data:
     <strong>My materials</strong> switch, and why cost can be hidden on a row you are otherwise allowed to see.</p>
     <p><strong>The house's shelf is open to every doctor.</strong> Using the clinic's own materials never asks
     permission — what each doctor uses is sorted out in the money, afterwards. The owner may close a
-    shelf of it to the doctors he names, per category (<a href="choose-who-uses-each-shelf.html">Choose-Who-Uses-Each-Shelf</a>). What no
-    permission ever opens is another doctor's own materials.</p>
+    shelf of it to the doctors he names, per category — or the odd single material that must differ
+    (<a href="choose-who-uses-each-shelf.html">Choose-Who-Uses-Each-Shelf</a>). What no permission ever opens is another doctor's own
+    materials.</p>
     <p><strong>A count never blocks anything.</strong> The clinic was explicit: the app warns, it does not stop the
     clinic working. A wrong number on a shelf must never be the reason a patient is not treated — so a
     material with <strong>None left</strong> is still fully usable, and a minus on the count is information for
@@ -2632,7 +2647,7 @@ data:
     <hr />
     <h2>tags: [home]</h2>
     <h1>Gompha Manual</h1>
-    <p><strong>Version: Milestone 1 · checked against image <code>clinic-v0.1.29</code> · Stamped 2026-08-25 (pass 9)</strong></p>
+    <p><strong>Version: Milestone 1 · checked against image <code>clinic-v0.1.31</code> · Stamped 2026-08-26 (pass 10)</strong></p>
     <blockquote>
     <h3>This manual covers Milestone 1 only</h3>
     <p>Milestone 1 is <strong>sign-in, people and access, rooms</strong>, <strong>a doctor's own treatment list</strong>, <strong>the
@@ -3521,9 +3536,6 @@ data:
     <li>Recording a count, entering a purchase and receiving a delivery — materials can now be added by
       hand (<a href="add-a-material.html">Add-a-Material</a>); counting and buying are not built.</li>
     <li>Marking material used on a patient, and moving a material to a different owner.</li>
-    <li>The recipe builder's material search learning to leave out what a closed shelf refuses — today
-      the material can still be listed and it is the save that refuses
-      (<a href="choose-who-uses-each-shelf.html">Choose-Who-Uses-Each-Shelf</a>).</li>
     <li>Procedures finding their place on the clinic's tab — stock and recipes are there today
       (<a href="use-the-clinics-stock-tab.html">Use-the-Clinics-Stock-Tab</a>).</li>
     <li>A doctor letting his own assistant see prices, from his own sign-in — he decides, for his
@@ -4657,9 +4669,9 @@ data:
       house paid and charges — the money boxes are hers to type here (<a href="add-a-material.html">Add-a-Material</a>).</li>
     <li><strong>Every doctor may draw from the clinic's shelf freely.</strong> Nobody has to ask permission before
       taking the house's gloves or anaesthetic. The owner <em>may</em> close a shelf to the doctors he
-      names (<a href="choose-who-uses-each-shelf.html">Choose-Who-Uses-Each-Shelf</a>); a doctor who is not named cannot put its materials on
-      a recipe — the save is refused, in the composer, never at the chair. What each doctor uses is
-      worked out in the money afterwards, where a person can check it.</li>
+      names (<a href="choose-who-uses-each-shelf.html">Choose-Who-Uses-Each-Shelf</a>); a doctor who is not named never meets its materials in
+      the recipe builder at all — the search leaves them out. What each doctor uses is worked out in
+      the money afterwards, where a person can check it.</li>
     <li><strong>Another doctor's own materials are never available to you.</strong> Not with permission, not as a
       favour, not at all. A doctor's own drawer is his (<a href="find-a-material.html">Find-a-Material</a>).</li>
     <li><strong>Taking a material off the house's shelf is the owner's decision alone</strong> — deciding what the
@@ -4673,10 +4685,9 @@ data:
     <p><strong>The shelf is open because the chair matters more than the arithmetic.</strong> A doctor mid-treatment
     must not be stopped by a permission question about a pair of gloves. The correction happens in
     the money, afterwards — where a person can look at it, question it and fix it. When the owner
-    does close a shelf, the closure obeys the same principle: it refuses the save in the composer,
-    never the doctor at the chair — and the material search in the recipe builder is being taught to
-    leave closed-shelf materials out altogether, so the refusal moves off the screen too
-    (<a href="choose-who-uses-each-shelf.html">Choose-Who-Uses-Each-Shelf</a>, <a href="roadmap.html">Roadmap</a>).</p>
+    does close a shelf, the closure obeys the same principle: the recipe builder's material search
+    leaves a closed shelf's materials out altogether, so the question never reaches the screen —
+    and never the doctor at the chair (<a href="choose-who-uses-each-shelf.html">Choose-Who-Uses-Each-Shelf</a>).</p>
     <p><strong>Your own materials stay yours.</strong> A doctor's own tab is exactly this screen's twin, and nobody
     else sees what is on it — which is why the badge says <em>The clinic's — not yours</em> and the two tabs
     are separate screens rather than one list with a filter.</p>
