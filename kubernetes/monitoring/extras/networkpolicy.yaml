@@ -48,5 +48,13 @@ spec:
             cidr: 192.168.1.100/32   # Prague Unraid
         - ipBlock:
             cidr: 100.85.129.88/32   # Greece Unraid (over tailnet)
+        - ipBlock:
+            cidr: 192.168.1.224/32   # LXC 110 xt-ml
+        - ipBlock:
+            cidr: 192.168.1.225/32   # LXC 111 ryzen-ml
+        - ipBlock:
+            cidr: 192.168.1.226/32   # LXC 112 whisper-gpu
+        - ipBlock:
+            cidr: 192.168.1.227/32   # LXC 113 DrGemma
       ports:
         - port: 1514
