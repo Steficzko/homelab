@@ -20,3 +20,7 @@ spec:
         - podSelector:
             matchLabels:
               app: nextcloud-cron
+        # pg_dump backup CronJob (added 2026-08-26 with the backup job itself)
+        - podSelector:
+            matchLabels:
+              app: postgres-backup

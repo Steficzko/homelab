@@ -1,0 +1,86 @@
+# Logical (pg_dump) backup of the Nextcloud Postgres DB -> MinIO. Until 2026-08-26 the DB had NO dump at all — only crash-consistent Longhorn snapshots.
+# Complements the block-level Longhorn/Velero snapshots with a portable,
+# version-restorable dump usable for granular restore and migration.
+# Restore:  pg_restore -h <host> -U <user> -d <db> --clean <file>.dump
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: postgres-backup
+  namespace: nextcloud
+spec:
+  schedule: "30 1 * * *"          # daily 01:30 — family data, not a dev DB
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      ttlSecondsAfterFinished: 10800   # auto-clean finished jobs (stops one-off failures re-alerting forever)
+      backoffLimit: 2
+      activeDeadlineSeconds: 1800
+      template:
+        metadata:
+          labels:
+            app: postgres-backup
+        spec:
+          restartPolicy: Never
+          affinity:                       # co-locate with postgres (cross-node net is unreliable)
+            podAffinity:
+              requiredDuringSchedulingIgnoredDuringExecution:
+                - labelSelector:
+                    matchLabels:
+                      app: postgres
+                  topologyKey: kubernetes.io/hostname
+          securityContext:
+            runAsUser: 1000
+            runAsGroup: 1000
+            fsGroup: 1000
+          initContainers:
+            - name: copy-mc
+              image: minio/mc@sha256:a7fe349ef4bd8521fb8497f55c6042871b2ae640607cf99d9bede5e9bdf11727
+              securityContext:
+                runAsUser: 0                  # mc is 0711 root-owned; need root to read+copy it
+              command: ["/bin/sh", "-c", "cp /usr/bin/mc /tools/mc && chmod 0755 /tools/mc"]
+              volumeMounts:
+                - { name: tools, mountPath: /tools }
+          containers:
+            - name: dump
+              image: postgres:16-alpine@sha256:16bc17c64a573ef34162af9298258d1aec548232985b33ed7b1eac33ba35c229
+              envFrom:
+                - secretRef: { name: postgres-secret }    # POSTGRES_USER / POSTGRES_DB / POSTGRES_PASSWORD
+                - secretRef: { name: backup-s3-secret }    # AWS_ACCESS_KEY_ID / AWS_SECRET_ACCESS_KEY / AWS_ENDPOINTS
+              env:
+                - { name: HOME,      value: /work }
+                - { name: PGHOST,    value: postgres }
+                - { name: BUCKET,    value: app-backups }
+                - { name: PREFIX,    value: nextcloud-postgres }
+                - { name: RETENTION, value: "30d" }   # 30 daily restore points
+              command:
+                - /bin/sh
+                - -c
+                - |
+                  set -eu
+                  export PGPASSWORD="$POSTGRES_PASSWORD"
+                  TS=$(date +%Y%m%d-%H%M%S)
+                  FILE="${POSTGRES_DB}-${TS}.dump"
+                  echo "==> Waiting for ${PGHOST}:5432 (tolerates kube-router NetworkPolicy propagation delay) ..."
+                  ok=0
+                  for i in $(seq 1 30); do
+                    if pg_isready -h "$PGHOST" -U "$POSTGRES_USER" -d "$POSTGRES_DB" -t 3 >/dev/null 2>&1; then ok=1; echo "    reachable (try ${i})"; break; fi
+                    sleep 3
+                  done
+                  [ "$ok" = 1 ] || { echo "ERROR: postgres unreachable after retries"; exit 1; }
+                  echo "==> Dumping ${POSTGRES_DB} from ${PGHOST} ..."
+                  pg_dump -h "$PGHOST" -U "$POSTGRES_USER" -d "$POSTGRES_DB" -Fc -Z6 -f "/work/${FILE}"
+                  echo "==> Uploading ${FILE} ..."
+                  /tools/mc alias set s3 "$AWS_ENDPOINTS" "$AWS_ACCESS_KEY_ID" "$AWS_SECRET_ACCESS_KEY"
+                  /tools/mc mb --ignore-existing "s3/${BUCKET}"
+                  /tools/mc cp "/work/${FILE}" "s3/${BUCKET}/${PREFIX}/${FILE}"
+                  echo "==> Pruning > ${RETENTION} old ..."
+                  /tools/mc rm --recursive --force --older-than "$RETENTION" "s3/${BUCKET}/${PREFIX}/" || true
+                  echo "==> Done: s3://${BUCKET}/${PREFIX}/${FILE}"
+              volumeMounts:
+                - { name: tools, mountPath: /tools }
+                - { name: work,  mountPath: /work }
+          volumes:
+            - { name: tools, emptyDir: {} }
+            - { name: work,  emptyDir: {} }
