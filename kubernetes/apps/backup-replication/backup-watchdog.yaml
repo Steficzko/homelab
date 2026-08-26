@@ -39,6 +39,8 @@ spec:
                   valueFrom: { secretKeyRef: { name: kuma-push, key: REPLICATION } }
                 - name: PUSH_GOMPHA_CLINIC
                   valueFrom: { secretKeyRef: { name: kuma-push, key: GOMPHA_CLINIC } }
+                - name: PUSH_NEXTCLOUD
+                  valueFrom: { secretKeyRef: { name: kuma-push, key: NEXTCLOUD } }
               command: ["/bin/sh", "-c"]
               args:
                 - |
@@ -68,3 +70,7 @@ spec:
                   # 20000 B: real dumps are ~38 KB and the failure mode this
                   # guards against (pg_dump refusing a newer server) wrote 200 B.
                   check gompha-clinic "src/clinic-backups/gompha-clinic-postgres/" 20000 5400 "$PUSH_GOMPHA_CLINIC"
+                  # Nextcloud pg_dump is DAILY (01:30), not hourly like the others,
+                  # so MAX_AGE is 26h. Real dumps are ~950 KB; 400000 min catches the
+                  # empty-dump failure mode without tripping on normal size drift.
+                  check nextcloud   "src/app-backups/nextcloud-postgres/"  400000 93600 "$PUSH_NEXTCLOUD"
