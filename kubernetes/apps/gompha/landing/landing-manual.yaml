@@ -1716,11 +1716,12 @@ data:
       doctors have — <em>My materials</em> is your own shelf. <a href="find-a-material.html">Find-a-Material</a>.</li>
     <li><strong>The clinic</strong> is the house's own surface, on its own screen and now carrying two tabs:
       <strong>Stock</strong> and <strong>Recipes</strong>. On the house's shelf — the gloves and the anaesthetic that belong
-      to no single doctor — you may look, and you may draw from it freely: <strong>no permission is ever
-      asked of a doctor at the chair</strong>. The owner may close a shelf of it to the doctors he names
-      (<a href="choose-who-uses-each-shelf.html">Choose-Who-Uses-Each-Shelf</a>); if a material from a closed shelf finds its way onto your
-      recipe, the save is refused — in the composer, never at the chair. What is never open to you
-      is another doctor's own materials (<a href="use-the-clinics-stock-tab.html">Use-the-Clinics-Stock-Tab</a>).</li>
+    to no single doctor — you may look, and you may draw from it freely: <strong>no permission is ever
+    asked of a doctor at the chair</strong>. The owner may close a shelf of it to the doctors he names
+    (<a href="choose-who-uses-each-shelf.html">Choose-Who-Uses-Each-Shelf</a>); a closed shelf's materials never turn up in your recipe
+    builder's search at all, and the rare material whose shelf was closed after you chose it is
+    refused at the save — in the composer, never at the chair. What is never open to you
+    is another doctor's own materials (<a href="use-the-clinics-stock-tab.html">Use-the-Clinics-Stock-Tab</a>).</li>
     </ul>
     <p>Every doctor may keep the clinic's supplier list — add, correct, archive and merge
     (<a href="add-a-supplier.html">Add-a-Supplier</a>, <a href="merge-two-suppliers.html">Merge-Two-Suppliers</a>) — and every doctor may add materials: his own on
