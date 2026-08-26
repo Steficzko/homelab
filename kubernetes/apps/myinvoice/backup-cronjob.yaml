@@ -64,7 +64,7 @@ spec:
                 - { name: tools, mountPath: /tools }
           containers:
             - name: dump
-              image: mariadb:11.4
+              image: mariadb:11.8
               envFrom:
                 - secretRef: { name: backup-s3-secret }   # AWS_ACCESS_KEY_ID / AWS_SECRET_ACCESS_KEY / AWS_ENDPOINTS
               env:
