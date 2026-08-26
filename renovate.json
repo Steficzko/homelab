@@ -17,15 +17,75 @@
   "kubernetes": {
     "fileMatch": ["kubernetes/.+\\.yaml$"]
   },
+  "customManagers": [
+    {
+      "description": "Longhorn is installed with kubectl apply, not Helm or ArgoCD, so no standard manager can see it. Track the version pinned in its README instead — this is the only reason it sat 5 minor versions behind.",
+      "customType": "regex",
+      "fileMatch": ["^kubernetes/infrastructure/longhorn/README\\.md$"],
+      "matchStrings": ["longhorn/longhorn/(?<currentValue>v[0-9]+\\.[0-9]+\\.[0-9]+)/deploy/longhorn\\.yaml"],
+      "datasourceTemplate": "github-releases",
+      "depNameTemplate": "longhorn/longhorn"
+    }
+  ],
   "packageRules": [
     {
+      "description": "Majors stay off — they need reading, not a PR queue.",
       "matchManagers": ["kubernetes", "helm-values"],
       "matchUpdateTypes": ["major"],
       "enabled": false
     },
     {
+      "description": "DEFAULT: digest and patch bumps auto-merge. These are the redis/ollama-style updates that drown the important PRs.",
+      "matchUpdateTypes": ["digest", "patch"],
+      "automerge": true,
+      "automergeType": "pr",
+      "platformAutomerge": true
+    },
+    {
+      "description": "Infrastructure NEVER auto-merges — a bad cert-manager or ingress bump locks you out of everything downstream, and ArgoCD auto-syncs whatever lands on main.",
+      "matchPackageNames": [
+        "/cert-manager/",
+        "/kube-vip/",
+        "/longhorn/",
+        "/argo-cd/",
+        "/argocd/",
+        "/ingress-nginx/",
+        "/cloudflared/",
+        "/velero/",
+        "/kube-prometheus-stack/",
+        "/loki/",
+        "/promtail/",
+        "/descheduler/"
+      ],
+      "automerge": false,
+      "groupName": "infrastructure (manual review)"
+    },
+    {
+      "description": "Data stores never auto-merge — any image bump restarts the pod, and a restart mid-backup silently produces empty dumps (see the netpol pod-admission lag).",
+      "matchPackageNames": [
+        "/postgres/",
+        "/mariadb/",
+        "/mysql/",
+        "/redis/",
+        "/mongo/",
+        "/minio/"
+      ],
+      "automerge": false,
+      "groupName": "databases (manual review)"
+    },
+    {
+      "description": "Vaultwarden is manual: it holds every credential plus the SOPS break-glass key. An unattended restart that goes wrong locks you out of the recovery path itself.",
+      "matchPackageNames": ["/vaultwarden/"],
+      "automerge": false
+    },
+    {
       "matchPackageNames": ["cloudflare/cloudflared"],
       "automerge": false
+    },
+    {
+      "description": "Everything else that still needs eyes gets grouped into one PR per weekend instead of a dozen.",
+      "matchUpdateTypes": ["minor"],
+      "groupName": "app minor updates"
     }
   ]
 }
