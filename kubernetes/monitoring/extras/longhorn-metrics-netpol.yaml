@@ -1,0 +1,25 @@
+# Longhorn v1.12's manifest ships NetworkPolicies that admit only Longhorn's own
+# components — which silently locked Prometheus out of manager :9500 the moment
+# the 1.12.1 rung applied (TargetDown on all 5 longhorn-backend targets).
+# NetworkPolicies are additive, so this grants monitoring -> manager metrics
+# without touching the upstream policy (which future longhorn.yaml applies
+# would overwrite anyway). Lives in extras/ so ArgoCD owns it.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: longhorn-manager-metrics-from-monitoring
+  namespace: longhorn-system
+spec:
+  podSelector:
+    matchLabels:
+      app: longhorn-manager
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: monitoring
+      ports:
+        - port: 9500
+          protocol: TCP
