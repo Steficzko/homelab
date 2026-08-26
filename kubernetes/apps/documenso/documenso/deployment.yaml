@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - name: documenso
-          image: documenso/documenso:v2.14.0@sha256:f1043654ffd88edffa6ba5b2bbda2897723fc5e9ae06f56c1fe514ee2b567f05
+          image: documenso/documenso:v2.17.0@sha256:1377ba20181d4d029e768b7b7615e4e49c39450a85588a525e78dc586dd2569c
           envFrom:
             - secretRef:
                 name: documenso-secret

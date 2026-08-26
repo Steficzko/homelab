@@ -17,7 +17,7 @@ spec:
       path: kubernetes/apps/headlamp
     - repoURL: https://kubernetes-sigs.github.io/headlamp/
       chart: headlamp
-      targetRevision: 0.43.0
+      targetRevision: 0.45.0
       helm:
         releaseName: headlamp
         valuesObject:

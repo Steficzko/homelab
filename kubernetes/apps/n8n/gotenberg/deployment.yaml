@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - name: gotenberg
-          image: gotenberg/gotenberg:8.34
+          image: gotenberg/gotenberg:8.36
           args:
             - gotenberg
             - --api-timeout=30s

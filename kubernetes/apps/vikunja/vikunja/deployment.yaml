@@ -19,7 +19,7 @@ spec:
         fsGroup: 1000
       containers:
         - name: vikunja
-          image: vikunja/vikunja:2.3.0
+          image: vikunja/vikunja:2.5.0
           envFrom:
             - secretRef:
                 name: vikunja-secret        # VIKUNJA_SERVICE_JWTSECRET
