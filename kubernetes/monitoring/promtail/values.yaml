@@ -1,3 +1,39 @@
+# Both Unraid boxes ship their syslog here instead of only mirroring to their USB
+# flash. Rationale: Unraid's root is a RAM disk, so its own logs die with the box —
+# after Greece's unclean shutdown on 2026-08-26 there was nothing left to read. The
+# flash mirror (/boot/logs/syslog) is kept as a fallback for whatever never makes it
+# over the wire; Loki is the durable, off-box copy.
+#
+# NOTE: promtail's syslog receiver accepts RFC5424 ONLY. rsyslog defaults to RFC3164,
+# so both NAS boxes must send with ;RSYSLOG_SyslogProtocol23Format and octet-counted
+# framing @@(o) — see /boot/config/rsyslog.d/50-loki.conf on each.
 config:
   clients:
     - url: http://loki.monitoring.svc.cluster.local:3100/loki/api/v1/push
+  snippets:
+    extraScrapeConfigs: |
+      - job_name: syslog
+        syslog:
+          listen_address: 0.0.0.0:1514
+          listen_protocol: tcp
+          idle_timeout: 60s
+          labels:
+            job: syslog
+        relabel_configs:
+          - source_labels: ['__syslog_message_hostname']
+            target_label: host
+          - source_labels: ['__syslog_message_severity']
+            target_label: severity
+          - source_labels: ['__syslog_message_app_name']
+            target_label: app
+
+# klipper-lb publishes this on every node IP, so both Unraids can reach it on the LAN
+# and Greece can reach it over the tailnet.
+extraPorts:
+  syslog:
+    name: syslog
+    containerPort: 1514
+    protocol: TCP
+    service:
+      type: LoadBalancer
+      port: 1514
