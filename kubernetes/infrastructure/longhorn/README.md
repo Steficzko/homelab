@@ -1,11 +1,11 @@
-# Longhorn v1.7.0
+# Longhorn v1.12.1
 
 ## Install method: kubectl apply (NOT helm)
 
 Longhorn ships a single all-in-one manifest. It was applied directly — no Helm release, no release secret, no `helm upgrade` lifecycle.
 
 ```bash
-kubectl apply -f https://raw.githubusercontent.com/longhorn/longhorn/v1.7.0/deploy/longhorn.yaml
+kubectl apply -f https://raw.githubusercontent.com/longhorn/longhorn/v1.12.1/deploy/longhorn.yaml
 ```
 
 After the base install, apply custom settings:
