@@ -56,5 +56,7 @@ spec:
             cidr: 192.168.1.226/32   # LXC 112 whisper-gpu
         - ipBlock:
             cidr: 192.168.1.227/32   # LXC 113 DrGemma
+        - ipBlock:
+            cidr: 192.168.1.191/32   # dev-seat (Debian dev VM)
       ports:
         - port: 1514
