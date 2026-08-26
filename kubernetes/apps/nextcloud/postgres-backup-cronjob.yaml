@@ -73,7 +73,10 @@ spec:
                   pg_dump -h "$PGHOST" -U "$POSTGRES_USER" -d "$POSTGRES_DB" -Fc -Z6 -f "/work/${FILE}"
                   echo "==> Uploading ${FILE} ..."
                   /tools/mc alias set s3 "$AWS_ENDPOINTS" "$AWS_ACCESS_KEY_ID" "$AWS_SECRET_ACCESS_KEY"
-                  /tools/mc mb --ignore-existing "s3/${BUCKET}"
+                  # ponytail-free note: the scoped policy has no CreateBucket/HeadBucket —
+                  # deliberate least-privilege. app-backups always exists (other jobs make it),
+                  # so a denied existence check must not fail the run.
+                  /tools/mc mb --ignore-existing "s3/${BUCKET}" 2>/dev/null || true
                   /tools/mc cp "/work/${FILE}" "s3/${BUCKET}/${PREFIX}/${FILE}"
                   echo "==> Pruning > ${RETENTION} old ..."
                   /tools/mc rm --recursive --force --older-than "$RETENTION" "s3/${BUCKET}/${PREFIX}/" || true
