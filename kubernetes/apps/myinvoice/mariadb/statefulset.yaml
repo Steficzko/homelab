@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: mariadb
-          image: mariadb:11.4
+          image: mariadb:11.8
           # Upstream compose tuning: performance_schema off saves ~100-200Mi RSS,
           # smaller redo log saves ~50Mi on disk. MariaDB re-sizes the redo log
           # safely on a clean shutdown, so this is not a one-way door.
