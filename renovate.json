@@ -115,6 +115,14 @@
         "cloudflare/cloudflared"
       ],
       "automerge": false
+    },
+    {
+      "description": "Longhorn gets its OWN PR, never mixed into the infrastructure group: merging its bump only edits the README pin \u2014 the actual upgrade is a manual, sequential-minor kubectl apply. A grouped merge would make the README lie about what is deployed.",
+      "matchPackageNames": [
+        "longhorn/longhorn"
+      ],
+      "groupName": "longhorn (docs pin \u2014 upgrade is manual)",
+      "automerge": false
     }
   ]
 }
