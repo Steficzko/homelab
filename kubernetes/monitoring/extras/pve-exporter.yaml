@@ -88,5 +88,7 @@ spec:
       params:
         target: ["192.168.1.122"]    # the exporter proxies to this PVE host
       relabelings:
-        - targetLabel: instance
+        # action: replace is defaulted by the operator; declaring it keeps ArgoCD in sync
+        - action: replace
+          targetLabel: instance
           replacement: pve
