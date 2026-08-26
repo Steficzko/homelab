@@ -4,7 +4,7 @@ metadata:
   name: wallabag-data-pvc
   namespace: wallabag
   labels:
-    recurring-job-group.longhorn.io/daily-backup: enabled
+    recurring-job.longhorn.io/daily-backup: enabled
 spec:
   accessModes:
     - ReadWriteOnce
