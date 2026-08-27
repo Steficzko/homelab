@@ -22,7 +22,7 @@ spec:
         releaseName: headlamp
         valuesObject:
           config:
-            unsafeUseServiceAccountToken: true
+            unsafeUseServiceAccountToken: false
           serviceAccount:
             create: true
           clusterRoleBinding:
