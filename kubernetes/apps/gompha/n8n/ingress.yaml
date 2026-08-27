@@ -8,6 +8,14 @@ metadata:
   namespace: gompha
   annotations:
     nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    # gompha.com is in a separate CF account with no CF Access available to us, so the
+    # editor/login/REST surface is gated with edge basic-auth instead (July pentest HIGH:
+    # the whole n8n was internet-facing with a brute-forceable /rest/login). The instance
+    # has ZERO active workflows/webhooks today, so gating the whole host breaks nothing.
+    # When public webhooks are needed, add a SECOND ingress scoped to /webhook* WITHOUT auth.
+    nginx.ingress.kubernetes.io/auth-type: basic
+    nginx.ingress.kubernetes.io/auth-secret: n8n-basicauth
+    nginx.ingress.kubernetes.io/auth-realm: "gompha automation"
     nginx.ingress.kubernetes.io/proxy-body-size: "0"
     nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
     nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
