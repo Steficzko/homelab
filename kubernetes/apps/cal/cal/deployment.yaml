@@ -1,0 +1,54 @@
+# Cal.com self-hosted (the "cal DIY" booking backend for kostikidis.net/consulting).
+# The official image bakes NEXT_PUBLIC_* at build time but ships a startup script
+# that rewrites the baked placeholder to the runtime NEXT_PUBLIC_WEBAPP_URL — so the
+# prebuilt image works as long as that env var is set here.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cal
+  namespace: cal
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: cal
+  template:
+    metadata:
+      labels:
+        app: cal
+    spec:
+      containers:
+        - name: cal
+          image: calcom/cal.com:v6.2.0
+          envFrom:
+            - secretRef:
+                name: cal-secret
+          env:
+            - { name: NEXT_PUBLIC_WEBAPP_URL, value: "https://cal.kostikidis.net" }
+            - { name: NEXTAUTH_URL, value: "https://cal.kostikidis.net" }
+            - { name: NEXT_PUBLIC_LICENSE_CONSENT, value: "agree" }
+            - { name: CALCOM_TELEMETRY_DISABLED, value: "1" }
+            - { name: EMAIL_FROM, value: "kostikidis.network@gmail.com" }
+            - { name: EMAIL_SERVER_HOST, value: "smtp.gmail.com" }
+            - { name: EMAIL_SERVER_PORT, value: "587" }
+            - { name: EMAIL_SERVER_USER, value: "kostikidis.network@gmail.com" }
+          ports:
+            - containerPort: 3000
+          # cold start runs prisma migrations + placeholder rewrite — give it room
+          startupProbe:
+            httpGet: { path: /auth/login, port: 3000 }
+            failureThreshold: 60
+            periodSeconds: 10
+          readinessProbe:
+            httpGet: { path: /auth/login, port: 3000 }
+            periodSeconds: 15
+            timeoutSeconds: 5
+          livenessProbe:
+            tcpSocket: { port: 3000 }
+            periodSeconds: 30
+            failureThreshold: 5
+          resources:
+            requests: { memory: 1Gi, cpu: "200m" }
+            limits: { memory: 2Gi }

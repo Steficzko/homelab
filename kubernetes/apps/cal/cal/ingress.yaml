@@ -1,0 +1,27 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: cal
+  namespace: cal
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    # booking pages are meant to be shared privately, not crawled
+    nginx.ingress.kubernetes.io/configuration-snippet: |
+      more_set_headers "X-Robots-Tag: noindex, nofollow";
+spec:
+  ingressClassName: nginx
+  tls:
+    - hosts: [cal.kostikidis.net]
+      secretName: cal-tls
+  rules:
+    - host: cal.kostikidis.net
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: cal
+                port:
+                  number: 3000
