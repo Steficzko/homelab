@@ -1,0 +1,20 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: penpot-app-ingress
+  namespace: penpot
+spec:
+  # All penpot pods (mcp/backend/frontend/exporter/postgres/redis) accept ingress
+  # ONLY from same-namespace pods or ingress-nginx. Closes cluster-wide lateral
+  # reach to penpot-mcp:4401, which reads every design with no Penpot login.
+  # Public access via designmcp.kostikidis.net is unaffected (enters through
+  # ingress-nginx and stays CF-Access-gated). postgres/redis already restrict to
+  # same-namespace via their own netpols; this is additive.
+  podSelector: {}
+  policyTypes: [Ingress]
+  ingress:
+    - from:
+        - podSelector: {}                      # penpot <-> penpot
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: ingress-nginx   # CF-gated public entry
