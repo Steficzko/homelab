@@ -155,6 +155,18 @@ data:
           icon: sh-longhorn
           href: https://grafana.kostikidis.net
           description: Distributed block storage
+      - Headlamp:
+          icon: sh-headlamp
+          href: https://k8s.kostikidis.net
+          description: Kubernetes UI
+      - xyOps Prague:
+          icon: mdi-calendar-clock
+          href: http://100.82.66.30:5522
+          description: Job scheduler · 11 servers
+      - xyOps Greece:
+          icon: mdi-calendar-clock
+          href: http://100.85.129.88:5522
+          description: Ops · DR + martunia
 
     - Family Photos:
       - Immich Stefanos:
