@@ -31,7 +31,7 @@ spec:
             - { name: VIKUNJA_SERVICE_TIMEZONE, value: "Europe/Athens" }
             # behind Cloudflare Access — registration open so you/family can sign up
             # past the Access login; flip to "false" once accounts exist.
-            - { name: VIKUNJA_SERVICE_ENABLEREGISTRATION, value: "true" }
+            - { name: VIKUNJA_SERVICE_ENABLEREGISTRATION, value: "false" }   # account exists; block new signups (defense-in-depth behind CF Access)
           ports:
             - containerPort: 3456
           readinessProbe:
