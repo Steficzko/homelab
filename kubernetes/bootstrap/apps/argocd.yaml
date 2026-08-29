@@ -1,0 +1,51 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: argocd
+  namespace: argocd
+spec:
+  project: default
+  # ArgoCD managing ArgoCD. Until 2026-08-29 this was the one thing GitOps did not
+  # cover: everything ArgoCD deploys lived in git, but ArgoCD itself was applied by
+  # hand from upstream install.yaml. Any change to it — the controller's node
+  # affinity, for instance — survived only in the cluster and would vanish on the
+  # next reinstall with no signal that it had.
+  #
+  # The base is the upstream manifest pinned to the exact running version, so the
+  # first sync is a no-op instead of ArgoCD rewriting its own deployment mid-flight.
+  source:
+    repoURL: https://github.com/Steficzko/homelab.git
+    targetRevision: HEAD
+    path: kubernetes/bootstrap/argocd
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: argocd
+  ignoreDifferences:
+    # The controller writes its own live state into these; they are not ours to own.
+    - group: apps
+      kind: StatefulSet
+      name: argocd-application-controller
+      jsonPointers:
+        - /spec/replicas
+    - group: apiextensions.k8s.io
+      kind: CustomResourceDefinition
+      jsonPointers:
+        - /status
+  syncPolicy:
+    automated:
+      # PRUNE IS DELIBERATELY OFF. Everywhere else in this repo prune is on, but a
+      # self-managing app that prunes can delete its own controller, its CRDs, and
+      # with them every other Application — and it cannot recover itself afterwards.
+      # Removing an ArgoCD component is rare and deserves a deliberate manual step.
+      prune: false
+      # On: this is what makes the node affinity durable. A hand-patch that drifts
+      # from git gets reverted, which is the whole point of bringing this into git.
+      selfHeal: true
+    syncOptions:
+      # install.yaml's CRDs exceed the last-applied-configuration annotation limit;
+      # client-side apply fails on them. (Same fix as the Gompha FOG Q-OPS1 issue.)
+      - ServerSideApply=true
+      - CreateNamespace=false
+  # If ArgoCD ever wedges itself, it cannot fix itself. Recover by hand:
+  #   kubectl apply -n argocd -f \
+  #     https://raw.githubusercontent.com/argoproj/argo-cd/v3.4.2/manifests/install.yaml

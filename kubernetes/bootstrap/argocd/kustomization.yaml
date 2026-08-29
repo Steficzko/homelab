@@ -1,0 +1,49 @@
+# ArgoCD managing itself. The base is the UPSTREAM install manifest pinned to the
+# exact version already running, so the first sync is a no-op rather than ArgoCD
+# rewriting its own deployment while it runs.
+#
+# Bump procedure: change the tag below, let ArgoCD sync, verify it comes back.
+# If a bad version ever wedges the controller, ArgoCD cannot fix ArgoCD — recover
+# by applying the upstream manifest for a known-good tag by hand:
+#   kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/<tag>/manifests/install.yaml
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: argocd
+
+resources:
+  - https://raw.githubusercontent.com/argoproj/argo-cd/v3.4.2/manifests/install.yaml
+
+patches:
+  # Keep the application controller off the control-plane/etcd nodes. It is the
+  # single largest movable pod in the cluster (~1.35Gi) and it was living on r1,
+  # an etcd member, which sat at 85% memory until 2026-08-29. Preferred, not
+  # required: if the workers are gone it may still schedule anywhere.
+  # Was applied as a live kubectl patch; this is that change made durable.
+  - target:
+      kind: StatefulSet
+      name: argocd-application-controller
+    patch: |-
+      - op: add
+        path: /spec/template/spec/affinity
+        value:
+          nodeAffinity:
+            preferredDuringSchedulingIgnoredDuringExecution:
+              - weight: 100
+                preference:
+                  matchExpressions:
+                    - key: node-role.kubernetes.io/control-plane
+                      operator: DoesNotExist
+          podAntiAffinity:
+            preferredDuringSchedulingIgnoredDuringExecution:
+              - weight: 100
+                podAffinityTerm:
+                  labelSelector:
+                    matchLabels:
+                      app.kubernetes.io/name: argocd-application-controller
+                  topologyKey: kubernetes.io/hostname
+              - weight: 5
+                podAffinityTerm:
+                  labelSelector:
+                    matchLabels:
+                      app.kubernetes.io/part-of: argocd
+                  topologyKey: kubernetes.io/hostname
