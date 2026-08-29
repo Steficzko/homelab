@@ -41,6 +41,34 @@ spec:
                   valueFrom: { secretKeyRef: { name: kuma-push, key: GOMPHA_CLINIC } }
                 - name: PUSH_NEXTCLOUD
                   valueFrom: { secretKeyRef: { name: kuma-push, key: NEXTCLOUD } }
+                # 2026-08-29: 11 of 16 backup jobs had no watch at all. vaultwarden was the
+                # worst of them — it holds every credential, every SSH key and the age key
+                # that decrypts this repo's SOPS secrets, and nothing would have told us if
+                # it started shipping empty archives.
+                - name: PUSH_VAULTWARDEN
+                  valueFrom: { secretKeyRef: { name: kuma-push, key: VAULTWARDEN } }
+                - name: PUSH_PLANE
+                  valueFrom: { secretKeyRef: { name: kuma-push, key: PLANE } }
+                - name: PUSH_BJJ
+                  valueFrom: { secretKeyRef: { name: kuma-push, key: BJJ } }
+                - name: PUSH_N8N
+                  valueFrom: { secretKeyRef: { name: kuma-push, key: N8N } }
+                - name: PUSH_CAL
+                  valueFrom: { secretKeyRef: { name: kuma-push, key: CAL } }
+                - name: PUSH_MYINVOICE
+                  valueFrom: { secretKeyRef: { name: kuma-push, key: MYINVOICE } }
+                - name: PUSH_NAMOSOCKS_DB
+                  valueFrom: { secretKeyRef: { name: kuma-push, key: NAMOSOCKS_DB } }
+                - name: PUSH_NAMOSOCKS_WP
+                  valueFrom: { secretKeyRef: { name: kuma-push, key: NAMOSOCKS_WP } }
+                - name: PUSH_NAMO_N8N
+                  valueFrom: { secretKeyRef: { name: kuma-push, key: NAMO_N8N } }
+                - name: PUSH_NAMO_WAREHOUSE
+                  valueFrom: { secretKeyRef: { name: kuma-push, key: NAMO_WAREHOUSE } }
+                - name: PUSH_BLANCA_DB
+                  valueFrom: { secretKeyRef: { name: kuma-push, key: BLANCA_DB } }
+                - name: PUSH_BLANCA_WP
+                  valueFrom: { secretKeyRef: { name: kuma-push, key: BLANCA_WP } }
               command: ["/bin/sh", "-c"]
               args:
                 - |
@@ -74,3 +102,21 @@ spec:
                   # so MAX_AGE is 26h. Real dumps are ~950 KB; 400000 min catches the
                   # empty-dump failure mode without tripping on normal size drift.
                   check nextcloud   "src/app-backups/nextcloud-postgres/"  400000 93600 "$PUSH_NEXTCLOUD"
+
+                  # --- added 2026-08-29 -------------------------------------------------
+                  # MIN_BYTES is roughly half the observed healthy size: high enough to catch
+                  # the empty/truncated-dump failure mode, low enough to survive normal drift.
+                  # MAX_AGE is 90 min for hourly jobs, 26 h for daily ones (same convention
+                  # as nextcloud above). Sizes observed 2026-08-29 are noted per line.
+                  check vaultwarden "src/app-backups/vaultwarden/"        300000 93600 "$PUSH_VAULTWARDEN"   # ~590 KB daily 03:15
+                  check plane       "src/app-backups/plane-postgres/"    1000000  5400 "$PUSH_PLANE"         # ~3.7 MB hourly
+                  check bjj         "src/app-backups/bjj-postgres/"       200000  5400 "$PUSH_BJJ"           # ~466 KB hourly
+                  check n8n         "src/app-backups/n8n/"                200000  5400 "$PUSH_N8N"           # ~512 KB hourly
+                  check cal         "src/app-backups/cal-postgres/"       300000 93600 "$PUSH_CAL"           # ~581 KB daily 01:45
+                  check myinvoice   "src/myinvoice-backups/daily/db/"      15000 93600 "$PUSH_MYINVOICE"     # ~33 KB daily 03:45
+                  check namosocks-db "src/namosocks-backups/db/"          600000 93600 "$PUSH_NAMOSOCKS_DB"  # ~1.3 MB daily 03:00
+                  check namosocks-wp "src/namosocks-backups/wp-content/" 50000000 93600 "$PUSH_NAMOSOCKS_WP" # ~118 MB daily 03:00
+                  check namo-n8n    "src/namosocks-backups/n8n/"            7000 93600 "$PUSH_NAMO_N8N"      # ~15 KB daily 03:45
+                  check namo-wh     "src/namosocks-backups/warehouse/"      1500 93600 "$PUSH_NAMO_WAREHOUSE" # ~3.3 KB daily 03:30
+                  check blanca-db   "src/blanca-web-backups/db/"           400000 93600 "$PUSH_BLANCA_DB"    # ~885 KB daily 03:30
+                  check blanca-wp   "src/blanca-web-backups/wp-content/" 50000000 93600 "$PUSH_BLANCA_WP"    # ~126 MB daily 03:30
