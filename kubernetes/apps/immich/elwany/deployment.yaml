@@ -15,6 +15,14 @@ spec:
       labels:
         app: immich-elwany
     spec:
+      affinity:                              # ADR-030 pattern: prefer workers (non-control-plane), soft fallback
+        nodeAffinity:                        # 2026-08-29: ~1Gi each; all four Immich instances were on control planes
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              preference:
+                matchExpressions:
+                  - key: node-role.kubernetes.io/control-plane
+                    operator: DoesNotExist
       initContainers:
         - name: wait-for-redis
           image: busybox:1.38

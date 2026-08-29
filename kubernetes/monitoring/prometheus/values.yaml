@@ -21,6 +21,19 @@ kubeEtcd:
   enabled: false
 
 grafana:
+  # ADR-030 pattern: prefer workers (non-control-plane), soft fallback.
+  # 2026-08-29: b3 was at 77% memory with only one volume-free pod to move, so
+  # grafana comes too. It holds a 5Gi RWO Longhorn volume, meaning the move is a
+  # detach/reattach rather than a plain restart — dashboards blink for ~a minute.
+  # deploymentStrategy Recreate below already prevents two pods contending for it.
+  affinity:
+    nodeAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+        - weight: 100
+          preference:
+            matchExpressions:
+              - key: node-role.kubernetes.io/control-plane
+                operator: DoesNotExist
   deploymentStrategy:
     type: Recreate
   additionalDataSources:
