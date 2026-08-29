@@ -53,8 +53,15 @@ spec:
             failureThreshold: 5
           resources:
             requests:
-              memory: 4Gi
-              cpu: "2"
+              memory: 4Gi        # sized for large-v3 loaded in RAM, not for idle
+              # 2026-08-29: was cpu "2". A request is a floor RESERVATION, and this
+              # pod idles at ~7m — so it held a third of the worker permanently.
+              # Combined with ollama on w2 that put both workers at 75% CPU requested
+              # (actual: 9-11%), which made them ineligible as descheduler
+              # destinations ("no node is underutilized") and pushed new pods onto
+              # the control planes until r1 hit 85% memory. CPU is compressible:
+              # a low request still bursts freely up to the limit.
+              cpu: 250m
             limits:
               memory: 6Gi
           volumeMounts:

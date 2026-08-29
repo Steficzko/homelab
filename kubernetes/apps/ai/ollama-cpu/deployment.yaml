@@ -47,8 +47,11 @@ spec:
             failureThreshold: 5
           resources:
             requests:
-              memory: 4Gi
-              cpu: "2"
+              memory: 4Gi        # sized for a loaded model (chat-fallback), not for idle
+              # 2026-08-29: was cpu "2" — see the note in whisper-cpu. This pod idles
+              # at ~1m CPU while reserving two cores. The limit below still allows
+              # four cores when a fallback inference actually runs.
+              cpu: 250m
             limits:
               memory: 12Gi
               cpu: "4"

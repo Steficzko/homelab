@@ -15,6 +15,14 @@ spec:
       labels:
         app: immich-lightroom
     spec:
+      affinity:                              # ADR-030 pattern: prefer workers (non-control-plane), soft fallback
+        nodeAffinity:                        # 2026-08-29: this pod is ~1.2Gi and sat on r1 (etcd) at 85% memory
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              preference:
+                matchExpressions:
+                  - key: node-role.kubernetes.io/control-plane
+                    operator: DoesNotExist
       containers:
         - name: immich-server
           image: ghcr.io/immich-app/immich-server:v3.1.0@sha256:b434cb9287eea1471c9974845914d4dd328c9c2d652e446ed4930f99944f0ceb
