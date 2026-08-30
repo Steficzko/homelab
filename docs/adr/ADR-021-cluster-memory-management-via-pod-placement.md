@@ -1,6 +1,8 @@
 # ADR-021 — Cluster Memory Management via Pod Placement Instead of Hardware Upgrade
 
-**Status:** Accepted — **pod-pins partially superseded by ADR-030 (verified 2026-06-27).** The specific pins below (`immich-lightroom`→`r1`, `immich-ml`→`r1`) are **no longer implemented**: live, `immich-lightroom` runs on `w1` and `immich-ml` on `b3`, both with **no `nodeSelector`** — placement is now steered by ADR-030's soft taint, not these pins. The memory-management *principle* stands; the `r1` pins do not.
+**Status:** Accepted — **pod-pins superseded by ADR-030, and the steering mechanism superseded again by ADR-035 (verified 2026-08-30).** The specific pins below (`immich-lightroom`→`r1`, `immich-ml`→`r1`) are **no longer implemented** and neither pod carries a `nodeSelector`. The memory-management *principle* stands; the `r1` pins do not.
+
+> **Correction, 2026-08-30.** This header previously read "placement is now steered by ADR-030's soft taint". That taint (`node-role.kubernetes.io/control-plane:PreferNoSchedule`) was **removed on 2026-08-20** and no ADR recorded it. For ten days this document delegated pod-placement authority to a mechanism that did not exist, which meant placement was governed by no accepted decision at all — and the measured result was the three etcd members carrying 156 pods at 76–85% memory while the two workers sat at 38–42%. Placement is now governed by **resource requests and explicit preferred affinity** — see **ADR-035**. Live placement today: `immich-lightroom` on `w2`, `immich-ml` on `w1`, both by affinity rather than by pin or taint.
 **Date:** 2026-06-04
 
 ## Context

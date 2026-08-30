@@ -4,7 +4,7 @@
 **Date:** 2026-06-27
 
 > This amends ADR-030 (Dedicated Worker Nodes: Topology Split). It does **not** reverse the
-> topology split — control-plane/worker separation, agents-not-members, and the soft taint all
+> topology split — control-plane/worker separation, agents-not-members, and ~~the soft taint~~ (removed 2026-08-20, see ADR-035) all
 > stand. It corrects a load-bearing hardware assumption (workers are 16 GiB, not 32 GiB),
 > downgrades tier-A placement from required to preferred, and records the Longhorn rebalance as
 > **executed** (2026-06-27) — including that the originally-planned mechanism turned out to be a
@@ -34,7 +34,7 @@ Workers are 16 GiB each, not 32 GiB. ADR-030's single-worker-failover survivabil
 **withdrawn**. It is no longer a design property; it is an explicitly-unsupported state.
 
 At 16 GiB (~14 GiB usable), one worker cannot hold the ~18 GiB app working-set. So if a worker is
-lost, the only thing keeping workloads scheduled is the soft-taint overflow back onto the
+lost, the only thing keeping workloads scheduled is ~~the soft-taint overflow~~ **the `preferred` (not `required`) affinity falling back** onto the
 control-plane nodes — and that **re-introduces the exact pressure on etcd members the topology
 split existed to remove.** Stated plainly: a worker failure trades the survivability guarantee for
 a temporary return to the pre-ADR-030 problem (app spikes landing on quorum members) until the
@@ -49,7 +49,7 @@ majority of the time. It removes a false claim about the **degraded** state.
 
 ADR-030 §3 hard-pins tier-A (`immich-ml`, whisper CPU fallback) to workers with **required**
 affinity. With a single 16 GiB worker that recreates a SPOF: if the one worker is full or down,
-tier-A pods go `Pending` with no control-plane fallback — the precise cliff the soft taint was
+tier-A pods go `Pending` with no control-plane fallback — the precise cliff the ~~soft taint~~ *(now: `preferred` affinity, ADR-035)* was
 chosen to avoid elsewhere.
 
 **Tier-A is amended from required to preferred worker affinity.** This keeps the scheduling
@@ -64,12 +64,11 @@ the `Pending`-on-failure cliff. Restore required affinity only once **both** con
 With condition 1 met, restoring required affinity is now gated only on the requests-honesty
 validation. Until that is done, tier-A stays preferred, matching tier-B.
 
-> **Reality check (2026-06-27):** the `preferred` affinity described here is **not yet in the
-> manifests** — `immich-ml`, `whisper`, `litellm`, and `ollama` have empty
-> `affinity`/`nodeSelector`/`tolerations`, so placement is soft-taint-only and `immich-ml` is
-> currently on `b3` (an etcd node). This section describes the **intended** placement, not deployed
-> state. Open action: add the `preferred` worker affinity to those four deploys, or accept
-> soft-taint-only steering and drop the affinity language.
+> **Reality check (2026-06-27) — RESOLVED, corrected 2026-08-30.** This said the `preferred`
+> affinity was "not yet in the manifests". It has since been applied to all four deployments,
+> each citing ADR-030 by name, and all four pods run on workers. The open action is closed.
+> The soft-taint half of the sentence is also obsolete: that taint was removed 2026-08-20.
+> Placement is now governed by requests and preferred affinity — see **ADR-035**.
 
 ### 3. Longhorn rebalance — EXECUTED 2026-06-27 (planned mechanism was a no-op)
 
@@ -123,7 +122,8 @@ so the apiserver was not listening on the floating VIP. Fixed the same session
 (`--bind-address=0.0.0.0`, hardened into `config.yaml`); the agent was then repointed to the VIP.
 The kube-vip DaemonSet was also pinned to control-plane nodes — it had no `nodeSelector` and
 crashlooped on the worker. The soft taint (`node-role.kubernetes.io/control-plane:PreferNoSchedule`)
-is applied to all three control-plane nodes.
+is applied to all three control-plane nodes. **(Removed 2026-08-20; live state is `TAINTS: <none>`
+on all five nodes. See ADR-035.)**
 
 **W2** joined 2026-06-27, same agent pattern, via the (now-working) VIP `192.168.1.200`. It came up
 on DHCP `.211`/`eno1`, was moved to static `.205`/`eno2`, and both workers carry a MAC→`eno2`
@@ -137,7 +137,7 @@ separately under ADR-021.
 ## Consequences
 
 - **The most honest line in the updated design:** single-worker failover is unsupported, and the
-  fallback (soft-taint overflow to control-plane) reverses the split under failure. This is a
+  fallback (~~soft-taint overflow~~ *preferred-affinity fallback, ADR-035*) to control-plane reverses the split under failure. This is a
   resilience downgrade versus what ADR-030 claimed — but ADR-030's claim rested on RAM that does
   not exist. The amendment trades a comforting fiction for an accurate failure model. With W2 now
   live, real degraded-state survivability returns **only if** tier-A requests prove honest and a

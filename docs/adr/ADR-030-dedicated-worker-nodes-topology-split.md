@@ -34,7 +34,15 @@ Add **two dedicated worker nodes** to the cluster as agents and split the topolo
 
 The two 9500T nodes join as K3s agents. **etcd quorum stays at 3.** The workers are never made control-plane members — adding etcd members on a 1 GbE fabric buys nothing for a 3-member-sufficient quorum and only widens the consensus blast radius.
 
-### 2. Soft taint on the control-plane
+### 2. Soft taint on the control-plane — **REMOVED 2026-08-20, superseded by ADR-035**
+
+> **This mechanism no longer exists.** Live state on every node is `TAINTS: <none>`. It was removed
+> on 2026-08-20 after a failure this ADR did not anticipate: `PreferNoSchedule` turns out to be
+> binary in practice. With `w1` cordoned for maintenance, `w2` was the only untainted node in the
+> cluster and absorbed roughly ninety pods — a mechanism intended to spread load had concentrated
+> it. It was replaced by raising `system-reserved` to 2560Mi on the control planes, and then, when
+> that proved insufficient, by explicit resource requests and preferred affinity. **See ADR-035.**
+> Everything below is retained as the reasoning of the time; it is no longer implemented.
 
 ```yaml
 node-role.kubernetes.io/control-plane:PreferNoSchedule
@@ -48,11 +56,22 @@ node-role.kubernetes.io/control-plane:PreferNoSchedule
 |------|-----------|-----------|
 | A | Contention-heavy AI: whisper CPU fallback, `immich-ml` | **Required** worker affinity |
 | B | Always-up gateways: `litellm`, ingress | **Preferred** worker affinity |
-| C | Everything else | Rides the soft taint (prefers workers, tolerates control-plane) |
+| C | Everything else | ~~Rides the soft taint~~ — left to the scheduler's own scoring (ADR-035; the taint is gone) |
 
-Tier A is hard-pinned to workers because that is the workload whose spikes were threatening etcd members. Tier B prefers workers but must stay schedulable if both workers are down. Tier C is left to the scheduler under the soft-taint gradient.
+Tier A is hard-pinned to workers because that is the workload whose spikes were threatening etcd members. Tier B prefers workers but must stay schedulable if both workers are down. Tier C is left to the scheduler under the soft-taint gradient. **(2026-08-30: there is no gradient — the taint was removed 2026-08-20. Tier C is steered by nothing but `LeastAllocated` scoring, which only works when requests are honest. See ADR-035, which found two workloads over-requesting CPU by 8x and thereby disabling the descheduler entirely.)**
 
-> **Implementation status (2026-06-27):** the per-pod affinity in this table was **never applied to the manifests.** `immich-ml`, `whisper`, `litellm`, and `ollama` all have empty `affinity`/`nodeSelector`/`tolerations` — placement is steered by the **soft taint alone**, and `immich-ml` currently sits on `b3` (an etcd node). The ADR-030-amendment downgraded Tier A from *required* to *preferred*; neither is deployed. The decision is recorded; **implementation is an open item** — add `preferred` worker affinity to those four deploys, or formally accept soft-taint-only steering. See `ADR-030-amendment-16gib-workers` §2.
+> **Implementation status — CORRECTED 2026-08-30.** This note previously read "the per-pod
+> affinity in this table was **never applied to the manifests**". That was true when written on
+> 2026-06-27. **It has not been true for months.** All four tier-A deployments carry the
+> `preferred` anti-control-plane affinity, each citing this ADR by name in a comment
+> (`kubernetes/apps/ai/{litellm,ollama-cpu,whisper-cpu}/deployment.yaml`,
+> `kubernetes/apps/immich/ml/deployment.yaml`), and all four pods run on workers.
+>
+> The note is left visible rather than deleted because the failure it represents is worth keeping:
+> a repo presented as evidence of how its author works spent months telling readers he records
+> decisions and does not implement them, when he had in fact implemented this one. **A stale status
+> note is not neutral — it actively libels the work.** Tier-A affinity was extended to the
+> remaining Immich instances and `grafana` on 2026-08-30; see ADR-035.
 
 ### 4. Longhorn: add the worker NVMe as replica targets
 
@@ -78,7 +97,7 @@ The control-plane nodes stay at 16 GiB; the workers get 32 GiB. The reasoning is
 
 - **This ADR amends ADR-021 and the amendment is load-bearing.** Live state (verified 2026-06-22): **only `immich-lightroom` carries the `r1` pin** (`nodeSelector: kubernetes.io/hostname: k3s-prg-r1`, now a 6 GiB limit) — **`immich-ml` has no nodeSelector** and is already free to ride tier-A affinity to a worker. So the action is narrower than first drafted: **remove `immich-lightroom`'s `r1` `nodeSelector`** so it can follow the soft-taint gradient off the etcd node onto a worker (it is the real 6 GiB pod pinned to a quorum member). Until that pin is lifted, ADR-021 ("stay on `r1`") and this ADR ("move off the control-plane") contradict each other for that pod. **This ADR supersedes the `immich-lightroom` pinning clause of ADR-021.** Update both the manifest and ADR-021 when this lands. **✓ DONE 2026-06-27: the `r1` `nodeSelector` was removed — `immich-lightroom` now runs on `w1` unpinned, and ADR-021's header is annotated as superseded.**
 
-- **Single-worker-failure survivability rests on requests being honest — and ADR-021 documents that they historically were not.** The "~18 GiB of requests fits on one 32 GiB worker, so losing a worker is survivable" claim is only true if requests reflect reality. ADR-021 records the opposite history: a phantom 9.8 GiB Loki cache request, and 12 GiB limits against 2–4 GiB real RSS. If tier-A AI and tier-B gateways converge on the lone surviving worker and one of them spikes (e.g. an `immich-server` instance or `ollama` driving toward its limit), 32 GiB gets tight. The soft-taint overflow to the control-plane is the explicit backstop for this case. Recorded as the assumption it is — not a proven property. Re-validate request accuracy on the workers before relying on single-worker failover.
+- **Single-worker-failure survivability rests on requests being honest — and ADR-021 documents that they historically were not.** The "~18 GiB of requests fits on one 32 GiB worker, so losing a worker is survivable" claim is only true if requests reflect reality. ADR-021 records the opposite history: a phantom 9.8 GiB Loki cache request, and 12 GiB limits against 2–4 GiB real RSS. If tier-A AI and tier-B gateways converge on the lone surviving worker and one of them spikes (e.g. an `immich-server` instance or `ollama` driving toward its limit), 32 GiB gets tight. The soft-taint overflow to the control-plane is the explicit backstop for this case. **(2026-08-30: the backstop is now `preferred` affinity falling back rather than a taint — same property, see ADR-035. The warning in this paragraph proved prescient: ADR-035 found `whisper` and `ollama` each requesting 2 CPU while using 7m and 1m, so request accuracy failed again exactly as predicted here.)** Recorded as the assumption it is — not a proven property. Re-validate request accuracy on the workers before relying on single-worker failover.
 
 - **+20–40 W always-on draw** for two added nodes. Accepted: power is a managed cost (PVE already tuned 230 W → 170 W), and the topology benefit justifies it. The 9500T is a low-TDP T-series part, keeping the addition modest.
 
@@ -90,7 +109,7 @@ The control-plane nodes stay at 16 GiB; the workers get 32 GiB. The reasoning is
 
 **Add 1× M910q i7-7700T worker after upgrading all three nodes to 32 GiB (earlier plan):** This was the prior direction. Superseded by this ADR. It coupled a full per-node RAM upgrade (cost on three boxes) with a single worker (still a SPOF for the worker tier) and a weaker CPU part. Two 32 GiB workers + unchanged 16 GiB control-plane is cheaper on RAM, removes the single-worker SPOF, and keeps the constraint-fixing RAM on the worker tier where it belongs.
 
-**Hard `NoSchedule` taint on the control-plane:** Rejected. With only two workers, a hard taint makes the worker tier a SPOF — losing one worker forces the survivor to carry everything or strands pods as `Pending`. The soft `PreferNoSchedule` taint keeps the control-plane as overflow while still steering normal scheduling onto workers.
+**Hard `NoSchedule` taint on the control-plane:** Rejected. With only two workers, a hard taint makes the worker tier a SPOF — losing one worker forces the survivor to carry everything or strands pods as `Pending`. The soft `PreferNoSchedule` taint keeps the control-plane as overflow while still steering normal scheduling onto workers. **(2026-08-30: the rejection of the hard taint still stands, and ADR-035 rejects `required` affinity for the same reason. The soft taint chosen instead was itself removed on 2026-08-20 — cordoning one worker made the other the sole untainted node and it took ~90 pods. Both taint variants are now rejected; preferred affinity carries the same fallback property without the cliff.)**
 
 **Make the workers control-plane members (5-member etcd):** Rejected. A 3-member quorum is sufficient and healthy. Adding etcd members over 1 GbE adds consensus traffic and widens the failure blast radius for zero availability gain.
 
