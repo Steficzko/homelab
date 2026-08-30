@@ -69,6 +69,8 @@ spec:
                   valueFrom: { secretKeyRef: { name: kuma-push, key: BLANCA_DB } }
                 - name: PUSH_BLANCA_WP
                   valueFrom: { secretKeyRef: { name: kuma-push, key: BLANCA_WP } }
+                - name: HC_WATCHDOG
+                  valueFrom: { secretKeyRef: { name: kuma-push, key: HC_WATCHDOG } }
               command: ["/bin/sh", "-c"]
               args:
                 - |
@@ -120,3 +122,10 @@ spec:
                   check namo-wh     "src/namosocks-backups/warehouse/"      1500 93600 "$PUSH_NAMO_WAREHOUSE" # ~3.3 KB daily 03:30
                   check blanca-db   "src/blanca-web-backups/db/"           400000 93600 "$PUSH_BLANCA_DB"    # ~885 KB daily 03:30
                   check blanca-wp   "src/blanca-web-backups/wp-content/" 50000000 93600 "$PUSH_BLANCA_WP"    # ~126 MB daily 03:30
+
+                  # healthchecks.io: the watchdog reporting that IT is still running.
+                  # Every check above pings Kuma, which lives on the same Unraid box as
+                  # this cluster's alerting -- so if the CronJob stops, all 17 checks go
+                  # quiet and look healthy. This ping is the only thing outside the fleet
+                  # that would notice. Unconditional: it reports liveness, not backup health.
+                  curl -fsS -m 10 --retry 3 "$HC_WATCHDOG" >/dev/null 2>&1 || true
