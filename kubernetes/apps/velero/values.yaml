@@ -44,6 +44,18 @@ schedules:
       includedNamespaces:
         - "*"
       defaultVolumesToFsBackup: false
+      # Velero here captures Kubernetes API objects ONLY — the cluster-rebuild artifact.
+      # Volume DATA is Longhorn's job (block backups to s3://longhornk3s) plus the per-app
+      # logical dumps; Velero has never taken a volume snapshot and is not meant to.
+      #
+      # Explicit false, added 2026-08-30. It was previously unset, which left Velero
+      # attempting a snapshot per PV and emitting
+      #   "No volume ID returned by volume snapshotter for persistent volume"
+      # sixty times a night — one per PV, every run, forever. Nothing was failing, but a
+      # backup that cries wolf 60 times nightly trains you to ignore its warnings, which is
+      # how a real one gets missed. Saying "no" out loud also makes the intent legible to
+      # the next reader, who would otherwise see a half-configured snapshotter.
+      snapshotVolumes: false
       labelSelector:
         matchExpressions:
           - key: "velero.io/exclude-from-backup"
