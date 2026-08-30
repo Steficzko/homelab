@@ -92,6 +92,13 @@ spec:
                   }
                   echo "== backup-watchdog $(date -u +%FT%TZ) =="
                   check dental      "src/clinic-backups/clinic-postgres/" 50000 5400 "$PUSH_DENTAL"
+                  # 100 B looks absurdly low next to every other threshold here, and it is
+                  # deliberate but CONDITIONAL: verified 2026-08-30 that this n8n has zero
+                  # workflows and zero credentials ("No workflows found with specified
+                  # filters"), so its tarball is a legitimate ~574 B empty archive.
+                  # THE MOMENT gompha n8n gets real workflows, RAISE THIS — at 100 B an
+                  # empty export would keep passing and the check would protect nothing,
+                  # which is the exact failure this watchdog exists to catch.
                   check gompha-n8n  "src/app-backups/gompha-n8n/"          100  5400 "$PUSH_GOMPHA_N8N"
                   check replication "dst/clinic-backups/clinic-postgres/" 50000 7200 "$PUSH_REPLICATION"
                   # The REBUILD's database. It had no backup at all until
