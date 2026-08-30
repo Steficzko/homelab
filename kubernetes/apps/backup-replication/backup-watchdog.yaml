@@ -69,6 +69,8 @@ spec:
                   valueFrom: { secretKeyRef: { name: kuma-push, key: BLANCA_DB } }
                 - name: PUSH_BLANCA_WP
                   valueFrom: { secretKeyRef: { name: kuma-push, key: BLANCA_WP } }
+                - name: PUSH_LONGHORN
+                  valueFrom: { secretKeyRef: { name: kuma-push, key: LONGHORN } }
                 - name: HC_WATCHDOG
                   valueFrom: { secretKeyRef: { name: kuma-push, key: HC_WATCHDOG } }
               command: ["/bin/sh", "-c"]
@@ -129,6 +131,29 @@ spec:
                   check namo-wh     "src/namosocks-backups/warehouse/"      1500 93600 "$PUSH_NAMO_WAREHOUSE" # ~3.3 KB daily 03:30
                   check blanca-db   "src/blanca-web-backups/db/"           400000 93600 "$PUSH_BLANCA_DB"    # ~885 KB daily 03:30
                   check blanca-wp   "src/blanca-web-backups/wp-content/" 50000000 93600 "$PUSH_BLANCA_WP"    # ~126 MB daily 03:30
+
+                  # Longhorn's block-level backups — the foundation ADR-011 rests on, and the
+                  # last backup job in the fleet with no watch. It needs its own check function:
+                  # the Longhorn backupstore is a nested tree (backupstore/volumes/<hh>/<hh>/<vol>/)
+                  # so a non-recursive `mc ls` sees directories, not objects. 32 volumes back up
+                  # nightly at 03:00 (64 completed 2026-08-30T01:08-01:09Z); MIN_COUNT 30 is
+                  # ~half of observed, catching "the RecurringJob stopped" and a partial run
+                  # without tripping when some volumes are legitimately detached.
+                  # NOTE the sub() below: MinIO returns fractional seconds (…:22.363Z) and jq's
+                  # fromdateiso8601 CANNOT parse them — it errors and the entry is silently
+                  # dropped. Without the strip this check reported 1 recent object instead of 64.
+                  lhcheck() {
+                    n=$(mc ls --recursive --json "src/longhornk3s/backupstore/" 2>/dev/null \
+                        | jq -r --argjson cutoff "$(( $(date +%s) - $2 ))" \
+                          'select((.lastModified | sub("\\.[0-9]+Z$";"Z") | fromdateiso8601) > $cutoff) | .key' 2>/dev/null | wc -l)
+                    if [ "${n:-0}" -ge "$1" ]; then
+                      curl -fsS --max-time 10 "$3?status=up&msg=longhorn-ok-${n}-objects" >/dev/null 2>&1 \
+                        && echo "  longhorn: UP (${n} backup objects written in window)"
+                    else
+                      echo "  longhorn: UNHEALTHY (only ${n:-0} recent objects) -> withholding ping"
+                    fi
+                  }
+                  lhcheck 30 93600 "$PUSH_LONGHORN"
 
                   # healthchecks.io: the watchdog reporting that IT is still running.
                   # Every check above pings Kuma, which lives on the same Unraid box as
