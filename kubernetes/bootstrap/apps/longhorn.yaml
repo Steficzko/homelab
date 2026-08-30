@@ -1,0 +1,55 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: longhorn
+  namespace: argocd
+spec:
+  project: default
+  # Longhorn under GitOps. It holds every PVC in this cluster and was, until
+  # 2026-08-30, the last critical layer with no record in git — installed and
+  # upgraded by hand (v1.7.0 -> v1.12.1 over five rungs on 2026-08-27), with the
+  # deployed version knowable only by reading a running pod.
+  #
+  # The base is upstream's manifest pinned to the version already running, so the
+  # first sync is a near no-op. Verified beforehand with
+  # `kubectl kustomize . | kubectl diff -f -`: one ConfigMap, six lines — quoting,
+  # the v1.12.1 disable-revision-counter format, and a stale
+  # app.kubernetes.io/version: v1.7.0 label the manual upgrade never corrected.
+  source:
+    repoURL: https://github.com/Steficzko/homelab.git
+    targetRevision: HEAD
+    path: kubernetes/bootstrap/longhorn
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: longhorn-system
+  ignoreDifferences:
+    # Longhorn's own controllers own these; they are not ours to reconcile.
+    - group: apiextensions.k8s.io
+      kind: CustomResourceDefinition
+      jsonPointers:
+        - /status
+    - group: apps
+      kind: DaemonSet
+      jsonPointers:
+        - /status
+  syncPolicy:
+    automated:
+      # PRUNE IS OFF, AND NOT NEGOTIABLE HERE.
+      # Everything in longhorn-system that is NOT in the upstream manifest is
+      # runtime state: 49 Volume CRs, their Replicas and Engines, the Settings
+      # (this cluster customises concurrent-automatic-engine-upgrade-per-node-limit,
+      # replica-auto-balance and overprovisioning), and the ServiceMonitor netpol
+      # from monitoring/extras. Prune would delete the storage layer's own
+      # bookkeeping, and with it the ability to find the data on disk.
+      prune: false
+      # Drift correction on the workload specs is the point of doing this at all.
+      # The manifest carries no Setting CRs, so runtime settings are untouched.
+      selfHeal: true
+    syncOptions:
+      - ServerSideApply=true
+      - CreateNamespace=false
+  # Upgrades: bump the tag in kubernetes/bootstrap/longhorn/kustomization.yaml.
+  # Longhorn does NOT support skipping minor versions — one rung at a time, and
+  # confirm every volume is healthy before the next. If a sync ever wedges the
+  # manager, ArgoCD cannot fix it; apply a known-good tag by hand:
+  #   kubectl apply -f https://raw.githubusercontent.com/longhorn/longhorn/v1.12.1/deploy/longhorn.yaml

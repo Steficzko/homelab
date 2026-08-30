@@ -1,0 +1,17 @@
+# Longhorn managing itself, pinned to the version already running.
+#
+# Longhorn holds every PVC in this cluster. It was installed and upgraded by hand
+# (v1.7.0 -> v1.12.1 across five rungs on 2026-08-27) with no record in git of what
+# version was deployed or why. This puts the storage layer under the same GitOps
+# discipline as everything it stores.
+#
+# Upgrade procedure: Longhorn does NOT support skipping minor versions. Bump this tag
+# one minor at a time, let it sync, confirm every volume is healthy before the next.
+# Recovery, if a sync ever wedges the manager:
+#   kubectl apply -f https://raw.githubusercontent.com/longhorn/longhorn/<tag>/deploy/longhorn.yaml
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: longhorn-system
+
+resources:
+  - https://raw.githubusercontent.com/longhorn/longhorn/v1.12.1/deploy/longhorn.yaml
