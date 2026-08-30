@@ -71,6 +71,8 @@ spec:
                   valueFrom: { secretKeyRef: { name: kuma-push, key: BLANCA_WP } }
                 - name: PUSH_LONGHORN
                   valueFrom: { secretKeyRef: { name: kuma-push, key: LONGHORN } }
+                - name: PUSH_VELERO
+                  valueFrom: { secretKeyRef: { name: kuma-push, key: VELERO } }
                 - name: HC_WATCHDOG
                   valueFrom: { secretKeyRef: { name: kuma-push, key: HC_WATCHDOG } }
               command: ["/bin/sh", "-c"]
@@ -142,18 +144,27 @@ spec:
                   # NOTE the sub() below: MinIO returns fractional seconds (…:22.363Z) and jq's
                   # fromdateiso8601 CANNOT parse them — it errors and the entry is silently
                   # dropped. Without the strip this check reported 1 recent object instead of 64.
-                  lhcheck() {
-                    n=$(mc ls --recursive --json "src/longhornk3s/backupstore/" 2>/dev/null \
-                        | jq -r --argjson cutoff "$(( $(date +%s) - $2 ))" \
+                  # countcheck NAME PATH MIN_COUNT MAX_AGE_SEC PUSH_URL
+                  # For backups that write a TREE of objects rather than one file, where the
+                  # signal is "how much was written recently", not "how big is the newest".
+                  countcheck() {
+                    n=$(mc ls --recursive --json "$2" 2>/dev/null \
+                        | jq -r --argjson cutoff "$(( $(date +%s) - $4 ))" \
                           'select((.lastModified | sub("\\.[0-9]+Z$";"Z") | fromdateiso8601) > $cutoff) | .key' 2>/dev/null | wc -l)
-                    if [ "${n:-0}" -ge "$1" ]; then
-                      curl -fsS --max-time 10 "$3?status=up&msg=longhorn-ok-${n}-objects" >/dev/null 2>&1 \
-                        && echo "  longhorn: UP (${n} backup objects written in window)"
+                    if [ "${n:-0}" -ge "$3" ]; then
+                      curl -fsS --max-time 10 "$5?status=up&msg=$1-ok-${n}-objects" >/dev/null 2>&1 \
+                        && echo "  $1: UP (${n} objects written in window)"
                     else
-                      echo "  longhorn: UNHEALTHY (only ${n:-0} recent objects) -> withholding ping"
+                      echo "  $1: UNHEALTHY (only ${n:-0} recent objects) -> withholding ping"
                     fi
                   }
-                  lhcheck 30 93600 "$PUSH_LONGHORN"
+                  countcheck longhorn "src/longhornk3s/backupstore/" 30 93600 "$PUSH_LONGHORN"
+                  # Velero: manifests only, NO volume data (snapshotVolumes: None,
+                  # defaultVolumesToFsBackup: false, 0 volume snapshots ever). It captures ~4,580
+                  # API objects nightly at 02:00 — the cluster-rebuild artifact, not a data backup.
+                  # Do not mistake a green light here for your data being safe; that is Longhorn's
+                  # job above and the per-app dumps below. 9 objects per run observed; 5 is half.
+                  countcheck velero "src/velerok3s/" 5 93600 "$PUSH_VELERO"
 
                   # healthchecks.io: the watchdog reporting that IT is still running.
                   # Every check above pings Kuma, which lives on the same Unraid box as
