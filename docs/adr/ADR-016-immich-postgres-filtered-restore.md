@@ -1,6 +1,12 @@
 # ADR-016 — Immich Postgres Migration: Filtered pg_restore Over Fresh Deploy
 
-**Status:** Accepted — implementation deferred post-Prague (week of 2026-05-29)
+**Status:** Accepted — **SHIPPED** (corrected 2026-08-31; this said "deferred" for three months after it was done)
+
+> Verified live: `immich-lightroom` and `redis-lightroom` both 1/1 and 88 days old, serving
+> `lightroom.kostikidis.net`. The 298,843-photo professional archive — the highest-stakes data
+> move in the fleet — completed and this document went on describing it as an open commitment.
+> Same failure as ADR-030 §55: the work shipped and the status line did not follow, so the repo
+> under-claimed what its author had actually delivered.
 
 ## Context
 

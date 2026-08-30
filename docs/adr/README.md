@@ -21,8 +21,9 @@ quietly overwritten. The ones I got wrong are still here on purpose.
 | [001](ADR-001-gitops-toolchain.md) | GitOps toolchain | Accepted |
 | [002](ADR-002-infrastructure-split.md) | Infrastructure split (K3s / Unraid / ML machine) | Accepted |
 | [003](ADR-003-networking.md) | Cluster networking stack | Accepted |
-| [004](ADR-004-internal-dns.md) | Internal DNS: AdGuard over Pi-hole | Accepted (pending deploy) |
+| [004](ADR-004-internal-dns.md) | Internal DNS: AdGuard over Pi-hole | **Superseded** (deployed, removed 2026-07-11) |
 | [006](ADR-006-dev-environment.md) | Dev environment: Debian VM on Unraid + Syncthing | Accepted |
+| [036](ADR-036-bootstrap-components-under-gitops.md) | ArgoCD and Longhorn manage themselves (pinned base, no prune) | Proposed |
 
 ## Networking & security
 | ADR | Decision | Status |
@@ -46,7 +47,7 @@ quietly overwritten. The ones I got wrong are still here on purpose.
 | ADR | Decision | Status |
 |---|---|---|
 | [008](ADR-008-multi-instance-immich.md) | Multiple Immich instances, per-instance Access policies | Accepted |
-| [016](ADR-016-immich-postgres-filtered-restore.md) | Immich Postgres migration: filtered `pg_restore` | Accepted (deferred) |
+| [016](ADR-016-immich-postgres-filtered-restore.md) | Immich Postgres migration: filtered `pg_restore` | Accepted (shipped) |
 | [020](ADR-020-shared-postgres-multi-immich.md) | Shared PostgreSQL pod for all four Immich instances | Accepted |
 
 ## AI / ML
@@ -54,9 +55,10 @@ quietly overwritten. The ones I got wrong are still here on purpose.
 |---|---|---|
 | [007](ADR-007-proxmox-ml-node-architecture.md) | Proxmox ML node: GPU inference + CPU transcription split | Accepted |
 | [009](ADR-009-litellm-inference-gateway.md) | LiteLLM as unified inference gateway with tiered fallback | Accepted |
-| [014](ADR-014-litellm-resilience-gpu-fallback.md) | LiteLLM resilience: circuit-breaker cooldown + GPU fallback | Proposed |
+| [014](ADR-014-litellm-resilience-gpu-fallback.md) | LiteLLM resilience: circuit-breaker cooldown + GPU fallback | Accepted (decision 2 withdrawn) |
 | [015](ADR-015-open-webui-embedding-engine-builtin.md) | Open WebUI embedding engine: switch to built-in | Accepted |
 | [028](ADR-028-whisper-stt-litellm-routing.md) | Whisper STT routing via LiteLLM | Draft (unstable) |
+| [033](ADR-033-dental-voice-stt-placement-and-engine.md) | Dental voice STT on RYZEN-ML, transformers engine | Accepted (**violated in prod**) |
 
 ## Applications
 | ADR | Decision | Status |
@@ -71,6 +73,8 @@ quietly overwritten. The ones I got wrong are still here on purpose.
 | [011](ADR-011-application-logical-backups-and-offsite-replication.md) | Backup & off-site replication (block + logical) | Accepted |
 | [012](ADR-012-greece-warm-standby-docker-stack.md) | Greece warm standby as a Docker/Portainer stack | Accepted |
 | [012-amend](ADR-012-amendment-drop-app-teamelwany-from-dr.md) | Drop `app.teamelwany.com` from the Greece standby | Proposed |
+| [031](ADR-031-gompha-dental-greece-warm-standby.md) | Gompha Greece warm standby with in-region decryption key | Accepted |
+| [032](ADR-032-backup-deadmans-switch-monitoring.md) | Backup verification by dead-man's switch, not exit code | Accepted (extended) |
 
 ## Topology & resource management
 | ADR | Decision | Status |
@@ -78,3 +82,9 @@ quietly overwritten. The ones I got wrong are still here on purpose.
 | [021](ADR-021-cluster-memory-management-via-pod-placement.md) | Memory management via pod placement, not hardware | Accepted (partially superseded by 030) |
 | [030](ADR-030-dedicated-worker-nodes-topology-split.md) | Dedicated worker nodes: topology split, not RAM upgrade | Accepted (enacted) |
 | [030-amend](ADR-030-amendment-16gib-workers.md) | 16 GiB workers, tier-A → preferred, rebalance enacted | Accepted |
+| [035](ADR-035-scheduling-by-requests-not-taints.md) | Placement governed by requests + affinity, not taints | Proposed |
+
+## Observability
+| ADR | Decision | Status |
+|---|---|---|
+| [034](ADR-034-unraid-syslog-to-loki.md) | Unraid + LXC syslog shipped to Loki via promtail | Accepted |

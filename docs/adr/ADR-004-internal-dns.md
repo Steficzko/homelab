@@ -1,6 +1,25 @@
 # ADR-004 — Internal DNS: AdGuard Home over Pi-hole
 
-**Status:** Accepted — pending deployment
+**Status:** **Superseded — deployed, then decommissioned 2026-07-11** (corrected 2026-08-31)
+
+> This status was wrong twice over: AdGuard *was* deployed (so "pending" was false), and it has
+> since been removed entirely (so "Accepted" was false). Verified: zero AdGuard containers on
+> Unraid, zero pods in the cluster.
+>
+> **The reasoning below is now inverted, and that is the important part.** This ADR argues at
+> length about closing the "split DNS gap" — that without a local override, LAN devices resolve
+> `*.kostikidis.net` through Cloudflare and hairpin back through the tunnel, adding latency and a
+> dependency on Cloudflare for internal access. That gap is now **permanently open by choice**:
+> LAN access to your own services depends on Cloudflare being up. The document describes as a
+> problem-to-be-solved what is in fact the architecture you live with.
+>
+> It also correctly argued *why on Unraid, not the cluster*: "AdGuard must survive cluster issues —
+> if Longhorn degrades or a node goes down, you still need DNS to diagnose the problem." That
+> reasoning was sound and the capability was removed anyway. If local DNS is ever reinstated, start
+> from this paragraph.
+>
+> Practical consequence, worth knowing: **use the public Cloudflare URLs on the LAN.** Internal
+> hostnames no longer resolve locally.
 
 ## Context
 
