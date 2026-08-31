@@ -40,7 +40,7 @@ spec:
           imagePullSecrets: [{name: ghcr-pull}]
           containers:
             - name: reaper
-              image: ghcr.io/steficzko/gompha-clinic:clinic-v0.1.32
+              image: ghcr.io/steficzko/gompha-clinic:clinic-v0.1.33
               command: ["/bin/sh", "-ec"]
               args:
                 - |
