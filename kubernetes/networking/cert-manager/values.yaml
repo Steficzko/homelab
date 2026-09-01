@@ -1,6 +1,0 @@
-# cert-manager Helm values
-# Chart: jetstack/cert-manager v1.20.2
-# Installed: helm install cert-manager jetstack/cert-manager -n cert-manager --create-namespace -f values.yaml
-
-crds:
-  enabled: true  # install CRDs as part of the Helm release (easier upgrades)

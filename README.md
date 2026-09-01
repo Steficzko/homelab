@@ -85,7 +85,7 @@ kubernetes/
   apps/           — application manifests (ArgoCD-synced)
   bootstrap/      — ArgoCD app-of-apps + root application
   infrastructure/ — Longhorn, descheduler, cert-manager, ingress
-  networking/     — cloudflared, ingress-nginx, kube-vip
+  networking/     — cloudflared, kube-vip
   monitoring/     — Prometheus + Grafana, Loki
 docs/
   adr/            — Architecture Decision Records (start here)
