@@ -1,8 +1,63 @@
-# /etc/rancher/k3s/config.yaml
-# Deployed to all 3 control-plane nodes.
-# K3s merges this file with any flags in the systemd unit at startup.
+# /etc/rancher/k3s/config.yaml — reference copy. NOT applied by GitOps.
+#
+# This is a HOST file on each control-plane node. Nothing in ArgoCD reads it and
+# nothing reconciles it, so a node rebuild loses these settings unless they are
+# restored by hand. Treat this as the record of what *should* be on the nodes and
+# diff against them; do not assume it is in force.
+#
+# K3s merges this file with the flags in /etc/systemd/system/k3s.service at
+# startup. Edits take effect only on `systemctl restart k3s`.
 #
 # Reference: https://docs.k3s.io/installation/configuration#configuration-file
 
 disable:
-  - traefik        # We use ingress-nginx instead (see ADR-003)
+  - traefik        # ingress-nginx instead (ADR-003)
+
+  - local-storage  # 2026-09-01: local-path and longhorn were BOTH flagged default,
+                   # so any PVC omitting storageClassName was resolved by Kubernetes
+                   # tie-breaking on the newest default — luck, not a decision.
+                   # Nothing used local-path (0 PVCs, 0 PVs) when it was removed.
+                   #
+                   # Disabling the addon rather than patching the annotation is
+                   # deliberate: k3s owns local-path as a packaged addon and
+                   # re-applies it on every server start, so `kubectl patch` on the
+                   # is-default-class annotation silently reverts at the next
+                   # restart. The line must be present on ALL THREE control planes
+                   # for the same reason — one node without it re-creates the addon
+                   # when it restarts.
+
+kubelet-arg:
+  # 2026-08-20: raised from 1Gi. The control planes are schedulable, and the
+  # PreferNoSchedule taint that used to steer work away from them caused an outage
+  # (90 pods landed on one worker, load hit 455, kubelet went unreachable).
+  # Reserving more here leaves the workers with ~3.6Gi more allocatable, so
+  # LeastAllocated prefers them without ever excluding the control planes.
+  - "system-reserved=memory=2560Mi"
+  - "kube-reserved=memory=1Gi"
+
+# ---------------------------------------------------------------------------
+# Per-node deviations — verified live 2026-09-01. NOT represented above.
+#
+# g2 (.202) and b3 (.203) additionally carry:
+#     bind-address: "0.0.0.0"
+#
+#   This is a no-op. 0.0.0.0 is k3s's default and all three nodes listen on
+#   *:6443 with or without it (verified: `ss -lntp`). It is drift rather than
+#   configuration — its only effect is to make r1 look different from its peers
+#   for no functional reason. Drop it from g2/b3 on their next restart rather
+#   than adding it to r1; a line that restates a default earns nothing and costs
+#   a false signal to the next reader.
+#
+# systemd unit flags differ by role and are not part of this file:
+#     r1   server --cluster-init --tls-san 192.168.1.201
+#     g2   server --server https://192.168.1.201:6443 --advertise-address=192.168.1.202
+#                 --node-ip=192.168.1.202 --flannel-iface=eno1
+#     b3   as g2, with .203
+#
+#   r1 having founded the cluster is expected and correct. r1 having no
+#   --node-ip and no --flannel-iface is worth knowing: these hosts are
+#   multi-homed and run Tailscale, so r1's node IP and flannel interface are
+#   left to auto-detection where both peers are explicitly pinned. It resolves
+#   correctly today (INTERNAL-IP 192.168.1.201, flannel on eno1) but it is the
+#   one asymmetry here with a real failure mode behind it.
+# ---------------------------------------------------------------------------
