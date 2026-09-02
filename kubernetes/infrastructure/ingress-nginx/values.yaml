@@ -1,4 +1,23 @@
 controller:
+  # A single ingress controller is a cluster-wide SPOF: every app's HTTP path dies if
+  # that one pod or its node goes, and a plain `kubectl drain` of its node has nowhere
+  # to move it. Two replicas + a PDB fix both. minAvailable 1 lets a node drain evict
+  # one replica at a time — the rolling-reboot sequence depends on exactly this. The
+  # chart (4.15.1) creates the PDB automatically once replicaCount > 1.
+  # Anti-affinity is SOFT (preferred): normally the two land on different nodes, but a
+  # single schedulable node still gets both rather than leaving one Pending.
+  replicaCount: 2
+  minAvailable: 1
+  affinity:
+    podAntiAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+        - weight: 100
+          podAffinityTerm:
+            topologyKey: kubernetes.io/hostname
+            labelSelector:
+              matchLabels:
+                app.kubernetes.io/name: ingress-nginx
+                app.kubernetes.io/component: controller
   config:
     # ── HSTS: LIVE ON ONE ZONE, INERT ON THE OTHER ────────────────────────────
     # nginx emits HSTS only on an HTTPS connection, so what these do depends
