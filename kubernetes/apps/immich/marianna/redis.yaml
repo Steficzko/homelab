@@ -21,7 +21,17 @@ spec:
           command:
             - sh
             - -c
-            - redis-server --save "" --requirepass $REDIS_PASSWORD
+            # --maxmemory bounds the BullMQ queue BELOW the cgroup limit. Without it redis
+            # grows unbounded and the kernel SIGKILLs it (CONSTRAINT_MEMCG) — and because
+            # --save "" means no persistence, that wipes the ENTIRE job queue. redis-lightroom
+            # died exactly that way at 03:01 on two consecutive nights (anon-rss 254MB vs the
+            # 256Mi limit) when Immich enqueued its nightly batch.
+            # noeviction, not an LRU policy: this is a job queue, so evicting keys silently
+            # drops work. Refusing the write instead surfaces an enqueue error Immich can retry
+            # — partial visible failure beats total silent loss.
+            - >-
+              redis-server --save "" --requirepass $REDIS_PASSWORD
+              --maxmemory 384mb --maxmemory-policy noeviction
           env:
             - name: REDIS_PASSWORD
               valueFrom:
@@ -33,7 +43,7 @@ spec:
               memory: 64Mi
               cpu: 50m
             limits:
-              memory: 256Mi
+              memory: 512Mi   # headroom above --maxmemory 384mb for redis overhead
           readinessProbe:
             exec:
               command:
