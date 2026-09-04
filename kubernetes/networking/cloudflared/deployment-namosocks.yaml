@@ -22,7 +22,7 @@ spec:
               app: cloudflared-namosocks
       containers:
         - name: cloudflared
-          image: cloudflare/cloudflared:2026.8.2
+          image: cloudflare/cloudflared:2026.8.3
           # Locally-managed config: we hold the tunnel token but NOT dashboard access to the
           # client's Zero Trust account, so ingress rules live in the ConfigMap instead of remotely.
           args:
