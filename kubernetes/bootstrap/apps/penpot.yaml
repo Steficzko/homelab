@@ -16,7 +16,7 @@ spec:
     # penpot app services (frontend/backend/exporter/mcp) via official Helm chart
     - repoURL: https://helm.penpot.app
       chart: penpot
-      targetRevision: 1.8.0
+      targetRevision: 1.9.0
       helm:
         valuesObject:
           # Resource requests/limits added 2026-08-20. These four ran with
