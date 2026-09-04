@@ -26,7 +26,7 @@ spec:
     # the 11 Plane workloads via the official chart
     - repoURL: https://helm.plane.so
       chart: plane-ce
-      targetRevision: 1.6.3
+      targetRevision: 1.8.0
       helm:
         releaseName: plane
         valuesObject:
