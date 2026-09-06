@@ -89,6 +89,32 @@ prometheus:
         labelSelector:
           matchLabels:
             app.kubernetes.io/name: prometheus
+    # Speedtest Tracker on both Unraid boxes. They live OUTSIDE the cluster, so a
+    # ServiceMonitor cannot reach them — static targets are the only option.
+    #
+    # /prometheus is gated by the app's own IP allow-list (a DATABASE setting, not
+    # an env var) and 403s until the SOURCE address is listed. That address differs
+    # per site and neither is obvious:
+    #   Prague  sees 192.168.1.202 — the k3s node's real LAN IP, preserved.
+    #   Greece  sees 192.168.16.1 — its Docker runs userland-proxy, which rewrites
+    #     the source to the bridge gateway, so no real client IP ever arrives and
+    #     192.168.16.0/20 had to be allowed there instead.
+    # 5m interval is deliberate: the data only changes hourly, so scraping faster
+    # just adds load against an off-cluster HTTP endpoint for no extra resolution.
+    additionalScrapeConfigs:
+      - job_name: speedtest-tracker
+        metrics_path: /prometheus
+        scrape_interval: 5m
+        scrape_timeout: 30s
+        static_configs:
+          - targets: ["192.168.1.100:8765"]
+            labels:
+              site: prague
+              nas: repy
+          - targets: ["100.85.129.88:8765"]
+            labels:
+              site: greece
+              nas: ptolemaida
 
 alertmanager:
   alertmanagerSpec:
