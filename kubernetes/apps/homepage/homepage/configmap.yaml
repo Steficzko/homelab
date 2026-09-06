@@ -167,6 +167,23 @@ data:
           icon: mdi-calendar-clock
           href: http://100.85.129.88:5522
           description: Ops · DR + martunia
+      # Speedtest Tracker, hourly (0 * * * *) on each Unraid.
+      # These use widgets, so Homepage fetches them server-side — the netpol needs
+      # 100.64.0.0/10:8765 for Greece (Prague is covered by the 192.168.1.0/24 rule).
+      - Repy:
+          icon: speedtest-tracker
+          href: http://192.168.1.100:8765
+          description: Prague · line speed, hourly
+          widget:
+            type: speedtest
+            url: http://192.168.1.100:8765
+      - Ptolemaida:
+          icon: speedtest-tracker
+          href: http://100.85.129.88:8765
+          description: Greece · line speed, hourly
+          widget:
+            type: speedtest
+            url: http://100.85.129.88:8765
 
     - Family Photos:
       - Immich Stefanos:

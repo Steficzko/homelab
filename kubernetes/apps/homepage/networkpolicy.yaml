@@ -42,6 +42,15 @@ spec:
     - to:
         - ipBlock:
             cidr: 192.168.1.0/24
+    # Speedtest Tracker widgets. Homepage fetches these SERVER-SIDE, unlike the
+    # xyOps/Kuma entries above which are plain hrefs the browser opens (and so
+    # never touch this policy). Prague is reachable via 192.168.1.0/24 above, but
+    # Greece is tailnet-only and 8765 is not 80/443, so it needs its own rule.
+    - to:
+        - ipBlock:
+            cidr: 100.64.0.0/10
+      ports:
+        - port: 8765
     # Prometheus, Longhorn, Grafana via cluster DNS
     - to:
         - namespaceSelector: {}
