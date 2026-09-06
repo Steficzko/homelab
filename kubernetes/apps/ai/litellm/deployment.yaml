@@ -23,7 +23,7 @@ spec:
                     operator: DoesNotExist
       containers:
         - name: litellm
-          image: ghcr.io/berriai/litellm@sha256:468c25f35f3e5ec4e414974f00deab93337b1b4d9953cabcfd3722e59415f834
+          image: ghcr.io/berriai/litellm@sha256:c8756e7b9a61fe45df2ccb5b781d388c3b2f3a21ef9e4956630caef20f9f03aa
           args:
             - --config
             - /app/config.yaml
