@@ -150,6 +150,26 @@ prometheus:
             labels:
               site: greece
               nas: ptolemaida
+      # The two Unraid NAS boxes themselves. They hold every backup, MinIO, the
+      # media stack and the Immich originals, and neither was visible to Prometheus
+      # at all — only the speedtest container on each was scraped. This adds CPU,
+      # memory, per-array-disk capacity, network and ~19 temperature sensors.
+      #
+      # Port 9110, not the conventional 9100: MinIO already binds 9100 on both hosts.
+      # Prague is reached on its LAN address and Greece over the tailnet, which is
+      # the only route to it.
+      - job_name: unraid-node-exporter
+        metrics_path: /metrics
+        scrape_interval: 60s
+        static_configs:
+          - targets: ["192.168.1.100:9110"]
+            labels:
+              site: prague
+              nas: repy
+          - targets: ["100.85.129.88:9110"]
+            labels:
+              site: greece
+              nas: ptolemaida
 
 alertmanager:
   alertmanagerSpec:
