@@ -43,6 +43,32 @@ prometheus-node-exporter:
           sourceLabels: [__meta_kubernetes_pod_node_name]
           targetLabel: instance
 
+# Same treatment for kubelet, which is the other genuinely node-level scrape and
+# feeds every Kubernetes/Compute Resources dashboard as well as its own.
+#
+# kubelet metrics already carry a `node` label, but the stock dashboards key on
+# `instance`, so they still displayed 192.168.1.20x:10250. The chart's own
+# relabelings here are minimal — a single __metrics_path__ -> metrics_path — and
+# `relabelings` REPLACES rather than appends, so that one is repeated below. Drop it
+# and cAdvisor/probes series lose the metrics_path label they are distinguished by.
+#
+# Not touched deliberately: apiserver, and the in-cluster pod targets (argocd,
+# cert-manager, longhorn, ingress-nginx...). Those are keyed by pod IP, which is
+# ephemeral and changes on every restart — the `pod` label already names them, and
+# rewriting instance there would fight the convention every stock dashboard assumes.
+kubelet:
+  serviceMonitor:
+    relabelings: &kubeletRelabel
+      - action: replace
+        sourceLabels: [__metrics_path__]
+        targetLabel: metrics_path
+      - action: replace
+        sourceLabels: [__meta_kubernetes_endpoint_address_target_name]
+        targetLabel: instance
+    cAdvisorRelabelings: *kubeletRelabel
+    probesRelabelings: *kubeletRelabel
+    resourceRelabelings: *kubeletRelabel
+
 grafana:
   # ADR-030 pattern: prefer workers (non-control-plane), soft fallback.
   # 2026-08-29: b3 was at 77% memory with only one volume-free pod to move, so
