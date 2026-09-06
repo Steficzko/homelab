@@ -20,6 +20,29 @@ kubeProxy:
 kubeEtcd:
   enabled: false
 
+# Make `instance` the NODE NAME instead of 192.168.1.20x:9100.
+#
+# This is the single highest-leverage label change available: every stock dashboard
+# (Node Exporter Full, all the Kubernetes/Compute Resources ones) uses `instance` as
+# its variable, so with the default they all present the fleet as five IP:port
+# strings. Relabelling once at the source renames them everywhere at once, rather
+# than patching join logic into each dashboard.
+#
+# COORDINATED CHANGE — this breaks anything that joined ON the old value:
+#   * the Homelab Overview dashboard joined via kube_node_info.internal_ip to
+#     recover the name; those joins are removed in the same commit and now just use
+#     {{instance}} directly.
+#   * homepage's node widgets hardcoded instance="192.168.1.20x:9100" in 15 PromQL
+#     queries; those are rewritten to the node names in the same commit.
+# Landing any of these three alone leaves broken panels.
+prometheus-node-exporter:
+  prometheus:
+    monitor:
+      relabelings:
+        - action: replace
+          sourceLabels: [__meta_kubernetes_pod_node_name]
+          targetLabel: instance
+
 grafana:
   # ADR-030 pattern: prefer workers (non-control-plane), soft fallback.
   # 2026-08-29: b3 was at 77% memory with only one volume-free pod to move, so
@@ -141,6 +164,12 @@ prometheus:
         metrics_path: /prometheus
         scrape_interval: 5m
         scrape_timeout: 30s
+        # instance would default to the ip:port; use the friendly name instead so
+        # panels and the target list read repy/ptolemaida, matching the node-exporter
+        # relabel above.
+        relabel_configs:
+          - source_labels: [nas]
+            target_label: instance
         static_configs:
           - targets: ["192.168.1.100:8765"]
             labels:
@@ -161,6 +190,9 @@ prometheus:
       - job_name: unraid-node-exporter
         metrics_path: /metrics
         scrape_interval: 60s
+        relabel_configs:
+          - source_labels: [nas]
+            target_label: instance
         static_configs:
           - targets: ["192.168.1.100:9110"]
             labels:
