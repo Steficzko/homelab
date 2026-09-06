@@ -8,6 +8,18 @@ controller:
   # single schedulable node still gets both rather than leaving one Pending.
   replicaCount: 2
   minAvailable: 1
+  # The controller shipped with NO metrics port at all (container ports were only
+  # http/https/webhook), so Prometheus held zero nginx_* series — no request rates,
+  # no latency, no per-ingress status codes, for the component every public request
+  # in the estate passes through. Enabling adds port 10254 plus a metrics Service.
+  # The ServiceMonitor needs release=kube-prometheus-stack or the Prometheus CR's
+  # serviceMonitorSelector ignores it silently.
+  metrics:
+    enabled: true
+    serviceMonitor:
+      enabled: true
+      additionalLabels:
+        release: kube-prometheus-stack
   affinity:
     podAntiAffinity:
       preferredDuringSchedulingIgnoredDuringExecution:

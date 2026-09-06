@@ -1,0 +1,62 @@
+# ServiceMonitors for ArgoCD and cert-manager.
+#
+# Both already EXPOSE metrics — ArgoCD on four services, cert-manager on 9402 —
+# but nothing was scraping them, so Prometheus held zero argocd_* and zero
+# certmanager_* series. The exporters were running for free and being discarded.
+#
+# These must live in the `monitoring` namespace and carry the label
+# `release: kube-prometheus-stack`: the Prometheus CR selects ServiceMonitors with
+# `serviceMonitorSelector.matchLabels.release=kube-prometheus-stack`, so an
+# unlabelled ServiceMonitor is silently ignored — it applies cleanly, shows up in
+# `kubectl get servicemonitor`, and never produces a target. Same pattern as the
+# existing longhorn-servicemonitor.yaml next to this file.
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: argocd
+  namespace: monitoring
+  labels:
+    release: kube-prometheus-stack
+spec:
+  namespaceSelector:
+    matchNames:
+      - argocd
+  selector:
+    matchExpressions:
+      # One ServiceMonitor covering all four ArgoCD components rather than four
+      # near-identical files. Every one of these Services names its metrics port
+      # "metrics", so a single endpoint definition binds them all.
+      - key: app.kubernetes.io/name
+        operator: In
+        values:
+          - argocd-application-controller   # sync/health state, reconcile timings
+          - argocd-server                   # API + UI request metrics
+          - argocd-repo-server              # manifest generation, git fetch timing
+          - argocd-notifications-controller
+  endpoints:
+    - port: metrics
+      path: /metrics
+      interval: 30s
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: cert-manager
+  namespace: monitoring
+  labels:
+    release: kube-prometheus-stack
+spec:
+  namespaceSelector:
+    matchNames:
+      - cert-manager
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: cert-manager
+      app.kubernetes.io/component: controller
+  endpoints:
+    # Port is named http-metrics here, not metrics — cert-manager differs from
+    # ArgoCD, so this cannot share the block above.
+    - port: http-metrics
+      path: /metrics
+      interval: 60s
