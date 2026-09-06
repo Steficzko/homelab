@@ -24,16 +24,23 @@ spec:
       - argocd
   selector:
     matchExpressions:
-      # One ServiceMonitor covering all four ArgoCD components rather than four
-      # near-identical files. Every one of these Services names its metrics port
-      # "metrics", so a single endpoint definition binds them all.
+      # These are the Services' OWN labels, not their pod selectors. A ServiceMonitor
+      # matches Service metadata.labels — using the value from a Service's
+      # spec.selector instead silently binds nothing (first attempt matched only
+      # argocd-repo-server, whose two happen to coincide).
+      #
+      # One ServiceMonitor for all four components rather than four near-identical
+      # files: each Service names its metrics port "metrics", so one endpoint binds
+      # them all. Listing names explicitly rather than matching
+      # part-of=argocd, which would also pull in redis/server/dex Services that have
+      # no metrics port at all.
       - key: app.kubernetes.io/name
         operator: In
         values:
-          - argocd-application-controller   # sync/health state, reconcile timings
-          - argocd-server                   # API + UI request metrics
-          - argocd-repo-server              # manifest generation, git fetch timing
-          - argocd-notifications-controller
+          - argocd-metrics                          # application-controller: sync/health, reconcile timings
+          - argocd-server-metrics                   # API + UI request metrics
+          - argocd-repo-server                      # manifest generation, git fetch timing
+          - argocd-notifications-controller-metrics
   endpoints:
     - port: metrics
       path: /metrics
