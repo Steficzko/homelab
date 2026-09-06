@@ -42,6 +42,41 @@ grafana:
       url: http://loki.monitoring.svc.cluster.local:3100
       access: proxy
       isDefault: false
+  # Three exporters were being scraped and displayed NOWHERE: longhorn-backend
+  # (5 targets, 63 metrics), node-exporter (5 targets, 321 metrics) and
+  # pve-exporter (28 metrics). The stock chart ships 25 dashboards, but every one
+  # of them is Kubernetes internals — API server, kubelet, CoreDNS — so the estate
+  # was fully instrumented and almost none of it was actually visible.
+  #
+  # Fetched by gnetId at pod start; verified Grafana can reach grafana.com and that
+  # each ID resolves to the dashboard named below. Revisions are PINNED so a
+  # dashboard cannot change under you between restarts — bump them deliberately.
+  dashboardProviders:
+    dashboardproviders.yaml:
+      apiVersion: 1
+      providers:
+        - name: homelab
+          orgId: 1
+          folder: Homelab
+          type: file
+          disableDeletion: false
+          editable: true
+          options:
+            path: /var/lib/grafana/dashboards/homelab
+  dashboards:
+    homelab:
+      longhorn:
+        gnetId: 13032        # Longhorn Example v1.1.0
+        revision: 6
+        datasource: Prometheus
+      node-exporter-full:
+        gnetId: 1860         # Node Exporter Full — disks, network, temps, per-node
+        revision: 45
+        datasource: Prometheus
+      proxmox:
+        gnetId: 10347        # Proxmox via Prometheus (pve-exporter)
+        revision: 5
+        datasource: Prometheus
   admin:
     existingSecret: kube-prometheus-stack-grafana
     userKey: admin-user
