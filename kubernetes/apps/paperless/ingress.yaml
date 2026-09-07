@@ -1,0 +1,21 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: paperless
+  namespace: paperless
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    nginx.ingress.kubernetes.io/proxy-body-size: "0"   # scans and multi-page PDFs
+spec:
+  ingressClassName: nginx
+  tls:
+    - hosts: [xartura.kostikidis.net]
+      secretName: paperless-tls
+  rules:
+    - host: xartura.kostikidis.net
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend: { service: { name: paperless, port: { number: 8000 } } }
