@@ -52,6 +52,12 @@ spec:
             - -c
             - |
               set -eu
+              # The main container mounts this volume OVER the image's tessdata dir, which hides
+              # more than the .traineddata files: tesseract also keeps configs/ and tessconfigs/
+              # in there, and without them every OCR run dies with
+              #   TesseractConfigError: Error occurred while parsing a Tesseract configuration file
+              # Seed from the image first (no-clobber, so downloaded models survive), then top up.
+              cp -rn /usr/share/tesseract-ocr/5/tessdata/. /tessdata/ 2>/dev/null || true
               # osd = orientation/script detection, required by deskew + rotate-pages.
               # script/Arabic is the fallback for Sorani: no ckb/kur model exists in ANY
               # tesseract repo, so Sorani OCR is input for the LLM, not a search corpus.
