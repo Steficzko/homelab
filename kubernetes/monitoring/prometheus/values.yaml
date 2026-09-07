@@ -162,6 +162,24 @@ grafana:
         grafana_folder: "Kubernetes"
       provider:
         foldersFromFilesStructure: true
+  # Grafana opened on the stock "Welcome to Grafana" splash — a page of
+  # tutorial links and a "Add your first data source" call to action on an
+  # estate with 40 dashboards and 20 scrape jobs. Anyone opening this Grafana
+  # should land on the one screen that answers "is the estate OK?".
+  #
+  # Path, not UID. Grafana's default_home_dashboard_uid exists, but it resolves
+  # against the database, and these dashboards are provisioned from ConfigMaps
+  # by the sidecar — their UIDs are stable but the path is what is guaranteed to
+  # be readable at boot, before provisioning has necessarily run.
+  #
+  # The filename is the ConfigMap's DATA KEY (homelab-overview.json), not the
+  # ConfigMap name, and the directory is the grafana_folder annotation. Rename
+  # either and Grafana silently falls back to the splash page — there is no
+  # error, the file just is not there. Verified against the live pod:
+  #   /tmp/dashboards/Homelab/homelab-overview.json
+  grafana.ini:
+    dashboards:
+      default_home_dashboard_path: /tmp/dashboards/Homelab/homelab-overview.json
   admin:
     existingSecret: kube-prometheus-stack-grafana
     userKey: admin-user
@@ -180,8 +198,33 @@ grafana:
 
 prometheus:
   prometheusSpec:
+    # retention and retentionSize are an OR, not an AND: whichever limit is hit
+    # first wins. At 8GiB, size won every time and 7d was decorative.
+    #
+    # Measured before changing anything, on 2026-09-07:
+    #   prometheus_tsdb_lowest_timestamp        -> 3.58 days of history
+    #   prometheus_tsdb_storage_blocks_bytes    -> 6.90 GB
+    #   prometheus_tsdb_wal_storage_size_bytes  -> 0.92 GB
+    #   prometheus_tsdb_head_chunks_storage_..  -> 0.10 GB   = 7.92 GB total
+    #   prometheus_tsdb_size_retentions_total   -> 20    <- size evicted 20 times
+    #   prometheus_tsdb_time_retentions_total   -> 0     <- time never did
+    # Since 2.28 retentionSize counts the WHOLE data directory, WAL included, so
+    # the effective ceiling really was 8GiB against a 7.92 GB working set.
+    #
+    # Consequence: every panel with a range longer than ~3 days was empty, and
+    # the speedtest "vs its own 7-day median" alert had no 7 days to compare to.
+    #
+    # 14GiB = 15.03 GB. Scaling the measured blocks linearly, 7 days needs
+    # 6.90 * (7/3.58) = 13.5 GB of blocks plus ~1.0 GB of WAL and head chunks,
+    # so 14.5 GB — it fits, with the PVC's remaining 6.4 GB (of 21.5 GB usable
+    # from the 20Gi Longhorn volume) left free for compaction, which needs room
+    # to write a new block before deleting the old ones.
+    #
+    # This is sized for TODAY's 528k active series. If the series count grows
+    # past roughly 550k, size becomes the binding limit again and the honest fix
+    # is a 30Gi PVC, not a bigger number here against the same volume.
     retention: 7d
-    retentionSize: 8GiB
+    retentionSize: 14GiB
     # Added 2026-08-20 after Prometheus was OOM-killed (exit 137) on k3s-prg-w2.
     # It ran with no requests/limits at all, which meant two things: the scheduler
     # counted it as consuming nothing when placing pods, and under node memory
@@ -264,6 +307,76 @@ prometheus:
             labels:
               site: greece
               nas: ptolemaida
+
+      # ---------------------------------------------------------------------
+      # PROPOSED, NOT ENABLED. Both blocks below are commented out because each
+      # needs a credential that must not be created without Stefanos deciding.
+      #
+      # MinIO and Uptime Kuma both already speak Prometheus natively and both
+      # currently refuse Prometheus:
+      #     http://192.168.1.100:9100/minio/v2/metrics/cluster   -> 403
+      #     http://100.85.129.88:9100/minio/v2/metrics/cluster   -> 403
+      #     http://100.82.66.30:3001/metrics                     -> 401
+      # (verified 2026-09-07). Neither is a scrape-config bug — the endpoints
+      # are auth-gated and no credential exists.
+      #
+      # MinIO matters most: it is the Longhorn backupstore AND the target of the
+      # hourly Prague->Greece replication, so with it unscraped the Backups
+      # dashboard can show that a backup ran but not that the bucket holding it
+      # is healthy or how full it is.
+      #
+      # Two ways to open MinIO, and the recommendation is the second:
+      #   a) set MINIO_PROMETHEUS_AUTH_TYPE=public on both containers. One env
+      #      var, no secret to rotate — but it publishes bucket names and sizes
+      #      unauthenticated to anything on the LAN and anything on the tailnet,
+      #      and the tailnet ACL is a blocklist, not least-privilege.
+      #   b) mint a read-only bearer token with
+      #         mc admin prometheus generate <alias> --expiry 8760h
+      #      store it as a Secret and mount it into Prometheus the same way the
+      #      Telegram bot token is mounted into Alertmanager:
+      #         prometheusSpec.secrets: [minio-prometheus-token]
+      #      which lands at /etc/prometheus/secrets/minio-prometheus-token/token.
+      #      Keeps the endpoint authenticated; costs one credential to rotate.
+      #
+      # Uptime Kuma's /metrics is HTTP Basic with ANY username and an API key as
+      # the password, so enabling it means creating an API key in the Kuma UI.
+      # Note before doing that: the Kuma admin login is recorded as breached and
+      # pending rotation — rotate the login first, then mint the key.
+      #
+      # Uncomment either block only after the matching Secret exists and is
+      # listed in prometheus.prometheusSpec.secrets, or Prometheus will start
+      # with a config-reload failure.
+      #
+      # - job_name: minio
+      #   metrics_path: /minio/v2/metrics/cluster
+      #   scrape_interval: 60s
+      #   authorization:
+      #     type: Bearer
+      #     credentials_file: /etc/prometheus/secrets/minio-prometheus-token/token
+      #   relabel_configs:
+      #     - source_labels: [nas]
+      #       target_label: instance
+      #   static_configs:
+      #     - targets: ["192.168.1.100:9100"]
+      #       labels:
+      #         site: prague
+      #         nas: repy
+      #     - targets: ["100.85.129.88:9100"]
+      #       labels:
+      #         site: greece
+      #         nas: ptolemaida
+      #
+      # - job_name: uptime-kuma
+      #   metrics_path: /metrics
+      #   scrape_interval: 60s
+      #   basic_auth:
+      #     username: prometheus
+      #     password_file: /etc/prometheus/secrets/uptime-kuma-token/apikey
+      #   static_configs:
+      #     - targets: ["100.82.66.30:3001"]
+      #       labels:
+      #         site: prague
+      #         instance: uptime-kuma
 
 alertmanager:
   alertmanagerSpec:

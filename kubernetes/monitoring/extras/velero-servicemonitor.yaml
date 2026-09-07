@@ -1,0 +1,51 @@
+# Velero exposes a full Prometheus endpoint on its `velero` Service, port 8085
+# (port name `http-monitoring`), and nothing was scraping it — Prometheus held
+# zero velero_* series while the exporter had been running since June.
+#
+# Verified before writing this file, by curling the Service from a throwaway pod:
+#   velero_backup_last_successful_timestamp{schedule="velero-daily"}  1788746459
+#   velero_backup_last_status{schedule="velero-daily"}                1
+#   velero_backup_success_total{schedule="velero-daily"}              6
+#   velero_backup_failure_total{schedule="velero-daily"}              0
+#   velero_backup_tarball_size_bytes{schedule="velero-daily"}         5874413
+#   velero_backup_total                                               30
+#
+# READ THE TARBALL SIZE. 5.8 MB for the whole cluster is the proof that this
+# backup is MANIFESTS ONLY. Velero here runs without node-agent/CSI snapshots, so
+# it captures zero bytes of PVC data — restoring from Velero alone gives you empty
+# volumes. Longhorn backups (a separate system, further down the Backups
+# dashboard) are what actually hold the data. The dashboard says this on the panel
+# itself; do not let a "Velero: last backup 2h ago, success" tile be read as
+# "the data is safe".
+#
+# The selector matches the Service's OWN labels. The velero Service's
+# spec.selector additionally carries `name: velero`, which is NOT in its
+# metadata.labels — selecting on that binds nothing.
+#
+# `release: kube-prometheus-stack` is mandatory: the Prometheus CR's
+# serviceMonitorSelector filters on it, and without it this applies cleanly,
+# appears in `kubectl get servicemonitor`, and never produces a target.
+#
+# No NetworkPolicy exists in the velero namespace, so no companion netpol is
+# needed here (unlike longhorn-metrics-netpol.yaml next to this file).
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: velero
+  namespace: monitoring
+  labels:
+    release: kube-prometheus-stack
+spec:
+  namespaceSelector:
+    matchNames:
+      - velero
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: velero
+      app.kubernetes.io/instance: velero
+  endpoints:
+    # 60s: Velero's counters only move once a day at 02:00. Scraping faster buys
+    # nothing and adds series to a TSDB that is already size-bound.
+    - port: http-monitoring
+      path: /metrics
+      interval: 60s

@@ -143,7 +143,7 @@ data:
                 "type": "prometheus",
                 "uid": "prometheus"
               },
-              "expr": "pve_up{id=\"node/pve\"} or vector(0)",
+              "expr": "max(pve_up{id=\"node/pve\"}) or vector(0)",
               "legendFormat": "",
               "refId": "G",
               "instant": true,
@@ -206,7 +206,7 @@ data:
                 "type": "prometheus",
                 "uid": "prometheus"
               },
-              "expr": "pve_uptime_seconds{id=\"node/pve\"} or vector(0)",
+              "expr": "max(pve_uptime_seconds{id=\"node/pve\"}) or vector(0)",
               "legendFormat": "",
               "refId": "I",
               "instant": true,
@@ -532,7 +532,7 @@ data:
                 "type": "prometheus",
                 "uid": "prometheus"
               },
-              "expr": "pve_memory_size_bytes{id=\"node/pve\"} or vector(0)",
+              "expr": "max(pve_memory_size_bytes{id=\"node/pve\"}) or vector(0)",
               "legendFormat": "",
               "refId": "S",
               "instant": true,

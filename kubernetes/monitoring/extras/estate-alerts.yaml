@@ -1,0 +1,408 @@
+# Alerts about THIS estate.
+#
+# Prometheus was evaluating 138 alerting rules and exactly two of them
+# (container-restarts, pve-alerts) were about anything Stefanos owns. The other
+# 136 ship with kube-prometheus-stack and watch Kubernetes watching itself:
+# apiserver latency, kubelet certificates, CoreDNS. Not one of them would have
+# noticed a NAS array filling up, a backup that stopped running, a Longhorn
+# volume losing a replica, or a Let's Encrypt renewal failing.
+#
+# Every expression below was executed against Prometheus before it was written
+# here, and the count of series it currently matches is recorded next to it. A
+# rule whose expression returns nothing because of a typo'd label is worse than
+# no rule: it is a safety mechanism connected to nothing, which is exactly the
+# failure this file exists to end.
+#
+# DELIBERATELY NOT HERE — node down / NotReady for the k3s nodes. The stock
+# ruleset already has KubeNodeNotReady, KubeNodeUnreachable and
+# KubeNodeReadinessFlapping, all evaluating, all now routed to Telegram.
+# Duplicating them would mean two alerts per outage with different wording and
+# different `for` windows. What the stock rules genuinely cannot see is the two
+# Unraid boxes, which are not Kubernetes nodes at all — hence NASOffline below.
+#
+# `release: kube-prometheus-stack` is mandatory. The Prometheus CR's
+# ruleSelector filters on it, and without it this applies cleanly, appears in
+# `kubectl get prometheusrule`, and is never evaluated.
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: estate-alerts
+  namespace: monitoring
+  labels:
+    release: kube-prometheus-stack
+spec:
+  groups:
+    # ------------------------------------------------------------------ NAS
+    - name: estate-unraid
+      rules:
+        # The stock NodeFilesystemAlmostOutOfSpace only matches job="node-exporter",
+        # which is the in-cluster DaemonSet. The Unraid boxes are scraped as
+        # job="unraid-node-exporter" (static targets, port 9110), so neither NAS
+        # has ever had a disk-space alert of any kind.
+        #
+        # fstype!="tmpfs" is load-bearing. Unraid mounts four 1 MB tmpfs stubs
+        # under /mnt — addons, remotes, rootshare and disks — and /mnt/disks
+        # matches a "disk.*" name filter. Without the fstype exclusion the rule
+        # evaluates two permanently-0% phantom filesystems alongside the real
+        # array.
+        #
+        # Currently matches 2 series: repy /mnt/disk1 (91.7%) and
+        # ptolemaida /mnt/disk1 (92.1%). Both sites, not just Prague.
+        - alert: UnraidArrayDiskFillingUp
+          expr: >-
+            100 - 100 *
+            node_filesystem_avail_bytes{job="unraid-node-exporter",fstype!="tmpfs",mountpoint=~"/mnt/(disk|cache|dataservices|virtual).*"}
+            /
+            node_filesystem_size_bytes{job="unraid-node-exporter",fstype!="tmpfs",mountpoint=~"/mnt/(disk|cache|dataservices|virtual).*"}
+            > 90
+          for: 15m
+          labels:
+            severity: warning
+          annotations:
+            summary: >-
+              {{ $labels.instance }} {{ $labels.mountpoint }} is
+              {{ $value | printf "%.1f" }}% full
+            description: >-
+              An Unraid array disk is a fixed-size member, not a pool — it does not
+              spill onto the next disk. When it fills, writes to the shares that
+              landed on it fail while the array still reports free space overall.
+              Move a share with the mover, or rebalance onto a less-full disk.
+
+        - alert: UnraidArrayDiskCritical
+          expr: >-
+            100 - 100 *
+            node_filesystem_avail_bytes{job="unraid-node-exporter",fstype!="tmpfs",mountpoint=~"/mnt/(disk|cache|dataservices|virtual).*"}
+            /
+            node_filesystem_size_bytes{job="unraid-node-exporter",fstype!="tmpfs",mountpoint=~"/mnt/(disk|cache|dataservices|virtual).*"}
+            > 95
+          for: 5m
+          labels:
+            severity: critical
+          annotations:
+            summary: >-
+              {{ $labels.instance }} {{ $labels.mountpoint }} is
+              {{ $value | printf "%.1f" }}% full — act now
+            description: >-
+              Below 5% free, XFS allocation starts failing and the Unraid mover has
+              nowhere to stage. Free space on this specific disk.
+
+        # The only "is the NAS alive?" signal that exists. Neither box is a
+        # Kubernetes node, so KubeNodeNotReady cannot see them, and losing Prague
+        # Unraid takes MinIO, xyOps and Uptime Kuma with it — i.e. it takes out
+        # most of the OTHER things that would have told you.
+        #
+        # 15m, because Greece is reached over the tailnet and a brief tailnet
+        # reconnect is not an outage worth a phone buzz.
+        - alert: NASOffline
+          expr: up{job="unraid-node-exporter"} == 0
+          for: 15m
+          labels:
+            severity: critical
+          annotations:
+            summary: "NAS {{ $labels.instance }} ({{ $labels.site }}) is not responding"
+            description: >-
+              node-exporter on :9110 has been unreachable for 15 minutes. Prague
+              Unraid holds MinIO, the media stack, the Immich originals and every
+              backup target; Greece holds the offsite copy. Check the box itself
+              before assuming this is a monitoring fault.
+
+        # 60 C as specified. Recorded honestly: this is a soft threshold on a
+        # sensor set that is all CPU package and NVMe — Unraid does not export
+        # spinning-disk temperatures over hwmon, those come from SMART. repy's
+        # coretemp idles at 53 C and WILL cross 60 C during a parity check, so
+        # `for: 30m` is what stops this being a monthly false alarm rather than
+        # the threshold itself. If it still proves noisy, delete this rule and
+        # keep the critical one below, which self-calibrates.
+        - alert: NASTemperatureHigh
+          expr: node_hwmon_temp_celsius{job="unraid-node-exporter"} > 60
+          for: 30m
+          labels:
+            severity: warning
+          annotations:
+            summary: >-
+              {{ $labels.instance }} sensor {{ $labels.chip }}/{{ $labels.sensor }}
+              at {{ $value | printf "%.0f" }} C for 30m
+            description: >-
+              Sustained, not a spike. A parity check will do this legitimately; a
+              failed fan will do it permanently. Check which.
+
+        # Better rule, kept as the critical tier: compare each sensor against the
+        # crit value the hardware itself reports, so a CPU rated to 105 C and an
+        # NVMe rated to 94.85 C get thresholds that mean the same thing.
+        - alert: NASTemperatureCritical
+          expr: >-
+            node_hwmon_temp_celsius{job="unraid-node-exporter"}
+            >= 0.85 * node_hwmon_temp_crit_celsius{job="unraid-node-exporter"}
+          for: 5m
+          labels:
+            severity: critical
+          annotations:
+            summary: >-
+              {{ $labels.instance }} {{ $labels.chip }}/{{ $labels.sensor }} at
+              {{ $value | printf "%.0f" }} C — 85% of its rated critical
+            description: >-
+              The sensor is approaching the temperature at which the hardware
+              throttles or shuts itself down. Stop non-essential load and check
+              airflow.
+
+    # -------------------------------------------------------------- backups
+    - name: estate-backups
+      rules:
+        # The failure this whole file exists for. A CronJob whose last Job
+        # reported success but which last ran nine days ago is invisible to
+        # KubeJobFailed — nothing failed, nothing ran. Only the AGE of the last
+        # success catches it.
+        #
+        # 26h, not 24h: it has to survive a daily job legitimately drifting, plus
+        # the gap after a node reboot reschedules it.
+        #
+        # snapshot-cleanup is excluded because it is weekly (0 5 * * 0) and would
+        # sit permanently firing; it has its own rule below.
+        - alert: BackupJobStale
+          expr: >-
+            (time() - kube_cronjob_status_last_successful_time{cronjob=~".*backup.*|minio-replication|filesystem-trim"})
+            / 3600 > 26
+          for: 1h
+          labels:
+            severity: critical
+          annotations:
+            summary: >-
+              Backup {{ $labels.namespace }}/{{ $labels.cronjob }} has not succeeded
+              for {{ $value | printf "%.0f" }}h
+            description: >-
+              Its schedule has been missed entirely. Check for a suspended CronJob,
+              a Job stuck Pending on a node with no room, or a container failing
+              before it can report. `kubectl -n {{ $labels.namespace }} get job
+              -l job-name` and the pod logs.
+
+        - alert: BackupJobStaleWeekly
+          expr: >-
+            (time() - kube_cronjob_status_last_successful_time{cronjob="snapshot-cleanup"})
+            / 86400 > 8
+          for: 1h
+          labels:
+            severity: warning
+          annotations:
+            summary: >-
+              Weekly job {{ $labels.namespace }}/{{ $labels.cronjob }} has not
+              succeeded for {{ $value | printf "%.1f" }} days
+            description: >-
+              snapshot-cleanup runs Sundays at 05:00. Past 8 days means a run was
+              skipped, and Longhorn snapshots accumulate on the replicas until
+              they eat the disks.
+
+        # The watchdog gets its own, much tighter rule because it is the estate's
+        # backup alarm: every 30 minutes it pushes ~19 per-backup heartbeats to
+        # Uptime Kuma and one to healthchecks.io. If it stops, every one of those
+        # 19 checks goes quiet and there is nothing left to notice. 2h rather
+        # than 26h precisely because the thing that watches everything else has
+        # to be watched harder than everything else.
+        - alert: BackupWatchdogStale
+          expr: >-
+            (time() - kube_cronjob_status_last_successful_time{namespace="backup",cronjob="backup-watchdog"})
+            / 3600 > 2
+          for: 15m
+          labels:
+            severity: critical
+          annotations:
+            summary: "backup-watchdog has not run for {{ $value | printf \"%.1f\" }}h"
+            description: >-
+              The watchdog runs every 30 minutes and is what pushes the ~19
+              per-backup heartbeats. While it is down the backup monitoring is
+              silent, not green — nothing else reports on those 19 checks.
+
+        # Catches what BackupJobStale cannot: the longhorn-system/daily-backup
+        # CronJob succeeds as a whole while an INDIVIDUAL volume errors out and
+        # quietly stops being backed up.
+        #
+        # The `> 0` filter is essential. 17 of the 49 volumes have never been
+        # backed up (they are databases covered by logical dumps, plus the
+        # Prometheus and Loki volumes). Their last_backup_at is literally 0, so
+        # without the filter time() - 0 evaluates to 57 years and this rule fires
+        # 17 times, permanently, on day one.
+        - alert: LonghornVolumeBackupStale
+          expr: >-
+            (time() - max by (volume, pvc, pvc_namespace) (longhorn_volume_last_backup_at > 0))
+            / 3600 > 26
+          for: 1h
+          labels:
+            severity: critical
+          annotations:
+            summary: >-
+              Longhorn volume {{ $labels.pvc_namespace }}/{{ $labels.pvc }} last
+              backed up {{ $value | printf "%.0f" }}h ago
+            description: >-
+              This volume carries the daily-backup recurring job but has not
+              produced a completed backup in over a day, while others have. Look
+              at the Backup CRs for this volume in longhorn-system and at the
+              backupstore lock — a stuck lock blocks one volume, not all of them.
+
+        - alert: VeleroBackupStale
+          expr: >-
+            (time() - velero_backup_last_successful_timestamp{schedule="velero-daily"})
+            / 3600 > 26
+          for: 1h
+          labels:
+            severity: warning
+          annotations:
+            summary: "Velero schedule velero-daily last succeeded {{ $value | printf \"%.0f\" }}h ago"
+            description: >-
+              Warning, not critical, and deliberately so: Velero here captures API
+              objects only — about 5.9 MB, zero bytes of PVC data. Losing it costs
+              the manifests, not the data. The data lives in the Longhorn backups
+              and the application dumps, which have their own rules above.
+
+    # --------------------------------------------------------- certificates
+    - name: estate-certificates
+      rules:
+        # cert-manager renews Let's Encrypt certificates at 30 days remaining. By
+        # 14 days it has had two weeks of retries and is failing — usually a
+        # DNS-01 token that lost its permissions, or a rate limit.
+        #
+        # `exported_namespace`, not `namespace`. cert-manager's own metrics carry
+        # namespace="cert-manager" (where the controller runs) and put the
+        # certificate's real namespace in exported_namespace. Using `namespace`
+        # gives every alert the same useless value and also collapses them into
+        # one Alertmanager group, because the route groups by namespace.
+        - alert: CertificateExpiringSoon
+          expr: (certmanager_certificate_expiration_timestamp_seconds - time()) / 86400 < 14
+          for: 1h
+          labels:
+            severity: warning
+          annotations:
+            summary: >-
+              Certificate {{ $labels.exported_namespace }}/{{ $labels.name }}
+              expires in {{ $value | printf "%.1f" }} days
+            description: >-
+              Renewal should have happened at 30 days left and has not. Check
+              `kubectl -n {{ $labels.exported_namespace }} describe certificate
+              {{ $labels.name }}` and the CertificateRequest/Order beneath it.
+
+        - alert: CertificateExpiryCritical
+          expr: (certmanager_certificate_expiration_timestamp_seconds - time()) / 86400 < 5
+          for: 15m
+          labels:
+            severity: critical
+          annotations:
+            summary: >-
+              Certificate {{ $labels.exported_namespace }}/{{ $labels.name }}
+              expires in {{ $value | printf "%.1f" }} days
+            description: >-
+              Under five days. When this lapses the site serves a browser
+              interstitial, and for the API-backed ones every client stops
+              trusting it at once. Fix the issuance now or replace the
+              certificate manually.
+
+    # ------------------------------------------------------------- longhorn
+    - name: estate-longhorn
+      rules:
+        # longhorn_volume_robustness is a one-hot: four series per volume, one
+        # per state, exactly one of them 1. Selecting on state and testing == 1
+        # is the whole rule.
+        #
+        # Unlike longhorn_volume_state / longhorn_engine_state, robustness is
+        # exported once per volume rather than by all five managers, so no
+        # max by (volume) collapse is needed here — verified: 49 volumes,
+        # 49 series per state.
+        - alert: LonghornVolumeDegraded
+          expr: longhorn_volume_robustness{state="degraded"} == 1
+          for: 10m
+          labels:
+            severity: warning
+          annotations:
+            summary: >-
+              Longhorn volume {{ $labels.pvc_namespace }}/{{ $labels.pvc }} is
+              degraded
+            description: >-
+              It is serving I/O from fewer replicas than it should. Longhorn will
+              usually rebuild on its own; 10 minutes is long enough that a node
+              reboot has finished rebuilding and short enough to catch a rebuild
+              that is not happening because no node has space.
+
+        - alert: LonghornVolumeFaulted
+          expr: longhorn_volume_robustness{state="faulted"} == 1
+          for: 1m
+          labels:
+            severity: critical
+          annotations:
+            summary: >-
+              Longhorn volume {{ $labels.pvc_namespace }}/{{ $labels.pvc }} is
+              FAULTED
+            description: >-
+              No healthy replica remains — the volume is offline and the workload
+              using it cannot read or write. Do not delete anything. Check the
+              replicas in the Longhorn UI and, if none can be salvaged, restore
+              from the backup shown on the Backups dashboard.
+
+    # ----------------------------------------------------------------- apps
+    - name: estate-apps
+      rules:
+        # immich_db_up comes from the sql-exporter that fronts all four Immich
+        # instances; `target` distinguishes stefanos / marianna / elwany /
+        # lightroom. 424k assets across them and, before this, nothing watched
+        # whether the databases were reachable at all.
+        - alert: ImmichDatabaseDown
+          expr: immich_db_up == 0
+          for: 10m
+          labels:
+            severity: critical
+          annotations:
+            summary: "Immich database for {{ $labels.target }} is unreachable"
+            description: >-
+              sql-exporter cannot query this instance's Postgres. The app will be
+              returning errors to the mobile clients. Check the immich namespace
+              and the shared vchord Postgres.
+
+        # Without this, ImmichDatabaseDown is a rule that cannot fire when it
+        # matters most: if the exporter dies, immich_db_up stops existing
+        # entirely rather than going to 0, and a rule on an absent series is
+        # silent. This is the second half of that alert, not a spare.
+        - alert: ImmichExporterDown
+          expr: up{job="immich-sql-exporter"} == 0
+          for: 10m
+          labels:
+            severity: warning
+            namespace: immich
+          annotations:
+            summary: "immich-sql-exporter is down — Immich is unmonitored"
+            description: >-
+              While this is down, ImmichDatabaseDown cannot fire: its series is
+              absent, not zero. Everything on the Immich dashboard is stale.
+
+    # ------------------------------------------------------------- internet
+    - name: estate-internet
+      rules:
+        # Absolute thresholds are wrong here — Prague sees ~235 Mb/s and Greece
+        # ~99 Mb/s, so one number cannot serve both. Comparing each link to its
+        # own 7-day median makes the rule mean "this link got materially worse
+        # than it normally is", which is the actual question.
+        #
+        # max by (instance) FIRST, on both sides. The raw series carries
+        # server_id, server_name, server_location and result_id, all of which
+        # change whenever speedtest picks a different server — so a
+        # quantile_over_time on the raw metric silently starts a new series each
+        # time and the median is computed over almost no samples.
+        #
+        # for: 2h means two consecutive hourly tests must both be low, so a
+        # single bad test against a busy server does not page anyone.
+        #
+        # CAVEAT, and it is a real one: this only becomes meaningful once
+        # Prometheus actually retains 7 days. Until the raised retentionSize has
+        # been in place for a week, the [7d] window contains whatever history
+        # exists and the median is computed over that shorter period.
+        - alert: SpeedtestDownloadDegraded
+          expr: >-
+            max by (instance) (speedtest_tracker_download_bits)
+            < 0.5 * quantile_over_time(0.5,
+                max by (instance) (speedtest_tracker_download_bits)[7d:1h])
+          for: 2h
+          labels:
+            severity: warning
+          annotations:
+            summary: >-
+              {{ $labels.instance }} download is less than half its 7-day median
+            description: >-
+              Two consecutive hourly speedtests came in below 50% of this link's
+              own normal. Either the line is degraded or something on the LAN is
+              saturating it — check the media stack and any running replication
+              before calling the ISP.
