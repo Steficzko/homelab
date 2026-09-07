@@ -87,6 +87,7 @@ controller:
     allocateLoadBalancerNodePorts: false
     # LB-IP path (192.168.1.201-203:80/443) — kube-proxy enforces these ranges here.
     loadBalancerSourceRanges:
+      - 192.168.1.0/24  # home LAN — ingress lives on a LAN IP and the LAN could not reach it
       - 100.64.0.0/10   # Tailscale
       - 10.42.0.0/16    # cluster pod CIDR
       - 10.43.0.0/16    # cluster service CIDR
