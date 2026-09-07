@@ -1,0 +1,277 @@
+# Immich has no metrics of its own that answer "how many photos, how much storage".
+#
+# Why not IMMICH_TELEMETRY_INCLUDE (the obvious first choice): it does not export any
+# of that. Verified against the immich-server v3.1.0 source that is actually running
+# here — the only business-level gauge is `immich.users.total`. Everything else is job
+# queue counters, per-repository method-duration histograms and process/host metrics.
+# Enabling it would give us a metrics endpoint with no asset counts and no bytes.
+#
+# Why not the /api/server/statistics endpoint: it is `admin: true` only, so it would
+# need four admin API keys — full-access credentials over four private photo libraries —
+# created, stored and rotated, purely to read two integers each. It also reports
+# `usage: 0` for any library-backed instance (see the lightroom note below), which is
+# precisely the "panel looks broken" failure we are trying to avoid.
+#
+# So: read the numbers from the database Immich already keeps them in, with the
+# credentials that already exist. No new secret, no admin key, no change to any Immich
+# deployment. The queries below are a faithful port of Immich's own
+# UserRepository.getUserStats() (server/src/repositories/user.repository.ts), so
+# immich_assets / immich_usage_bytes agree with what the UI and the API report.
+#
+# Cost, measured on the largest database (lightroom, 300k assets): 41 ms for the counts,
+# 91 ms for the byte sums. Scraped every 2m against a shared Postgres — negligible.
+#
+# The trade-off, stated plainly: this couples to Immich's schema. All instances are
+# digest-pinned to v3.1.0, so a schema change is a deliberate upgrade event, not a
+# surprise. If an upgrade renames these columns the exporter goes down loudly (the
+# target fails) rather than silently reporting zero.
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: immich-sql-exporter
+  namespace: immich
+data:
+  # Template, not the live config: __DB_PASSWORD__ is substituted at pod start from the
+  # existing immich-secret. No credential is stored in this repo.
+  #
+  # The password is carried in a URI userinfo field, so it must stay URL-safe. The
+  # current one is 32 alphanumeric characters. If it is ever rotated to something
+  # containing : / @ ? # % it must be percent-encoded here or the DSN will not parse.
+  sql_exporter.yml: |
+    global:
+      scrape_timeout: 10s
+      scrape_timeout_offset: 500ms
+      min_interval: 0s
+      max_connections: 4
+      max_idle_connections: 4
+
+    jobs:
+      - job_name: immich
+        collectors: [immich_stats]
+        enable_ping: true
+        static_configs:
+          # The map key becomes the `target` label, so every series is named after the
+          # library it describes. Nothing here is addressed by IP.
+          - targets:
+              stefanos:  "postgres://postgres:__DB_PASSWORD__@postgres.immich.svc.cluster.local:5432/immich_stefanos?sslmode=disable"
+              marianna:  "postgres://postgres:__DB_PASSWORD__@postgres.immich.svc.cluster.local:5432/immich_marianna?sslmode=disable"
+              lightroom: "postgres://postgres:__DB_PASSWORD__@postgres.immich.svc.cluster.local:5432/immich_lightroom?sslmode=disable"
+              elwany:    "postgres://postgres:__DB_PASSWORD__@postgres.immich.svc.cluster.local:5432/immich_elwany?sslmode=disable"
+
+    collectors:
+      - collector_name: immich_stats
+        metrics:
+          # Matches Immich's own definition: not soft-deleted, and visibility <> 'hidden'
+          # (hidden is the video half of live/motion photos — counting it would double
+          # every iPhone photo).
+          - metric_name: immich_assets
+            type: gauge
+            help: 'Assets in the library by media type, excluding hidden and trashed assets.'
+            key_labels: [media_type]
+            values: [count]
+            query: |
+              SELECT 'photo' AS media_type, count(*)::bigint AS count
+              FROM asset a
+              WHERE a."deletedAt" IS NULL AND a.type = 'IMAGE' AND a.visibility <> 'hidden'
+              UNION ALL
+              SELECT 'video', count(*)::bigint
+              FROM asset a
+              WHERE a."deletedAt" IS NULL AND a.type = 'VIDEO' AND a.visibility <> 'hidden'
+
+          # Uploaded bytes only (libraryId IS NULL), exactly as the statistics API counts
+          # them, so this figure reconciles with the Immich UI.
+          - metric_name: immich_usage_bytes
+            type: gauge
+            help: 'Bytes of uploaded assets by media type. Excludes external libraries, matching the Immich statistics API.'
+            key_labels: [media_type]
+            values: [bytes]
+            query: |
+              SELECT 'photo' AS media_type, coalesce(sum(e."fileSizeInByte"), 0)::bigint AS bytes
+              FROM asset a JOIN asset_exif e ON e."assetId" = a.id
+              WHERE a."deletedAt" IS NULL AND a."libraryId" IS NULL AND a.type = 'IMAGE'
+              UNION ALL
+              SELECT 'video', coalesce(sum(e."fileSizeInByte"), 0)::bigint
+              FROM asset a JOIN asset_exif e ON e."assetId" = a.id
+              WHERE a."deletedAt" IS NULL AND a."libraryId" IS NULL AND a.type = 'VIDEO'
+
+          # The lightroom instance is 100% external library: 300k assets, 7.3 TB, all with
+          # libraryId set. Immich's statistics API reports usage: 0 for it. Without this
+          # metric its storage panel would read 0 B and look broken while holding 7 TB.
+          - metric_name: immich_external_library_bytes
+            type: gauge
+            help: 'Bytes of assets in external libraries. The Immich statistics API omits these entirely.'
+            values: [bytes]
+            query: |
+              SELECT coalesce(sum(e."fileSizeInByte"), 0)::bigint AS bytes
+              FROM asset a JOIN asset_exif e ON e."assetId" = a.id
+              WHERE a."deletedAt" IS NULL AND a."libraryId" IS NOT NULL
+
+          - metric_name: immich_users
+            type: gauge
+            help: 'Non-deleted user accounts.'
+            values: [count]
+            query: |
+              SELECT count(*)::bigint AS count FROM "user" WHERE "deletedAt" IS NULL
+
+          - metric_name: immich_trashed_assets
+            type: gauge
+            help: 'Assets in the trash, awaiting permanent deletion.'
+            values: [count]
+            query: |
+              SELECT count(*)::bigint AS count FROM asset WHERE "deletedAt" IS NOT NULL
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: immich-sql-exporter
+  namespace: immich
+  labels: { app: immich-sql-exporter }
+spec:
+  replicas: 1
+  selector:
+    matchLabels: { app: immich-sql-exporter }
+  template:
+    metadata:
+      labels: { app: immich-sql-exporter }
+      annotations:
+        # roll the pod when the queries change, otherwise the ConfigMap update is silent
+        checksum/config-version: "1"
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 65534
+        runAsGroup: 65534
+        fsGroup: 65534
+      initContainers:
+        # Renders the template into an emptyDir with the password injected. Keeps the
+        # credential out of Git and out of the ConfigMap, without inventing a new Secret.
+        - name: render-config
+          image: busybox:1.36.1
+          command:
+            - sh
+            - -c
+            - |
+              set -eu
+              sed "s|__DB_PASSWORD__|${DB_PASSWORD}|g" \
+                /template/sql_exporter.yml > /config/sql_exporter.yml
+              chmod 400 /config/sql_exporter.yml
+          env:
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: immich-secret
+                  key: POSTGRES_PASSWORD
+          volumeMounts:
+            - { name: template, mountPath: /template, readOnly: true }
+            - { name: config, mountPath: /config }
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities: { drop: ["ALL"] }
+          resources:
+            requests: { cpu: 5m, memory: 16Mi }
+            limits: { memory: 32Mi }
+      containers:
+        - name: sql-exporter
+          image: burningalchemist/sql_exporter:0.17.3
+          args:
+            - "-config.file=/config/sql_exporter.yml"
+            - "-web.listen-address=:9399"
+          ports:
+            - { name: http, containerPort: 9399 }
+          volumeMounts:
+            - { name: config, mountPath: /config, readOnly: true }
+          # /healthz exists on this image, unlike the pve exporter
+          startupProbe:
+            httpGet: { path: /healthz, port: http }
+            failureThreshold: 30
+            periodSeconds: 2
+          readinessProbe:
+            httpGet: { path: /healthz, port: http }
+            periodSeconds: 10
+          livenessProbe:
+            httpGet: { path: /healthz, port: http }
+            periodSeconds: 30
+          resources:
+            requests: { cpu: 10m, memory: 32Mi }
+            limits: { memory: 128Mi }
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities: { drop: ["ALL"] }
+      volumes:
+        - name: template
+          configMap: { name: immich-sql-exporter }
+        - name: config
+          emptyDir: { medium: Memory }
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: immich-sql-exporter
+  namespace: immich
+  labels: { app: immich-sql-exporter }
+spec:
+  selector: { app: immich-sql-exporter }
+  ports:
+    - { name: http, port: 9399, targetPort: http }
+---
+# The exporter lives in the immich namespace on purpose: the immich-postgres
+# NetworkPolicy only admits the immich namespace, so an exporter in `monitoring`
+# would be silently blocked and the target would sit permanently down.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: immich-sql-exporter
+  namespace: immich
+spec:
+  podSelector:
+    matchLabels: { app: immich-sql-exporter }
+  policyTypes: [Ingress]
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: monitoring
+      ports:
+        - { port: 9399, protocol: TCP }
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: immich-sql-exporter
+  namespace: immich
+  labels:
+    release: kube-prometheus-stack   # without this the Prometheus selector ignores it
+spec:
+  selector:
+    # matches the Service's own labels, not its pod selector
+    matchLabels: { app: immich-sql-exporter }
+  endpoints:
+    - port: http
+      interval: 2m
+      scrapeTimeout: 30s
+      relabelings:
+        # Without this, `instance` is the exporter's pod IP:port. Nothing in this
+        # estate should be labelled by IP where a human can read it, and a pod IP
+        # is meaningless the moment the pod reschedules anyway. Per-library
+        # identity lives on `target`; this label just names the exporter.
+        - action: replace
+          targetLabel: instance
+          replacement: immich-sql-exporter
+      metricRelabelings:
+        # sql_exporter emits its own per-database `up`, which is genuinely useful (it
+        # says whether each database answered) but would collide with Prometheus's own
+        # `up` and pollute every `up == 0` query in the estate. Rename it instead.
+        - action: replace
+          sourceLabels: [__name__]
+          regex: up
+          targetLabel: __name__
+          replacement: immich_db_up
+        # collides with the synthesized scrape_duration_seconds and adds nothing
+        - action: drop
+          sourceLabels: [__name__]
+          regex: scrape_duration_seconds
+        # the exporter's internal job label survives as exported_job; it is noise
+        - action: labeldrop
+          regex: exported_job

@@ -1,34 +1,40 @@
-# Homelab overview dashboard — the single screen that answers "is the estate OK?".
+# The one screen that answers "is the estate OK?" — every machine side by side.
+#
+# This is deliberately the ONLY estate-wide dashboard. A separate "Estate"
+# dashboard beside this one would be two dashboards for one subject, which is
+# the duplication this layout exists to remove.
+#
+# Traps baked into the queries here:
+#   * longhorn_volume_* is exported by all 5 longhorn-managers, so a naive
+#     count() reports ~294 volumes instead of 49 — hence count(count by (volume)).
+#   * node_memory_* / node_filesystem_* carry `instance`, NOT `node`. Grouping
+#     by node collapses all five hosts into one meaningless figure.
+#   * Unraid mounts 1 MB tmpfs stubs under /mnt (addons, remotes, rootshare,
+#     disks). They are excluded by fstype, not by name — /mnt/disks matches a
+#     "disk.*" name filter and drags a 0%% series through every array panel.
+#   * Speedtest metrics are speedtest_tracker_*, not speedtest_*. The old
+#     speedtest_download_bits / speedtest_ping_latency panels here were empty
+#     from the day they were written; those metric names never existed.
+#
+# Generated, not hand-edited. Every query in this file was executed against
+# Prometheus before the file was written; a panel that returned zero series
+# was fixed or dropped rather than shipped, because a "No data" panel reads
+# as an outage.
 #
 # Kept in Git as a ConfigMap rather than clicked together in Grafana's UI: a
-# dashboard that only exists in Grafana's SQLite DB is lost with the PVC and is
-# invisible to review. The sidecar (grafana-sc-dashboard) picks up any ConfigMap
-# labelled grafana_dashboard=1 in ANY namespace and drops it into Grafana.
+# dashboard that only exists in Grafana's SQLite DB dies with the PVC and is
+# invisible to review. The sidecar (grafana-sc-dashboard) picks up any
+# ConfigMap labelled grafana_dashboard=1 in ANY namespace.
 #
-# NAMES, NOT IPs — and the fix lives at the SOURCE, not here. `instance` is
-# relabelled to the node name at scrape time (prometheus values.yaml,
-# prometheus-node-exporter.prometheus.monitor.relabelings), so every dashboard in
-# Grafana — including the 25 stock ones — shows k3s-prg-r1 rather than
-# 192.168.1.201:9100. This dashboard therefore just uses {{instance}}; the earlier
-# kube_node_info join it carried is gone, because it would now break.
-# Proxmox still joins pve_guest_info to turn id="lxc/110" into name="xt-ml".
+# grafana_folder is load-bearing — without it the sidecar files the dashboard
+# under (General).
 #
-# Every panel query was executed against Prometheus BEFORE committing and confirmed
-# to return series — no speculative panels. Two corrections that came out of that
-# check and are worth not re-making:
-#   * longhorn_volume_* is exported by all 5 longhorn-managers, so a naive
-#     count() reports ~294 volumes instead of 49. Hence count(count by (volume) ...).
-#   * node_memory_* / node_filesystem_* carry `instance`, NOT `node`. Grouping by
-#     node collapses all five hosts into one meaningless 267% figure.
-# NAS row: both Unraid boxes run node-exporter on :9110 (9100 is MinIO on both).
-# Array disks are matched by mountpoint=~"/mnt/(disk|cache|dataservices|virtual).*"
-# rather than a flat /mnt/.* — Unraid also mounts several 1 MB tmpfs stubs under
-# /mnt (addons, remotes, rootshare, disks) that would otherwise sit at 0% and
-# clutter the panel.
-#
-# Panels that can legitimately be empty (degraded volumes, failed pods) use
-# `or vector(0)` so a healthy estate renders 0 rather than "No data".
----
+# NAMES, NOT IPs. `instance` is relabelled to the node name at scrape time
+# (prometheus values.yaml), so panels just use {{instance}}. Do NOT reintroduce
+# a kube_node_info or node_uname_info join to recover names: it would join on a
+# value that no longer exists. node_uname_info.nodename is worse than useless
+# here — it is mixed-case on k3s (K3s-prg-B3 vs k3s-prg-R1) and a Docker
+# container ID on both Unraid boxes.
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -36,43 +42,46 @@ metadata:
   namespace: monitoring
   labels:
     grafana_dashboard: "1"
+  annotations:
+    grafana_folder: "Homelab"
 data:
   homelab-overview.json: |
     {
-      "title": "Homelab \u2014 Overview",
       "uid": "homelab-overview",
+      "title": "Homelab — Estate Overview",
       "tags": [
         "homelab",
-        "overview"
+        "overview",
+        "estate"
       ],
       "timezone": "browser",
       "schemaVersion": 39,
       "version": 1,
       "refresh": "1m",
+      "editable": true,
+      "graphTooltip": 1,
       "time": {
         "from": "now-6h",
         "to": "now"
       },
-      "editable": true,
-      "graphTooltip": 1,
       "panels": [
         {
-          "type": "row",
-          "title": "At a glance",
           "id": 1,
+          "type": "row",
+          "title": "Estate at a glance",
+          "collapsed": false,
           "gridPos": {
             "h": 1,
             "w": 24,
             "x": 0,
             "y": 0
           },
-          "collapsed": false,
           "panels": []
         },
         {
-          "type": "stat",
-          "title": "Nodes Ready",
           "id": 2,
+          "type": "stat",
+          "title": "Hosts up",
           "datasource": {
             "type": "prometheus",
             "uid": "prometheus"
@@ -83,35 +92,11 @@ data:
             "x": 0,
             "y": 1
           },
-          "targets": [
-            {
-              "refId": "A",
-              "expr": "sum(kube_node_status_condition{condition=\"Ready\",status=\"true\"})",
-              "datasource": {
-                "type": "prometheus",
-                "uid": "prometheus"
-              },
-              "instant": true
-            }
-          ],
-          "options": {
-            "reduceOptions": {
-              "calcs": [
-                "lastNotNull"
-              ],
-              "fields": "",
-              "values": false
-            },
-            "orientation": "auto",
-            "textMode": "value",
-            "colorMode": "background",
-            "graphMode": "none",
-            "justifyMode": "auto"
-          },
           "fieldConfig": {
             "defaults": {
-              "unit": "none",
-              "decimals": 0,
+              "color": {
+                "mode": "thresholds"
+              },
               "mappings": [],
               "thresholds": {
                 "mode": "absolute",
@@ -121,23 +106,47 @@ data:
                     "value": null
                   },
                   {
-                    "color": "yellow",
-                    "value": 3
-                  },
-                  {
                     "color": "green",
-                    "value": 5
+                    "value": 1
                   }
                 ]
               }
             },
             "overrides": []
-          }
+          },
+          "options": {
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "orientation": "auto",
+            "textMode": "auto",
+            "colorMode": "value",
+            "graphMode": "none",
+            "justifyMode": "auto",
+            "text": {}
+          },
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "expr": "count(up{job=~\"node-exporter|unraid-node-exporter\"} == 1) or vector(0)",
+              "legendFormat": "",
+              "refId": "D",
+              "instant": true,
+              "range": false
+            }
+          ]
         },
         {
+          "id": 4,
           "type": "stat",
-          "title": "Pods Running",
-          "id": 3,
+          "title": "Hosts down",
           "datasource": {
             "type": "prometheus",
             "uid": "prometheus"
@@ -148,17 +157,28 @@ data:
             "x": 3,
             "y": 1
           },
-          "targets": [
-            {
-              "refId": "A",
-              "expr": "sum(kube_pod_status_phase{phase=\"Running\"})",
-              "datasource": {
-                "type": "prometheus",
-                "uid": "prometheus"
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
               },
-              "instant": true
-            }
-          ],
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 1
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
           "options": {
             "reduceOptions": {
               "calcs": [
@@ -168,33 +188,30 @@ data:
               "values": false
             },
             "orientation": "auto",
-            "textMode": "value",
-            "colorMode": "background",
+            "textMode": "auto",
+            "colorMode": "value",
             "graphMode": "none",
-            "justifyMode": "auto"
+            "justifyMode": "auto",
+            "text": {}
           },
-          "fieldConfig": {
-            "defaults": {
-              "unit": "none",
-              "decimals": 0,
-              "mappings": [],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green",
-                    "value": null
-                  }
-                ]
-              }
-            },
-            "overrides": []
-          }
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "expr": "count(up{job=~\"node-exporter|unraid-node-exporter\"} == 0) or vector(0)",
+              "legendFormat": "",
+              "refId": "F",
+              "instant": true,
+              "range": false
+            }
+          ]
         },
         {
+          "id": 6,
           "type": "stat",
-          "title": "Pods Failed",
-          "id": 4,
+          "title": "k8s nodes Ready",
           "datasource": {
             "type": "prometheus",
             "uid": "prometheus"
@@ -205,17 +222,28 @@ data:
             "x": 6,
             "y": 1
           },
-          "targets": [
-            {
-              "refId": "A",
-              "expr": "sum(kube_pod_status_phase{phase=\"Failed\"}) or vector(0)",
-              "datasource": {
-                "type": "prometheus",
-                "uid": "prometheus"
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
               },
-              "instant": true
-            }
-          ],
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "red",
+                    "value": null
+                  },
+                  {
+                    "color": "green",
+                    "value": 1
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
           "options": {
             "reduceOptions": {
               "calcs": [
@@ -225,41 +253,30 @@ data:
               "values": false
             },
             "orientation": "auto",
-            "textMode": "value",
-            "colorMode": "background",
+            "textMode": "auto",
+            "colorMode": "value",
             "graphMode": "none",
-            "justifyMode": "auto"
+            "justifyMode": "auto",
+            "text": {}
           },
-          "fieldConfig": {
-            "defaults": {
-              "unit": "none",
-              "decimals": 0,
-              "mappings": [],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green",
-                    "value": null
-                  },
-                  {
-                    "color": "yellow",
-                    "value": 1
-                  },
-                  {
-                    "color": "red",
-                    "value": 5
-                  }
-                ]
-              }
-            },
-            "overrides": []
-          }
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "expr": "sum(kube_node_status_condition{condition=\"Ready\",status=\"true\"}) or vector(0)",
+              "legendFormat": "",
+              "refId": "H",
+              "instant": true,
+              "range": false
+            }
+          ]
         },
         {
+          "id": 8,
           "type": "stat",
-          "title": "ArgoCD apps not Healthy",
-          "id": 5,
+          "title": "Pods running",
           "datasource": {
             "type": "prometheus",
             "uid": "prometheus"
@@ -270,17 +287,24 @@ data:
             "x": 9,
             "y": 1
           },
-          "targets": [
-            {
-              "refId": "A",
-              "expr": "sum(argocd_app_info) - sum(argocd_app_info{health_status=\"Healthy\"})",
-              "datasource": {
-                "type": "prometheus",
-                "uid": "prometheus"
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
               },
-              "instant": true
-            }
-          ],
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
           "options": {
             "reduceOptions": {
               "calcs": [
@@ -290,41 +314,30 @@ data:
               "values": false
             },
             "orientation": "auto",
-            "textMode": "value",
-            "colorMode": "background",
+            "textMode": "auto",
+            "colorMode": "value",
             "graphMode": "none",
-            "justifyMode": "auto"
+            "justifyMode": "auto",
+            "text": {}
           },
-          "fieldConfig": {
-            "defaults": {
-              "unit": "none",
-              "decimals": 0,
-              "mappings": [],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green",
-                    "value": null
-                  },
-                  {
-                    "color": "yellow",
-                    "value": 1
-                  },
-                  {
-                    "color": "red",
-                    "value": 3
-                  }
-                ]
-              }
-            },
-            "overrides": []
-          }
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "expr": "sum(kube_pod_status_phase{phase=\"Running\"}) or vector(0)",
+              "legendFormat": "",
+              "refId": "J",
+              "instant": true,
+              "range": false
+            }
+          ]
         },
         {
+          "id": 10,
           "type": "stat",
-          "title": "ArgoCD apps OutOfSync",
-          "id": 6,
+          "title": "Pods failed / pending",
           "datasource": {
             "type": "prometheus",
             "uid": "prometheus"
@@ -335,35 +348,11 @@ data:
             "x": 12,
             "y": 1
           },
-          "targets": [
-            {
-              "refId": "A",
-              "expr": "sum(argocd_app_info) - sum(argocd_app_info{sync_status=\"Synced\"})",
-              "datasource": {
-                "type": "prometheus",
-                "uid": "prometheus"
-              },
-              "instant": true
-            }
-          ],
-          "options": {
-            "reduceOptions": {
-              "calcs": [
-                "lastNotNull"
-              ],
-              "fields": "",
-              "values": false
-            },
-            "orientation": "auto",
-            "textMode": "value",
-            "colorMode": "background",
-            "graphMode": "none",
-            "justifyMode": "auto"
-          },
           "fieldConfig": {
             "defaults": {
-              "unit": "none",
-              "decimals": 0,
+              "color": {
+                "mode": "thresholds"
+              },
               "mappings": [],
               "thresholds": {
                 "mode": "absolute",
@@ -373,23 +362,47 @@ data:
                     "value": null
                   },
                   {
-                    "color": "yellow",
-                    "value": 1
-                  },
-                  {
                     "color": "red",
-                    "value": 3
+                    "value": 1
                   }
                 ]
               }
             },
             "overrides": []
-          }
+          },
+          "options": {
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "orientation": "auto",
+            "textMode": "auto",
+            "colorMode": "value",
+            "graphMode": "none",
+            "justifyMode": "auto",
+            "text": {}
+          },
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "expr": "sum(kube_pod_status_phase{phase=~\"Failed|Pending\"}) or vector(0)",
+              "legendFormat": "",
+              "refId": "L",
+              "instant": true,
+              "range": false
+            }
+          ]
         },
         {
+          "id": 12,
           "type": "stat",
-          "title": "Longhorn volumes",
-          "id": 7,
+          "title": "ArgoCD not Healthy",
           "datasource": {
             "type": "prometheus",
             "uid": "prometheus"
@@ -400,17 +413,28 @@ data:
             "x": 15,
             "y": 1
           },
-          "targets": [
-            {
-              "refId": "A",
-              "expr": "count(count by (volume) (longhorn_volume_state))",
-              "datasource": {
-                "type": "prometheus",
-                "uid": "prometheus"
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
               },
-              "instant": true
-            }
-          ],
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 1
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
           "options": {
             "reduceOptions": {
               "calcs": [
@@ -420,33 +444,30 @@ data:
               "values": false
             },
             "orientation": "auto",
-            "textMode": "value",
-            "colorMode": "background",
+            "textMode": "auto",
+            "colorMode": "value",
             "graphMode": "none",
-            "justifyMode": "auto"
+            "justifyMode": "auto",
+            "text": {}
           },
-          "fieldConfig": {
-            "defaults": {
-              "unit": "none",
-              "decimals": 0,
-              "mappings": [],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green",
-                    "value": null
-                  }
-                ]
-              }
-            },
-            "overrides": []
-          }
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "expr": "sum(argocd_app_info{health_status!=\"Healthy\"}) or vector(0)",
+              "legendFormat": "",
+              "refId": "N",
+              "instant": true,
+              "range": false
+            }
+          ]
         },
         {
+          "id": 14,
           "type": "stat",
-          "title": "Longhorn degraded",
-          "id": 8,
+          "title": "ArgoCD OutOfSync",
           "datasource": {
             "type": "prometheus",
             "uid": "prometheus"
@@ -457,35 +478,11 @@ data:
             "x": 18,
             "y": 1
           },
-          "targets": [
-            {
-              "refId": "A",
-              "expr": "count(count by (volume) (longhorn_volume_robustness{robustness=\"degraded\"} == 1)) or vector(0)",
-              "datasource": {
-                "type": "prometheus",
-                "uid": "prometheus"
-              },
-              "instant": true
-            }
-          ],
-          "options": {
-            "reduceOptions": {
-              "calcs": [
-                "lastNotNull"
-              ],
-              "fields": "",
-              "values": false
-            },
-            "orientation": "auto",
-            "textMode": "value",
-            "colorMode": "background",
-            "graphMode": "none",
-            "justifyMode": "auto"
-          },
           "fieldConfig": {
             "defaults": {
-              "unit": "none",
-              "decimals": 0,
+              "color": {
+                "mode": "thresholds"
+              },
               "mappings": [],
               "thresholds": {
                 "mode": "absolute",
@@ -495,23 +492,47 @@ data:
                     "value": null
                   },
                   {
-                    "color": "yellow",
-                    "value": 1
-                  },
-                  {
                     "color": "red",
-                    "value": 3
+                    "value": 1
                   }
                 ]
               }
             },
             "overrides": []
-          }
+          },
+          "options": {
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "orientation": "auto",
+            "textMode": "auto",
+            "colorMode": "value",
+            "graphMode": "none",
+            "justifyMode": "auto",
+            "text": {}
+          },
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "expr": "sum(argocd_app_info{sync_status!=\"Synced\"}) or vector(0)",
+              "legendFormat": "",
+              "refId": "P",
+              "instant": true,
+              "range": false
+            }
+          ]
         },
         {
+          "id": 16,
           "type": "stat",
-          "title": "Soonest cert expiry",
-          "id": 9,
+          "title": "Longhorn degraded",
           "datasource": {
             "type": "prometheus",
             "uid": "prometheus"
@@ -522,17 +543,28 @@ data:
             "x": 21,
             "y": 1
           },
-          "targets": [
-            {
-              "refId": "A",
-              "expr": "min(certmanager_certificate_expiration_timestamp_seconds - time())/86400",
-              "datasource": {
-                "type": "prometheus",
-                "uid": "prometheus"
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
               },
-              "instant": true
-            }
-          ],
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 1
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
           "options": {
             "reduceOptions": {
               "calcs": [
@@ -542,15 +574,168 @@ data:
               "values": false
             },
             "orientation": "auto",
-            "textMode": "value",
-            "colorMode": "background",
+            "textMode": "auto",
+            "colorMode": "value",
             "graphMode": "none",
-            "justifyMode": "auto"
+            "justifyMode": "auto",
+            "text": {}
+          },
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "expr": "sum(longhorn_volume_robustness{state=~\"degraded|faulted\"}) or vector(0)",
+              "legendFormat": "",
+              "refId": "R",
+              "instant": true,
+              "range": false
+            }
+          ]
+        },
+        {
+          "id": 18,
+          "type": "stat",
+          "title": "Longhorn volumes",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "gridPos": {
+            "h": 4,
+            "w": 3,
+            "x": 0,
+            "y": 5
           },
           "fieldConfig": {
             "defaults": {
-              "unit": "d",
-              "decimals": 0,
+              "color": {
+                "mode": "palette-classic"
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "options": {
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "orientation": "auto",
+            "textMode": "auto",
+            "colorMode": "value",
+            "graphMode": "none",
+            "justifyMode": "auto",
+            "text": {}
+          },
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "expr": "count(count by (volume) (longhorn_volume_actual_size_bytes)) or vector(0)",
+              "legendFormat": "",
+              "refId": "T",
+              "instant": true,
+              "range": false
+            }
+          ]
+        },
+        {
+          "id": 20,
+          "type": "stat",
+          "title": "Longhorn used",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "gridPos": {
+            "h": 4,
+            "w": 3,
+            "x": 3,
+            "y": 5
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  }
+                ]
+              },
+              "unit": "bytes"
+            },
+            "overrides": []
+          },
+          "options": {
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "orientation": "auto",
+            "textMode": "auto",
+            "colorMode": "value",
+            "graphMode": "none",
+            "justifyMode": "auto",
+            "text": {}
+          },
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "expr": "sum(max by (volume) (longhorn_volume_actual_size_bytes)) or vector(0)",
+              "legendFormat": "",
+              "refId": "V",
+              "instant": true,
+              "range": false
+            }
+          ]
+        },
+        {
+          "id": 22,
+          "type": "stat",
+          "title": "Soonest cert expiry",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "gridPos": {
+            "h": 4,
+            "w": 3,
+            "x": 6,
+            "y": 5
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
               "mappings": [],
               "thresholds": {
                 "mode": "absolute",
@@ -560,85 +745,69 @@ data:
                     "value": null
                   },
                   {
-                    "color": "yellow",
-                    "value": 7
+                    "color": "orange",
+                    "value": 604800
                   },
                   {
                     "color": "green",
-                    "value": 21
+                    "value": 1209600
                   }
                 ]
-              }
+              },
+              "unit": "s",
+              "decimals": 0
             },
             "overrides": []
-          }
+          },
+          "options": {
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "orientation": "auto",
+            "textMode": "auto",
+            "colorMode": "value",
+            "graphMode": "none",
+            "justifyMode": "auto",
+            "text": {}
+          },
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "expr": "(min(certmanager_certificate_expiration_timestamp_seconds) - time()) or vector(0)",
+              "legendFormat": "",
+              "refId": "X",
+              "instant": true,
+              "range": false
+            }
+          ]
         },
         {
-          "type": "row",
-          "title": "Cluster",
-          "id": 10,
+          "id": 24,
+          "type": "stat",
+          "title": "Ingress req/s",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
           "gridPos": {
-            "h": 1,
-            "w": 24,
-            "x": 0,
+            "h": 4,
+            "w": 3,
+            "x": 9,
             "y": 5
           },
-          "collapsed": false,
-          "panels": []
-        },
-        {
-          "type": "timeseries",
-          "title": "CPU % per node",
-          "id": 11,
-          "datasource": {
-            "type": "prometheus",
-            "uid": "prometheus"
-          },
-          "gridPos": {
-            "h": 8,
-            "w": 12,
-            "x": 0,
-            "y": 6
-          },
-          "targets": [
-            {
-              "refId": "A",
-              "expr": "100 - (avg by (instance) (rate(node_cpu_seconds_total{mode=\"idle\"}[5m])) * 100)",
-              "legendFormat": "{{instance}}",
-              "datasource": {
-                "type": "prometheus",
-                "uid": "prometheus"
-              }
-            }
-          ],
-          "options": {
-            "legend": {
-              "displayMode": "list",
-              "placement": "bottom",
-              "showLegend": true,
-              "calcs": []
-            },
-            "tooltip": {
-              "mode": "multi",
-              "sort": "desc"
-            }
-          },
           "fieldConfig": {
             "defaults": {
-              "unit": "percent",
-              "min": 0,
-              "max": 100,
-              "custom": {
-                "drawStyle": "line",
-                "lineWidth": 2,
-                "fillOpacity": 18,
-                "showPoints": "never",
-                "spanNulls": true,
-                "stacking": {
-                  "mode": "none"
-                },
-                "gradientMode": "opacity"
+              "color": {
+                "mode": "palette-classic"
               },
+              "mappings": [],
               "thresholds": {
                 "mode": "absolute",
                 "steps": [
@@ -647,276 +816,128 @@ data:
                     "value": null
                   }
                 ]
-              }
-            },
-            "overrides": []
-          }
-        },
-        {
-          "type": "timeseries",
-          "title": "Memory % per node",
-          "id": 12,
-          "datasource": {
-            "type": "prometheus",
-            "uid": "prometheus"
-          },
-          "gridPos": {
-            "h": 8,
-            "w": 12,
-            "x": 12,
-            "y": 6
-          },
-          "targets": [
-            {
-              "refId": "A",
-              "expr": "(1 - node_memory_MemAvailable_bytes/node_memory_MemTotal_bytes)*100",
-              "legendFormat": "{{instance}}",
-              "datasource": {
-                "type": "prometheus",
-                "uid": "prometheus"
-              }
-            }
-          ],
-          "options": {
-            "legend": {
-              "displayMode": "list",
-              "placement": "bottom",
-              "showLegend": true,
-              "calcs": []
-            },
-            "tooltip": {
-              "mode": "multi",
-              "sort": "desc"
-            }
-          },
-          "fieldConfig": {
-            "defaults": {
-              "unit": "percent",
-              "min": 0,
-              "max": 100,
-              "custom": {
-                "drawStyle": "line",
-                "lineWidth": 2,
-                "fillOpacity": 18,
-                "showPoints": "never",
-                "spanNulls": true,
-                "stacking": {
-                  "mode": "none"
-                },
-                "gradientMode": "opacity"
               },
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green",
-                    "value": null
-                  }
-                ]
-              }
-            },
-            "overrides": []
-          }
-        },
-        {
-          "type": "timeseries",
-          "title": "Root filesystem used % per node",
-          "id": 13,
-          "datasource": {
-            "type": "prometheus",
-            "uid": "prometheus"
-          },
-          "gridPos": {
-            "h": 8,
-            "w": 12,
-            "x": 0,
-            "y": 14
-          },
-          "targets": [
-            {
-              "refId": "A",
-              "expr": "(1 - node_filesystem_avail_bytes{mountpoint=\"/\",fstype!=\"rootfs\"}/node_filesystem_size_bytes{mountpoint=\"/\",fstype!=\"rootfs\"})*100",
-              "legendFormat": "{{instance}}",
-              "datasource": {
-                "type": "prometheus",
-                "uid": "prometheus"
-              }
-            }
-          ],
-          "options": {
-            "legend": {
-              "displayMode": "list",
-              "placement": "bottom",
-              "showLegend": true,
-              "calcs": []
-            },
-            "tooltip": {
-              "mode": "multi",
-              "sort": "desc"
-            }
-          },
-          "fieldConfig": {
-            "defaults": {
-              "unit": "percent",
-              "min": 0,
-              "max": 100,
-              "custom": {
-                "drawStyle": "line",
-                "lineWidth": 2,
-                "fillOpacity": 18,
-                "showPoints": "never",
-                "spanNulls": true,
-                "stacking": {
-                  "mode": "none"
-                },
-                "gradientMode": "opacity"
-              },
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green",
-                    "value": null
-                  }
-                ]
-              }
-            },
-            "overrides": []
-          }
-        },
-        {
-          "type": "timeseries",
-          "title": "Load average (1m)",
-          "id": 14,
-          "datasource": {
-            "type": "prometheus",
-            "uid": "prometheus"
-          },
-          "gridPos": {
-            "h": 8,
-            "w": 12,
-            "x": 12,
-            "y": 14
-          },
-          "targets": [
-            {
-              "refId": "A",
-              "expr": "node_load1",
-              "legendFormat": "{{instance}}",
-              "datasource": {
-                "type": "prometheus",
-                "uid": "prometheus"
-              }
-            }
-          ],
-          "options": {
-            "legend": {
-              "displayMode": "list",
-              "placement": "bottom",
-              "showLegend": true,
-              "calcs": []
-            },
-            "tooltip": {
-              "mode": "multi",
-              "sort": "desc"
-            }
-          },
-          "fieldConfig": {
-            "defaults": {
-              "unit": "none",
-              "min": 0,
-              "custom": {
-                "drawStyle": "line",
-                "lineWidth": 2,
-                "fillOpacity": 18,
-                "showPoints": "never",
-                "spanNulls": true,
-                "stacking": {
-                  "mode": "none"
-                },
-                "gradientMode": "opacity"
-              },
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green",
-                    "value": null
-                  }
-                ]
-              }
-            },
-            "overrides": []
-          }
-        },
-        {
-          "type": "row",
-          "title": "Ingress / public traffic",
-          "id": 15,
-          "gridPos": {
-            "h": 1,
-            "w": 24,
-            "x": 0,
-            "y": 22
-          },
-          "collapsed": false,
-          "panels": []
-        },
-        {
-          "type": "timeseries",
-          "title": "Requests per second by ingress",
-          "id": 16,
-          "datasource": {
-            "type": "prometheus",
-            "uid": "prometheus"
-          },
-          "gridPos": {
-            "h": 8,
-            "w": 12,
-            "x": 0,
-            "y": 23
-          },
-          "targets": [
-            {
-              "refId": "A",
-              "expr": "sum by (ingress) (rate(nginx_ingress_controller_requests[5m]))",
-              "legendFormat": "{{ingress}}",
-              "datasource": {
-                "type": "prometheus",
-                "uid": "prometheus"
-              }
-            }
-          ],
-          "options": {
-            "legend": {
-              "displayMode": "table",
-              "placement": "bottom",
-              "showLegend": true,
-              "calcs": [
-                "mean",
-                "max"
-              ]
-            },
-            "tooltip": {
-              "mode": "multi",
-              "sort": "desc"
-            }
-          },
-          "fieldConfig": {
-            "defaults": {
               "unit": "reqps",
-              "min": 0,
-              "custom": {
-                "drawStyle": "line",
-                "lineWidth": 2,
-                "fillOpacity": 18,
-                "showPoints": "never",
-                "spanNulls": true,
-                "stacking": {
-                  "mode": "normal"
-                },
-                "gradientMode": "opacity"
+              "decimals": 2
+            },
+            "overrides": []
+          },
+          "options": {
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "orientation": "auto",
+            "textMode": "auto",
+            "colorMode": "value",
+            "graphMode": "none",
+            "justifyMode": "auto",
+            "text": {}
+          },
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
               },
+              "expr": "sum(rate(nginx_ingress_controller_requests[5m])) or vector(0)",
+              "legendFormat": "",
+              "refId": "Z",
+              "instant": true,
+              "range": false
+            }
+          ]
+        },
+        {
+          "id": 26,
+          "type": "stat",
+          "title": "Ingress 5xx/s",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "gridPos": {
+            "h": 4,
+            "w": 3,
+            "x": 12,
+            "y": 5
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 1
+                  }
+                ]
+              },
+              "unit": "reqps",
+              "decimals": 3
+            },
+            "overrides": []
+          },
+          "options": {
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "orientation": "auto",
+            "textMode": "auto",
+            "colorMode": "value",
+            "graphMode": "none",
+            "justifyMode": "auto",
+            "text": {}
+          },
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "expr": "sum(rate(nginx_ingress_controller_requests{status=~\"5..\"}[5m])) or vector(0)",
+              "legendFormat": "",
+              "refId": "B",
+              "instant": true,
+              "range": false
+            }
+          ]
+        },
+        {
+          "id": 28,
+          "type": "stat",
+          "title": "Proxmox guests running",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "gridPos": {
+            "h": 4,
+            "w": 3,
+            "x": 15,
+            "y": 5
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "mappings": [],
               "thresholds": {
                 "mode": "absolute",
                 "steps": [
@@ -928,170 +949,56 @@ data:
               }
             },
             "overrides": []
-          }
-        },
-        {
-          "type": "timeseries",
-          "title": "HTTP status classes",
-          "id": 17,
-          "datasource": {
-            "type": "prometheus",
-            "uid": "prometheus"
           },
-          "gridPos": {
-            "h": 8,
-            "w": 12,
-            "x": 12,
-            "y": 23
+          "options": {
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "orientation": "auto",
+            "textMode": "auto",
+            "colorMode": "value",
+            "graphMode": "none",
+            "justifyMode": "auto",
+            "text": {}
           },
           "targets": [
             {
-              "refId": "A",
-              "expr": "sum by (status) (rate(nginx_ingress_controller_requests{status=~\"2..\"}[5m]))",
-              "legendFormat": "2xx",
               "datasource": {
                 "type": "prometheus",
                 "uid": "prometheus"
-              }
-            },
-            {
-              "refId": "B",
-              "expr": "sum by (status) (rate(nginx_ingress_controller_requests{status=~\"3..\"}[5m]))",
-              "legendFormat": "3xx",
-              "datasource": {
-                "type": "prometheus",
-                "uid": "prometheus"
-              }
-            },
-            {
-              "refId": "C",
-              "expr": "sum(rate(nginx_ingress_controller_requests{status=~\"4..\"}[5m]))",
-              "legendFormat": "4xx",
-              "datasource": {
-                "type": "prometheus",
-                "uid": "prometheus"
-              }
-            },
-            {
+              },
+              "expr": "count(pve_up == 1 and on (id) pve_guest_info) or vector(0)",
+              "legendFormat": "",
               "refId": "D",
-              "expr": "sum(rate(nginx_ingress_controller_requests{status=~\"5..\"}[5m]))",
-              "legendFormat": "5xx",
-              "datasource": {
-                "type": "prometheus",
-                "uid": "prometheus"
-              }
+              "instant": true,
+              "range": false
             }
-          ],
-          "options": {
-            "legend": {
-              "displayMode": "list",
-              "placement": "bottom",
-              "showLegend": true,
-              "calcs": []
-            },
-            "tooltip": {
-              "mode": "multi",
-              "sort": "desc"
-            }
-          },
-          "fieldConfig": {
-            "defaults": {
-              "unit": "reqps",
-              "min": 0,
-              "custom": {
-                "drawStyle": "line",
-                "lineWidth": 2,
-                "fillOpacity": 18,
-                "showPoints": "never",
-                "spanNulls": true,
-                "stacking": {
-                  "mode": "none"
-                },
-                "gradientMode": "opacity"
-              },
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green",
-                    "value": null
-                  }
-                ]
-              }
-            },
-            "overrides": []
-          }
+          ]
         },
         {
-          "type": "timeseries",
-          "title": "Request latency p50 / p95 / p99",
-          "id": 18,
+          "id": 30,
+          "type": "stat",
+          "title": "NAS array used",
           "datasource": {
             "type": "prometheus",
             "uid": "prometheus"
           },
           "gridPos": {
-            "h": 7,
-            "w": 24,
-            "x": 0,
-            "y": 31
-          },
-          "targets": [
-            {
-              "refId": "A",
-              "expr": "histogram_quantile(0.50,sum by (le) (rate(nginx_ingress_controller_request_duration_seconds_bucket[5m])))",
-              "legendFormat": "p50",
-              "datasource": {
-                "type": "prometheus",
-                "uid": "prometheus"
-              }
-            },
-            {
-              "refId": "B",
-              "expr": "histogram_quantile(0.95,sum by (le) (rate(nginx_ingress_controller_request_duration_seconds_bucket[5m])))",
-              "legendFormat": "p95",
-              "datasource": {
-                "type": "prometheus",
-                "uid": "prometheus"
-              }
-            },
-            {
-              "refId": "C",
-              "expr": "histogram_quantile(0.99,sum by (le) (rate(nginx_ingress_controller_request_duration_seconds_bucket[5m])))",
-              "legendFormat": "p99",
-              "datasource": {
-                "type": "prometheus",
-                "uid": "prometheus"
-              }
-            }
-          ],
-          "options": {
-            "legend": {
-              "displayMode": "list",
-              "placement": "bottom",
-              "showLegend": true,
-              "calcs": []
-            },
-            "tooltip": {
-              "mode": "multi",
-              "sort": "desc"
-            }
+            "h": 4,
+            "w": 3,
+            "x": 18,
+            "y": 5
           },
           "fieldConfig": {
             "defaults": {
-              "unit": "s",
-              "min": 0,
-              "custom": {
-                "drawStyle": "line",
-                "lineWidth": 2,
-                "fillOpacity": 18,
-                "showPoints": "never",
-                "spanNulls": true,
-                "stacking": {
-                  "mode": "none"
-                },
-                "gradientMode": "opacity"
+              "color": {
+                "mode": "palette-classic"
               },
+              "mappings": [],
               "thresholds": {
                 "mode": "absolute",
                 "steps": [
@@ -1100,57 +1007,172 @@ data:
                     "value": null
                   }
                 ]
-              }
+              },
+              "unit": "bytes"
             },
             "overrides": []
-          }
+          },
+          "options": {
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "orientation": "auto",
+            "textMode": "auto",
+            "colorMode": "value",
+            "graphMode": "none",
+            "justifyMode": "auto",
+            "text": {}
+          },
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "expr": "sum(node_filesystem_size_bytes{job=\"unraid-node-exporter\",fstype!~\"tmpfs|ramfs|overlay|squashfs|iso9660|devtmpfs|nsfs|autofs\",mountpoint=~\"/mnt/.*\"}) - sum(node_filesystem_avail_bytes{job=\"unraid-node-exporter\",fstype!~\"tmpfs|ramfs|overlay|squashfs|iso9660|devtmpfs|nsfs|autofs\",mountpoint=~\"/mnt/.*\"}) or vector(0)",
+              "legendFormat": "",
+              "refId": "F",
+              "instant": true,
+              "range": false
+            }
+          ]
         },
         {
+          "id": 32,
+          "type": "stat",
+          "title": "NAS array free",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "gridPos": {
+            "h": 4,
+            "w": 3,
+            "x": 21,
+            "y": 5
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  }
+                ]
+              },
+              "unit": "bytes"
+            },
+            "overrides": []
+          },
+          "options": {
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "orientation": "auto",
+            "textMode": "auto",
+            "colorMode": "value",
+            "graphMode": "none",
+            "justifyMode": "auto",
+            "text": {}
+          },
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "expr": "sum(node_filesystem_avail_bytes{job=\"unraid-node-exporter\",fstype!~\"tmpfs|ramfs|overlay|squashfs|iso9660|devtmpfs|nsfs|autofs\",mountpoint=~\"/mnt/.*\"}) or vector(0)",
+              "legendFormat": "",
+              "refId": "H",
+              "instant": true,
+              "range": false
+            }
+          ]
+        },
+        {
+          "id": 34,
           "type": "row",
-          "title": "Storage \u2014 Longhorn",
-          "id": 19,
+          "title": "Every machine, side by side",
+          "collapsed": false,
           "gridPos": {
             "h": 1,
             "w": 24,
             "x": 0,
-            "y": 38
+            "y": 9
           },
-          "collapsed": false,
           "panels": []
         },
         {
+          "id": 37,
           "type": "timeseries",
-          "title": "Volume actual size (top 10)",
-          "id": 20,
+          "title": "CPU busy % — all hosts",
           "datasource": {
             "type": "prometheus",
             "uid": "prometheus"
           },
           "gridPos": {
-            "h": 8,
+            "h": 9,
             "w": 12,
             "x": 0,
-            "y": 39
+            "y": 10
           },
-          "targets": [
-            {
-              "refId": "A",
-              "expr": "topk(10, max by (volume) (longhorn_volume_actual_size_bytes))",
-              "legendFormat": "{{volume}}",
-              "datasource": {
-                "type": "prometheus",
-                "uid": "prometheus"
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  }
+                ]
+              },
+              "unit": "percent",
+              "min": 0,
+              "max": 100,
+              "custom": {
+                "drawStyle": "line",
+                "lineInterpolation": "smooth",
+                "lineWidth": 2,
+                "fillOpacity": 8,
+                "gradientMode": "opacity",
+                "showPoints": "never",
+                "spanNulls": true,
+                "axisPlacement": "auto",
+                "scaleDistribution": {
+                  "type": "linear"
+                }
               }
-            }
-          ],
+            },
+            "overrides": []
+          },
           "options": {
             "legend": {
-              "displayMode": "table",
+              "displayMode": "list",
               "placement": "bottom",
               "showLegend": true,
               "calcs": [
                 "mean",
-                "max"
+                "max",
+                "lastNotNull"
               ]
             },
             "tooltip": {
@@ -1158,21 +1180,52 @@ data:
               "sort": "desc"
             }
           },
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "expr": "100 - (avg by (instance) (rate(node_cpu_seconds_total{job=~\"node-exporter|unraid-node-exporter\",mode=\"idle\"}[5m])) * 100)",
+              "legendFormat": "{{instance}}",
+              "refId": "J",
+              "instant": false,
+              "range": true
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "expr": "100 * (pve_cpu_usage_ratio{id=\"node/pve\"} / pve_cpu_usage_limit{id=\"node/pve\"})",
+              "legendFormat": "pve",
+              "refId": "K",
+              "instant": false,
+              "range": true
+            }
+          ],
+          "description": "k3s nodes, both NAS boxes and the Proxmox host on one axis. Proxmox reports a ratio against its own core count, so it is normalised to a percentage here."
+        },
+        {
+          "id": 40,
+          "type": "timeseries",
+          "title": "Memory used % — all hosts",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "gridPos": {
+            "h": 9,
+            "w": 12,
+            "x": 12,
+            "y": 10
+          },
           "fieldConfig": {
             "defaults": {
-              "unit": "bytes",
-              "min": 0,
-              "custom": {
-                "drawStyle": "line",
-                "lineWidth": 2,
-                "fillOpacity": 18,
-                "showPoints": "never",
-                "spanNulls": true,
-                "stacking": {
-                  "mode": "none"
-                },
-                "gradientMode": "opacity"
+              "color": {
+                "mode": "palette-classic"
               },
+              "mappings": [],
               "thresholds": {
                 "mode": "absolute",
                 "steps": [
@@ -1181,102 +1234,71 @@ data:
                     "value": null
                   }
                 ]
+              },
+              "unit": "percent",
+              "min": 0,
+              "max": 100,
+              "custom": {
+                "drawStyle": "line",
+                "lineInterpolation": "smooth",
+                "lineWidth": 2,
+                "fillOpacity": 8,
+                "gradientMode": "opacity",
+                "showPoints": "never",
+                "spanNulls": true,
+                "axisPlacement": "auto",
+                "scaleDistribution": {
+                  "type": "linear"
+                }
               }
             },
             "overrides": []
-          }
-        },
-        {
-          "type": "timeseries",
-          "title": "Node storage available",
-          "id": 21,
-          "datasource": {
-            "type": "prometheus",
-            "uid": "prometheus"
           },
-          "gridPos": {
-            "h": 8,
-            "w": 12,
-            "x": 12,
-            "y": 39
-          },
-          "targets": [
-            {
-              "refId": "A",
-              "expr": "longhorn_node_storage_usage_bytes",
-              "legendFormat": "{{node}} used",
-              "datasource": {
-                "type": "prometheus",
-                "uid": "prometheus"
-              }
-            },
-            {
-              "refId": "B",
-              "expr": "longhorn_node_storage_capacity_bytes",
-              "legendFormat": "{{node}} capacity",
-              "datasource": {
-                "type": "prometheus",
-                "uid": "prometheus"
-              }
-            }
-          ],
           "options": {
             "legend": {
               "displayMode": "list",
               "placement": "bottom",
               "showLegend": true,
-              "calcs": []
+              "calcs": [
+                "mean",
+                "max",
+                "lastNotNull"
+              ]
             },
             "tooltip": {
               "mode": "multi",
               "sort": "desc"
             }
           },
-          "fieldConfig": {
-            "defaults": {
-              "unit": "bytes",
-              "min": 0,
-              "custom": {
-                "drawStyle": "line",
-                "lineWidth": 2,
-                "fillOpacity": 18,
-                "showPoints": "never",
-                "spanNulls": true,
-                "stacking": {
-                  "mode": "none"
-                },
-                "gradientMode": "opacity"
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
               },
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green",
-                    "value": null
-                  }
-                ]
-              }
+              "expr": "100 * (1 - node_memory_MemAvailable_bytes{job=~\"node-exporter|unraid-node-exporter\"} / node_memory_MemTotal_bytes{job=~\"node-exporter|unraid-node-exporter\"})",
+              "legendFormat": "{{instance}}",
+              "refId": "M",
+              "instant": false,
+              "range": true
             },
-            "overrides": []
-          }
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "expr": "100 * (pve_memory_usage_bytes{id=\"node/pve\"} / pve_memory_size_bytes{id=\"node/pve\"})",
+              "legendFormat": "pve",
+              "refId": "N",
+              "instant": false,
+              "range": true
+            }
+          ]
         },
         {
-          "type": "row",
-          "title": "Internet \u2014 Speedtest (hourly)",
-          "id": 22,
-          "gridPos": {
-            "h": 1,
-            "w": 24,
-            "x": 0,
-            "y": 47
-          },
-          "collapsed": false,
-          "panels": []
-        },
-        {
+          "id": 42,
           "type": "timeseries",
-          "title": "Download",
-          "id": 23,
+          "title": "Load average (1m) — all hosts",
           "datasource": {
             "type": "prometheus",
             "uid": "prometheus"
@@ -1285,55 +1307,14 @@ data:
             "h": 8,
             "w": 8,
             "x": 0,
-            "y": 48
-          },
-          "targets": [
-            {
-              "refId": "A",
-              "expr": "speedtest_download_bits{nas=\"repy\"}",
-              "legendFormat": "Repy (Prague)",
-              "datasource": {
-                "type": "prometheus",
-                "uid": "prometheus"
-              }
-            },
-            {
-              "refId": "B",
-              "expr": "speedtest_download_bits{nas=\"ptolemaida\"}",
-              "legendFormat": "Ptolemaida (Greece)",
-              "datasource": {
-                "type": "prometheus",
-                "uid": "prometheus"
-              }
-            }
-          ],
-          "options": {
-            "legend": {
-              "displayMode": "list",
-              "placement": "bottom",
-              "showLegend": true,
-              "calcs": []
-            },
-            "tooltip": {
-              "mode": "multi",
-              "sort": "desc"
-            }
+            "y": 19
           },
           "fieldConfig": {
             "defaults": {
-              "unit": "bps",
-              "min": 0,
-              "custom": {
-                "drawStyle": "line",
-                "lineWidth": 2,
-                "fillOpacity": 18,
-                "showPoints": "never",
-                "spanNulls": true,
-                "stacking": {
-                  "mode": "none"
-                },
-                "gradientMode": "opacity"
+              "color": {
+                "mode": "palette-classic"
               },
+              "mappings": [],
               "thresholds": {
                 "mode": "absolute",
                 "steps": [
@@ -1342,15 +1323,56 @@ data:
                     "value": null
                   }
                 ]
+              },
+              "min": 0,
+              "custom": {
+                "drawStyle": "line",
+                "lineInterpolation": "smooth",
+                "lineWidth": 2,
+                "fillOpacity": 8,
+                "gradientMode": "opacity",
+                "showPoints": "never",
+                "spanNulls": true,
+                "axisPlacement": "auto",
+                "scaleDistribution": {
+                  "type": "linear"
+                }
               }
             },
             "overrides": []
-          }
+          },
+          "options": {
+            "legend": {
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": true,
+              "calcs": [
+                "lastNotNull"
+              ]
+            },
+            "tooltip": {
+              "mode": "multi",
+              "sort": "desc"
+            }
+          },
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "expr": "node_load1{job=~\"node-exporter|unraid-node-exporter\"}",
+              "legendFormat": "{{instance}}",
+              "refId": "P",
+              "instant": false,
+              "range": true
+            }
+          ]
         },
         {
+          "id": 45,
           "type": "timeseries",
-          "title": "Upload",
-          "id": 24,
+          "title": "Network throughput — all hosts",
           "datasource": {
             "type": "prometheus",
             "uid": "prometheus"
@@ -1359,55 +1381,14 @@ data:
             "h": 8,
             "w": 8,
             "x": 8,
-            "y": 48
-          },
-          "targets": [
-            {
-              "refId": "A",
-              "expr": "speedtest_upload_bits{nas=\"repy\"}",
-              "legendFormat": "Repy (Prague)",
-              "datasource": {
-                "type": "prometheus",
-                "uid": "prometheus"
-              }
-            },
-            {
-              "refId": "B",
-              "expr": "speedtest_upload_bits{nas=\"ptolemaida\"}",
-              "legendFormat": "Ptolemaida (Greece)",
-              "datasource": {
-                "type": "prometheus",
-                "uid": "prometheus"
-              }
-            }
-          ],
-          "options": {
-            "legend": {
-              "displayMode": "list",
-              "placement": "bottom",
-              "showLegend": true,
-              "calcs": []
-            },
-            "tooltip": {
-              "mode": "multi",
-              "sort": "desc"
-            }
+            "y": 19
           },
           "fieldConfig": {
             "defaults": {
-              "unit": "bps",
-              "min": 0,
-              "custom": {
-                "drawStyle": "line",
-                "lineWidth": 2,
-                "fillOpacity": 18,
-                "showPoints": "never",
-                "spanNulls": true,
-                "stacking": {
-                  "mode": "none"
-                },
-                "gradientMode": "opacity"
+              "color": {
+                "mode": "palette-classic"
               },
+              "mappings": [],
               "thresholds": {
                 "mode": "absolute",
                 "steps": [
@@ -1416,45 +1397,24 @@ data:
                     "value": null
                   }
                 ]
+              },
+              "unit": "Bps",
+              "custom": {
+                "drawStyle": "line",
+                "lineInterpolation": "smooth",
+                "lineWidth": 2,
+                "fillOpacity": 8,
+                "gradientMode": "opacity",
+                "showPoints": "never",
+                "spanNulls": true,
+                "axisPlacement": "auto",
+                "scaleDistribution": {
+                  "type": "linear"
+                }
               }
             },
             "overrides": []
-          }
-        },
-        {
-          "type": "timeseries",
-          "title": "Ping",
-          "id": 25,
-          "datasource": {
-            "type": "prometheus",
-            "uid": "prometheus"
           },
-          "gridPos": {
-            "h": 8,
-            "w": 8,
-            "x": 16,
-            "y": 48
-          },
-          "targets": [
-            {
-              "refId": "A",
-              "expr": "speedtest_ping_latency{nas=\"repy\"}",
-              "legendFormat": "Repy (Prague)",
-              "datasource": {
-                "type": "prometheus",
-                "uid": "prometheus"
-              }
-            },
-            {
-              "refId": "B",
-              "expr": "speedtest_ping_latency{nas=\"ptolemaida\"}",
-              "legendFormat": "Ptolemaida (Greece)",
-              "datasource": {
-                "type": "prometheus",
-                "uid": "prometheus"
-              }
-            }
-          ],
           "options": {
             "legend": {
               "displayMode": "list",
@@ -1467,470 +1427,1359 @@ data:
               "sort": "desc"
             }
           },
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "expr": "sum by (instance) (rate(node_network_receive_bytes_total{job=~\"node-exporter|unraid-node-exporter\",device!~\"lo|veth.*|cni.*|flannel.*|docker.*|br-.*|kube-.*|tailscale.*|virbr.*|dummy.*\"}[5m]))",
+              "legendFormat": "{{instance}} in",
+              "refId": "R",
+              "instant": false,
+              "range": true
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "expr": "-sum by (instance) (rate(node_network_transmit_bytes_total{job=~\"node-exporter|unraid-node-exporter\",device!~\"lo|veth.*|cni.*|flannel.*|docker.*|br-.*|kube-.*|tailscale.*|virbr.*|dummy.*\"}[5m]))",
+              "legendFormat": "{{instance}} out",
+              "refId": "S",
+              "instant": false,
+              "range": true
+            }
+          ]
+        },
+        {
+          "id": 47,
+          "type": "timeseries",
+          "title": "Hottest sensor per host",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 8,
+            "x": 16,
+            "y": 19
+          },
           "fieldConfig": {
             "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  }
+                ]
+              },
+              "unit": "celsius",
+              "custom": {
+                "drawStyle": "line",
+                "lineInterpolation": "smooth",
+                "lineWidth": 2,
+                "fillOpacity": 8,
+                "gradientMode": "opacity",
+                "showPoints": "never",
+                "spanNulls": true,
+                "axisPlacement": "auto",
+                "scaleDistribution": {
+                  "type": "linear"
+                }
+              }
+            },
+            "overrides": []
+          },
+          "options": {
+            "legend": {
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": true,
+              "calcs": [
+                "max",
+                "lastNotNull"
+              ]
+            },
+            "tooltip": {
+              "mode": "multi",
+              "sort": "desc"
+            }
+          },
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "expr": "max by (instance) (node_hwmon_temp_celsius{job=~\"node-exporter|unraid-node-exporter\"})",
+              "legendFormat": "{{instance}}",
+              "refId": "U",
+              "instant": false,
+              "range": true
+            }
+          ]
+        },
+        {
+          "id": 55,
+          "type": "table",
+          "title": "Machine roll-call",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "gridPos": {
+            "h": 9,
+            "w": 24,
+            "x": 0,
+            "y": 27
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  }
+                ]
+              },
+              "custom": {
+                "align": "auto",
+                "filterable": false
+              }
+            },
+            "overrides": [
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Up"
+                },
+                "properties": [
+                  {
+                    "id": "mappings",
+                    "value": [
+                      {
+                        "type": "value",
+                        "options": {
+                          "0": {
+                            "text": "DOWN",
+                            "color": "red",
+                            "index": 0
+                          },
+                          "1": {
+                            "text": "UP",
+                            "color": "green",
+                            "index": 1
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "id": "custom.cellOptions",
+                    "value": {
+                      "type": "color-text"
+                    }
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byRegexp",
+                  "options": "CPU %|Memory %"
+                },
+                "properties": [
+                  {
+                    "id": "unit",
+                    "value": "percent"
+                  },
+                  {
+                    "id": "decimals",
+                    "value": 1
+                  },
+                  {
+                    "id": "min",
+                    "value": 0
+                  },
+                  {
+                    "id": "max",
+                    "value": 100
+                  },
+                  {
+                    "id": "custom.cellOptions",
+                    "value": {
+                      "type": "gauge",
+                      "mode": "gradient"
+                    }
+                  },
+                  {
+                    "id": "thresholds",
+                    "value": {
+                      "mode": "absolute",
+                      "steps": [
+                        {
+                          "color": "green",
+                          "value": null
+                        },
+                        {
+                          "color": "orange",
+                          "value": 70
+                        },
+                        {
+                          "color": "red",
+                          "value": 85
+                        }
+                      ]
+                    }
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "RAM"
+                },
+                "properties": [
+                  {
+                    "id": "unit",
+                    "value": "bytes"
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Uptime"
+                },
+                "properties": [
+                  {
+                    "id": "unit",
+                    "value": "s"
+                  },
+                  {
+                    "id": "decimals",
+                    "value": 0
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Hottest"
+                },
+                "properties": [
+                  {
+                    "id": "unit",
+                    "value": "celsius"
+                  },
+                  {
+                    "id": "decimals",
+                    "value": 1
+                  },
+                  {
+                    "id": "custom.cellOptions",
+                    "value": {
+                      "type": "color-background"
+                    }
+                  },
+                  {
+                    "id": "thresholds",
+                    "value": {
+                      "mode": "absolute",
+                      "steps": [
+                        {
+                          "color": "green",
+                          "value": null
+                        },
+                        {
+                          "color": "orange",
+                          "value": 60
+                        },
+                        {
+                          "color": "red",
+                          "value": 75
+                        }
+                      ]
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          "options": {
+            "showHeader": true,
+            "footer": {
+              "show": false
+            },
+            "cellHeight": "sm"
+          },
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "expr": "up{job=~\"node-exporter|unraid-node-exporter\"}",
+              "legendFormat": "",
+              "refId": "W",
+              "instant": true,
+              "range": false
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "expr": "100 - (avg by (instance) (rate(node_cpu_seconds_total{job=~\"node-exporter|unraid-node-exporter\",mode=\"idle\"}[5m])) * 100)",
+              "legendFormat": "",
+              "refId": "X",
+              "instant": true,
+              "range": false
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "expr": "100 * (1 - node_memory_MemAvailable_bytes{job=~\"node-exporter|unraid-node-exporter\"} / node_memory_MemTotal_bytes{job=~\"node-exporter|unraid-node-exporter\"})",
+              "legendFormat": "",
+              "refId": "Y",
+              "instant": true,
+              "range": false
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "expr": "node_memory_MemTotal_bytes{job=~\"node-exporter|unraid-node-exporter\"}",
+              "legendFormat": "",
+              "refId": "Z",
+              "instant": true,
+              "range": false
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "expr": "sum by (instance) (count by (instance, cpu) (node_cpu_seconds_total{job=~\"node-exporter|unraid-node-exporter\",mode=\"idle\"}))",
+              "legendFormat": "",
+              "refId": "A",
+              "instant": true,
+              "range": false
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "expr": "time() - node_boot_time_seconds{job=~\"node-exporter|unraid-node-exporter\"}",
+              "legendFormat": "",
+              "refId": "B",
+              "instant": true,
+              "range": false
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "expr": "max by (instance) (node_hwmon_temp_celsius{job=~\"node-exporter|unraid-node-exporter\"})",
+              "legendFormat": "",
+              "refId": "C",
+              "instant": true,
+              "range": false
+            }
+          ],
+          "transformations": [
+            {
+              "id": "joinByField",
+              "options": {
+                "byField": "instance",
+                "mode": "outer"
+              }
+            },
+            {
+              "id": "organize",
+              "options": {
+                "excludeByName": {
+                  "Time": true,
+                  "Time 1": true,
+                  "Time 2": true,
+                  "Time 3": true,
+                  "Time 4": true,
+                  "Time 5": true,
+                  "Time 6": true,
+                  "Time 7": true,
+                  "job": true,
+                  "job 1": true,
+                  "job 2": true,
+                  "container": true,
+                  "endpoint": true,
+                  "namespace": true,
+                  "pod": true,
+                  "service": true,
+                  "nas": true,
+                  "site": true,
+                  "__name__": true
+                },
+                "indexByName": {
+                  "instance": 0,
+                  "Value #A": 1,
+                  "Value #E": 2,
+                  "Value #D": 3,
+                  "Value #B": 4,
+                  "Value #C": 5,
+                  "Value #G": 6,
+                  "Value #F": 7
+                },
+                "renameByName": {
+                  "instance": "Host",
+                  "Value #A": "Up",
+                  "Value #B": "CPU %",
+                  "Value #C": "Memory %",
+                  "Value #D": "RAM",
+                  "Value #E": "Cores",
+                  "Value #F": "Uptime",
+                  "Value #G": "Hottest"
+                }
+              }
+            }
+          ],
+          "description": "Every physical host in the estate in one table. Proxmox is absent by design: pve-exporter reports the hypervisor, not a node_exporter host, and mixing the two would mean two different definitions of 'CPU %' in one column."
+        },
+        {
+          "id": 56,
+          "type": "row",
+          "title": "Storage",
+          "collapsed": false,
+          "gridPos": {
+            "h": 1,
+            "w": 24,
+            "x": 0,
+            "y": 36
+          },
+          "panels": []
+        },
+        {
+          "id": 58,
+          "type": "timeseries",
+          "title": "NAS array disk used %",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 8,
+            "x": 0,
+            "y": 37
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  }
+                ]
+              },
+              "unit": "percent",
+              "min": 0,
+              "max": 100,
+              "custom": {
+                "drawStyle": "line",
+                "lineInterpolation": "smooth",
+                "lineWidth": 2,
+                "fillOpacity": 8,
+                "gradientMode": "opacity",
+                "showPoints": "never",
+                "spanNulls": true,
+                "axisPlacement": "auto",
+                "scaleDistribution": {
+                  "type": "linear"
+                }
+              }
+            },
+            "overrides": []
+          },
+          "options": {
+            "legend": {
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": true,
+              "calcs": [
+                "lastNotNull"
+              ]
+            },
+            "tooltip": {
+              "mode": "multi",
+              "sort": "desc"
+            }
+          },
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "expr": "100 * (1 - node_filesystem_avail_bytes{job=\"unraid-node-exporter\",fstype!~\"tmpfs|ramfs|overlay|squashfs|iso9660|devtmpfs|nsfs|autofs\",mountpoint=~\"/mnt/.*\"} / node_filesystem_size_bytes{job=\"unraid-node-exporter\",fstype!~\"tmpfs|ramfs|overlay|squashfs|iso9660|devtmpfs|nsfs|autofs\",mountpoint=~\"/mnt/.*\"})",
+              "legendFormat": "{{nas}} {{mountpoint}}",
+              "refId": "F",
+              "instant": false,
+              "range": true
+            }
+          ]
+        },
+        {
+          "id": 60,
+          "type": "timeseries",
+          "title": "k3s node root filesystem used %",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 8,
+            "x": 8,
+            "y": 37
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  }
+                ]
+              },
+              "unit": "percent",
+              "min": 0,
+              "max": 100,
+              "custom": {
+                "drawStyle": "line",
+                "lineInterpolation": "smooth",
+                "lineWidth": 2,
+                "fillOpacity": 8,
+                "gradientMode": "opacity",
+                "showPoints": "never",
+                "spanNulls": true,
+                "axisPlacement": "auto",
+                "scaleDistribution": {
+                  "type": "linear"
+                }
+              }
+            },
+            "overrides": []
+          },
+          "options": {
+            "legend": {
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": true,
+              "calcs": [
+                "lastNotNull"
+              ]
+            },
+            "tooltip": {
+              "mode": "multi",
+              "sort": "desc"
+            }
+          },
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "expr": "100 * (1 - node_filesystem_avail_bytes{job=\"node-exporter\",mountpoint=\"/\"} / node_filesystem_size_bytes{job=\"node-exporter\",mountpoint=\"/\"})",
+              "legendFormat": "{{instance}}",
+              "refId": "H",
+              "instant": false,
+              "range": true
+            }
+          ]
+        },
+        {
+          "id": 62,
+          "type": "timeseries",
+          "title": "Longhorn — top 10 volumes by size",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 8,
+            "x": 16,
+            "y": 37
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  }
+                ]
+              },
+              "unit": "bytes",
+              "min": 0,
+              "custom": {
+                "drawStyle": "line",
+                "lineInterpolation": "smooth",
+                "lineWidth": 2,
+                "fillOpacity": 8,
+                "gradientMode": "opacity",
+                "showPoints": "never",
+                "spanNulls": true,
+                "axisPlacement": "auto",
+                "scaleDistribution": {
+                  "type": "linear"
+                }
+              }
+            },
+            "overrides": []
+          },
+          "options": {
+            "legend": {
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": true,
+              "calcs": []
+            },
+            "tooltip": {
+              "mode": "multi",
+              "sort": "desc"
+            }
+          },
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "expr": "topk(10, max by (pvc_namespace, pvc) (longhorn_volume_actual_size_bytes))",
+              "legendFormat": "{{pvc_namespace}}/{{pvc}}",
+              "refId": "J",
+              "instant": false,
+              "range": true
+            }
+          ]
+        },
+        {
+          "id": 63,
+          "type": "row",
+          "title": "Platform",
+          "collapsed": false,
+          "gridPos": {
+            "h": 1,
+            "w": 24,
+            "x": 0,
+            "y": 45
+          },
+          "panels": []
+        },
+        {
+          "id": 65,
+          "type": "timeseries",
+          "title": "Ingress requests/sec by host",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 8,
+            "x": 0,
+            "y": 46
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  }
+                ]
+              },
+              "unit": "reqps",
+              "min": 0,
+              "custom": {
+                "drawStyle": "line",
+                "lineInterpolation": "smooth",
+                "lineWidth": 2,
+                "fillOpacity": 35,
+                "gradientMode": "opacity",
+                "showPoints": "never",
+                "spanNulls": true,
+                "axisPlacement": "auto",
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "stacking": {
+                  "mode": "normal",
+                  "group": "A"
+                }
+              }
+            },
+            "overrides": []
+          },
+          "options": {
+            "legend": {
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": true,
+              "calcs": []
+            },
+            "tooltip": {
+              "mode": "multi",
+              "sort": "desc"
+            }
+          },
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "expr": "sum by (host) (rate(nginx_ingress_controller_requests[5m]))",
+              "legendFormat": "{{host}}",
+              "refId": "M",
+              "instant": false,
+              "range": true
+            }
+          ]
+        },
+        {
+          "id": 67,
+          "type": "timeseries",
+          "title": "Ingress responses by status class",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 8,
+            "x": 8,
+            "y": 46
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  }
+                ]
+              },
+              "unit": "reqps",
+              "min": 0,
+              "custom": {
+                "drawStyle": "line",
+                "lineInterpolation": "smooth",
+                "lineWidth": 2,
+                "fillOpacity": 35,
+                "gradientMode": "opacity",
+                "showPoints": "never",
+                "spanNulls": true,
+                "axisPlacement": "auto",
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "stacking": {
+                  "mode": "normal",
+                  "group": "A"
+                }
+              }
+            },
+            "overrides": []
+          },
+          "options": {
+            "legend": {
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": true,
+              "calcs": []
+            },
+            "tooltip": {
+              "mode": "multi",
+              "sort": "desc"
+            }
+          },
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "expr": "sum by (status) (rate(nginx_ingress_controller_requests[5m]))",
+              "legendFormat": "{{status}}",
+              "refId": "O",
+              "instant": false,
+              "range": true
+            }
+          ]
+        },
+        {
+          "id": 69,
+          "type": "timeseries",
+          "title": "Certificate days until expiry",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 8,
+            "x": 16,
+            "y": 46
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  }
+                ]
+              },
+              "unit": "d",
+              "custom": {
+                "drawStyle": "line",
+                "lineInterpolation": "smooth",
+                "lineWidth": 2,
+                "fillOpacity": 8,
+                "gradientMode": "opacity",
+                "showPoints": "never",
+                "spanNulls": true,
+                "axisPlacement": "auto",
+                "scaleDistribution": {
+                  "type": "linear"
+                }
+              }
+            },
+            "overrides": []
+          },
+          "options": {
+            "legend": {
+              "displayMode": "hidden",
+              "placement": "bottom",
+              "showLegend": true,
+              "calcs": []
+            },
+            "tooltip": {
+              "mode": "multi",
+              "sort": "desc"
+            }
+          },
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "expr": "(certmanager_certificate_expiration_timestamp_seconds - time()) / 86400",
+              "legendFormat": "{{exported_namespace}}/{{name}}",
+              "refId": "Q",
+              "instant": false,
+              "range": true
+            }
+          ]
+        },
+        {
+          "id": 71,
+          "type": "timeseries",
+          "title": "ArgoCD apps by health",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 8,
+            "x": 0,
+            "y": 54
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  }
+                ]
+              },
+              "min": 0,
+              "custom": {
+                "drawStyle": "line",
+                "lineInterpolation": "smooth",
+                "lineWidth": 2,
+                "fillOpacity": 35,
+                "gradientMode": "opacity",
+                "showPoints": "never",
+                "spanNulls": true,
+                "axisPlacement": "auto",
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "stacking": {
+                  "mode": "normal",
+                  "group": "A"
+                }
+              }
+            },
+            "overrides": []
+          },
+          "options": {
+            "legend": {
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": true,
+              "calcs": []
+            },
+            "tooltip": {
+              "mode": "multi",
+              "sort": "desc"
+            }
+          },
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "expr": "sum by (health_status) (argocd_app_info)",
+              "legendFormat": "{{health_status}}",
+              "refId": "S",
+              "instant": false,
+              "range": true
+            }
+          ]
+        },
+        {
+          "id": 73,
+          "type": "timeseries",
+          "title": "Proxmox guest CPU %",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 8,
+            "x": 8,
+            "y": 54
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  }
+                ]
+              },
+              "unit": "percent",
+              "min": 0,
+              "custom": {
+                "drawStyle": "line",
+                "lineInterpolation": "smooth",
+                "lineWidth": 2,
+                "fillOpacity": 8,
+                "gradientMode": "opacity",
+                "showPoints": "never",
+                "spanNulls": true,
+                "axisPlacement": "auto",
+                "scaleDistribution": {
+                  "type": "linear"
+                }
+              }
+            },
+            "overrides": []
+          },
+          "options": {
+            "legend": {
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": true,
+              "calcs": []
+            },
+            "tooltip": {
+              "mode": "multi",
+              "sort": "desc"
+            }
+          },
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "expr": "100 * (pve_cpu_usage_ratio / pve_cpu_usage_limit) * on (id) group_left (name) pve_guest_info",
+              "legendFormat": "{{name}}",
+              "refId": "U",
+              "instant": false,
+              "range": true
+            }
+          ]
+        },
+        {
+          "id": 75,
+          "type": "timeseries",
+          "title": "Container restarts (1h)",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 8,
+            "x": 16,
+            "y": 54
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  }
+                ]
+              },
+              "min": 0,
+              "custom": {
+                "drawStyle": "line",
+                "lineInterpolation": "smooth",
+                "lineWidth": 2,
+                "fillOpacity": 8,
+                "gradientMode": "opacity",
+                "showPoints": "never",
+                "spanNulls": true,
+                "axisPlacement": "auto",
+                "scaleDistribution": {
+                  "type": "linear"
+                }
+              }
+            },
+            "overrides": []
+          },
+          "options": {
+            "legend": {
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": true,
+              "calcs": []
+            },
+            "tooltip": {
+              "mode": "multi",
+              "sort": "desc"
+            }
+          },
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "expr": "topk(10, sum by (namespace) (increase(kube_pod_container_status_restarts_total[1h])))",
+              "legendFormat": "{{namespace}}",
+              "refId": "W",
+              "instant": false,
+              "range": true
+            }
+          ]
+        },
+        {
+          "id": 76,
+          "type": "row",
+          "title": "Internet links",
+          "collapsed": false,
+          "gridPos": {
+            "h": 1,
+            "w": 24,
+            "x": 0,
+            "y": 62
+          },
+          "panels": []
+        },
+        {
+          "id": 78,
+          "type": "timeseries",
+          "title": "Download",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 8,
+            "x": 0,
+            "y": 63
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  }
+                ]
+              },
+              "unit": "bps",
+              "min": 0,
+              "custom": {
+                "drawStyle": "line",
+                "lineInterpolation": "smooth",
+                "lineWidth": 2,
+                "fillOpacity": 8,
+                "gradientMode": "opacity",
+                "showPoints": "never",
+                "spanNulls": true,
+                "axisPlacement": "auto",
+                "scaleDistribution": {
+                  "type": "linear"
+                }
+              }
+            },
+            "overrides": []
+          },
+          "options": {
+            "legend": {
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": true,
+              "calcs": [
+                "mean",
+                "lastNotNull"
+              ]
+            },
+            "tooltip": {
+              "mode": "multi",
+              "sort": "desc"
+            }
+          },
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "expr": "max by (nas) (speedtest_tracker_download_bits)",
+              "legendFormat": "{{nas}}",
+              "refId": "Z",
+              "instant": false,
+              "range": true
+            }
+          ]
+        },
+        {
+          "id": 80,
+          "type": "timeseries",
+          "title": "Upload",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 8,
+            "x": 8,
+            "y": 63
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  }
+                ]
+              },
+              "unit": "bps",
+              "min": 0,
+              "custom": {
+                "drawStyle": "line",
+                "lineInterpolation": "smooth",
+                "lineWidth": 2,
+                "fillOpacity": 8,
+                "gradientMode": "opacity",
+                "showPoints": "never",
+                "spanNulls": true,
+                "axisPlacement": "auto",
+                "scaleDistribution": {
+                  "type": "linear"
+                }
+              }
+            },
+            "overrides": []
+          },
+          "options": {
+            "legend": {
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": true,
+              "calcs": [
+                "mean",
+                "lastNotNull"
+              ]
+            },
+            "tooltip": {
+              "mode": "multi",
+              "sort": "desc"
+            }
+          },
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "expr": "max by (nas) (speedtest_tracker_upload_bits)",
+              "legendFormat": "{{nas}}",
+              "refId": "B",
+              "instant": false,
+              "range": true
+            }
+          ]
+        },
+        {
+          "id": 82,
+          "type": "timeseries",
+          "title": "Ping",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 8,
+            "x": 16,
+            "y": 63
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  }
+                ]
+              },
               "unit": "ms",
               "min": 0,
               "custom": {
                 "drawStyle": "line",
+                "lineInterpolation": "smooth",
                 "lineWidth": 2,
-                "fillOpacity": 18,
+                "fillOpacity": 8,
+                "gradientMode": "opacity",
                 "showPoints": "never",
                 "spanNulls": true,
-                "stacking": {
-                  "mode": "none"
-                },
-                "gradientMode": "opacity"
-              },
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green",
-                    "value": null
-                  }
-                ]
+                "axisPlacement": "auto",
+                "scaleDistribution": {
+                  "type": "linear"
+                }
               }
             },
             "overrides": []
-          }
-        },
-        {
-          "type": "row",
-          "title": "NAS \u2014 Unraid (Repy / Ptolemaida)",
-          "id": 26,
-          "gridPos": {
-            "h": 1,
-            "w": 24,
-            "x": 0,
-            "y": 56
           },
-          "collapsed": false,
-          "panels": []
-        },
-        {
-          "type": "stat",
-          "title": "Repy array used",
-          "id": 27,
-          "datasource": {
-            "type": "prometheus",
-            "uid": "prometheus"
-          },
-          "gridPos": {
-            "h": 4,
-            "w": 4,
-            "x": 0,
-            "y": 57
-          },
-          "targets": [
-            {
-              "refId": "A",
-              "expr": "max((1-node_filesystem_avail_bytes{job=\"unraid-node-exporter\",nas=\"repy\",mountpoint=~\"/mnt/disk.*\"}/node_filesystem_size_bytes{job=\"unraid-node-exporter\",nas=\"repy\",mountpoint=~\"/mnt/disk.*\"})*100)",
-              "datasource": {
-                "type": "prometheus",
-                "uid": "prometheus"
-              },
-              "instant": true
-            }
-          ],
-          "options": {
-            "reduceOptions": {
-              "calcs": [
-                "lastNotNull"
-              ],
-              "fields": "",
-              "values": false
-            },
-            "orientation": "auto",
-            "textMode": "value",
-            "colorMode": "background",
-            "graphMode": "none",
-            "justifyMode": "auto"
-          },
-          "fieldConfig": {
-            "defaults": {
-              "unit": "percent",
-              "decimals": 0,
-              "mappings": [],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green",
-                    "value": null
-                  },
-                  {
-                    "color": "yellow",
-                    "value": 80
-                  },
-                  {
-                    "color": "red",
-                    "value": 90
-                  }
-                ]
-              }
-            },
-            "overrides": []
-          }
-        },
-        {
-          "type": "stat",
-          "title": "Ptolemaida array used",
-          "id": 28,
-          "datasource": {
-            "type": "prometheus",
-            "uid": "prometheus"
-          },
-          "gridPos": {
-            "h": 4,
-            "w": 4,
-            "x": 4,
-            "y": 57
-          },
-          "targets": [
-            {
-              "refId": "A",
-              "expr": "max((1-node_filesystem_avail_bytes{job=\"unraid-node-exporter\",nas=\"ptolemaida\",mountpoint=~\"/mnt/disk.*\"}/node_filesystem_size_bytes{job=\"unraid-node-exporter\",nas=\"ptolemaida\",mountpoint=~\"/mnt/disk.*\"})*100)",
-              "datasource": {
-                "type": "prometheus",
-                "uid": "prometheus"
-              },
-              "instant": true
-            }
-          ],
-          "options": {
-            "reduceOptions": {
-              "calcs": [
-                "lastNotNull"
-              ],
-              "fields": "",
-              "values": false
-            },
-            "orientation": "auto",
-            "textMode": "value",
-            "colorMode": "background",
-            "graphMode": "none",
-            "justifyMode": "auto"
-          },
-          "fieldConfig": {
-            "defaults": {
-              "unit": "percent",
-              "decimals": 0,
-              "mappings": [],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green",
-                    "value": null
-                  },
-                  {
-                    "color": "yellow",
-                    "value": 80
-                  },
-                  {
-                    "color": "red",
-                    "value": 90
-                  }
-                ]
-              }
-            },
-            "overrides": []
-          }
-        },
-        {
-          "type": "stat",
-          "title": "Repy hottest",
-          "id": 29,
-          "datasource": {
-            "type": "prometheus",
-            "uid": "prometheus"
-          },
-          "gridPos": {
-            "h": 4,
-            "w": 4,
-            "x": 8,
-            "y": 57
-          },
-          "targets": [
-            {
-              "refId": "A",
-              "expr": "max(node_hwmon_temp_celsius{job=\"unraid-node-exporter\",nas=\"repy\"})",
-              "datasource": {
-                "type": "prometheus",
-                "uid": "prometheus"
-              },
-              "instant": true
-            }
-          ],
-          "options": {
-            "reduceOptions": {
-              "calcs": [
-                "lastNotNull"
-              ],
-              "fields": "",
-              "values": false
-            },
-            "orientation": "auto",
-            "textMode": "value",
-            "colorMode": "background",
-            "graphMode": "none",
-            "justifyMode": "auto"
-          },
-          "fieldConfig": {
-            "defaults": {
-              "unit": "celsius",
-              "decimals": 0,
-              "mappings": [],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green",
-                    "value": null
-                  },
-                  {
-                    "color": "yellow",
-                    "value": 55
-                  },
-                  {
-                    "color": "red",
-                    "value": 65
-                  }
-                ]
-              }
-            },
-            "overrides": []
-          }
-        },
-        {
-          "type": "stat",
-          "title": "Ptolemaida hottest",
-          "id": 30,
-          "datasource": {
-            "type": "prometheus",
-            "uid": "prometheus"
-          },
-          "gridPos": {
-            "h": 4,
-            "w": 4,
-            "x": 12,
-            "y": 57
-          },
-          "targets": [
-            {
-              "refId": "A",
-              "expr": "max(node_hwmon_temp_celsius{job=\"unraid-node-exporter\",nas=\"ptolemaida\"})",
-              "datasource": {
-                "type": "prometheus",
-                "uid": "prometheus"
-              },
-              "instant": true
-            }
-          ],
-          "options": {
-            "reduceOptions": {
-              "calcs": [
-                "lastNotNull"
-              ],
-              "fields": "",
-              "values": false
-            },
-            "orientation": "auto",
-            "textMode": "value",
-            "colorMode": "background",
-            "graphMode": "none",
-            "justifyMode": "auto"
-          },
-          "fieldConfig": {
-            "defaults": {
-              "unit": "celsius",
-              "decimals": 0,
-              "mappings": [],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green",
-                    "value": null
-                  },
-                  {
-                    "color": "yellow",
-                    "value": 55
-                  },
-                  {
-                    "color": "red",
-                    "value": 65
-                  }
-                ]
-              }
-            },
-            "overrides": []
-          }
-        },
-        {
-          "type": "stat",
-          "title": "Repy memory",
-          "id": 31,
-          "datasource": {
-            "type": "prometheus",
-            "uid": "prometheus"
-          },
-          "gridPos": {
-            "h": 4,
-            "w": 4,
-            "x": 16,
-            "y": 57
-          },
-          "targets": [
-            {
-              "refId": "A",
-              "expr": "(1-node_memory_MemAvailable_bytes{job=\"unraid-node-exporter\",nas=\"repy\"}/node_memory_MemTotal_bytes{job=\"unraid-node-exporter\",nas=\"repy\"})*100",
-              "datasource": {
-                "type": "prometheus",
-                "uid": "prometheus"
-              },
-              "instant": true
-            }
-          ],
-          "options": {
-            "reduceOptions": {
-              "calcs": [
-                "lastNotNull"
-              ],
-              "fields": "",
-              "values": false
-            },
-            "orientation": "auto",
-            "textMode": "value",
-            "colorMode": "background",
-            "graphMode": "none",
-            "justifyMode": "auto"
-          },
-          "fieldConfig": {
-            "defaults": {
-              "unit": "percent",
-              "decimals": 0,
-              "mappings": [],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green",
-                    "value": null
-                  },
-                  {
-                    "color": "yellow",
-                    "value": 85
-                  },
-                  {
-                    "color": "red",
-                    "value": 95
-                  }
-                ]
-              }
-            },
-            "overrides": []
-          }
-        },
-        {
-          "type": "stat",
-          "title": "Ptolemaida memory",
-          "id": 32,
-          "datasource": {
-            "type": "prometheus",
-            "uid": "prometheus"
-          },
-          "gridPos": {
-            "h": 4,
-            "w": 4,
-            "x": 20,
-            "y": 57
-          },
-          "targets": [
-            {
-              "refId": "A",
-              "expr": "(1-node_memory_MemAvailable_bytes{job=\"unraid-node-exporter\",nas=\"ptolemaida\"}/node_memory_MemTotal_bytes{job=\"unraid-node-exporter\",nas=\"ptolemaida\"})*100",
-              "datasource": {
-                "type": "prometheus",
-                "uid": "prometheus"
-              },
-              "instant": true
-            }
-          ],
-          "options": {
-            "reduceOptions": {
-              "calcs": [
-                "lastNotNull"
-              ],
-              "fields": "",
-              "values": false
-            },
-            "orientation": "auto",
-            "textMode": "value",
-            "colorMode": "background",
-            "graphMode": "none",
-            "justifyMode": "auto"
-          },
-          "fieldConfig": {
-            "defaults": {
-              "unit": "percent",
-              "decimals": 0,
-              "mappings": [],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green",
-                    "value": null
-                  },
-                  {
-                    "color": "yellow",
-                    "value": 85
-                  },
-                  {
-                    "color": "red",
-                    "value": 95
-                  }
-                ]
-              }
-            },
-            "overrides": []
-          }
-        },
-        {
-          "type": "timeseries",
-          "title": "Array disk used % \u2014 per disk, both NAS",
-          "id": 33,
-          "datasource": {
-            "type": "prometheus",
-            "uid": "prometheus"
-          },
-          "gridPos": {
-            "h": 8,
-            "w": 12,
-            "x": 0,
-            "y": 61
-          },
-          "targets": [
-            {
-              "refId": "A",
-              "expr": "(1-node_filesystem_avail_bytes{job=\"unraid-node-exporter\",mountpoint=~\"/mnt/(disk|cache|dataservices|virtual).*\"}/node_filesystem_size_bytes{job=\"unraid-node-exporter\",mountpoint=~\"/mnt/(disk|cache|dataservices|virtual).*\"})*100",
-              "legendFormat": "{{nas}} {{mountpoint}}",
-              "datasource": {
-                "type": "prometheus",
-                "uid": "prometheus"
-              }
-            }
-          ],
           "options": {
             "legend": {
-              "displayMode": "table",
+              "displayMode": "list",
               "placement": "bottom",
               "showLegend": true,
               "calcs": [
                 "mean",
-                "max"
+                "lastNotNull"
               ]
             },
             "tooltip": {
@@ -1938,450 +2787,26 @@ data:
               "sort": "desc"
             }
           },
-          "fieldConfig": {
-            "defaults": {
-              "unit": "percent",
-              "min": 0,
-              "max": 100,
-              "custom": {
-                "drawStyle": "line",
-                "lineWidth": 2,
-                "fillOpacity": 18,
-                "showPoints": "never",
-                "spanNulls": true,
-                "stacking": {
-                  "mode": "none"
-                },
-                "gradientMode": "opacity"
-              },
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green",
-                    "value": null
-                  }
-                ]
-              }
-            },
-            "overrides": []
-          }
-        },
-        {
-          "type": "timeseries",
-          "title": "NAS temperatures",
-          "id": 34,
-          "datasource": {
-            "type": "prometheus",
-            "uid": "prometheus"
-          },
-          "gridPos": {
-            "h": 8,
-            "w": 12,
-            "x": 12,
-            "y": 61
-          },
           "targets": [
             {
-              "refId": "A",
-              "expr": "node_hwmon_temp_celsius{job=\"unraid-node-exporter\"}",
-              "legendFormat": "{{nas}} {{chip}}",
               "datasource": {
                 "type": "prometheus",
                 "uid": "prometheus"
-              }
-            }
-          ],
-          "options": {
-            "legend": {
-              "displayMode": "list",
-              "placement": "bottom",
-              "showLegend": true,
-              "calcs": []
-            },
-            "tooltip": {
-              "mode": "multi",
-              "sort": "desc"
-            }
-          },
-          "fieldConfig": {
-            "defaults": {
-              "unit": "celsius",
-              "min": null,
-              "custom": {
-                "drawStyle": "line",
-                "lineWidth": 2,
-                "fillOpacity": 18,
-                "showPoints": "never",
-                "spanNulls": true,
-                "stacking": {
-                  "mode": "none"
-                },
-                "gradientMode": "opacity"
               },
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green",
-                    "value": null
-                  }
-                ]
-              }
-            },
-            "overrides": []
-          }
-        },
-        {
-          "type": "timeseries",
-          "title": "NAS CPU %",
-          "id": 35,
-          "datasource": {
-            "type": "prometheus",
-            "uid": "prometheus"
-          },
-          "gridPos": {
-            "h": 8,
-            "w": 12,
-            "x": 0,
-            "y": 69
-          },
-          "targets": [
-            {
-              "refId": "A",
-              "expr": "100 - (avg by (nas) (rate(node_cpu_seconds_total{job=\"unraid-node-exporter\",mode=\"idle\"}[5m])) * 100)",
+              "expr": "max by (nas) (speedtest_tracker_ping_ms)",
               "legendFormat": "{{nas}}",
-              "datasource": {
-                "type": "prometheus",
-                "uid": "prometheus"
-              }
+              "refId": "D",
+              "instant": false,
+              "range": true
             }
-          ],
-          "options": {
-            "legend": {
-              "displayMode": "list",
-              "placement": "bottom",
-              "showLegend": true,
-              "calcs": []
-            },
-            "tooltip": {
-              "mode": "multi",
-              "sort": "desc"
-            }
-          },
-          "fieldConfig": {
-            "defaults": {
-              "unit": "percent",
-              "min": 0,
-              "max": 100,
-              "custom": {
-                "drawStyle": "line",
-                "lineWidth": 2,
-                "fillOpacity": 18,
-                "showPoints": "never",
-                "spanNulls": true,
-                "stacking": {
-                  "mode": "none"
-                },
-                "gradientMode": "opacity"
-              },
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green",
-                    "value": null
-                  }
-                ]
-              }
-            },
-            "overrides": []
-          }
-        },
-        {
-          "type": "timeseries",
-          "title": "NAS network throughput",
-          "id": 36,
-          "datasource": {
-            "type": "prometheus",
-            "uid": "prometheus"
-          },
-          "gridPos": {
-            "h": 8,
-            "w": 12,
-            "x": 12,
-            "y": 69
-          },
-          "targets": [
-            {
-              "refId": "A",
-              "expr": "sum by (nas) (rate(node_network_receive_bytes_total{job=\"unraid-node-exporter\",device!~\"lo|docker.*|veth.*|br-.*\"}[5m]))*8",
-              "legendFormat": "{{nas}} rx",
-              "datasource": {
-                "type": "prometheus",
-                "uid": "prometheus"
-              }
-            },
-            {
-              "refId": "B",
-              "expr": "sum by (nas) (rate(node_network_transmit_bytes_total{job=\"unraid-node-exporter\",device!~\"lo|docker.*|veth.*|br-.*\"}[5m]))*8",
-              "legendFormat": "{{nas}} tx",
-              "datasource": {
-                "type": "prometheus",
-                "uid": "prometheus"
-              }
-            }
-          ],
-          "options": {
-            "legend": {
-              "displayMode": "list",
-              "placement": "bottom",
-              "showLegend": true,
-              "calcs": []
-            },
-            "tooltip": {
-              "mode": "multi",
-              "sort": "desc"
-            }
-          },
-          "fieldConfig": {
-            "defaults": {
-              "unit": "bps",
-              "min": 0,
-              "custom": {
-                "drawStyle": "line",
-                "lineWidth": 2,
-                "fillOpacity": 18,
-                "showPoints": "never",
-                "spanNulls": true,
-                "stacking": {
-                  "mode": "none"
-                },
-                "gradientMode": "opacity"
-              },
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green",
-                    "value": null
-                  }
-                ]
-              }
-            },
-            "overrides": []
-          }
-        },
-        {
-          "type": "row",
-          "title": "Platform \u2014 ArgoCD, certs, Proxmox",
-          "id": 37,
-          "gridPos": {
-            "h": 1,
-            "w": 24,
-            "x": 0,
-            "y": 77
-          },
-          "collapsed": false,
-          "panels": []
-        },
-        {
-          "type": "timeseries",
-          "title": "ArgoCD apps by health",
-          "id": 38,
-          "datasource": {
-            "type": "prometheus",
-            "uid": "prometheus"
-          },
-          "gridPos": {
-            "h": 8,
-            "w": 8,
-            "x": 0,
-            "y": 78
-          },
-          "targets": [
-            {
-              "refId": "A",
-              "expr": "sum by (health_status) (argocd_app_info)",
-              "legendFormat": "{{health_status}}",
-              "datasource": {
-                "type": "prometheus",
-                "uid": "prometheus"
-              }
-            }
-          ],
-          "options": {
-            "legend": {
-              "displayMode": "list",
-              "placement": "bottom",
-              "showLegend": true,
-              "calcs": []
-            },
-            "tooltip": {
-              "mode": "multi",
-              "sort": "desc"
-            }
-          },
-          "fieldConfig": {
-            "defaults": {
-              "unit": "none",
-              "min": 0,
-              "custom": {
-                "drawStyle": "line",
-                "lineWidth": 2,
-                "fillOpacity": 18,
-                "showPoints": "never",
-                "spanNulls": true,
-                "stacking": {
-                  "mode": "normal"
-                },
-                "gradientMode": "opacity"
-              },
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green",
-                    "value": null
-                  }
-                ]
-              }
-            },
-            "overrides": []
-          }
-        },
-        {
-          "type": "timeseries",
-          "title": "Certificate days until expiry",
-          "id": 39,
-          "datasource": {
-            "type": "prometheus",
-            "uid": "prometheus"
-          },
-          "gridPos": {
-            "h": 8,
-            "w": 8,
-            "x": 8,
-            "y": 78
-          },
-          "targets": [
-            {
-              "refId": "A",
-              "expr": "(certmanager_certificate_expiration_timestamp_seconds - time())/86400",
-              "legendFormat": "{{name}}",
-              "datasource": {
-                "type": "prometheus",
-                "uid": "prometheus"
-              }
-            }
-          ],
-          "options": {
-            "legend": {
-              "displayMode": "table",
-              "placement": "bottom",
-              "showLegend": true,
-              "calcs": [
-                "mean",
-                "max"
-              ]
-            },
-            "tooltip": {
-              "mode": "multi",
-              "sort": "desc"
-            }
-          },
-          "fieldConfig": {
-            "defaults": {
-              "unit": "d",
-              "min": 0,
-              "custom": {
-                "drawStyle": "line",
-                "lineWidth": 2,
-                "fillOpacity": 18,
-                "showPoints": "never",
-                "spanNulls": true,
-                "stacking": {
-                  "mode": "none"
-                },
-                "gradientMode": "opacity"
-              },
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green",
-                    "value": null
-                  }
-                ]
-              }
-            },
-            "overrides": []
-          }
-        },
-        {
-          "type": "timeseries",
-          "title": "Proxmox guest CPU",
-          "id": 40,
-          "datasource": {
-            "type": "prometheus",
-            "uid": "prometheus"
-          },
-          "gridPos": {
-            "h": 8,
-            "w": 8,
-            "x": 16,
-            "y": 78
-          },
-          "targets": [
-            {
-              "refId": "A",
-              "expr": "pve_cpu_usage_ratio*100 * on(id) group_left(name) (pve_guest_info)",
-              "legendFormat": "{{name}}",
-              "datasource": {
-                "type": "prometheus",
-                "uid": "prometheus"
-              }
-            }
-          ],
-          "options": {
-            "legend": {
-              "displayMode": "list",
-              "placement": "bottom",
-              "showLegend": true,
-              "calcs": []
-            },
-            "tooltip": {
-              "mode": "multi",
-              "sort": "desc"
-            }
-          },
-          "fieldConfig": {
-            "defaults": {
-              "unit": "percent",
-              "min": 0,
-              "custom": {
-                "drawStyle": "line",
-                "lineWidth": 2,
-                "fillOpacity": 18,
-                "showPoints": "never",
-                "spanNulls": true,
-                "stacking": {
-                  "mode": "none"
-                },
-                "gradientMode": "opacity"
-              },
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green",
-                    "value": null
-                  }
-                ]
-              }
-            },
-            "overrides": []
-          }
+          ]
         }
-      ]
+      ],
+      "templating": {
+        "list": []
+      },
+      "annotations": {
+        "list": []
+      },
+      "description": "The whole estate on one page: five k3s nodes, two Unraid NAS boxes, one Proxmox host, and the platform services that tie them together."
     }

@@ -112,20 +112,56 @@ grafana:
           editable: true
           options:
             path: /var/lib/grafana/dashboards/homelab
+        # Node Exporter Full is a 284-panel community dashboard that overlaps the
+        # curated Machines dashboards. It is kept because it is a genuinely useful
+        # drill-down, but it does not belong beside the curated set — a reader
+        # opening `Homelab` should find the one canonical view, not two competing
+        # ones. Parking it in `Reference` is additive and reverses by moving the
+        # entry back under `homelab:` below.
+        - name: reference
+          orgId: 1
+          folder: Reference
+          type: file
+          disableDeletion: false
+          editable: true
+          options:
+            path: /var/lib/grafana/dashboards/reference
   dashboards:
     homelab:
       longhorn:
         gnetId: 13032        # Longhorn Example v1.1.0
         revision: 6
         datasource: Prometheus
-      node-exporter-full:
-        gnetId: 1860         # Node Exporter Full — disks, network, temps, per-node
-        revision: 45
-        datasource: Prometheus
       proxmox:
         gnetId: 10347        # Proxmox via Prometheus (pve-exporter)
         revision: 5
         datasource: Prometheus
+    reference:
+      node-exporter-full:
+        gnetId: 1860         # Node Exporter Full — disks, network, temps, per-node
+        revision: 45
+        datasource: Prometheus
+  # Everything the dashboard sidecar picked up landed in (General): 25 stock chart
+  # dashboards plus every dashboard we ship as a ConfigMap. (General) is where
+  # dashboards go to be un-findable, and a hiring manager opening Grafana sees one
+  # undifferentiated list of 26 items.
+  #
+  # folderAnnotation makes the sidecar read `grafana_folder` off each ConfigMap and
+  # file the dashboard under that name; foldersFromFilesStructure is what actually
+  # lets Grafana create those folders from the directory tree the sidecar writes.
+  # BOTH are required — folderAnnotation alone silently does nothing.
+  #
+  # `annotations` is applied by the chart to all 25 of its own dashboard ConfigMaps
+  # (templates/grafana/dashboards-1.14/*.yaml render it verbatim), which is what
+  # moves them out of (General) in one line instead of 25 patches. They are all
+  # Kubernetes internals, so they share one folder.
+  sidecar:
+    dashboards:
+      folderAnnotation: grafana_folder
+      annotations:
+        grafana_folder: "Kubernetes"
+      provider:
+        foldersFromFilesStructure: true
   admin:
     existingSecret: kube-prometheus-stack-grafana
     userKey: admin-user
