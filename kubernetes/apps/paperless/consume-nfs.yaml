@@ -1,0 +1,34 @@
+# Consume directory only. Documents and the search index live on Longhorn — NFS here is
+# deliberate and narrow: a drop folder has to be reachable from a desktop file manager, and
+# a stale Unraid NFS handle must never be able to take the library with it.
+#
+# Unraid share "Xartura" (created 2026-09-07): fsid=121, NFS private, exported rw to the six
+# cluster addresses (.200 VIP + .201-.205) with no_root_squash,no_all_squash so the pod's
+# uid 1000 passes through. Subdirs shared/ stefanos/ marianna/ are owned 1000:1000 and drive
+# the per-user ownership workflows. Persisted in /boot/config/shares/Xartura.cfg, so /etc/exports
+# (tmpfs) is regenerated correctly on every Unraid boot. SMB export is off — NFS only.
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: paperless-consume-nfs
+spec:
+  capacity: { storage: 100Gi }     # not enforced for NFS
+  accessModes: [ReadWriteMany]
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: ""
+  claimRef: { namespace: paperless, name: consume-pvc }
+  nfs:
+    server: 192.168.1.100
+    path: /mnt/user/Xartura
+  mountOptions: [hard, nfsvers=4.1]
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: consume-pvc
+  namespace: paperless
+spec:
+  accessModes: [ReadWriteMany]
+  storageClassName: ""
+  volumeName: paperless-consume-nfs
+  resources: { requests: { storage: 100Gi } }

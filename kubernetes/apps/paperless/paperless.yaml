@@ -1,0 +1,134 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: data-pvc
+  namespace: paperless
+  labels:
+    recurring-job.longhorn.io/daily-backup: "enabled"
+spec:
+  accessModes: [ReadWriteOnce]
+  storageClassName: longhorn
+  resources: { requests: { storage: 5Gi } }
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: media-pvc
+  namespace: paperless
+  labels:
+    recurring-job.longhorn.io/daily-backup: "enabled"
+spec:
+  accessModes: [ReadWriteOnce]
+  storageClassName: longhorn
+  resources: { requests: { storage: 20Gi } }
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata: { name: paperless, namespace: paperless }
+spec:
+  replicas: 1
+  strategy: { type: Recreate }        # RWO Longhorn volumes: never two pods at once
+  selector: { matchLabels: { app: paperless } }
+  template:
+    metadata: { labels: { app: paperless } }
+    spec:
+      securityContext: { fsGroup: 1000 }
+      initContainers:
+        # The image ships ONLY deu eng fra ita osd spa (verified against
+        # ghcr.io/paperless-ngx/paperless-ngx:3.1.3). PAPERLESS_OCR_LANGUAGES installs packs via
+        # apt at boot, which needs root and a Debian mirror on every restart — so instead the
+        # traineddata lands once on the Longhorn data PVC and the mount below shadows the image
+        # copy. Idempotent: after the first boot this loop makes no network calls at all.
+        - name: tessdata
+          image: ghcr.io/paperless-ngx/paperless-ngx:3.1.3@sha256:aa810a36942c63d4ee70d00eda7236cd3d6acfb7eb3f7987fb568ed14df8817a
+          command:
+            - /bin/sh
+            - -c
+            - |
+              set -eu
+              # osd = orientation/script detection, required by deskew + rotate-pages.
+              # script/Arabic is the fallback for Sorani: no ckb/kur model exists in ANY
+              # tesseract repo, so Sorani OCR is input for the LLM, not a search corpus.
+              for L in osd eng ell ces ara kmr script/Arabic; do
+                f="${L##*/}.traineddata"
+                [ -s "/tessdata/$f" ] && continue
+                echo "fetching $f"
+                curl -sSLf --retry 5 --retry-delay 5 \
+                  -o "/tessdata/$f.part" \
+                  "https://github.com/tesseract-ocr/tessdata_fast/raw/main/${L}.traineddata"
+                mv "/tessdata/$f.part" "/tessdata/$f"
+              done
+              ls -l /tessdata
+          volumeMounts:
+            - { name: data, mountPath: /tessdata, subPath: tessdata }
+          resources: { requests: { memory: 32Mi, cpu: "10m" }, limits: { memory: 128Mi } }
+      containers:
+        - name: paperless
+          image: ghcr.io/paperless-ngx/paperless-ngx:3.1.3@sha256:aa810a36942c63d4ee70d00eda7236cd3d6acfb7eb3f7987fb568ed14df8817a
+          envFrom:
+            - secretRef: { name: paperless-secret }
+          env:
+            - { name: PAPERLESS_DBHOST,  value: postgres }
+            - { name: PAPERLESS_DBNAME,  value: paperless }
+            - { name: PAPERLESS_DBUSER,  value: paperless }
+            - { name: PAPERLESS_TIME_ZONE, value: Europe/Prague }
+            # Same hostname the previous instance used. Set now so Django's CSRF/ALLOWED_HOSTS
+            # are already right when the Ingress lands in phase 3 — reaching it by port-forward
+            # before then still works, PAPERLESS_URL only widens what Django will accept.
+            - { name: PAPERLESS_URL, value: "https://xartura.kostikidis.net" }
+            # Tesseract runs every language in this list against every page: more languages =
+            # slower and slightly less accurate. Trim it if OCR throughput becomes the problem.
+            - { name: PAPERLESS_OCR_LANGUAGE, value: "eng+ell+ces+ara" }
+            - { name: PAPERLESS_CONSUMER_RECURSIVE, value: "1" }
+            - { name: PAPERLESS_CONSUMER_POLLING, value: "15" }   # NFS gives no reliable inotify
+            - { name: PAPERLESS_FILENAME_FORMAT, value: "{{ owner_username }}/{{ created_year }}/{{ title }}" }
+            - { name: PAPERLESS_TASK_WORKERS, value: "2" }
+            - { name: PAPERLESS_THREADS_PER_WORKER, value: "2" }
+            - { name: PAPERLESS_ENABLE_UPDATE_CHECK, value: "false" }
+          ports: [{ name: http, containerPort: 8000 }]
+          startupProbe:                 # first boot runs migrations and builds the index
+            httpGet: { path: /accounts/login/, port: http }
+            periodSeconds: 10
+            failureThreshold: 60
+          readinessProbe:
+            httpGet: { path: /accounts/login/, port: http }
+            periodSeconds: 15
+          livenessProbe:
+            httpGet: { path: /accounts/login/, port: http }
+            periodSeconds: 30
+            failureThreshold: 5
+          resources: { requests: { memory: 768Mi, cpu: "300m" }, limits: { memory: 3Gi } }
+          volumeMounts:
+            - { name: data,    mountPath: /usr/src/paperless/data }
+            - { name: media,   mountPath: /usr/src/paperless/media }
+            - { name: consume, mountPath: /usr/src/paperless/consume }
+            - { name: data,    mountPath: /usr/share/tesseract-ocr/5/tessdata, subPath: tessdata }
+      volumes:
+        - { name: data,    persistentVolumeClaim: { claimName: data-pvc } }
+        - { name: media,   persistentVolumeClaim: { claimName: media-pvc } }
+        - { name: consume, persistentVolumeClaim: { claimName: consume-pvc } }
+---
+apiVersion: v1
+kind: Service
+metadata: { name: paperless, namespace: paperless }
+spec:
+  selector: { app: paperless }
+  ports: [{ port: 8000, targetPort: http }]
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata: { name: paperless, namespace: paperless }
+spec:
+  podSelector: { matchLabels: { app: paperless } }
+  policyTypes: [Ingress, Egress]
+  ingress:
+    - from:
+        - namespaceSelector: { matchLabels: { kubernetes.io/metadata.name: ingress-nginx } }
+      ports: [{ port: 8000 }]
+  egress:
+    - to: [{ podSelector: { matchLabels: { app: postgres } } }]
+      ports: [{ port: 5432 }]
+    - to: [{ podSelector: { matchLabels: { app: redis } } }]
+      ports: [{ port: 6379 }]
+    - ports: [{ port: 53, protocol: UDP }, { port: 53, protocol: TCP }]   # DNS
+    - ports: [{ port: 443, protocol: TCP }]                               # tessdata init, first boot only

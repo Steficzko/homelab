@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata: { name: redis, namespace: paperless }
+spec:
+  replicas: 1
+  strategy: { type: Recreate }
+  selector: { matchLabels: { app: redis } }
+  template:
+    metadata: { labels: { app: redis } }
+    spec:
+      containers:
+        - name: redis
+          image: redis:7-alpine@sha256:ff02b58f971e7d7d156a1267e283fcbbeee91773b6aa36c49dac28ecfe28eadf
+          command:
+            - sh
+            - -c
+            # Same reasoning as the Immich brokers: --maxmemory sits BELOW the cgroup limit so
+            # the kernel never SIGKILLs redis and wipes the celery queue, and noeviction makes a
+            # full queue fail loudly instead of silently dropping documents mid-OCR.
+            - >-
+              redis-server --save "" --requirepass $REDIS_PASSWORD
+              --maxmemory 192mb --maxmemory-policy noeviction
+          env:
+            - name: REDIS_PASSWORD
+              valueFrom: { secretKeyRef: { name: paperless-secret, key: REDIS_PASSWORD } }
+          resources: { requests: { memory: 64Mi, cpu: "50m" }, limits: { memory: 256Mi } }
+          readinessProbe:
+            exec: { command: [sh, -c, "redis-cli -a $REDIS_PASSWORD ping"] }
+            initialDelaySeconds: 10
+            periodSeconds: 10
+---
+apiVersion: v1
+kind: Service
+metadata: { name: redis, namespace: paperless }
+spec:
+  selector: { app: redis }
+  ports: [{ port: 6379, targetPort: 6379 }]
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata: { name: redis, namespace: paperless }
+spec:
+  podSelector: { matchLabels: { app: redis } }
+  policyTypes: [Ingress, Egress]
+  ingress:
+    - ports: [{ port: 6379 }]
+      from: [{ podSelector: { matchLabels: { app: paperless } } }]
