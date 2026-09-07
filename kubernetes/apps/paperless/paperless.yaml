@@ -32,6 +32,12 @@ spec:
   template:
     metadata: { labels: { app: paperless } }
     spec:
+      # The Service is called "paperless", so kubelet injects PAPERLESS_PORT=tcp://<ip>:8000 —
+      # and paperless-ngx reads PAPERLESS_PORT as the port granian binds to, so it crash-loops
+      # with "'tcp://10.43.x.x:8000' is not a valid integer". Nothing here needs the legacy
+      # service link vars; turning them off kills the whole class of collision rather than
+      # papering over this one name.
+      enableServiceLinks: false
       securityContext: { fsGroup: 1000 }
       initContainers:
         # The image ships ONLY deu eng fra ita osd spa (verified against
