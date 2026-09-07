@@ -60,3 +60,38 @@ spec:
             cidr: 192.168.1.191/32   # dev-seat (Debian dev VM)
       ports:
         - port: 1514
+
+    # Grafana from the k3s nodes themselves, port 3000.
+    #
+    # `tailscale serve` runs in a node's HOST namespace and proxies to Grafana's
+    # ClusterIP, giving a real Let's Encrypt cert for <node>.taila09f30.ts.net —
+    # so the phone gets HTTPS without a warning and without Cloudflare Access.
+    # That proxy's source is the node's own LAN address, and the rules above only
+    # admit node IPs on 1514 (syslog->Loki), so without this the proxy connects
+    # only when Grafana happens to be scheduled on the same node. Grafana has
+    # worker affinity and an RWO Longhorn volume, so it moves — meaning it would
+    # work until it silently didn't.
+    #
+    # Scoped to the five nodes and port 3000 only; this does not widen anything
+    # for the tailnet at large.
+    - from:
+        # The node's FLANNEL address, not its LAN address. Traffic from a node's
+        # host namespace to a pod leaves via flannel.1 and is sourced from the
+        # node's own /32 in the pod CIDR — `ip route get <podIP>` shows
+        # "via flannel.1 src 10.42.2.0". Allowing 192.168.1.20x here silently
+        # matches nothing; the packet never carries that address.
+        # Five explicit /32s rather than 10.42.0.0/16, which would let every pod
+        # in the cluster reach Grafana.
+        - ipBlock:
+            cidr: 10.42.0.0/32       # k3s-prg-r1
+        - ipBlock:
+            cidr: 10.42.1.0/32       # k3s-prg-g2
+        - ipBlock:
+            cidr: 10.42.2.0/32       # k3s-prg-b3
+        - ipBlock:
+            cidr: 10.42.3.0/32       # k3s-prg-w1
+        - ipBlock:
+            cidr: 10.42.4.0/32       # k3s-prg-w2
+      ports:
+        - port: 3000
+          protocol: TCP
