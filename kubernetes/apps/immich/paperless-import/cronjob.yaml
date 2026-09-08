@@ -41,6 +41,7 @@ spec:
                   valueFrom: { secretKeyRef: { name: immich-secret, key: POSTGRES_PASSWORD } }
                 - { name: PGHOST,           value: postgres }   # the Service is "postgres"; the POD is immich-postgres
                 - { name: PGUSER,           value: postgres }
+                - { name: PGOPTIONS,        value: "-c default_transaction_read_only=on" }
                 - { name: SCREENSHOT_CHARS, value: "300" }   # no camera EXIF
                 - { name: CAMERA_CHARS,     value: "500" }   # camera EXIF present: a scene that
                                                              # merely contains print is not a document
@@ -68,9 +69,10 @@ spec:
                     touch "$state"
                     echo "== $owner ($db) =="
 
-                    # Read-only transaction: belt and braces on top of SELECT-only SQL.
-                    SQL="begin transaction read only;
-                    select a.id,
+                    # Read-only enforced by PGOPTIONS below, not by begin/commit: with -t -A those
+                    # two statements print "BEGIN" and "COMMIT" as data rows, which then land in
+                    # the state file as bogus assets.
+                    SQL="select a.id,
                            case when e.make is null or e.make = '' then 'screenshot' else 'photo' end,
                            a.\"originalPath\", a.\"originalFileName\",
                            to_char(a.\"fileCreatedAt\", 'YYYY-MM-DD')
@@ -80,8 +82,7 @@ spec:
                     where a.type = 'IMAGE' and a.\"deletedAt\" is null
                     group by a.id, e.make, a.\"originalPath\", a.\"originalFileName\", a.\"fileCreatedAt\"
                     having ( ((e.make is null or e.make = '') and coalesce(sum(length(o.text)),0) >= $SCREENSHOT_CHARS)
-                          or ((e.make is not null and e.make <> '') and coalesce(sum(length(o.text)),0) >= $CAMERA_CHARS) );
-                    commit;"
+                          or ((e.make is not null and e.make <> '') and coalesce(sum(length(o.text)),0) >= $CAMERA_CHARS) );"
                     psql -d "$db" -X -A -F'|' -t -v ON_ERROR_STOP=1 -c "$SQL" > /tmp/cand.txt
 
                     n=0; q=0; skipped=0
