@@ -1,0 +1,100 @@
+# Logical backup of the Neo4j graph -> MinIO.
+#
+# Community edition has no online neo4j-admin backup and neo4j-admin dump needs the
+# database stopped, so this uses APOC's online export: apoc.export.cypher.all streamed
+# over Bolt, gzipped, pushed to MinIO. The Longhorn daily-backup on the PVC covers the
+# store files; this is the portable, version-independent copy you can replay with
+# cypher-shell into any Neo4j.
+#
+# Restore:  zcat neo4j-<ts>.cypher.gz | cypher-shell -u neo4j -p <pw>
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: neo4j-backup
+  namespace: neo4j
+spec:
+  schedule: "15 2 * * *"          # daily 02:15
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      ttlSecondsAfterFinished: 10800
+      backoffLimit: 2
+      activeDeadlineSeconds: 1800
+      template:
+        metadata:
+          labels: { app: neo4j-backup }
+        spec:
+          restartPolicy: Never
+          enableServiceLinks: false      # same NEO4J_PORT_* collision would hit cypher-shell's env
+          initContainers:
+            - name: copy-mc
+              image: minio/mc@sha256:a7fe349ef4bd8521fb8497f55c6042871b2ae640607cf99d9bede5e9bdf11727
+              securityContext: { runAsUser: 0 }
+              command: ["/bin/sh", "-c", "cp /usr/bin/mc /tools/mc && chmod 0755 /tools/mc"]
+              volumeMounts: [{ name: tools, mountPath: /tools }]
+          containers:
+            - name: dump
+              image: neo4j:5-community@sha256:037cf5756f0135cbfd66b739b6df7c7c4bb100f9ce11602f6f9538e17e02c74d
+              envFrom:
+                - secretRef: { name: neo4j-auth }        # NEO4J_AUTH=neo4j/<password>
+                - secretRef: { name: backup-s3-secret }
+              env:
+                - { name: HOME,      value: /work }
+                - { name: BOLT,      value: "bolt://neo4j:7687" }
+                - { name: BUCKET,    value: app-backups }
+                - { name: PREFIX,    value: neo4j }
+                - { name: RETENTION, value: "30d" }
+              command:
+                - /bin/sh
+                - -c
+                - |
+                  set -eu
+                  PW="${NEO4J_AUTH#neo4j/}"
+                  TS=$(date +%Y%m%d-%H%M%S)
+                  FILE="neo4j-${TS}.cypher.gz"
+                  echo "==> Waiting for Bolt (netpol propagation) ..."
+                  ok=0
+                  for i in $(seq 1 30); do
+                    if cypher-shell -a "$BOLT" -u neo4j -p "$PW" "RETURN 1;" >/dev/null 2>&1; then ok=1; echo "    reachable (try ${i})"; break; fi
+                    sleep 3
+                  done
+                  [ "$ok" = 1 ] || { echo "ERROR: neo4j unreachable after retries"; exit 1; }
+                  echo "==> Exporting graph via APOC ..."
+                  # stream:true returns the statements as rows instead of writing a server-side
+                  # file; --format plain keeps cypher-shell from decorating the output.
+                  cypher-shell -a "$BOLT" -u neo4j -p "$PW" --format plain \
+                    "CALL apoc.export.cypher.all(null,{stream:true,format:'cypher-shell'}) YIELD cypherStatements RETURN cypherStatements;" \
+                    | gzip -6 > "/work/${FILE}"
+                  SZ=$(stat -c%s "/work/${FILE}")
+                  echo "==> ${FILE} is ${SZ} bytes"
+                  [ "$SZ" -gt 20 ] || { echo "ERROR: export is empty"; exit 1; }
+                  echo "==> Uploading ..."
+                  /tools/mc alias set s3 "$AWS_ENDPOINTS" "$AWS_ACCESS_KEY_ID" "$AWS_SECRET_ACCESS_KEY"
+                  /tools/mc mb --ignore-existing "s3/${BUCKET}" 2>/dev/null || true
+                  /tools/mc cp "/work/${FILE}" "s3/${BUCKET}/${PREFIX}/${FILE}"
+                  echo "==> Pruning > ${RETENTION} ..."
+                  /tools/mc rm --recursive --force --older-than "$RETENTION" "s3/${BUCKET}/${PREFIX}/" || true
+                  echo "==> Done: s3://${BUCKET}/${PREFIX}/${FILE}"
+              volumeMounts:
+                - { name: tools, mountPath: /tools }
+                - { name: work,  mountPath: /work }
+          volumes:
+            - { name: tools, emptyDir: {} }
+            - { name: work,  emptyDir: {} }
+---
+# Let the backup pod reach Bolt (the app netpol admits 7687 broadly, but the backup pod
+# also needs its own egress to Bolt + MinIO + DNS).
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata: { name: neo4j-backup, namespace: neo4j }
+spec:
+  podSelector: { matchLabels: { app: neo4j-backup } }
+  policyTypes: [Egress]
+  egress:
+    - to: [{ podSelector: { matchLabels: { app: neo4j } } }]
+      ports: [{ port: 7687 }]
+    - ports: [{ port: 53, protocol: UDP }, { port: 53, protocol: TCP }]   # DNS
+    - to: [{ ipBlock: { cidr: 192.168.1.100/32 } }]
+      ports: [{ port: 9100 }]                                             # MinIO on Unraid
