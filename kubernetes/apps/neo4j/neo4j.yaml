@@ -25,6 +25,10 @@ spec:
   template:
     metadata: { labels: { app: neo4j } }
     spec:
+      # The Service is named "neo4j", so kubelet injects NEO4J_PORT_7687_TCP_PORT=... which
+      # Neo4j's strict config validation reads as the unknown setting PORT.7687.TCP.PORT and
+      # crash-loops. Same collision class as paperless; kill the legacy link vars.
+      enableServiceLinks: false
       securityContext: { fsGroup: 7474 }   # the "neo4j" user/group in the image
       containers:
         - name: neo4j
@@ -35,6 +39,10 @@ spec:
             # Community edition — set explicitly so an accidental enterprise image can't
             # silently start unlicensed.
             - { name: NEO4J_ACCEPT_LICENSE_AGREEMENT, value: "no" }
+            # APOC: the standard procedure library. Needed for online logical export on
+            # Community (neo4j-admin dump is offline-only), and load-bearing for graph work.
+            # The image auto-downloads the apoc-core jar on first boot -> egress 443 below.
+            - { name: NEO4J_PLUGINS, value: '["apoc"]' }
             # Heap and page cache are the two knobs that matter. Sized to the 2Gi request
             # below with headroom: JVM heap 1G, page cache 512M, ~0.5G for the rest.
             - { name: NEO4J_server_memory_heap_initial__size, value: "1G" }
@@ -87,3 +95,4 @@ spec:
     - ports: [{ port: 7687 }]
   egress:
     - ports: [{ port: 53, protocol: UDP }, { port: 53, protocol: TCP }]   # DNS
+    - ports: [{ port: 443, protocol: TCP }]                               # APOC plugin download, first boot only
