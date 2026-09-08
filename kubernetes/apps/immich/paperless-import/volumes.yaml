@@ -1,0 +1,57 @@
+# The importer runs in the immich namespace because immich-postgres' NetworkPolicy admits
+# only that namespace. It therefore needs its own claims on the two Paperless-side shares;
+# the paperless namespace has separate PVs onto the same exports.
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: paperless-consume-from-immich
+spec:
+  capacity: { storage: 100Gi }
+  accessModes: [ReadWriteMany]
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: ""
+  claimRef: { namespace: immich, name: paperless-consume-pvc }
+  nfs:
+    server: 192.168.1.100
+    path: /mnt/user/Xartura
+  mountOptions: [hard, nfsvers=4.1]
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: paperless-consume-pvc
+  namespace: immich
+spec:
+  accessModes: [ReadWriteMany]
+  storageClassName: ""
+  volumeName: paperless-consume-from-immich
+  resources: { requests: { storage: 100Gi } }
+---
+# Asset-id -> outcome, one line per asset. This is what makes the job idempotent and what
+# stops a document the owner deleted in Paperless from being re-imported on the next run.
+# Do not clear it casually.
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: paperless-import-state
+spec:
+  capacity: { storage: 1Gi }
+  accessModes: [ReadWriteMany]
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: ""
+  claimRef: { namespace: immich, name: paperless-import-state-pvc }
+  nfs:
+    server: 192.168.1.100
+    path: /mnt/user/Paperless-ngx/import-state
+  mountOptions: [hard, nfsvers=4.1]
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: paperless-import-state-pvc
+  namespace: immich
+spec:
+  accessModes: [ReadWriteMany]
+  storageClassName: ""
+  volumeName: paperless-import-state
+  resources: { requests: { storage: 1Gi } }

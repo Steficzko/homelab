@@ -1,0 +1,132 @@
+# Immich -> Paperless: text-heavy screenshots and photographed documents.
+#
+# Modelled on martunia's stack 49 (her ADR-0038), with the same two gates and the same
+# filename convention, adapted to this cluster:
+#   * READ-ONLY towards Immich. A read-only SQL transaction and :ro mounts of the library.
+#     No Immich API calls, no writes, no config change.
+#   * Immich's own OCR (asset_ocr) only DECIDES what is worth importing. Paperless does the
+#     real OCR — the languages here are eng+ell+ces+ara, and Marianna's documents are Czech.
+#   * screenshot_* / photo_* filenames drive two things already built: the storage path that
+#     puts these on the Unraid array instead of Longhorn, and the per-folder owner workflow.
+#
+# Census 2026-09-08: stefanos 2,778 candidates / 3.0 GB, marianna 8,401 / 30 GB.
+# BATCH caps each run so the consume queue never gets 11k files at once — Paperless needs
+# roughly half a minute per document, so the backlog drains over days either way.
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: paperless-import
+  namespace: immich
+spec:
+  schedule: "20 * * * *"
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      ttlSecondsAfterFinished: 10800
+      backoffLimit: 1
+      activeDeadlineSeconds: 3000
+      template:
+        metadata:
+          labels: { app: paperless-import }
+        spec:
+          restartPolicy: Never
+          securityContext: { runAsUser: 1000, runAsGroup: 1000, fsGroup: 1000 }
+          containers:
+            - name: import
+              image: postgres:16-alpine@sha256:16bc17c64a573ef34162af9298258d1aec548232985b33ed7b1eac33ba35c229
+              env:
+                - name: PGPASSWORD
+                  valueFrom: { secretKeyRef: { name: immich-secret, key: POSTGRES_PASSWORD } }
+                - { name: PGHOST,           value: immich-postgres }
+                - { name: PGUSER,           value: postgres }
+                - { name: SCREENSHOT_CHARS, value: "300" }   # no camera EXIF
+                - { name: CAMERA_CHARS,     value: "500" }   # camera EXIF present: a scene that
+                                                             # merely contains print is not a document
+                - { name: BATCH,            value: "20" }    # raised after the first verified cycle
+              command:
+                - /bin/sh
+                - -c
+                - |
+                  set -eu
+                  total_q=0; total_s=0
+                  for pair in "stefanos:immich_stefanos" "marianna:immich_marianna"; do
+                    owner="${pair%%:*}"; db="${pair##*:}"
+                    src="/immich/$owner"; dst="/consume/$owner"; state="/state/${owner}.state"
+                    touch "$state"
+                    echo "== $owner ($db) =="
+
+                    # Read-only transaction: belt and braces on top of SELECT-only SQL.
+                    SQL="begin transaction read only;
+                    select a.id,
+                           case when e.make is null or e.make = '' then 'screenshot' else 'photo' end,
+                           a.\"originalPath\", a.\"originalFileName\",
+                           to_char(a.\"fileCreatedAt\", 'YYYY-MM-DD')
+                    from asset a
+                    left join asset_exif e on e.\"assetId\" = a.id
+                    left join asset_ocr  o on o.\"assetId\" = a.id
+                    where a.type = 'IMAGE' and a.\"deletedAt\" is null
+                    group by a.id, e.make, a.\"originalPath\", a.\"originalFileName\", a.\"fileCreatedAt\"
+                    having ( ((e.make is null or e.make = '') and coalesce(sum(length(o.text)),0) >= $SCREENSHOT_CHARS)
+                          or ((e.make is not null and e.make <> '') and coalesce(sum(length(o.text)),0) >= $CAMERA_CHARS) );
+                    commit;"
+                    psql -d "$db" -X -A -F'|' -t -v ON_ERROR_STOP=1 -c "$SQL" > /tmp/cand.txt
+
+                    n=0; q=0; skipped=0
+                    while IFS='|' read -r id kind path fname created; do
+                      [ -z "${id:-}" ] && continue
+                      grep -q "^${id}:" "$state" 2>/dev/null && continue
+                      [ "$n" -ge "$BATCH" ] && break
+
+                      # Immich mounts its library at /usr/src/app/upload; we mount the same
+                      # export at $src, so strip that prefix to get a path we can read.
+                      file="$src/${path#/usr/src/app/upload/}"
+
+                      case "$(printf '%s' "$fname" | tr 'A-Z' 'a-z')" in
+                        *.heic|*.heif)
+                          # Paperless cannot consume HEIC. Recorded so the count stays visible
+                          # and a later conversion step can find them.
+                          echo "${id}:skipped-heic" >> "$state"; skipped=$((skipped+1)); continue ;;
+                      esac
+                      if [ ! -f "$file" ]; then
+                        echo "${id}:missing" >> "$state"; skipped=$((skipped+1)); continue
+                      fi
+
+                      # Copy to a temp name first: Paperless polls this directory every 15s and
+                      # would happily consume a half-written file.
+                      if cp "$file" "$dst/.tmp.$id" 2>/dev/null && mv "$dst/.tmp.$id" "$dst/${kind}_${created}_${fname}"; then
+                        echo "${id}:queued" >> "$state"; q=$((q+1)); n=$((n+1))
+                      else
+                        rm -f "$dst/.tmp.$id"; echo "${id}:copy-failed" >> "$state"; skipped=$((skipped+1))
+                      fi
+                    done < /tmp/cand.txt
+
+                    cand=$(wc -l < /tmp/cand.txt); seen=$(wc -l < "$state")
+                    left=$((cand - seen)); [ "$left" -lt 0 ] && left=0
+                    echo "   queued this run: $q | skipped: $skipped | remaining: ~$left of $cand"
+                    total_q=$((total_q+q)); total_s=$((total_s+skipped))
+                  done
+                  echo "== done: queued $total_q, skipped $total_s =="
+              volumeMounts:
+                - { name: immich-stefanos, mountPath: /immich/stefanos, readOnly: true }
+                - { name: immich-marianna, mountPath: /immich/marianna, readOnly: true }
+                - { name: consume,         mountPath: /consume }
+                - { name: state,           mountPath: /state }
+              resources: { requests: { memory: 64Mi, cpu: "50m" }, limits: { memory: 256Mi } }
+          volumes:
+            - { name: immich-stefanos, persistentVolumeClaim: { claimName: stefanos-media-pvc, readOnly: true } }
+            - { name: immich-marianna, persistentVolumeClaim: { claimName: marianna-media-pvc, readOnly: true } }
+            - { name: consume,         persistentVolumeClaim: { claimName: paperless-consume-pvc } }
+            - { name: state,           persistentVolumeClaim: { claimName: paperless-import-state-pvc } }
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata: { name: paperless-import, namespace: immich }
+spec:
+  podSelector: { matchLabels: { app: paperless-import } }
+  policyTypes: [Ingress, Egress]
+  egress:
+    - to: [{ podSelector: { matchLabels: { app: immich-postgres } } }]
+      ports: [{ port: 5432 }]
+    - ports: [{ port: 53, protocol: UDP }, { port: 53, protocol: TCP }]

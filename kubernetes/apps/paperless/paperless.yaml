@@ -97,6 +97,8 @@ spec:
             - { name: PAPERLESS_TASK_WORKERS, value: "2" }
             - { name: PAPERLESS_THREADS_PER_WORKER, value: "2" }
             - { name: PAPERLESS_ENABLE_UPDATE_CHECK, value: "false" }
+            # Re-imports must not pile up duplicates: matched by SHA-256, dropped at the door.
+            - { name: PAPERLESS_CONSUMER_DELETE_DUPLICATES, value: "1" }
           ports: [{ name: http, containerPort: 8000 }]
           startupProbe:                 # first boot runs migrations and builds the index
             httpGet: { path: /accounts/login/, port: http }
