@@ -39,7 +39,7 @@ spec:
               env:
                 - name: PGPASSWORD
                   valueFrom: { secretKeyRef: { name: immich-secret, key: POSTGRES_PASSWORD } }
-                - { name: PGHOST,           value: immich-postgres }
+                - { name: PGHOST,           value: postgres }   # the Service is "postgres"; the POD is immich-postgres
                 - { name: PGUSER,           value: postgres }
                 - { name: SCREENSHOT_CHARS, value: "300" }   # no camera EXIF
                 - { name: CAMERA_CHARS,     value: "500" }   # camera EXIF present: a scene that
