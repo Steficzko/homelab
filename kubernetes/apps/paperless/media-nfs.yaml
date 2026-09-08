@@ -1,0 +1,41 @@
+# Document store on the Unraid array, not Longhorn.
+#
+# ADR-037 originally put media on Longhorn. That was sized for a household's scanned
+# paperwork; the Immich import changes the shape of the problem — 11,179 candidate
+# documents, 33 GB of originals before Paperless generates a PDF/A for each. Growing a
+# replicated Longhorn volume to fit that spends three copies of NVMe on what is mostly
+# cold storage, while the array has 4.4 TB free.
+#
+# Not covered by the Longhorn daily-backup job, and deliberately so: the imported originals
+# already live in Immich, which has its own protection. Paperless holds a working copy plus
+# the archive PDF/A, and the metadata that makes it searchable is in the nightly pg_dump.
+#
+# Known behaviour: a stale NFS handle after an Unraid reboot shows up as unreadable
+# documents until the pod is restarted — the same thing the four Immich instances do.
+# The search index and tessdata stay on Longhorn (data-pvc): small, and they want real
+# filesystem semantics.
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: paperless-media-nfs
+spec:
+  capacity: { storage: 500Gi }     # not enforced for NFS
+  accessModes: [ReadWriteMany]
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: ""
+  claimRef: { namespace: paperless, name: media-nfs-pvc }
+  nfs:
+    server: 192.168.1.100
+    path: /mnt/user/Paperless-ngx/media
+  mountOptions: [hard, nfsvers=4.1]
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: media-nfs-pvc
+  namespace: paperless
+spec:
+  accessModes: [ReadWriteMany]
+  storageClassName: ""
+  volumeName: paperless-media-nfs
+  resources: { requests: { storage: 500Gi } }
