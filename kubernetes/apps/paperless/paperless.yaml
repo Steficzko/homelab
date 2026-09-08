@@ -10,6 +10,18 @@ spec:
   storageClassName: longhorn
   resources: { requests: { storage: 5Gi } }
 ---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: media-pvc
+  namespace: paperless
+  labels:
+    recurring-job.longhorn.io/daily-backup: "enabled"
+spec:
+  accessModes: [ReadWriteOnce]
+  storageClassName: longhorn
+  resources: { requests: { storage: 20Gi } }
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata: { name: paperless, namespace: paperless }
@@ -101,11 +113,18 @@ spec:
           volumeMounts:
             - { name: data,    mountPath: /usr/src/paperless/data }
             - { name: media,   mountPath: /usr/src/paperless/media }
+            # Storage path "screenshots" (assigned by the Immich-import workflow) resolves under
+            # these two directories, so bulk imports land on the Unraid array while scanned
+            # passports and contracts stay on replicated, backed-up Longhorn. kubelet orders
+            # nested mounts by path depth, so these are applied after the media volume above.
+            - { name: bulk, mountPath: /usr/src/paperless/media/documents/originals/screenshots, subPath: originals }
+            - { name: bulk, mountPath: /usr/src/paperless/media/documents/archive/screenshots,   subPath: archive }
             - { name: consume, mountPath: /usr/src/paperless/consume }
             - { name: data,    mountPath: /usr/share/tesseract-ocr/5/tessdata, subPath: tessdata }
       volumes:
         - { name: data,    persistentVolumeClaim: { claimName: data-pvc } }
-        - { name: media,   persistentVolumeClaim: { claimName: media-nfs-pvc } }   # Unraid array, see media-nfs.yaml
+        - { name: media,   persistentVolumeClaim: { claimName: media-pvc } }
+        - { name: bulk,    persistentVolumeClaim: { claimName: media-nfs-pvc } }   # Unraid array, see media-nfs.yaml
         - { name: consume, persistentVolumeClaim: { claimName: consume-pvc } }
 ---
 apiVersion: v1
