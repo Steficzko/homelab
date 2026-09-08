@@ -50,6 +50,17 @@ spec:
                 - -c
                 - |
                   set -eu
+                  # K3s admits a new pod to its NetworkPolicy ~30-45s late, so a short job that
+                  # talks to a netpol'd service on its first breath gets "Name has no usable
+                  # address" and dies. Wait for the DB rather than fail. (Same trap that broke
+                  # the dental backup silently.)
+                  ok=0
+                  for i in $(seq 1 30); do
+                    if pg_isready -h "$PGHOST" -U "$PGUSER" -t 3 >/dev/null 2>&1; then ok=1; echo "postgres reachable (try $i)"; break; fi
+                    sleep 3
+                  done
+                  [ "$ok" = 1 ] || { echo "ERROR: immich-postgres unreachable after retries"; exit 1; }
+
                   total_q=0; total_s=0
                   for pair in "stefanos:immich_stefanos" "marianna:immich_marianna"; do
                     owner="${pair%%:*}"; db="${pair##*:}"
