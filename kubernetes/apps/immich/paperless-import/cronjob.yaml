@@ -45,7 +45,7 @@ spec:
                 - { name: SCREENSHOT_CHARS, value: "300" }   # no camera EXIF
                 - { name: CAMERA_CHARS,     value: "500" }   # camera EXIF present: a scene that
                                                              # merely contains print is not a document
-                - { name: BATCH,            value: "20" }    # raised after the first verified cycle
+                - { name: BATCH,            value: "5000" }  # full pace: drains the ~11k backlog in ~3 hourly runs. Files pool in consume; Paperless OCRs at its own ~120/h.
               command:
                 - /bin/sh
                 - -c
