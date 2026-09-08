@@ -1,0 +1,29 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: neo4j
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/Steficzko/homelab.git
+    targetRevision: HEAD
+    path: kubernetes/apps/neo4j
+    directory:
+      recurse: true
+      exclude: '{*.sops.yaml,*placeholder*.yaml}'
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: neo4j
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - RespectIgnoreDifferences=true
+  ignoreDifferences:
+    - group: ""
+      kind: PersistentVolumeClaim
+      jsonPointers:
+        - /spec/resources/requests/storage   # Longhorn expansions happen live

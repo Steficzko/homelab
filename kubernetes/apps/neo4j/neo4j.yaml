@@ -1,0 +1,89 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: neo4j
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: neo4j-data
+  namespace: neo4j
+  labels:
+    recurring-job.longhorn.io/daily-backup: "enabled"
+spec:
+  accessModes: [ReadWriteOnce]
+  storageClassName: longhorn
+  resources: { requests: { storage: 20Gi } }
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata: { name: neo4j, namespace: neo4j }
+spec:
+  replicas: 1
+  strategy: { type: Recreate }        # single RWO volume; Community is single-instance anyway
+  selector: { matchLabels: { app: neo4j } }
+  template:
+    metadata: { labels: { app: neo4j } }
+    spec:
+      securityContext: { fsGroup: 7474 }   # the "neo4j" user/group in the image
+      containers:
+        - name: neo4j
+          image: neo4j:5-community@sha256:037cf5756f0135cbfd66b739b6df7c7c4bb100f9ce11602f6f9538e17e02c74d
+          envFrom:
+            - secretRef: { name: neo4j-auth }        # NEO4J_AUTH=neo4j/<password>
+          env:
+            # Community edition — set explicitly so an accidental enterprise image can't
+            # silently start unlicensed.
+            - { name: NEO4J_ACCEPT_LICENSE_AGREEMENT, value: "no" }
+            # Heap and page cache are the two knobs that matter. Sized to the 2Gi request
+            # below with headroom: JVM heap 1G, page cache 512M, ~0.5G for the rest.
+            - { name: NEO4J_server_memory_heap_initial__size, value: "1G" }
+            - { name: NEO4J_server_memory_heap_max__size,     value: "1G" }
+            - { name: NEO4J_server_memory_pagecache_size,     value: "512m" }
+            # Bind both listeners to all interfaces inside the pod so the Service can reach them.
+            - { name: NEO4J_server_default__listen__address, value: "0.0.0.0" }
+          ports:
+            - { name: http, containerPort: 7474 }    # Browser UI + HTTP API
+            - { name: bolt, containerPort: 7687 }    # Bolt protocol (drivers)
+          readinessProbe:
+            tcpSocket: { port: 7687 }
+            initialDelaySeconds: 20
+            periodSeconds: 10
+          livenessProbe:
+            tcpSocket: { port: 7687 }
+            initialDelaySeconds: 60
+            periodSeconds: 30
+            failureThreshold: 5
+          resources:
+            requests: { memory: 2Gi, cpu: "250m" }
+            limits:   { memory: 3Gi }               # > heap+pagecache+overhead; JVM must not be OOMKilled
+          volumeMounts:
+            - { name: data, mountPath: /data }
+      volumes:
+        - { name: data, persistentVolumeClaim: { claimName: neo4j-data } }
+---
+apiVersion: v1
+kind: Service
+metadata: { name: neo4j, namespace: neo4j }
+spec:
+  selector: { app: neo4j }
+  ports:
+    - { name: http, port: 7474, targetPort: http }
+    - { name: bolt, port: 7687, targetPort: bolt }
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata: { name: neo4j, namespace: neo4j }
+spec:
+  podSelector: { matchLabels: { app: neo4j } }
+  policyTypes: [Ingress, Egress]
+  ingress:
+    # HTTP UI via ingress-nginx (behind Cloudflare Access).
+    - from:
+        - namespaceSelector: { matchLabels: { kubernetes.io/metadata.name: ingress-nginx } }
+      ports: [{ port: 7474 }]
+    # Bolt is not HTTP and cannot go through the HTTP ingress. Reachable in-cluster and,
+    # for drivers, over the tailnet via the node — kept open on the pod, gated at the edge.
+    - ports: [{ port: 7687 }]
+  egress:
+    - ports: [{ port: 53, protocol: UDP }, { port: 53, protocol: TCP }]   # DNS
