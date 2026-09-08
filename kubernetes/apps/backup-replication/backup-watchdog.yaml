@@ -75,6 +75,8 @@ spec:
                   valueFrom: { secretKeyRef: { name: kuma-push, key: VELERO } }
                 - name: PUSH_PAPERLESS
                   valueFrom: { secretKeyRef: { name: kuma-push, key: PAPERLESS } }
+                - name: PUSH_NEO4J
+                  valueFrom: { secretKeyRef: { name: kuma-push, key: NEO4J } }
                 - name: HC_WATCHDOG
                   valueFrom: { secretKeyRef: { name: kuma-push, key: HC_WATCHDOG } }
               command: ["/bin/sh", "-c"]
@@ -139,6 +141,9 @@ spec:
                   # set — that is the schema floor, so it only grows. 150000 is the usual "half
                   # the observed size" rule and already catches the empty/truncated failure.
                   check paperless   "src/app-backups/paperless-postgres/" 150000 93600 "$PUSH_PAPERLESS"    # ~328 KB daily 01:45
+                  # APOC cypher export, gzipped. An empty graph is ~300 B, so 100 only catches a
+                  # totally failed export; raise once the code graph has real content.
+                  check neo4j       "src/app-backups/neo4j/"                 100 93600 "$PUSH_NEO4J"        # daily 02:15
 
                   # Longhorn's block-level backups — the foundation ADR-011 rests on, and the
                   # last backup job in the fleet with no watch. It needs its own check function:
