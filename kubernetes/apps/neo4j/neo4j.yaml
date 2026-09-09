@@ -86,13 +86,13 @@ spec:
   podSelector: { matchLabels: { app: neo4j } }
   policyTypes: [Ingress, Egress]
   ingress:
-    # HTTP UI via ingress-nginx (behind Cloudflare Access).
-    - from:
-        - namespaceSelector: { matchLabels: { kubernetes.io/metadata.name: ingress-nginx } }
-      ports: [{ port: 7474 }]
-    # Bolt is not HTTP and cannot go through the HTTP ingress. Reachable in-cluster and,
-    # for drivers, over the tailnet via the node — kept open on the pod, gated at the edge.
-    - ports: [{ port: 7687 }]
+    # Both the HTTP browser (7474) and Bolt (7687) are reached two ways: in-cluster, and
+    # over the tailnet via `tailscale serve` on a node — whose traffic arrives from the NODE,
+    # not the ingress-nginx namespace. An earlier ingress-nginx-only rule on 7474 blocked the
+    # node path, so the browser reset while Bolt worked. Both ports are open in-cluster; the
+    # gate is Neo4j's own auth, and nothing reaches the pod from outside except the deliberate
+    # tailscale serve.
+    - ports: [{ port: 7474 }, { port: 7687 }]
   egress:
     - ports: [{ port: 53, protocol: UDP }, { port: 53, protocol: TCP }]   # DNS
     - ports: [{ port: 443, protocol: TCP }]                               # APOC plugin download, first boot only
