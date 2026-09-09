@@ -11,7 +11,11 @@ spec:
   storageClassName: ""
   nfs:
     server: 192.168.1.100
-    path: /mnt/user/k3s-services/immich_database/marianna
+    # Repointed 2026-09-09 from k3s-services/immich_database/marianna (a stale partial copy:
+    # 27,348 files, nothing after mid-2021) to the completed consolidation target on the array.
+    # Photos/Marianna is the full library — 39,185 originals, matching the DB's 39,183, every
+    # year present. The k3s-services tree is left untouched as a fallback until this is trusted.
+    path: /mnt/user/Photos/Marianna
   mountOptions:
     - hard
     - nfsvers=4.1
