@@ -45,12 +45,14 @@ spec:
     # Speedtest Tracker widgets. Homepage fetches these SERVER-SIDE, unlike the
     # xyOps/Kuma entries above which are plain hrefs the browser opens (and so
     # never touch this policy). Prague is reachable via 192.168.1.0/24 above, but
-    # Greece is tailnet-only and 8765 is not 80/443, so it needs its own rule.
+    # Greece is tailnet-only: 8765 = speedtest, 80 = the Unraid GraphQL API (its https
+    # serves 404 on /graphql, http answers). Prague's API is covered by the 192.168.1.0/24 rule.
     - to:
         - ipBlock:
             cidr: 100.64.0.0/10
       ports:
         - port: 8765
+        - port: 80
     # Prometheus, Longhorn, Grafana via cluster DNS
     - to:
         - namespaceSelector: {}

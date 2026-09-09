@@ -199,6 +199,25 @@ data:
           widget:
             type: speedtest
             url: http://100.85.129.88:8765
+      # Unraid array/pool health via the built-in unraid-api GraphQL (VIEWER key, read-only).
+      # Keys come from the homepage-secrets Secret as HOMEPAGE_VAR_*. Prague answers on https,
+      # Greece's https serves 404 on /graphql so it uses http (tailnet-encrypted anyway).
+      - Unraid Prague:
+          icon: sh-unraid
+          href: https://192.168.1.100
+          description: repy · array + disks
+          widget:
+            type: unraid
+            url: https://192.168.1.100
+            key: "{{HOMEPAGE_VAR_UNRAID_PRAGUE_KEY}}"
+      - Unraid Greece:
+          icon: sh-unraid
+          href: http://100.85.129.88
+          description: ptolemaida · array + disks
+          widget:
+            type: unraid
+            url: http://100.85.129.88
+            key: "{{HOMEPAGE_VAR_UNRAID_GREECE_KEY}}"
 
     - Family Photos:
       - Immich Stefanos:
