@@ -38,6 +38,21 @@ data:
         url: http://longhorn-backend.longhorn-system.svc.cluster.local:9500
 
   widgets.yaml: |
+    # Cluster totals + one bar per node. Needs kubernetes.yaml mode:cluster, the homepage
+    # ServiceAccount cluster-read (rbac.yaml) and metrics-server (present). This is the native
+    # node view that was missing while kubernetes.yaml was empty.
+    - kubernetes:
+        cluster:
+          show: true
+          cpu: true
+          memory: true
+          showLabel: true
+          label: "cluster"
+        nodes:
+          show: true
+          cpu: true
+          memory: true
+          showLabel: true
     - longhorn:
         expanded: true
         total: false
@@ -283,4 +298,4 @@ data:
     {}
 
   kubernetes.yaml: |
-    {}
+    mode: cluster
