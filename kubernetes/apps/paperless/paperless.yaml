@@ -97,7 +97,7 @@ spec:
             - { name: PAPERLESS_URL, value: "https://xartura.kostikidis.net" }
             # Tesseract runs every language in this list against every page: more languages =
             # slower and slightly less accurate. Trim it if OCR throughput becomes the problem.
-            - { name: PAPERLESS_OCR_LANGUAGE, value: "eng+ell+ces+ara+pol" }
+            - { name: PAPERLESS_OCR_LANGUAGE, value: "ell+eng+ces+pol+ara" }   # priority order: Greek bulk, then English; Czech/Polish/Arabic few
             - { name: PAPERLESS_CONSUMER_RECURSIVE, value: "1" }
             - { name: PAPERLESS_CONSUMER_POLLING, value: "15" }   # NFS gives no reliable inotify
             - { name: PAPERLESS_FILENAME_FORMAT, value: "{{ owner_username }}/{{ created_year }}/{{ title }}" }
