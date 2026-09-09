@@ -277,10 +277,9 @@ data:
           description: Container management
       - Neo4j:
           icon: sh-neo4j
-          href: http://k3s-prg-b3.taila09f30.ts.net:7474/browser/
-          description: Code knowledge graph
-          # up/down is checked against the in-cluster service (tailnet URL isn't reachable
-          # from the homepage pod); the link itself is the tailnet browser.
+          description: Code knowledge graph (in-cluster only)
+          # No external route by design — consumed over Bolt in-cluster by the graph
+          # tooling. Status-only tile; up/down checked against the in-cluster service.
           siteMonitor: http://neo4j.neo4j.svc.cluster.local:7474
 
     - External:
