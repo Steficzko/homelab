@@ -38,6 +38,13 @@ spec:
       # service link vars; turning them off kills the whole class of collision rather than
       # papering over this one name.
       enableServiceLinks: false
+      affinity:                              # OCR is CPU-heavy; prefer the less-loaded workers over b3
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              preference:
+                matchExpressions:
+                  - { key: node-role.kubernetes.io/control-plane, operator: DoesNotExist }
       securityContext: { fsGroup: 1000 }
       initContainers:
         # The image ships ONLY deu eng fra ita osd spa (verified against
@@ -94,8 +101,8 @@ spec:
             - { name: PAPERLESS_CONSUMER_RECURSIVE, value: "1" }
             - { name: PAPERLESS_CONSUMER_POLLING, value: "15" }   # NFS gives no reliable inotify
             - { name: PAPERLESS_FILENAME_FORMAT, value: "{{ owner_username }}/{{ created_year }}/{{ title }}" }
-            - { name: PAPERLESS_TASK_WORKERS, value: "2" }
-            - { name: PAPERLESS_THREADS_PER_WORKER, value: "2" }
+            - { name: PAPERLESS_TASK_WORKERS, value: "4" }        # 4 docs in parallel on the 6-core node
+            - { name: PAPERLESS_THREADS_PER_WORKER, value: "1" }  # throughput of many docs favours more workers over threads/doc
             - { name: PAPERLESS_ENABLE_UPDATE_CHECK, value: "false" }
             # Re-imports must not pile up duplicates: matched by SHA-256, dropped at the door.
             - { name: PAPERLESS_CONSUMER_DELETE_DUPLICATES, value: "1" }
@@ -111,7 +118,7 @@ spec:
             httpGet: { path: /accounts/login/, port: http }
             periodSeconds: 30
             failureThreshold: 5
-          resources: { requests: { memory: 768Mi, cpu: "300m" }, limits: { memory: 3Gi } }
+          resources: { requests: { memory: 768Mi, cpu: "300m" }, limits: { memory: 4Gi } }   # 4 OCR workers
           volumeMounts:
             - { name: data,    mountPath: /usr/src/paperless/data }
             - { name: media,   mountPath: /usr/src/paperless/media }
