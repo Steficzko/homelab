@@ -210,6 +210,8 @@ data:
             type: unraid
             url: https://192.168.1.100
             key: "{{HOMEPAGE_VAR_UNRAID_PRAGUE_KEY}}"
+            # 4-field cap: show array fullness (the disk-filling alert) + free space + load.
+            fields: ["arrayUsedPercent","arrayFree","cpu","memoryPercent"]
       - Unraid Greece:
           icon: sh-unraid
           href: http://100.85.129.88
@@ -218,6 +220,7 @@ data:
             type: unraid
             url: http://100.85.129.88
             key: "{{HOMEPAGE_VAR_UNRAID_GREECE_KEY}}"
+            fields: ["arrayUsedPercent","arrayFree","cpu","memoryPercent"]
 
     - Family Photos:
       - Immich Stefanos:
