@@ -68,7 +68,7 @@ spec:
               # osd = orientation/script detection, required by deskew + rotate-pages.
               # script/Arabic is the fallback for Sorani: no ckb/kur model exists in ANY
               # tesseract repo, so Sorani OCR is input for the LLM, not a search corpus.
-              for L in osd eng ell ces ara kmr script/Arabic; do
+              for L in osd eng ell ces ara pol kmr script/Arabic; do
                 f="${L##*/}.traineddata"
                 [ -s "/tessdata/$f" ] && continue
                 echo "fetching $f"
@@ -97,7 +97,7 @@ spec:
             - { name: PAPERLESS_URL, value: "https://xartura.kostikidis.net" }
             # Tesseract runs every language in this list against every page: more languages =
             # slower and slightly less accurate. Trim it if OCR throughput becomes the problem.
-            - { name: PAPERLESS_OCR_LANGUAGE, value: "eng+ell+ces+ara" }
+            - { name: PAPERLESS_OCR_LANGUAGE, value: "eng+ell+ces+ara+pol" }
             - { name: PAPERLESS_CONSUMER_RECURSIVE, value: "1" }
             - { name: PAPERLESS_CONSUMER_POLLING, value: "15" }   # NFS gives no reliable inotify
             - { name: PAPERLESS_FILENAME_FORMAT, value: "{{ owner_username }}/{{ created_year }}/{{ title }}" }
