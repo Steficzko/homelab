@@ -143,6 +143,7 @@ metadata:
   namespace: brain
 spec:
   type: LoadBalancer
+  externalTrafficPolicy: Local   # keep the peer's real IP so the netpol's LAN rule is what gates 22000 (with Cluster, svclb SNATs to the node bridge and the rule is decorative)
   selector: { app: brain }
   ports:
     - { name: sync-tcp, port: 22000, targetPort: 22000, protocol: TCP }
