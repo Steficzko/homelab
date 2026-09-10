@@ -23,8 +23,8 @@ spec:
         - { port: 22000, protocol: TCP }
         - { port: 22000, protocol: UDP }
     - from:
-        - ipBlock: { cidr: 100.64.0.0/10 }         # browser Obsidian: tailnet only (NodePort 30300, Local policy keeps the source IP)
-      ports: [{ port: 3000 }]
+        - ipBlock: { cidr: 100.64.0.0/10 }         # browser Obsidian: tailnet only (NodePort 30301, Local policy keeps the source IP). Whole tailnet = every tailnet device (SEC-8); basic auth is the real gate
+      ports: [{ port: 3001 }]
   egress:
     - ports: [{ port: 443 }, { port: 80 }]         # Telegram API, yt-dlp, page titles
       to:

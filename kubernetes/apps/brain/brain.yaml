@@ -19,14 +19,14 @@ spec:
         checksum/code: "c0f92d60ba5babf8"   # sha256 of capture.py, set by the regeneration step; a code push rolls the pod
     spec:
       securityContext:
-        fsGroup: 100          # per-container runAsUser below; the obsidian image must start as root (s6) and drops to PUID 99
+        fsGroup: 100
+        runAsNonRoot: true    # pod-wide invariant; the obsidian container opts out explicitly below (s6 starts as root, drops to PUID 99)
       affinity:
         nodeAffinity:
-          preferredDuringSchedulingIgnoredDuringExecution:
-            - weight: 100
-              preference:
-                matchExpressions:
-                  - { key: node-role.kubernetes.io/control-plane, operator: DoesNotExist }   # ADR-035
+          requiredDuringSchedulingIgnoredDuringExecution:   # pinned: the browser Obsidian address is this node's tailnet name (NodePort + Local policy)
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - { key: kubernetes.io/hostname, operator: In, values: [k3s-prg-w1] }
       containers:
         - name: capture
           image: ghcr.io/jauderho/yt-dlp:latest@sha256:0987db27a321d2e485873168b7eb50d21bf11b5f1f309c4594cfc713bdf76a82   # Alpine + python3.14 + ffmpeg 8 + yt-dlp; nothing installed at start
@@ -115,9 +115,20 @@ spec:
             - name: PASSWORD
               valueFrom: { secretKeyRef: { name: brain-secret, key: OBSIDIAN_PASSWORD } }
           ports:
-            - { name: web, containerPort: 3000 }
+            - { name: web, containerPort: 3001 }   # HTTPS twin (self-signed): a secure context is needed for clipboard/WebRTC in the stream
           securityContext:
-            capabilities: { drop: [ALL], add: [CHOWN, SETUID, SETGID, FOWNER, DAC_OVERRIDE] }   # s6-overlay needs these to drop to PUID
+            runAsNonRoot: false   # the ONE exception in this pod: s6-overlay starts as root and drops to PUID 99
+            allowPrivilegeEscalation: false
+            capabilities: { drop: [ALL], add: [CHOWN, SETUID, SETGID, FOWNER, DAC_OVERRIDE] }   # what s6 needs to drop privileges
+          livenessProbe:
+            tcpSocket: { port: 3001 }
+            initialDelaySeconds: 60
+            periodSeconds: 60
+            failureThreshold: 3
+          readinessProbe:
+            tcpSocket: { port: 3001 }
+            initialDelaySeconds: 20
+            periodSeconds: 30
           volumeMounts:
             - { name: obsidian-config, mountPath: /config }
             - { name: vault, mountPath: /vault }
@@ -179,8 +190,10 @@ spec:
     - { name: sync-udp, port: 22000, targetPort: 22000, protocol: UDP }
 ---
 # Browser Obsidian: tailnet only. NodePort with Local policy keeps the client's tailnet address
-# so the netpol (ingress from 100.64.0.0/10 on 3000) is what admits it; the LAN is not allowed.
-# Address: the pod's node on the tailnet, e.g. http://k3s-prg-w1.taila09f30.ts.net:30300
+# so the netpol (ingress from 100.64.0.0/10 on 3001) is what admits it; the LAN is not allowed.
+# The pod is pinned to k3s-prg-w1 so the address is stable: https://k3s-prg-w1.taila09f30.ts.net:30301
+# (self-signed certificate; accept it once). Basic auth from brain-secret is the access control —
+# the tailnet ACL is stock allow-all (SEC-8), so 100.64.0.0/10 is not "Stefanos only".
 apiVersion: v1
 kind: Service
 metadata:
@@ -191,4 +204,4 @@ spec:
   externalTrafficPolicy: Local
   selector: { app: brain }
   ports:
-    - { name: web, port: 3000, targetPort: web, nodePort: 30300 }
+    - { name: web, port: 3001, targetPort: web, nodePort: 30301 }
