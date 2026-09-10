@@ -1,0 +1,146 @@
+# ADR-038 phase A. One pod, two containers, one RWO vault: `capture` (drop-zone watcher +
+# Telegram long-poll, stdlib Python from the brain-capture-code ConfigMap) and `syncthing`
+# (the only way humans reach the vault). Unprivileged: runs as the Unraid nobody:users pair
+# (99:100), which is what the NFS shares squash to.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: brain
+  namespace: brain
+spec:
+  replicas: 1
+  strategy: { type: Recreate }   # RWO volume: never two pods
+  selector:
+    matchLabels: { app: brain }
+  template:
+    metadata:
+      labels: { app: brain }
+      annotations:
+        checksum/code: "acf7b841dd001762"   # sha256 of capture.py, set by the regeneration step; a code push rolls the pod
+    spec:
+      securityContext:
+        runAsUser: 99
+        runAsGroup: 100
+        fsGroup: 100
+        runAsNonRoot: true
+      affinity:
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              preference:
+                matchExpressions:
+                  - { key: node-role.kubernetes.io/control-plane, operator: DoesNotExist }   # ADR-035
+      containers:
+        - name: capture
+          image: ghcr.io/jauderho/yt-dlp:latest@sha256:0987db27a321d2e485873168b7eb50d21bf11b5f1f309c4594cfc713bdf76a82   # Alpine + python3.14 + ffmpeg 8 + yt-dlp; nothing installed at start
+          command: ["python3", "/app/capture.py"]
+          securityContext:
+            readOnlyRootFilesystem: true
+            allowPrivilegeEscalation: false
+            capabilities: { drop: [ALL] }
+          envFrom:
+            - secretRef: { name: brain-secret }   # TELEGRAM_TOKEN, TELEGRAM_CHAT_IDS, LITELLM_KEY, KUMA_PUSH_URL
+          env:
+            - { name: VAULT, value: /data/vault }
+            - { name: DATA, value: /data/data }
+            - { name: PAPERLESS_CONSUME, value: /data/paperless-consume }
+            - { name: LITELLM_URL, value: "http://litellm.ai.svc.cluster.local:4000/v1" }
+            - { name: GOTENBERG_URL, value: "http://gotenberg.n8n.svc.cluster.local:3000" }
+            - { name: POLL_SECONDS, value: "60" }
+            - { name: TZ, value: Europe/Prague }
+            - { name: HOME, value: /tmp }          # yt-dlp cache; root fs is read-only
+            - { name: TMPDIR, value: /tmp }
+          ports:
+            - { name: metrics, containerPort: 8080 }
+          livenessProbe:
+            httpGet: { path: /healthz, port: metrics }
+            initialDelaySeconds: 90
+            periodSeconds: 60
+            failureThreshold: 3
+          readinessProbe:
+            httpGet: { path: /metrics, port: metrics }
+            initialDelaySeconds: 5
+            periodSeconds: 30
+          volumeMounts:
+            - { name: code, mountPath: /app, readOnly: true }
+            - { name: vault, mountPath: /data/vault }
+            - { name: data, mountPath: /data/data }
+            - { name: paperless-consume, mountPath: /data/paperless-consume }
+            - { name: tmp, mountPath: /tmp }
+          resources:
+            requests: { memory: 256Mi, cpu: 100m }
+            limits:   { memory: 2Gi, cpu: "2" }     # ffmpeg scene detection on 720p video
+        - name: syncthing
+          image: syncthing/syncthing:2.1.5@sha256:397aa00b92b48d65540ea3ae3cbf271b87bdccbe07a0b7bd7d2debc3a7b29138
+          env:
+            - { name: STGUIADDRESS, value: "0.0.0.0:8384" }
+            - { name: STNOUPGRADE, value: "1" }      # Renovate bumps the tag, not the binary
+            - { name: PUID, value: "99" }
+            - { name: PGID, value: "100" }
+            - { name: TZ, value: Europe/Prague }
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities: { drop: [ALL] }
+          ports:
+            - { name: gui, containerPort: 8384 }
+            - { name: sync-tcp, containerPort: 22000, protocol: TCP }
+            - { name: sync-udp, containerPort: 22000, protocol: UDP }
+          livenessProbe:
+            httpGet: { path: /rest/noauth/health, port: gui }
+            initialDelaySeconds: 30
+            periodSeconds: 60
+          volumeMounts:
+            - { name: syncthing-config, mountPath: /var/syncthing/config }
+            - { name: vault, mountPath: /data/vault }
+            - { name: data, mountPath: /data/data }
+          resources:
+            requests: { memory: 128Mi, cpu: 50m }
+            limits:   { memory: 1Gi, cpu: "1" }
+      volumes:
+        - name: code
+          configMap: { name: brain-capture-code }
+        - name: vault
+          persistentVolumeClaim: { claimName: vault }
+        - name: data
+          persistentVolumeClaim: { claimName: data }
+        - name: paperless-consume
+          persistentVolumeClaim: { claimName: paperless-consume }
+        - name: syncthing-config
+          persistentVolumeClaim: { claimName: syncthing-config }
+        - name: tmp
+          emptyDir: { sizeLimit: 8Gi }
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: brain-capture
+  namespace: brain
+  labels: { app: brain }        # ServiceMonitor matches Service labels, not pod selectors
+spec:
+  selector: { app: brain }
+  ports:
+    - { name: metrics, port: 8080, targetPort: metrics }
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: brain-syncthing-gui
+  namespace: brain
+spec:
+  selector: { app: brain }
+  ports:
+    - { name: gui, port: 8384, targetPort: gui }
+---
+# k3s ServiceLB binds 22000 on every node IP. LAN peers dial any node. Relays and global
+# discovery are OFF until the remote-reach ticket is decided (ADR-038 security posture).
+apiVersion: v1
+kind: Service
+metadata:
+  name: brain-syncthing
+  namespace: brain
+spec:
+  type: LoadBalancer
+  selector: { app: brain }
+  ports:
+    - { name: sync-tcp, port: 22000, targetPort: 22000, protocol: TCP }
+    - { name: sync-udp, port: 22000, targetPort: 22000, protocol: UDP }

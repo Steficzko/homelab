@@ -21,6 +21,9 @@ spec:
         - namespaceSelector:
             matchLabels:
               kubernetes.io/metadata.name: n8n
+        - namespaceSelector:                       # ADR-038 second brain (whisper, json-extract, chat)
+            matchLabels:
+              kubernetes.io/metadata.name: brain
       ports:
         - port: 4000
   egress:

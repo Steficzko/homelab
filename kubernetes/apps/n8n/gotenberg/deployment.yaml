@@ -23,6 +23,9 @@ spec:
             - --api-timeout=30s
             - --chromium-disable-javascript=false
             - --libreoffice-disable-routes=true
+            # ADR-038: the brain sends it user-supplied URLs. Never let Chromium fetch the cluster,
+            # the node IPs, the tailnet, loopback or cluster DNS names. LAN is trusted by decision.
+            - --chromium-deny-list=^https?://(10\.|192\.168\.1\.2|100\.|127\.|0\.0\.0\.0|localhost|\[::1\]|[a-z0-9-]+\.svc)
           ports:
             - containerPort: 3000
           resources:

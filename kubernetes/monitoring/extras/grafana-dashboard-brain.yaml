@@ -1,0 +1,36 @@
+# Second brain (ADR-038): four stat panels from brain-capture's stdlib /metrics, scraped by
+# brain-servicemonitor.yaml next to this file. Kept in Git as a ConfigMap so it survives the
+# Grafana PVC and is reviewable; the sidecar picks up grafana_dashboard=1 in any namespace and
+# grafana_folder decides where it lands.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-dashboard-brain
+  namespace: monitoring
+  labels:
+    grafana_dashboard: "1"
+  annotations:
+    grafana_folder: "Apps"
+data:
+  brain.json: |
+    {
+      "uid": "homelab-brain",
+      "title": "Second Brain",
+      "tags": ["homelab", "brain"],
+      "timezone": "browser",
+      "schemaVersion": 39,
+      "version": 1,
+      "refresh": "1m",
+      "panels": [
+        {"type": "stat", "title": "Captures since pod start", "gridPos": {"x": 0, "y": 0, "w": 6, "h": 4},
+         "targets": [{"expr": "brain_captures_total", "refId": "A"}]},
+        {"type": "stat", "title": "Minutes since last capture", "gridPos": {"x": 6, "y": 0, "w": 6, "h": 4},
+         "targets": [{"expr": "(time() - brain_last_capture_timestamp_seconds) / 60", "refId": "A"}],
+         "fieldConfig": {"defaults": {"unit": "m", "decimals": 0}}},
+        {"type": "stat", "title": "Watcher cycle age (s)", "gridPos": {"x": 12, "y": 0, "w": 6, "h": 4},
+         "targets": [{"expr": "time() - brain_last_cycle_timestamp_seconds", "refId": "A"}],
+         "fieldConfig": {"defaults": {"unit": "s", "decimals": 0, "thresholds": {"mode": "absolute", "steps": [{"color": "green", "value": null}, {"color": "red", "value": 300}]}}}},
+        {"type": "stat", "title": "Errors / backend down", "gridPos": {"x": 18, "y": 0, "w": 6, "h": 4},
+         "targets": [{"expr": "brain_errors_total", "refId": "A", "legendFormat": "errors"}, {"expr": "brain_backend_down_total", "refId": "B", "legendFormat": "backend down"}]}
+      ]
+    }

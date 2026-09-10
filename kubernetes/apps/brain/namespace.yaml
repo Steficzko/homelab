@@ -1,0 +1,5 @@
+# ADR-038 — the second brain. Everything brain-related in k3s lives here.
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: brain

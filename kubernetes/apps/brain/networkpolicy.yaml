@@ -1,0 +1,52 @@
+# ADR-038 security posture. Ingress: metrics for Prometheus, Syncthing from the LAN.
+# The GUI (8384) has no ingress rule on purpose: reach it with kubectl port-forward only.
+# Egress: Telegram/yt-dlp/page titles on the internet, LiteLLM, Gotenberg, NFS + Kuma on
+# Unraid, Syncthing to LAN peers, DNS. Nothing else.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: brain
+  namespace: brain
+spec:
+  podSelector:
+    matchLabels: { app: brain }
+  policyTypes: [Ingress, Egress]
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels: { kubernetes.io/metadata.name: monitoring }
+      ports: [{ port: 8080 }]
+    - from:
+        - ipBlock: { cidr: 192.168.1.0/24 }        # LAN only; remote reach is an open ticket
+      ports:
+        - { port: 22000, protocol: TCP }
+        - { port: 22000, protocol: UDP }
+  egress:
+    - ports: [{ port: 443 }, { port: 80 }]         # Telegram API, yt-dlp, page titles
+      to:
+        - ipBlock:
+            cidr: 0.0.0.0/0
+            except: [10.0.0.0/8, 192.168.0.0/16, 100.64.0.0/10, 172.16.0.0/12]
+    - ports: [{ port: 4000 }]                      # LiteLLM (its netpol admits ns brain)
+      to:
+        - namespaceSelector:
+            matchLabels: { kubernetes.io/metadata.name: ai }
+          podSelector:
+            matchLabels: { app: litellm }
+    - ports: [{ port: 3000 }]                      # Gotenberg: URL → PDF for Paperless
+      to:
+        - namespaceSelector:
+            matchLabels: { kubernetes.io/metadata.name: n8n }
+          podSelector:
+            matchLabels: { app: gotenberg }
+    - ports: [{ port: 2049 }, { port: 3001 }]      # Unraid: NFS (data + Paperless consume) and Kuma push
+      to: [{ ipBlock: { cidr: 192.168.1.100/32 } }]
+    - ports:                                       # Syncthing to LAN peers
+        - { port: 22000, protocol: TCP }
+        - { port: 22000, protocol: UDP }
+        - { port: 21027, protocol: UDP }
+      to: [{ ipBlock: { cidr: 192.168.1.0/24 } }]
+    - ports: [{ port: 53, protocol: UDP }, { port: 53, protocol: TCP }]
+      to:
+        - namespaceSelector:
+            matchLabels: { kubernetes.io/metadata.name: kube-system }

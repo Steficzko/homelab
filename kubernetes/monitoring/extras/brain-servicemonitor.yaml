@@ -1,0 +1,18 @@
+# Scrapes brain-capture's tiny stdlib /metrics (ADR-038). Must live in `monitoring` and carry
+# `release: kube-prometheus-stack` or the Prometheus CR ignores it — see the argocd
+# ServiceMonitor next to this file for the full explanation.
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: brain
+  namespace: monitoring
+  labels:
+    release: kube-prometheus-stack
+spec:
+  namespaceSelector:
+    matchNames: [brain]
+  selector:
+    matchLabels: { app: brain }
+  endpoints:
+    - port: metrics
+      interval: 60s
