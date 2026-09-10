@@ -19,10 +19,7 @@ spec:
         checksum/code: "c0f92d60ba5babf8"   # sha256 of capture.py, set by the regeneration step; a code push rolls the pod
     spec:
       securityContext:
-        runAsUser: 99
-        runAsGroup: 100
-        fsGroup: 100
-        runAsNonRoot: true
+        fsGroup: 100          # per-container runAsUser below; the obsidian image must start as root (s6) and drops to PUID 99
       affinity:
         nodeAffinity:
           preferredDuringSchedulingIgnoredDuringExecution:
@@ -35,6 +32,9 @@ spec:
           image: ghcr.io/jauderho/yt-dlp:latest@sha256:0987db27a321d2e485873168b7eb50d21bf11b5f1f309c4594cfc713bdf76a82   # Alpine + python3.14 + ffmpeg 8 + yt-dlp; nothing installed at start
           command: ["python3", "/app/capture.py"]
           securityContext:
+            runAsUser: 99
+            runAsGroup: 100
+            runAsNonRoot: true
             readOnlyRootFilesystem: true
             allowPrivilegeEscalation: false
             capabilities: { drop: [ALL] }
@@ -80,6 +80,9 @@ spec:
             - { name: PGID, value: "100" }
             - { name: TZ, value: Europe/Prague }
           securityContext:
+            runAsUser: 99
+            runAsGroup: 100
+            runAsNonRoot: true
             allowPrivilegeEscalation: false
             capabilities: { drop: [ALL] }
           ports:
@@ -97,6 +100,30 @@ spec:
           resources:
             requests: { memory: 128Mi, cpu: 50m }
             limits:   { memory: 1Gi, cpu: "1" }
+        - name: obsidian
+          # Obsidian desktop streamed to the browser (KasmVNC). Sits on the master vault: what you
+          # type here lands on the source of truth; Syncthing fans it out. Reachable on the tailnet
+          # only (NodePort + netpol). BRAIN-40.
+          image: lscr.io/linuxserver/obsidian:1.9.14@sha256:49b3b4d853c8918293bf2af0e3be5b7a0f1ab5fe81b4117404fc047035833bb2
+          env:
+            - { name: PUID, value: "99" }
+            - { name: PGID, value: "100" }
+            - { name: TZ, value: Europe/Prague }
+            - { name: TITLE, value: "Second Brain" }
+            - name: CUSTOM_USER
+              valueFrom: { secretKeyRef: { name: brain-secret, key: OBSIDIAN_USER } }
+            - name: PASSWORD
+              valueFrom: { secretKeyRef: { name: brain-secret, key: OBSIDIAN_PASSWORD } }
+          ports:
+            - { name: web, containerPort: 3000 }
+          securityContext:
+            capabilities: { drop: [ALL], add: [CHOWN, SETUID, SETGID, FOWNER, DAC_OVERRIDE] }   # s6-overlay needs these to drop to PUID
+          volumeMounts:
+            - { name: obsidian-config, mountPath: /config }
+            - { name: vault, mountPath: /vault }
+          resources:
+            requests: { memory: 512Mi, cpu: 100m }
+            limits:   { memory: 2Gi, cpu: "2" }
       volumes:
         - name: code
           configMap: { name: brain-capture-code }
@@ -108,6 +135,8 @@ spec:
           persistentVolumeClaim: { claimName: paperless-consume }
         - name: syncthing-config
           persistentVolumeClaim: { claimName: syncthing-config }
+        - name: obsidian-config
+          persistentVolumeClaim: { claimName: obsidian-config }
         - name: tmp
           emptyDir: { sizeLimit: 8Gi }
         - name: zoneinfo
@@ -148,3 +177,18 @@ spec:
   ports:
     - { name: sync-tcp, port: 22000, targetPort: 22000, protocol: TCP }
     - { name: sync-udp, port: 22000, targetPort: 22000, protocol: UDP }
+---
+# Browser Obsidian: tailnet only. NodePort with Local policy keeps the client's tailnet address
+# so the netpol (ingress from 100.64.0.0/10 on 3000) is what admits it; the LAN is not allowed.
+# Address: the pod's node on the tailnet, e.g. http://k3s-prg-w1.taila09f30.ts.net:30300
+apiVersion: v1
+kind: Service
+metadata:
+  name: brain-obsidian
+  namespace: brain
+spec:
+  type: NodePort
+  externalTrafficPolicy: Local
+  selector: { app: brain }
+  ports:
+    - { name: web, port: 3000, targetPort: web, nodePort: 30300 }
