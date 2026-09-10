@@ -67,6 +67,7 @@ spec:
             - { name: data, mountPath: /data/data }
             - { name: paperless-consume, mountPath: /data/paperless-consume }
             - { name: tmp, mountPath: /tmp }
+            - { name: zoneinfo, mountPath: /usr/share/zoneinfo, readOnly: true }   # Alpine image has no tzdata; TZ=Europe/Prague needs it for note timestamps
           resources:
             requests: { memory: 256Mi, cpu: 100m }
             limits:   { memory: 2Gi, cpu: "2" }     # ffmpeg scene detection on 720p video
@@ -109,6 +110,8 @@ spec:
           persistentVolumeClaim: { claimName: syncthing-config }
         - name: tmp
           emptyDir: { sizeLimit: 8Gi }
+        - name: zoneinfo
+          hostPath: { path: /usr/share/zoneinfo, type: Directory }   # read-only; the nodes are Debian and carry tzdata
 ---
 apiVersion: v1
 kind: Service
