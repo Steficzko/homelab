@@ -1,0 +1,52 @@
+# Second brain (ADR-038): the sensors that make "phase A is running" into "phase A is
+# trustworthy". Kuma already watches the heartbeat; these watch the metrics Prometheus
+# scrapes from the capture pod. `release: kube-prometheus-stack` is mandatory (ruleSelector).
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: brain-alerts
+  namespace: monitoring
+  labels:
+    release: kube-prometheus-stack
+spec:
+  groups:
+    - name: estate-brain
+      rules:
+        - alert: BrainCaptureStalled
+          expr: time() - brain_last_cycle_timestamp_seconds > 900
+          for: 5m
+          labels:
+            severity: warning
+          annotations:
+            summary: "brain-capture has not completed a cycle for {{ $value | printf \"%.0f\" }}s"
+            description: >-
+              The watcher loop updates this on every cycle and on every transcription chunk.
+              Stalled means drops are not becoming notes. Check `kubectl logs -n brain deploy/brain -c capture`.
+        - alert: BrainCaptureErrors
+          expr: increase(brain_errors_total[1h]) > 3
+          for: 0m
+          labels:
+            severity: warning
+          annotations:
+            summary: "brain-capture logged {{ $value | printf \"%.0f\" }} failures in the last hour"
+            description: >-
+              Files that failed on their own content are parked under data/audio/_failed with a .err
+              file next to each; a burst usually means a format the pipeline does not handle.
+        - alert: BrainBackendDown
+          expr: increase(brain_backend_down_total[30m]) > 2
+          for: 0m
+          labels:
+            severity: warning
+          annotations:
+            summary: "brain-capture cannot reach Whisper/LiteLLM/Gotenberg"
+            description: >-
+              Captures are retried, nothing is lost, but nothing is being transcribed. Check LiteLLM
+              and the ryzen-ml Whisper container.
+        - alert: BrainMetricsAbsent
+          expr: absent(brain_last_cycle_timestamp_seconds)
+          for: 10m
+          labels:
+            severity: warning
+          annotations:
+            summary: "no brain-capture metrics for 10 minutes"
+            description: "The pod is down or the ServiceMonitor lost its target."

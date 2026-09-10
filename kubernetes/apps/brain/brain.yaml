@@ -16,7 +16,7 @@ spec:
     metadata:
       labels: { app: brain }
       annotations:
-        checksum/code: "acf7b841dd001762"   # sha256 of capture.py, set by the regeneration step; a code push rolls the pod
+        checksum/code: "c0f92d60ba5babf8"   # sha256 of capture.py, set by the regeneration step; a code push rolls the pod
     spec:
       securityContext:
         runAsUser: 99
@@ -58,7 +58,7 @@ spec:
             periodSeconds: 60
             failureThreshold: 3
           readinessProbe:
-            httpGet: { path: /metrics, port: metrics }
+            httpGet: { path: /ready, port: metrics }
             initialDelaySeconds: 5
             periodSeconds: 30
           volumeMounts:

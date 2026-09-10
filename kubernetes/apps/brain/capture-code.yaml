@@ -190,7 +190,8 @@ data:
                 dropped += 1
                 continue
             if bad_words:
-                toks = [w for w in t.split() if (w.strip(".,!?"), ) and not any(bw[1].strip(".,!?") == w.strip(".,!?") for bw in bad_words)]
+                bad = {bw[1].strip(".,!?") for bw in bad_words}
+                toks = [w for w in t.split() if w.strip(".,!?") not in bad]
                 if len(toks) < len(t.split()):
                     dropped += 1
                     t = " ".join(toks)
@@ -200,7 +201,12 @@ data:
         return "\n".join(kept).strip(), dropped == 0
     
     
+    def progress():
+        STATE["last_cycle"] = time.time()  # liveness watches this; long transcriptions must keep it fresh
+    
+    
     def whisper_chunk(wav):
+        progress()
         body, ctype = multipart({"model": "whisper", "response_format": "verbose_json", "timestamp_granularities[]": "word"},
                                 {"file": (wav.name, wav.read_bytes())})
         last = None
@@ -225,6 +231,7 @@ data:
             out, verified = [], True
             for i, part in enumerate(parts):
                 t, ok = filter_transcript(whisper_chunk(part))
+                progress()
                 verified = verified and ok
                 if t:
                     out.append((f"[{(i*CHUNK)//60:02d}:00] " if len(parts) > 1 else "") + t)
@@ -263,9 +270,15 @@ data:
         return DATA / "audio" / datetime.now().strftime("%Y") / name
     
     
+    def transcript_of(dest):
+        return dest.with_suffix(dest.suffix + ".txt")
+    
+    
     def already_done(f):
+        """A drop is done only when its kept copy has a transcript beside it. A copy without a
+        transcript means the pod died mid-work; the sweep in watcher() picks it up again."""
         dest = audio_dest(f.name)
-        return dest.exists() and dest.stat().st_size == f.stat().st_size
+        return dest.exists() and dest.stat().st_size == f.stat().st_size and transcript_of(dest).exists()
     
     
     def process_audio_file(dest, source):
@@ -295,19 +308,31 @@ data:
             log(f"kuma push failed: {e}")
     
     
+    def orphans():
+        """Kept copies (drops or Telegram saves) that have no transcript: work interrupted by a
+        restart, a liveness kill, or a backend outage. Older than 2 min so in-flight ones are skipped."""
+        for f in sorted((DATA / "audio").glob("*/*")):
+            if f.is_file() and f.suffix.lower() in EXT and not transcript_of(f).exists() \
+               and "_failed" not in f.parts and time.time() - f.stat().st_mtime > 120:
+                yield f
+    
+    
     def watcher():
         drops = DATA / "drops"
         drops.mkdir(parents=True, exist_ok=True)
         while True:
             status, msg = "up", "OK"
             try:
-                for f in sorted(drops.iterdir()):
-                    if not f.is_file() or f.suffix.lower() not in EXT or f.name.startswith(".") or already_done(f):
-                        continue
-                    if time.time() - f.stat().st_mtime < 15:
-                        continue  # still being written
+                work = [("drop", f) for f in sorted(drops.iterdir())
+                        if f.is_file() and f.suffix.lower() in EXT and not f.name.startswith(".")
+                        and not already_done(f) and time.time() - f.stat().st_mtime >= 15]
+                work += [("orphan", f) for f in orphans()]
+                for kind, f in work:
                     try:
-                        process_drop(f)
+                        if kind == "drop":
+                            process_drop(f)
+                        else:
+                            process_audio_file(f, "telegram-voice" if f.name.startswith("tg-") else "drop")
                     except BackendDown as e:
                         STATE["backend_down"] += 1
                         status, msg = "down", "backend"
@@ -318,8 +343,12 @@ data:
                         log(f"audio FAILED {f.name}: {e}")
                         failed = DATA / "audio" / "_failed"
                         failed.mkdir(parents=True, exist_ok=True)
-                        shutil.copy2(str(f), str(failed / f.name))  # keep the drop untouched; park a copy
+                        if kind == "drop":
+                            shutil.copy2(str(f), str(failed / f.name))  # keep the drop untouched; park a copy
+                        else:
+                            shutil.move(str(f), str(failed / f.name))   # orphan copy: move so it is not retried forever
                         (failed / (f.name + ".err")).write_text(str(e))
+                        STATE["last_cycle"] = time.time()
                 STATE["last_cycle"] = time.time()
             except Exception as e:
                 STATE["errors"] += 1
@@ -468,7 +497,10 @@ data:
             pass
     
         def do_GET(self):
-            if self.path == "/healthz":
+            if self.path == "/ready":
+                ok = STATE["last_cycle"] > 0
+                self.send_response(200 if ok else 503); self.end_headers(); self.wfile.write(b"ready" if ok else b"starting")
+            elif self.path == "/healthz":
                 ok = time.time() - STATE["last_cycle"] < 5 * POLL
                 self.send_response(200 if ok else 503); self.end_headers(); self.wfile.write(b"ok" if ok else b"stale")
             elif self.path == "/metrics":
@@ -491,6 +523,7 @@ data:
         if not ALLOWED_CHATS:
             raise SystemExit("TELEGRAM_CHAT_IDS is empty: refusing to run an open bot")
         log(f"brain-capture up vault={VAULT} data={DATA} litellm={LITELLM}")
+        STATE["last_cycle"] = time.time()
         for t in (watcher, telegram):
             threading.Thread(target=t, daemon=True).start()
         serve()

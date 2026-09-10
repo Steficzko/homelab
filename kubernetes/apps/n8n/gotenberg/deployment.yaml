@@ -23,9 +23,10 @@ spec:
             - --api-timeout=30s
             - --chromium-disable-javascript=false
             - --libreoffice-disable-routes=true
-            # ADR-038: the brain sends it user-supplied URLs. Never let Chromium fetch the cluster,
-            # the node IPs, the tailnet, loopback or cluster DNS names. LAN is trusted by decision.
-            - --chromium-deny-list=^https?://(10\.|192\.168\.1\.2|100\.|127\.|0\.0\.0\.0|localhost|\[::1\]|[a-z0-9-]+\.svc)
+            # ADR-038: the brain sends it user-supplied URLs. Chromium must never fetch private
+            # ranges (RFC1918, CGNAT/tailnet, loopback) or cluster/LAN DNS names — a pasted link is
+            # attacker input. Unraid, pve and the cluster all sit inside these ranges on purpose.
+            - --chromium-deny-list=^https?://(10\\.|172\\.(1[6-9]|2[0-9]|3[01])\\.|192\\.168\\.|100\\.(6[4-9]|[7-9][0-9]|1[01][0-9]|12[0-7])\\.|127\\.|0\\.0\\.0\\.0|localhost|\\[::1\\]|[^/]*\\.(svc|cluster\\.local|local|internal|lan|home)(:|/|$))
           ports:
             - containerPort: 3000
           resources:
