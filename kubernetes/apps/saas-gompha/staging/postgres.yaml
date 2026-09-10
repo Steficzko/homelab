@@ -45,6 +45,13 @@ data:
     # gompha_app:   runtime, subject to FORCE RLS — never BYPASSRLS, never superuser.
     psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "$POSTGRES_DB" \
          -v owner_pw="$GOMPHA_OWNER_PASSWORD" -v app_pw="$GOMPHA_APP_PASSWORD" <<-'EOSQL'
+      -- psql -v interpolates CLIENT-side: the password IS in the statement text.
+      -- pg_stat_statements stores utility statements verbatim (track_utility is
+      -- on by default) and the temp init server runs with the Deployment's args,
+      -- so without these two the plaintext would land in PGDATA/pg_stat/*.stat
+      -- (on the backed-up volume) and in the slow-query log.
+      SET pg_stat_statements.track_utility = off;
+      SET log_min_duration_statement = -1;
       CREATE ROLE gompha_owner LOGIN PASSWORD :'owner_pw' NOSUPERUSER BYPASSRLS CREATEDB;
       CREATE ROLE gompha_app   LOGIN PASSWORD :'app_pw'   NOSUPERUSER NOBYPASSRLS;
       ALTER DATABASE gompha_clinic OWNER TO gompha_owner;
@@ -55,6 +62,15 @@ data:
     psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname gompha_clinic <<-'EOSQL'
       ALTER SCHEMA public OWNER TO gompha_owner;
       GRANT USAGE ON SCHEMA public TO gompha_app;
+      -- query stats (data.md "measure before indexing"). Needs the
+      -- shared_preload_libraries arg on the Deployment below. It lives HERE and
+      -- not in a migration because the extension is NOT trusted (pg_trgm and
+      -- btree_gist are, which is why 0200/0700 may create those as
+      -- gompha_owner). Reading other roles' query text needs pg_read_all_stats;
+      -- the API runs as gompha_app, so the owner gets it. On an instance
+      -- initialised before 2026-09-09 both lines were run once by hand.
+      CREATE EXTENSION IF NOT EXISTS pg_stat_statements;
+      GRANT pg_read_all_stats TO gompha_owner;
     EOSQL
 ---
 apiVersion: apps/v1
@@ -79,6 +95,28 @@ spec:
           # N1; sibling licensing/dental pin the same way).
           image: postgres:17-alpine@sha256:18cfe3ef5e6815560c98237d6216d1e5119702fb0f3894c8785dd58b8bbe5d73
           ports: [{containerPort: 5432}]
+          # Observability (data.md "measure before indexing"; operating.md).
+          # pg_stat_statements normalises constants, so it never holds a
+          # patient's name. The slow-query log WOULD: psycopg binds parameters
+          # and PG logs them alongside a slow statement — parameter logging is
+          # therefore OFF (log_parameter_max_length=0, privacy.md: logs must
+          # not become a second copy of the record). 250ms = "slow" on a clinic
+          # link budget; lower it when the p99 drops.
+          # NOT covered by these flags: constraint-violation DETAIL lines
+          # (Key (col)=(value)) and utility-statement text. And the container
+          # log is scraped into Loki (31-day retention, Grafana) — a second
+          # store outside the erasure cascade — so what is logged here matters
+          # beyond the pod. Decide explicitly before copying this file to prod.
+          args:
+            - postgres
+            - -c
+            - shared_preload_libraries=pg_stat_statements
+            - -c
+            - log_min_duration_statement=250ms
+            - -c
+            - log_parameter_max_length=0
+            - -c
+            - log_parameter_max_length_on_error=0
           env:
             - {name: POSTGRES_DB, value: gompha_clinic}
             # the bootstrap superuser (creates the two roles above); the API

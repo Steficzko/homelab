@@ -89,7 +89,10 @@ spec:
                   # -Fc: custom format, so a single table can be restored without
                   # replaying the whole dump. set -e means a pg_dump failure fails
                   # the job rather than piping an empty stream into an object.
-                  pg_dump -Fc "$DATABASE_URL" \
+                  # pg_stat_statements is observability, not schema, and it is an
+                  # UNTRUSTED extension: the restore drill runs as gompha_owner
+                  # into an empty database and could not recreate it.
+                  pg_dump -Fc --exclude-extension=pg_stat_statements "$DATABASE_URL" \
                     | age -r "$AGE_RECIPIENT" \
                     | mc pipe "minio/clinic-backups/gompha-clinic-postgres/${ts}.dump.age"
                   # prove something non-trivial landed: an empty or truncated
