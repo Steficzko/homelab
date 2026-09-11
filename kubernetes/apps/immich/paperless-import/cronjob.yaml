@@ -100,6 +100,11 @@ spec:
                           # Paperless cannot consume HEIC. Recorded so the count stays visible
                           # and a later conversion step can find them.
                           echo "${id}:skipped-heic" >> "$state"; skipped=$((skipped+1)); continue ;;
+                        *.dng|*.nrw|*.nef|*.cr2|*.cr3|*.arw|*.raf|*.orf|*.rw2|*.tif|*.tiff)
+                          # RAW and 16-bit TIFF: Paperless's PIL parser rejects them ("unable to
+                          # preserve more than 8 bits per sample"). 31 of these (DNG, NRW, TIF)
+                          # sat in consume forever on 2026-09-11.
+                          echo "${id}:skipped-raw" >> "$state"; skipped=$((skipped+1)); continue ;;
                       esac
                       if [ ! -f "$file" ]; then
                         echo "${id}:missing" >> "$state"; skipped=$((skipped+1)); continue
