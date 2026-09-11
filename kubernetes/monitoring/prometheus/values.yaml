@@ -383,6 +383,7 @@ alertmanager:
     # mounts at /etc/alertmanager/secrets/alertmanager-telegram/bottoken
     secrets:
       - alertmanager-telegram
+      - alertmanager-deadmanswitch
     topologySpreadConstraints:
       - maxSkew: 1
         topologyKey: kubernetes.io/hostname
@@ -414,12 +415,22 @@ alertmanager:
         # noticed by something outside the fleet instead of by a human.
         - matchers:
             - alertname = "Watchdog"
-          receiver: telegram
+          receiver: deadmanswitch
           group_wait: 0s
-          group_interval: 24h
-          repeat_interval: 24h
+          group_interval: 1h
+          repeat_interval: 1h
     receivers:
       - name: "null"
+      # Dead-man switch. healthchecks.io expects a ping every hour (30m grace) and
+      # alerts when one does not arrive — so it watches for SILENCE, which Telegram
+      # cannot do. It sits outside the fleet deliberately: everything that could
+      # break the pager (this cluster, Prague Unraid, the tunnel) is inside it.
+      # send_resolved is off; Watchdog never resolves, and a resolve ping would
+      # just be a second heartbeat.
+      - name: deadmanswitch
+        webhook_configs:
+          - url_file: /etc/alertmanager/secrets/alertmanager-deadmanswitch/url
+            send_resolved: false
       - name: telegram
         telegram_configs:
           - bot_token_file: /etc/alertmanager/secrets/alertmanager-telegram/bottoken

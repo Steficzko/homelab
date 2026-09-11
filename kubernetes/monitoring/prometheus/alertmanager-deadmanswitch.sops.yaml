@@ -1,0 +1,54 @@
+# Dead-man switch target for the Alertmanager Watchdog route.
+#
+# Watchdog fires forever by design, so a notification failing to arrive is the
+# signal. Telegram cannot carry that: a human has to notice an absence. This
+# healthchecks.io check notices it instead, from OUTSIDE the fleet, which matters
+# because everything that could break the pager lives inside it.
+#
+# Mounted by alertmanagerSpec.secrets as
+#   /etc/alertmanager/secrets/alertmanager-deadmanswitch/url
+# and read by the webhook receiver's url_file (Alertmanager >= 0.26).
+#
+# NOT applied by ArgoCD. Like every other *.sops.yaml here, the encrypted file is
+# the source of truth in git and the Secret is applied by hand:
+#   sops -d kubernetes/monitoring/prometheus/alertmanager-deadmanswitch.sops.yaml | kubectl apply -f -
+apiVersion: v1
+kind: Secret
+metadata:
+    name: alertmanager-deadmanswitch
+    namespace: monitoring
+stringData:
+    url: ENC[AES256_GCM,data:hD0/dd36koe0Lhlx1UpEYEm8elZBRLDzGbtaNhULx+xLLohbnxu7/qupT7hiwLijFpvWfCAvAok=,iv:EeOG6oMD/TMmJNG6yyCov7xzznYphBY3cOqUaafLq7A=,tag:gm3f+PtITJMdIGBo+iqpfQ==,type:str]
+sops:
+    age:
+        - enc: |
+            -----BEGIN AGE ENCRYPTED FILE-----
+            YWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IFgyNTUxOSBZTjRnQ3NLUHoycDZNbk4y
+            M2RsTkk0UUJFYVhtZmthcmJIUmZiVjdoclNJCk5Ea1Vianh2c254YVl0R0M1Q3Nt
+            ZkN2UXR5ODNEYnFEdUZkbmJCeVFyL3cKLS0tIDc2bnRhcXRFeVFNU2NEVExrdFdD
+            R0c2NXRER3JheXhCNkFneitwdHJNeUkKJyAHQqGPwJE2Yorl47/w03qJhHUIhQw5
+            yNi4HdScHi0apcHQoez/5+I3Q9yKkKOYmDOSQQxyV4ODVbIG5z26Tg==
+            -----END AGE ENCRYPTED FILE-----
+          recipient: age18sv9srthxjgaxqufmnf8dwdwg3pugdxkxye8mmndstvjh45zqg9qcsk8c5
+        - enc: |
+            -----BEGIN AGE ENCRYPTED FILE-----
+            YWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IFgyNTUxOSBTR28rbW9jTzcvYThITGpV
+            TW40WU00RmxNc3AxY21RaVcvKzRPOVF4SWlJCkxubUljN1dEclBQQTBOQWkvemo2
+            aUFEbXdzaUJ6RFNESjB6NzE4OGcwa1kKLS0tIFIxeVJSejN4a2swVWF5Yjg4MFBU
+            SzBOWVRrc0xLelpiSGxKd2hPZngyVmcKIA8WsxAeHjgNzAIPFXxrdrlBv8bcGnGV
+            vLljn6ckKLP087UHojLmHnzdeDyoY5LC/o+y4CQsM0EIZQQHz6KrTw==
+            -----END AGE ENCRYPTED FILE-----
+          recipient: age16nu9pu2s9cy3gf9gdgfm6pwqyrm9t2jnkvvrrcqe07tfcemfxafq4v4sv6
+        - enc: |
+            -----BEGIN AGE ENCRYPTED FILE-----
+            YWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IFgyNTUxOSB1OGNZZkhEN0dkbDMzeDBj
+            WS9LaHQvcHpncXBkQkp0Mm1Jb0pJKy9VVFJNCmY1Y09nOHd5c2N4d1krdFhkZThs
+            YnU3ZWd0U0p3ay9HUERxdW9uTVZtU28KLS0tIDJUTXRGeEZuc1NoV2lCaU5hYkNZ
+            UmhMN2tGRFh3Z1F1M3RYSXQwemUzRzQKit9CMOLDDVeNAlGRkA9SFSodLFkNf4eN
+            A5lM2XGOp7ybtkwlUh4wbv9I+SBNEdzAX1dDm2LC001FrjsrBG2m6Q==
+            -----END AGE ENCRYPTED FILE-----
+          recipient: age15el6f6wzcdzge9fvpcawuqfdjgld8tlpawyunktmm2lyxtdwlv8sa88y7s
+    encrypted_regex: ^(data|stringData)$
+    lastmodified: "2026-09-11T13:32:42Z"
+    mac: ENC[AES256_GCM,data://u4gm+UoNWshv+LBsE2ZVZHu+06XymkdSMP7JzfT6Jz/mrpPIVOFQi+W5oXOAUm+guAkbQhR5pXi4qh8pvRRx5eQsKfNPKVbUwQ18TtOgbnf8Bu+idajussYTKkr+H7LYqnYctacaAAQ48pk4ZgSuy7vSm+KIwwUSt+LRuFY5U=,iv:Ru1ac8F5TBtNsyg6n3b5GD6ezn6+FFizTZZoreJXArI=,tag:0Nu25XfYpYtoK/AnWkMtPg==,type:str]
+    version: 3.13.1
