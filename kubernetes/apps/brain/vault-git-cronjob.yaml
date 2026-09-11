@@ -62,6 +62,17 @@ spec:
               env:
                 - { name: HOME, value: /tmp }    # git needs a writable HOME; root fs is read-only
                 - { name: TZ,   value: Europe/Prague }
+                # /data/vault is owned by root:users mode 2775 — that is how Longhorn creates a
+                # volume root. The job writes through the group (gid 100), but git compares the
+                # repository directory's OWNER to the running uid, sees root against 99, and
+                # refuses with "detected dubious ownership". That check exists to stop you running
+                # hooks out of someone else's repo; here the directory is a mount root owned by
+                # root by construction and the content is ours, so the exception is correct rather
+                # than a workaround. Declared as env so it applies to every git call and stays
+                # visible in the manifest instead of being buried in the script.
+                - { name: GIT_CONFIG_COUNT,  value: "1" }
+                - { name: GIT_CONFIG_KEY_0,   value: safe.directory }
+                - { name: GIT_CONFIG_VALUE_0, value: /data/vault }
               command:
                 - /bin/sh
                 - -c
