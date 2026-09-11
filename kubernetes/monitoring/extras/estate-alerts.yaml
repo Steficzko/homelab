@@ -46,14 +46,54 @@ spec:
         # evaluates two permanently-0% phantom filesystems alongside the real
         # array.
         #
-        # Currently matches 2 series: repy /mnt/disk1 (91.7%) and
-        # ptolemaida /mnt/disk1 (92.1%). Both sites, not just Prague.
+        # Array disks (/mnt/diskN) are judged on ABSOLUTE free space, not percent.
+        # Both boxes run a ~390 GB per-share minimum-free floor with the highwater
+        # allocator, so a 4 TB member sitting at ~390 GB free (90%+) is the
+        # designed end state, not a fault — Unraid has already moved on to the
+        # next disk. A percent rule fires forever on those; retuned 2026-09-10.
+        # The real anomaly is a disk written PAST the floor: below 300 GB free.
+        # Pools and non-array mounts (cache, dataservices, virtual) have no such
+        # floor and keep the percent rules below.
         - alert: UnraidArrayDiskFillingUp
           expr: >-
+            node_filesystem_avail_bytes{job="unraid-node-exporter",fstype!="tmpfs",mountpoint=~"/mnt/disk[0-9]+"}
+            < 300e9
+          for: 15m
+          labels:
+            severity: warning
+          annotations:
+            summary: >-
+              {{ $labels.instance }} {{ $labels.mountpoint }} has only
+              {{ $value | humanize1024 }}B free
+            description: >-
+              An Unraid array disk is a fixed-size member, not a pool — it does not
+              spill onto the next disk. This one is below the ~390 GB share floor,
+              which means something wrote past it (a share with floor 0, or a single
+              file larger than the remaining space). Move a share with the mover, or
+              rebalance onto a less-full disk.
+
+        - alert: UnraidArrayDiskCritical
+          expr: >-
+            node_filesystem_avail_bytes{job="unraid-node-exporter",fstype!="tmpfs",mountpoint=~"/mnt/disk[0-9]+"}
+            < 150e9
+          for: 5m
+          labels:
+            severity: critical
+          annotations:
+            summary: >-
+              {{ $labels.instance }} {{ $labels.mountpoint }} has only
+              {{ $value | humanize1024 }}B free — act now
+            description: >-
+              Well past the share floor. XFS allocation starts failing near full
+              and the Unraid mover has nowhere to stage. Free space on this
+              specific disk.
+
+        - alert: UnraidPoolFillingUp
+          expr: >-
             100 - 100 *
-            node_filesystem_avail_bytes{job="unraid-node-exporter",fstype!="tmpfs",mountpoint=~"/mnt/(disk|cache|dataservices|virtual).*"}
+            node_filesystem_avail_bytes{job="unraid-node-exporter",fstype!="tmpfs",mountpoint=~"/mnt/(cache|dataservices|virtual).*"}
             /
-            node_filesystem_size_bytes{job="unraid-node-exporter",fstype!="tmpfs",mountpoint=~"/mnt/(disk|cache|dataservices|virtual).*"}
+            node_filesystem_size_bytes{job="unraid-node-exporter",fstype!="tmpfs",mountpoint=~"/mnt/(cache|dataservices|virtual).*"}
             > 90
           for: 15m
           labels:
@@ -63,17 +103,15 @@ spec:
               {{ $labels.instance }} {{ $labels.mountpoint }} is
               {{ $value | printf "%.1f" }}% full
             description: >-
-              An Unraid array disk is a fixed-size member, not a pool — it does not
-              spill onto the next disk. When it fills, writes to the shares that
-              landed on it fail while the array still reports free space overall.
-              Move a share with the mover, or rebalance onto a less-full disk.
+              A non-array Unraid mount (cache pool, dataservices, virtualization)
+              is over 90% full. These have no share floor and fill until they fail.
 
-        - alert: UnraidArrayDiskCritical
+        - alert: UnraidPoolCritical
           expr: >-
             100 - 100 *
-            node_filesystem_avail_bytes{job="unraid-node-exporter",fstype!="tmpfs",mountpoint=~"/mnt/(disk|cache|dataservices|virtual).*"}
+            node_filesystem_avail_bytes{job="unraid-node-exporter",fstype!="tmpfs",mountpoint=~"/mnt/(cache|dataservices|virtual).*"}
             /
-            node_filesystem_size_bytes{job="unraid-node-exporter",fstype!="tmpfs",mountpoint=~"/mnt/(disk|cache|dataservices|virtual).*"}
+            node_filesystem_size_bytes{job="unraid-node-exporter",fstype!="tmpfs",mountpoint=~"/mnt/(cache|dataservices|virtual).*"}
             > 95
           for: 5m
           labels:
@@ -83,8 +121,7 @@ spec:
               {{ $labels.instance }} {{ $labels.mountpoint }} is
               {{ $value | printf "%.1f" }}% full — act now
             description: >-
-              Below 5% free, XFS allocation starts failing and the Unraid mover has
-              nowhere to stage. Free space on this specific disk.
+              Below 5% free on a pool mount. Free space on this mount now.
 
         # The only "is the NAS alive?" signal that exists. Neither box is a
         # Kubernetes node, so KubeNodeNotReady cannot see them, and losing Prague
