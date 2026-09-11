@@ -194,6 +194,15 @@ spec:
       kind: Job
       jsonPointers:
         - /spec/template/metadata/annotations/timestamp
+        # A Job's pod template is immutable, and the chart stamps its own version
+        # into it as a label. Bumping plane-ce 1.6.3 -> 1.8.0 (#53) therefore left
+        # the completed 2026-08-22 migrator Job unpatchable: every sync retried the
+        # same rejected patch and the app sat in a permanent Failed sync loop, which
+        # is worse than OutOfSync because real drift would then hide behind an
+        # expected-yellow. Ignoring the label is right rather than deleting and
+        # recreating the Job: recreating re-runs the migrator for a cosmetic label,
+        # and the chart will do this again on every future version bump.
+        - /spec/template/metadata/labels/helm.sh~1chart
     # Longhorn reports actual size back onto the claim
     - group: ""
       kind: PersistentVolumeClaim

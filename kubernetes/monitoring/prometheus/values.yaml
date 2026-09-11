@@ -413,12 +413,27 @@ alertmanager:
         # One heartbeat a day walks the real path. Its ABSENCE is the alarm.
         # Upgrade path: point this at a healthchecks.io webhook so the absence is
         # noticed by something outside the fleet instead of by a human.
+        # Watchdog goes to BOTH legs, because they prove different things and
+        # continue:true is what lets one alert match two routes.
+        #   deadmanswitch -> proves Prometheus is evaluating and Alertmanager is
+        #     routing, and healthchecks.io notices the SILENCE from outside the fleet.
+        #   telegram      -> proves the actual pager: the bot token and its egress.
+        # The webhook alone was a regression: if the bot token died, the dead-man
+        # switch would stay green while every real alert vanished. Daily, so it is a
+        # heartbeat and not noise.
         - matchers:
             - alertname = "Watchdog"
           receiver: deadmanswitch
           group_wait: 0s
           group_interval: 1h
           repeat_interval: 1h
+          continue: true
+        - matchers:
+            - alertname = "Watchdog"
+          receiver: telegram
+          group_wait: 0s
+          group_interval: 24h
+          repeat_interval: 24h
     receivers:
       - name: "null"
       # Dead-man switch. healthchecks.io expects a ping every hour (30m grace) and

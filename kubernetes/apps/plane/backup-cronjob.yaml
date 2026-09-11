@@ -52,7 +52,7 @@ spec:
                 - { name: tools, mountPath: /tools }
           containers:
             - name: dump
-              image: postgres:15-alpine
+              image: postgres:15-alpine@sha256:fe0737ba566a2c5b2a28f34433c0a423261900ec17b9bf7ad115e1aae7e57f1b
               envFrom:
                 - secretRef: { name: plane-pgdb-secret }    # POSTGRES_USER / POSTGRES_DB / POSTGRES_PASSWORD
                 - secretRef: { name: backup-s3-secret }     # AWS_ACCESS_KEY_ID / AWS_SECRET_ACCESS_KEY / AWS_ENDPOINTS
