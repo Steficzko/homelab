@@ -20,7 +20,7 @@ spec:
     spec:
       securityContext:
         fsGroup: 100
-        runAsNonRoot: true    # pod-wide invariant; the obsidian container opts out explicitly below (s6 starts as root, drops to PUID 99)
+        runAsNonRoot: true
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:   # pinned: the browser Obsidian address is this node's tailnet name (NodePort + Local policy)
