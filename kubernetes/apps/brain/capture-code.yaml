@@ -55,6 +55,12 @@ data:
     # Drops the watcher will never pick up, already named in the log. ponytail: an in-memory set, not a
     # state file — a pod restart re-logs them, which is the right trade: the log is what gets read.
     IGNORED = set()
+    # chat id -> (note path, epoch). After a link is captured, the NEXT plain text message becomes that
+    # note's "Why". One-shot and consumed on use. Stefanos does not reply to prompts, he types the
+    # thought as a new message — measured 2026-09-11, twice, when his note about scaling Gompha became
+    # an orphan instead of context on the reel that prompted it.
+    PENDING = {}
+    CONTEXT_WINDOW = int(os.environ.get("CONTEXT_WINDOW_SECONDS", "300"))
     
     
     class BackendDown(Exception):
@@ -435,12 +441,30 @@ data:
         return post_json(f"{API}/sendMessage", body)["result"]["message_id"]
     
     
+    def video_title(url):
+        """Title BEFORE the download, because a note's path is fixed at capture and never changes.
+        Costs one metadata call (~4 s measured). Instagram and TikTok return a generic "Video by <user>",
+        so fall back to the caption, which is where the substance is."""
+        try:
+            out = subprocess.run(["yt-dlp", "-q", "--no-warnings", "--no-playlist",
+                                  "--print", "%(title)s", "--print", "%(description)s", url],
+                                 capture_output=True, text=True, timeout=90, check=True).stdout.splitlines()
+        except Exception as e:
+            log(f"  title lookup failed, falling back to the url: {e}")
+            return url
+        t = (out[0] if out else "").strip()
+        desc = " ".join(out[1:]).strip()
+        if not t or t == url or re.fullmatch(r"video by .+", t, re.I):
+            t = desc
+        return " ".join(t.split())[:120] or url
+    
+    
     def capture_link(url, msg_id, chat, why=""):
         video = is_video_url(url)
-        title = url if video else page_title(url)
-        slug = slugify(urllib.parse.urlparse(url).path.strip("/").replace("/", "-") or "video") if video else slugify(title)
-        ask = tg_send(chat, "What is this about? (reply to this message, optional)", reply_to=msg_id)
-        p = write_note("telegram-link", title, f"<{url}>", {"url": url, "telegram_msg": msg_id, "telegram_ask": ask, "tags": []})
+        title = video_title(url) if video else page_title(url)
+        slug = slugify(title) or "link"
+        p = write_note("telegram-link", title, f"<{url}>", {"url": url, "telegram_msg": msg_id, "tags": []})
+        PENDING[chat] = (p, time.time())   # the next plain text message is this note's Why. No prompt.
         if why:
             append_section(p, "Why", why)
         n = STATE["captures"]
@@ -503,6 +527,12 @@ data:
                         # note, no log, no reply. Any message sent as a reply — a link included — was
                         # simply lost. Now a missed ask falls through to the URL and text branches, so a
                         # message always becomes something. Nothing is ignored silently.
+                    elif text and (pend := PENDING.pop(chat, None)) is not None \
+                            and time.time() - pend[1] < CONTEXT_WINDOW \
+                            and not re.search(r"https?://\S+", text):
+                        # He types the thought as a new message rather than replying. Take it either way.
+                        append_section(pend[0], "Why", text)
+                        tg_send(chat, f"\u2705 added to \u201c{pend[0].stem[16:56]}\u2026\u201d")
                     elif (m := re.search(r"https?://\S+", text)):
                         # a shared link usually arrives with words around it ("look at this https://…");
                         # the first URL is the capture, the surrounding words are the "why"
