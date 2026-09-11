@@ -70,15 +70,31 @@ spec:
                 # root by construction and the content is ours, so the exception is correct rather
                 # than a workaround. Declared as env so it applies to every git call and stays
                 # visible in the manifest instead of being buried in the script.
-                - { name: GIT_CONFIG_COUNT,  value: "1" }
+                # The committer is the pipeline, not Stefanos — a synthetic, non-routable identity
+                # so the history never implies he typed something he did not.
+                - { name: GIT_CONFIG_COUNT,   value: "3" }
                 - { name: GIT_CONFIG_KEY_0,   value: safe.directory }
                 - { name: GIT_CONFIG_VALUE_0, value: /data/vault }
+                - { name: GIT_CONFIG_KEY_1,   value: user.name }
+                - { name: GIT_CONFIG_VALUE_1, value: brain vault-git }
+                - { name: GIT_CONFIG_KEY_2,   value: user.email }
+                - { name: GIT_CONFIG_VALUE_2, value: brain@cluster.local }
               command:
                 - /bin/sh
                 - -c
                 - |
                   set -eu
                   cd /data/vault
+
+                  # Guard: never run git anywhere but the vault. `git add -A` in the wrong place
+                  # ingests whatever it finds, and a bad mount or an empty path variable is all it
+                  # takes to point it somewhere else. Checked in 2026-09-11 after exactly that
+                  # happened on a workstation while testing this script.
+                  [ "$PWD" = "/data/vault" ] || { echo "FATAL: cwd is $PWD, not the vault"; exit 1; }
+                  if [ ! -d .stfolder ] || [ ! -d inbox ]; then
+                    echo "FATAL: $PWD has no .stfolder and inbox, so it is not the vault. Refusing."
+                    exit 1
+                  fi
 
                   if [ ! -d .git ]; then
                     echo "initialising the vault history"
@@ -88,8 +104,16 @@ spec:
                     #   lost+found  root-owned mode 0770 on the ext4 volume; uid 99 cannot read it
                     #   .stfolder   Syncthing's marker
                     #   workspace*  Obsidian per-device UI state, already in .stignore
+                    #   plugins/    Obsidian plugin CODE. Excluded deliberately: the first run
+                    #               wanted to commit 64k lines of plugin JavaScript, which would
+                    #               dominate every diff and bury the thing the history is FOR.
+                    #               Plugins are reinstallable; local-llm-helper/data.json also
+                    #               holds device-local settings and is already in .stignore.
+                    #               The small .obsidian/*.json config IS kept — it restores a
+                    #               working Obsidian without carrying its binaries.
                     printf '%s\n' 'lost+found/' '.stfolder/' '.obsidian/workspace*.json' \
-                                  '.obsidian/cache/' '.trash/' > .git/info/exclude
+                                  '.obsidian/cache/' '.obsidian/plugins/' '.trash/' \
+                                  > .git/info/exclude
                   fi
 
                   # The invariant, enforced rather than documented.
