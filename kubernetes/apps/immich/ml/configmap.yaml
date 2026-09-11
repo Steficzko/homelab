@@ -7,6 +7,16 @@ data:
   nginx.conf: |
     events {}
     http {
+      # nginx defaults client_max_body_size to 1m. Immich posts the image itself to
+      # /predict, so every photo over 1 MB came back 413 and the server logged it as
+      # "failed for all URLs" — a proxy rejection looks identical to both backends
+      # being down. Only the marianna instance tripped it (22 of 22 413s in a 2000-line
+      # sample); the other three happen to hold smaller images. The failed jobs retried,
+      # and that retry churn is what OOM-killed marianna twice on 2026-09-11.
+      # 50m is well clear of the ~1.4 MB seen here; not unlimited, so a malformed
+      # request cannot make the proxy buffer without bound.
+      client_max_body_size 50m;
+
       upstream immich_ml_backends {
         server immich-ml-ryzen.immich.svc.cluster.local:3003 max_fails=2 fail_timeout=30s;
         server immich-ml-unraid.immich.svc.cluster.local:3003 backup;
