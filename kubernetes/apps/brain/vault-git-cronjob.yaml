@@ -99,22 +99,28 @@ spec:
                   if [ ! -d .git ]; then
                     echo "initialising the vault history"
                     git init -q
-                    # Local excludes, not a .gitignore: a .gitignore would be a new file IN the vault
-                    # and would sync to every device. info/exclude stays inside .git.
-                    #   lost+found  root-owned mode 0770 on the ext4 volume; uid 99 cannot read it
-                    #   .stfolder   Syncthing's marker
-                    #   workspace*  Obsidian per-device UI state, already in .stignore
-                    #   plugins/    Obsidian plugin CODE. Excluded deliberately: the first run
-                    #               wanted to commit 64k lines of plugin JavaScript, which would
-                    #               dominate every diff and bury the thing the history is FOR.
-                    #               Plugins are reinstallable; local-llm-helper/data.json also
-                    #               holds device-local settings and is already in .stignore.
-                    #               The small .obsidian/*.json config IS kept — it restores a
-                    #               working Obsidian without carrying its binaries.
-                    printf '%s\n' 'lost+found/' '.stfolder/' '.obsidian/workspace*.json' \
-                                  '.obsidian/cache/' '.obsidian/plugins/' '.trash/' \
-                                  > .git/info/exclude
                   fi
+
+                  # Rewritten EVERY run, not only at init. Learned 2026-09-11: writing this once
+                  # inside the init branch meant a repo created by an earlier version kept the old
+                  # exclusions, so a later fix silently did nothing and 64k lines of plugin
+                  # JavaScript went into the first commit.
+                  # Local excludes, not a .gitignore: a .gitignore would be a new file IN the vault
+                  # and would sync to every device. info/exclude stays inside .git.
+                  #   lost+found  root-owned mode 0770 on the ext4 volume; uid 99 cannot read it
+                  #   .stfolder   Syncthing's marker
+                  #   plugins/    Obsidian plugin CODE — reinstallable, would dominate every diff,
+                  #               and local-llm-helper/data.json holds device-local settings that
+                  #               are already in .stignore. The small .obsidian/*.json config IS
+                  #               kept, so a restore still yields a working Obsidian.
+                  #   workspace*  Obsidian per-device UI state
+                  printf '%s\n' 'lost+found/' '.stfolder/' '.obsidian/workspace*.json' \
+                                '.obsidian/cache/' '.obsidian/plugins/' '.trash/' \
+                                > .git/info/exclude
+
+                  # Anything excluded after it was already tracked stays tracked until told
+                  # otherwise. Untrack it, keeping the file on disk.
+                  git rm -r --cached --quiet --ignore-unmatch .obsidian/plugins >/dev/null 2>&1 || true
 
                   # The invariant, enforced rather than documented.
                   if [ -n "$(git remote)" ]; then
