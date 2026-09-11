@@ -24,6 +24,10 @@ spec:
           env:
             - { name: PORT, value: "3000" }
             - { name: NEXT_PUBLIC_WEBAPP_URL, value: "https://sign.kostikidis.net" }
+            # Registration was open to the internet: anyone reaching sign.kostikidis.net
+            # could create an account. Cloudflare Access cannot gate this host — external
+            # recipients sign via emailed /sign/<token> links and hold no Access identity.
+            - { name: NEXT_PUBLIC_DISABLE_SIGNUP, value: "true" }
             - { name: NEXT_PRIVATE_SIGNING_LOCAL_FILE_PATH, value: "/opt/documenso/cert.p12" }
             - { name: NEXT_PRIVATE_SIGNING_PASSPHRASE, value: "" }
             - { name: NEXT_PRIVATE_SMTP_TRANSPORT, value: "smtp-auth" }
