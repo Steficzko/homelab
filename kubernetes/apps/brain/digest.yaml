@@ -1,0 +1,282 @@
+# The return door — resurface a few of Stefanos's own notes weekly (BRAIN-46 follow-on).
+#
+# Capture without resurfacing is a write-only archive. The LLM council's verdict was that the
+# binding constraint is not the server but whether the thing ever gives anything back: three notes
+# in is the honest measurement of a chore with no payoff.
+#
+# Two deliberate departures from what the council proposed, to keep standing rules intact:
+#   * It writes a NOTE INTO THE VAULT and does not send note content through Telegram. "Telegram is
+#     inbound only" and "no titles leave through Telegram" are standing rules. The nudge that does
+#     go out carries a COUNT and nothing else, the same shape as the existing neutral
+#     acknowledgements.
+#   * No model call at all. Selection is dates plus random choice, so it costs zero GPU time and
+#     cannot collide with the other user of the card — which the council specifically warned about.
+#
+# Reuses the capture image (Alpine + python3, already pinned and tracked by Renovate) rather than
+# adding one. Pinned to k3s-prg-w1 because the vault PVC is ReadWriteOnce. Its own ConfigMap, so it
+# is deletable without touching the capture pipeline. Generated from
+# /mnt/devdata/BRAIN-DESIGN/code/digest.py — edit there, run `python3 digest.py --selftest`,
+# regenerate with the command in that folder's README. ADR-038.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: brain-digest-code
+  namespace: brain
+data:
+  digest.py: |
+    #!/usr/bin/env python3
+    """The return door: resurface a few of Stefanos's own notes, weekly.
+    
+    Why this exists: capture without resurfacing is a write-only archive. The council's verdict
+    (research/council/2026-09-11-piping-transcript.md) was that the binding constraint is not the
+    server but whether the thing ever gives anything back, and that another week of capture with no
+    payoff produces another week of nothing.
+    
+    Two deliberate departures from the council's proposal, both to keep standing rules intact:
+    
+      * It writes a NOTE INTO THE VAULT, it does not send note content through Telegram. "Telegram is
+        inbound only" and "no titles leave through Telegram" are standing rules; a weekly digest of his
+        own thinking pushed through Telegram's servers would breach both. The nudge that does go out
+        carries a count and nothing else — same shape as the existing neutral acknowledgements.
+      * No model call. Selection is dates and random choice, so this costs no GPU time at all and
+        cannot collide with the other user of the card. The council warned about exactly that.
+    
+    ponytail: selection is a random sample with no memory, so a note can repeat across weeks. With
+    three notes in the vault that is unavoidable anyway. When the corpus is real, add an age floor and
+    a seen-ledger beside the state file — the upgrade is a sorted read, not a redesign.
+    """
+    import json
+    import os
+    import random
+    import sys
+    import urllib.parse
+    import urllib.request
+    from datetime import datetime, timedelta, timezone
+    from pathlib import Path
+    
+    VAULT = Path(os.environ.get("VAULT", "/data/vault"))
+    COUNT = int(os.environ.get("DIGEST_COUNT", "3"))
+    MIN_AGE_DAYS = int(os.environ.get("DIGEST_MIN_AGE_DAYS", "0"))  # raise once the corpus is real
+    QUOTE_LINES = int(os.environ.get("DIGEST_QUOTE_LINES", "3"))
+    TOKEN = os.environ.get("TELEGRAM_TOKEN", "")
+    CHAT = os.environ.get("TELEGRAM_CHAT_IDS", "").split(",")[0].strip()
+    # Fenced material answers only when a question opens it, so it is never resurfaced unasked.
+    SKIP_DIRS = {"attachments", "fenced", ".obsidian", ".stfolder", ".trash", "lost+found", ".git"}
+    
+    
+    def log(m):
+        print(f"[digest] {m}", flush=True)
+    
+    
+    def read_note(path):
+        """Return (frontmatter dict, body lines). A line parser, not YAML: the capture image has no
+        pyyaml and the frontmatter capture writes is flat `key: value`."""
+        fm, body, state = {}, [], "start"
+        try:
+            text = path.read_text(encoding="utf-8")
+        except (OSError, UnicodeDecodeError):
+            return {}, []
+        for line in text.splitlines():
+            if state == "start":
+                state = "fm" if line.strip() == "---" else "body"
+                if state == "body" and line.strip():
+                    body.append(line)
+                continue
+            if state == "fm":
+                if line.strip() == "---":
+                    state = "body"
+                elif ":" in line:
+                    k, _, v = line.partition(":")
+                    fm[k.strip()] = v.strip()
+                continue
+            body.append(line)
+        return fm, body
+    
+    
+    def candidates():
+        """Notes Stefanos wrote himself, old enough to be worth re-reading, digests excluded."""
+        cutoff = datetime.now(timezone.utc) - timedelta(days=MIN_AGE_DAYS)
+        out = []
+        for p in sorted(VAULT.rglob("*.md")):
+            if SKIP_DIRS & set(p.relative_to(VAULT).parts[:-1]):
+                continue
+            fm, body = read_note(p)
+            if fm.get("origin") != "self":          # imported/conversation/observed are not his words
+                continue
+            if fm.get("digest") == "true" or fm.get("source") == "weekly-digest":
+                continue                            # never resurface a digest inside a digest
+            when = fm.get("created", "")
+            try:
+                dt = datetime.fromisoformat(when)
+                if dt.tzinfo is None:
+                    dt = dt.replace(tzinfo=timezone.utc)
+            except ValueError:
+                dt = datetime.fromtimestamp(p.stat().st_mtime, timezone.utc)
+            if dt > cutoff:
+                continue
+            text = [l for l in body if l.strip() and not l.startswith("#")]
+            if not text:
+                continue
+            out.append((dt, p, text))
+        return out
+    
+    
+    def render(picks, total):
+        now = datetime.now().astimezone()
+        lines = [
+            "---",
+            f"created: {now.isoformat(timespec='seconds')}",
+            "source: weekly-digest",
+            "digest: true",
+            "tags: [digest]",
+            "enriched: true",
+            "---",
+            "",
+            f"# Weekly digest — {now.date().isoformat()}",
+            "",
+            f"{len(picks)} of your own notes, picked from {total}. Dates are what you recorded, not a guess.",
+            "",
+        ]
+        for dt, p, text in picks:
+            quote = " ".join(" ".join(text[:QUOTE_LINES]).split())
+            if len(quote) > 400:
+                quote = quote[:400].rsplit(" ", 1)[0] + "…"
+            lines += [f"## {dt.date().isoformat()} — [[{p.stem}]]", "", f"> {quote}", ""]
+        return "\n".join(lines) + "\n"
+    
+    
+    def nudge(n):
+        """Content-free by design: a count, never a title or a quote. See the module docstring."""
+        if not (TOKEN and CHAT):
+            log("no telegram token or chat id; skipping the nudge")
+            return
+        body = urllib.parse.urlencode({"chat_id": CHAT, "text": f"Weekly digest ready: {n} notes in your inbox."}).encode()
+        try:
+            urllib.request.urlopen(f"https://api.telegram.org/bot{TOKEN}/sendMessage", data=body, timeout=30).read()
+            log("nudge sent")
+        except Exception as e:                       # a failed nudge must never lose the digest
+            log(f"nudge failed, digest still written: {e}")
+    
+    
+    def main():
+        pool = candidates()
+        if not pool:
+            log("nothing to resurface yet")
+            return 0
+        picks = sorted(random.sample(pool, min(COUNT, len(pool))), key=lambda t: t[0])
+        out = VAULT / "inbox" / f"{datetime.now().astimezone().date().isoformat()}-weekly-digest.md"
+        if out.exists():
+            log(f"{out.name} already exists; not overwriting")
+            return 0
+        out.parent.mkdir(parents=True, exist_ok=True)
+        out.write_text(render(picks, len(pool)), encoding="utf-8")
+        log(f"wrote {out.name} with {len(picks)} of {len(pool)}")
+        nudge(len(picks))
+        return 0
+    
+    
+    def selftest():
+        import tempfile
+        global VAULT, MIN_AGE_DAYS
+        d = Path(tempfile.mkdtemp())
+        VAULT = d
+        (d / "inbox").mkdir()
+        (d / "fenced").mkdir()
+    
+        def note(rel, origin, created, body, extra=""):
+            p = d / rel
+            p.parent.mkdir(parents=True, exist_ok=True)
+            p.write_text(f"---\ncreated: {created}\nsource: x\norigin: {origin}\n{extra}---\n\n# t\n\n{body}\n")
+            return p
+    
+        note("inbox/a.md", "self", "2026-01-01T10:00:00+00:00", "first thought here")
+        note("inbox/b.md", "self", "2026-02-01T10:00:00+00:00", "second thought here")
+        note("inbox/c.md", "imported", "2026-03-01T10:00:00+00:00", "an article")
+        note("fenced/d.md", "self", "2026-04-01T10:00:00+00:00", "about a person")
+        note("inbox/e.md", "self", "2026-05-01T10:00:00+00:00", "old digest", extra="digest: true\n")
+    
+        pool = candidates()
+        names = sorted(p.name for _, p, _ in pool)
+        assert names == ["a.md", "b.md"], f"selection wrong: {names}"   # imported, fenced, digest all excluded
+    
+        picks = sorted(pool, key=lambda t: t[0])
+        text = render(picks, len(pool))
+        assert "origin:" not in text.split("---")[1], "digest must not claim an origin scope"
+        assert "digest: true" in text, "digest must mark itself so it is never resurfaced"
+        assert "[[a]]" in text and "[[b]]" in text, "wikilinks missing"
+        assert "2026-01-01" in text, "recorded date missing"
+    
+        MIN_AGE_DAYS = 36500                                            # nothing is that old
+        assert candidates() == [], "age floor not applied"
+    
+        print("selftest OK")
+        return 0
+    
+    
+    if __name__ == "__main__":
+        sys.exit(selftest() if "--selftest" in sys.argv else main())
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: brain-digest
+  namespace: brain
+spec:
+  schedule: "0 8 * * 1"            # Monday 08:00 Prague
+  timeZone: Europe/Prague          # explicit: the estate has been bitten by UTC-by-default before
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      ttlSecondsAfterFinished: 86400
+      backoffLimit: 2
+      activeDeadlineSeconds: 300
+      template:
+        metadata:
+          labels:
+            app: brain-digest
+        spec:
+          restartPolicy: Never
+          affinity:
+            nodeAffinity:
+              requiredDuringSchedulingIgnoredDuringExecution:
+                nodeSelectorTerms:
+                  - matchExpressions:
+                      - { key: kubernetes.io/hostname, operator: In, values: [k3s-prg-w1] }
+          securityContext:
+            runAsUser: 99
+            runAsGroup: 100
+            runAsNonRoot: true
+          containers:
+            - name: digest
+              image: ghcr.io/jauderho/yt-dlp:latest@sha256:0987db27a321d2e485873168b7eb50d21bf11b5f1f309c4594cfc713bdf76a82
+              command: ["python3", "/app/digest.py"]
+              securityContext:
+                readOnlyRootFilesystem: true
+                allowPrivilegeEscalation: false
+                capabilities: { drop: [ALL] }
+              envFrom:
+                - secretRef: { name: brain-secret }   # TELEGRAM_TOKEN, TELEGRAM_CHAT_IDS (nudge only)
+              env:
+                - { name: VAULT, value: /data/vault }
+                - { name: HOME,  value: /tmp }
+                - { name: TZ,    value: Europe/Prague }
+                - { name: DIGEST_COUNT, value: "3" }
+                # 0 while the vault holds three notes; raise to 7 once a real corpus exists so the
+                # digest resurfaces things he has had time to forget.
+                - { name: DIGEST_MIN_AGE_DAYS, value: "0" }
+              volumeMounts:
+                - { name: code,  mountPath: /app, readOnly: true }
+                - { name: vault, mountPath: /data/vault }
+                - { name: tmp,   mountPath: /tmp }
+              resources:
+                requests: { memory: 32Mi, cpu: 10m }
+                limits:   { memory: 256Mi, cpu: "500m" }
+          volumes:
+            - name: code
+              configMap: { name: brain-digest-code }
+            - name: vault
+              persistentVolumeClaim: { claimName: vault }
+            - name: tmp
+              emptyDir: { sizeLimit: 32Mi }
