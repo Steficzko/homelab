@@ -88,6 +88,16 @@ spec:
             volumeSize: 10Gi
           minio:
             local_setup: true
+            # MinIO gated their Docker Hub repos on/before 2026-09-11: anonymous
+            # pulls of minio/minio and minio/mc now return 401 insufficient_scope,
+            # while library/postgres and grafana/grafana still return 200. The chart
+            # defaults to minio/minio:latest and minio/mc:latest from Docker Hub, so
+            # this pod would have failed on its next pull — it only still runs because
+            # the image is cached on its node. quay.io serves BOTH images anonymously
+            # at byte-identical digests, so these are registry swaps, not upgrades.
+            # Pinned rather than :latest so a floating tag cannot move under us again.
+            image: quay.io/minio/minio@sha256:14cea493d9a34af32f524e538b8346cf79f3321eff8e708c1e2960462bd8936e
+            image_mc: quay.io/minio/mc@sha256:a7fe349ef4bd8521fb8497f55c6042871b2ae640607cf99d9bede5e9bdf11727
             storageClass: longhorn
             volumeSize: 20Gi          # raw transcripts attached to issues
             env:
