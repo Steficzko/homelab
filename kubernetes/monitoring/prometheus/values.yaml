@@ -400,11 +400,24 @@ alertmanager:
       repeat_interval: 4h
       receiver: telegram
       routes:
-        # Watchdog = always-firing heartbeat; InfoInhibitor = suppression helper.
-        # Neither is a real alert — both go to the black hole, not Telegram.
+        # InfoInhibitor is a suppression helper, not an alert. Black hole.
         - matchers:
-            - alertname =~ "Watchdog|InfoInhibitor"
+            - alertname = "InfoInhibitor"
           receiver: "null"
+        # Watchdog fires forever by design. It used to go to "null" alongside
+        # InfoInhibitor, which meant NOTHING ever exercised the pager end to end:
+        # Prometheus evaluating -> Alertmanager routing -> Telegram token -> phone.
+        # A rule that fails to load also fails to fire, so the failure mode of this
+        # whole stack is silence, and silence looked identical to health.
+        # One heartbeat a day walks the real path. Its ABSENCE is the alarm.
+        # Upgrade path: point this at a healthchecks.io webhook so the absence is
+        # noticed by something outside the fleet instead of by a human.
+        - matchers:
+            - alertname = "Watchdog"
+          receiver: telegram
+          group_wait: 0s
+          group_interval: 24h
+          repeat_interval: 24h
     receivers:
       - name: "null"
       - name: telegram
