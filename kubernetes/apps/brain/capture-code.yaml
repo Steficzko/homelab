@@ -119,6 +119,10 @@ data:
     
     
     def find_note_by_ask(ask_id):
+        """ponytail: inbox only, newest first. Pass two will file notes out of inbox, and a reply to a
+        still-open ask on a filed note will then miss — but it now falls through and becomes an ordinary
+        text note rather than vanishing, so the failure is visible. Widen to VAULT.rglob when pass two
+        exists and the cost of scanning the whole vault per reply is worth measuring."""
         for f in sorted(glob.glob(str(VAULT / "inbox" / "*.md")), reverse=True):
             head = open(f, encoding="utf-8").read(2000)
             if re.search(rf"^telegram_ask: {ask_id}$", head, re.M):
@@ -491,11 +495,14 @@ data:
                         dest.write_bytes(http("GET", f"{FILEAPI}/{fp}", timeout=120))
                         tg_send(chat, "🎙 queued")
                         threading.Thread(target=_voice, args=(dest, chat), daemon=True).start()
-                    elif reply_to and text:
-                        p = find_note_by_ask(reply_to)
-                        if p:
-                            append_section(p, "Why", text)
-                            tg_send(chat, "✅ added")
+                    elif reply_to and text and (p := find_note_by_ask(reply_to)) is not None:
+                        append_section(p, "Why", text)
+                        tg_send(chat, "✅ added")
+                        # The lookup lives in the condition on purpose. It used to be an `if` inside the
+                        # branch, so a reply to anything that is NOT one of our asks was swallowed: no
+                        # note, no log, no reply. Any message sent as a reply — a link included — was
+                        # simply lost. Now a missed ask falls through to the URL and text branches, so a
+                        # message always becomes something. Nothing is ignored silently.
                     elif (m := re.search(r"https?://\S+", text)):
                         # a shared link usually arrives with words around it ("look at this https://…");
                         # the first URL is the capture, the surrounding words are the "why"
