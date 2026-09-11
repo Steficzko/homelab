@@ -46,30 +46,45 @@ spec:
                 - { name: BUCKET,    value: app-backups }
                 - { name: PREFIX,    value: neo4j }
                 - { name: RETENTION, value: "30d" }
+                - { name: MIN_NODES, value: "1" }        # ponytail: refuses only an EMPTY graph; raise if partial re-imports become a thing
               command:
-                - /bin/sh
+                - /bin/bash
                 - -c
                 - |
-                  set -eu
+                  set -euo pipefail
                   PW="${NEO4J_AUTH#neo4j/}"
                   TS=$(date +%Y%m%d-%H%M%S)
                   FILE="neo4j-${TS}.cypher.gz"
+                  cs() { cypher-shell -a "$BOLT" -u neo4j -p "$PW" --format plain "$@"; }
                   echo "==> Waiting for Bolt (netpol propagation) ..."
                   ok=0
                   for i in $(seq 1 30); do
-                    if cypher-shell -a "$BOLT" -u neo4j -p "$PW" "RETURN 1;" >/dev/null 2>&1; then ok=1; echo "    reachable (try ${i})"; break; fi
+                    if cs "RETURN 1;" >/dev/null 2>&1; then ok=1; echo "    reachable (try ${i})"; break; fi
                     sleep 3
                   done
                   [ "$ok" = 1 ] || { echo "ERROR: neo4j unreachable after retries"; exit 1; }
+                  # 2026-09-09: the first run backed up an EMPTY graph (40 B gzip) and reported
+                  # success — the size guard was 20 B and the pipe hid cypher-shell's exit code.
+                  NODES=$(cs "MATCH (n) RETURN count(n);" | tail -1)
+                  echo "==> Graph has ${NODES} nodes"
+                  [ "$NODES" -ge "$MIN_NODES" ] || { echo "ERROR: ${NODES} nodes < MIN_NODES=${MIN_NODES}; refusing to back up an empty graph"; exit 1; }
                   echo "==> Exporting graph via APOC ..."
-                  # stream:true returns the statements as rows instead of writing a server-side
-                  # file; --format plain keeps cypher-shell from decorating the output.
-                  cypher-shell -a "$BOLT" -u neo4j -p "$PW" --format plain \
-                    "CALL apoc.export.cypher.all(null,{stream:true,format:'cypher-shell'}) YIELD cypherStatements RETURN cypherStatements;" \
-                    | gzip -6 > "/work/${FILE}"
-                  SZ=$(stat -c%s "/work/${FILE}")
-                  echo "==> ${FILE} is ${SZ} bytes"
-                  [ "$SZ" -gt 20 ] || { echo "ERROR: export is empty"; exit 1; }
+                  # stream:true returns the statements as rows instead of a server-side file.
+                  # cypher-shell's plain formatter wraps each string in quotes and escapes ONLY
+                  # the quotes (backslashes pass through), so: JSON-encode server-side, strip
+                  # the wrapper quotes, undo the quote escaping, decode with jq. The result is
+                  # a raw cypher-shell script, replayable as-is (the old job stored the
+                  # quoted/escaped form, which cypher-shell could not read back).
+                  cs "CALL apoc.export.cypher.all(null,{stream:true,format:'cypher-shell'}) YIELD cypherStatements RETURN apoc.convert.toJson(cypherStatements);" > /work/raw.txt
+                  tail -n +2 /work/raw.txt | sed -E 's/^"//; s/"$//; s/\\"/"/g' | jq -r . > /work/dump.cypher
+                  # every node is one {_id:N, properties:...} row; relationships add more _id refs,
+                  # so a complete export always has >= NODES matches.
+                  GOT=$(grep -o '_id:[0-9]*' /work/dump.cypher | wc -l)
+                  echo "==> Export: ${GOT} _id rows for ${NODES} nodes, $(stat -c%s /work/dump.cypher) bytes"
+                  [ "$GOT" -ge "$NODES" ] || { echo "ERROR: export incomplete"; exit 1; }
+                  head -1 /work/dump.cypher | grep -q '^:begin' || { echo "ERROR: export is not a cypher-shell script"; exit 1; }
+                  gzip -6 -c /work/dump.cypher > "/work/${FILE}"
+                  echo "==> ${FILE} is $(stat -c%s "/work/${FILE}") bytes"
                   echo "==> Uploading ..."
                   /tools/mc alias set s3 "$AWS_ENDPOINTS" "$AWS_ACCESS_KEY_ID" "$AWS_SECRET_ACCESS_KEY"
                   /tools/mc mb --ignore-existing "s3/${BUCKET}" 2>/dev/null || true
