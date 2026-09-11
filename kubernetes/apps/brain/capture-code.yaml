@@ -90,8 +90,13 @@ data:
         return "note"
     
     
-    def note_path(created, slug):
-        return VAULT / "inbox" / f"{created.strftime('%Y-%m-%d-%H%M')}-{slug}.md"
+    # The one wall. Anything that is not Stefanos's own words lives behind it, so an index can exclude
+    # it with a single path rule — `origin` is frontmatter, and frontmatter is invisible to retrieval.
+    OUTSIDE = {"imported": "outside/imported", "conversation": "outside/parties"}
+    
+    
+    def note_path(created, slug, folder="inbox"):
+        return VAULT / folder / f"{created.strftime('%Y-%m-%d-%H%M')}-{slug}.md"
     
     
     def _fm(v):
@@ -104,13 +109,14 @@ data:
     
     def write_note(kind, title, body, extra):
         now = datetime.now().astimezone()
-        p = note_path(now, slugify(title))
+        origin = extra.pop("origin", None) or ("imported" if kind.endswith("-link") else "self")
+        folder = OUTSIDE.get(origin, "inbox")   # his own words stay in the inbox; the rest go behind the wall
+        p = note_path(now, slugify(title), folder)
         n = 1
         while p.exists():  # never overwrite: same minute + same slug gets a suffix
             n += 1
-            p = note_path(now, f"{slugify(title)}-{n}")
-        fm = {"created": now.isoformat(timespec="seconds"), "source": kind,
-              "origin": "imported" if kind.endswith("-link") else "self", **extra}
+            p = note_path(now, f"{slugify(title)}-{n}", folder)
+        fm = {"created": now.isoformat(timespec="seconds"), "source": kind, "origin": origin, **extra}
         fm.setdefault("tags", [])
         fm.setdefault("enriched", False)
         lines = ["---"] + [f"{k}: {_fm(v)}" for k, v in fm.items()] + ["---", "", f"# {title}", "", (body or "").rstrip(), ""]
@@ -128,14 +134,14 @@ data:
     
     
     def find_note_by_ask(ask_id):
-        """ponytail: inbox only, newest first. Pass two will file notes out of inbox, and a reply to a
-        still-open ask on a filed note will then miss — but it now falls through and becomes an ordinary
-        text note rather than vanishing, so the failure is visible. Widen to VAULT.rglob when pass two
-        exists and the cost of scanning the whole vault per reply is worth measuring."""
-        for f in sorted(glob.glob(str(VAULT / "inbox" / "*.md")), reverse=True):
-            head = open(f, encoding="utf-8").read(2000)
+        """Scans the WHOLE vault, newest first. It was inbox-only until 2026-09-12, when imported notes
+        moved behind the wall into outside/imported — a reply to a link's question then found nothing,
+        which a test caught. ponytail: a full scan per reply, fine at this size; if it ever costs
+        anything, index the ask ids instead of walking files."""
+        for f in sorted(VAULT.rglob("*.md"), key=lambda x: x.name, reverse=True):
+            head = f.read_text(encoding="utf-8")[:2000]
             if re.search(rf"^telegram_ask: {ask_id}$", head, re.M):
-                return Path(f)
+                return f
         return None
     
     

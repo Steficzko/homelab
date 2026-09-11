@@ -26,21 +26,21 @@ data:
   digest.py: |
     #!/usr/bin/env python3
     """The return door: resurface a few of Stefanos's own notes, weekly.
-    
+
     Why this exists: capture without resurfacing is a write-only archive. The council's verdict
     (research/council/2026-09-11-piping-transcript.md) was that the binding constraint is not the
     server but whether the thing ever gives anything back, and that another week of capture with no
     payoff produces another week of nothing.
-    
+
     Two deliberate departures from the council's proposal, both to keep standing rules intact:
-    
+
       * It writes a NOTE INTO THE VAULT, it does not send note content through Telegram. "Telegram is
         inbound only" and "no titles leave through Telegram" are standing rules; a weekly digest of his
         own thinking pushed through Telegram's servers would breach both. The nudge that does go out
         carries a count and nothing else — same shape as the existing neutral acknowledgements.
       * No model call. Selection is dates and random choice, so this costs no GPU time at all and
         cannot collide with the other user of the card. The council warned about exactly that.
-    
+
     ponytail: selection is a random sample with no memory, so a note can repeat across weeks. With
     three notes in the vault that is unavoidable anyway. When the corpus is real, add an age floor and
     a seen-ledger beside the state file — the upgrade is a sorted read, not a redesign.
@@ -53,7 +53,7 @@ data:
     import urllib.request
     from datetime import datetime, timedelta, timezone
     from pathlib import Path
-    
+
     VAULT = Path(os.environ.get("VAULT", "/data/vault"))
     COUNT = int(os.environ.get("DIGEST_COUNT", "3"))
     MIN_AGE_DAYS = int(os.environ.get("DIGEST_MIN_AGE_DAYS", "0"))  # raise once the corpus is real
@@ -61,13 +61,14 @@ data:
     TOKEN = os.environ.get("TELEGRAM_TOKEN", "")
     CHAT = os.environ.get("TELEGRAM_CHAT_IDS", "").split(",")[0].strip()
     # Fenced material answers only when a question opens it, so it is never resurfaced unasked.
-    SKIP_DIRS = {"attachments", "fenced", ".obsidian", ".stfolder", ".trash", "lost+found", ".git"}
-    
-    
+    # "outside" is the wall: never resurface anything that is not his own words, whatever room it is in.
+    SKIP_DIRS = {"outside", "attachments", ".obsidian", ".stfolder", ".trash", "lost+found", ".git"}
+
+
     def log(m):
         print(f"[digest] {m}", flush=True)
-    
-    
+
+
     def read_note(path):
         """Return (frontmatter dict, body lines). A line parser, not YAML: the capture image has no
         pyyaml and the frontmatter capture writes is flat `key: value`."""
@@ -91,8 +92,8 @@ data:
                 continue
             body.append(line)
         return fm, body
-    
-    
+
+
     def candidates():
         """Notes Stefanos wrote himself, old enough to be worth re-reading, digests excluded."""
         cutoff = datetime.now(timezone.utc) - timedelta(days=MIN_AGE_DAYS)
@@ -119,8 +120,8 @@ data:
                 continue
             out.append((dt, p, text))
         return out
-    
-    
+
+
     def render(picks, total):
         now = datetime.now().astimezone()
         lines = [
@@ -143,8 +144,8 @@ data:
                 quote = quote[:400].rsplit(" ", 1)[0] + "…"
             lines += [f"## {dt.date().isoformat()} — [[{p.stem}]]", "", f"> {quote}", ""]
         return "\n".join(lines) + "\n"
-    
-    
+
+
     def nudge(n):
         """Content-free by design: a count, never a title or a quote. See the module docstring."""
         if not (TOKEN and CHAT):
@@ -156,8 +157,8 @@ data:
             log("nudge sent")
         except Exception as e:                       # a failed nudge must never lose the digest
             log(f"nudge failed, digest still written: {e}")
-    
-    
+
+
     def main():
         pool = candidates()
         if not pool:
@@ -173,48 +174,49 @@ data:
         log(f"wrote {out.name} with {len(picks)} of {len(pool)}")
         nudge(len(picks))
         return 0
-    
-    
+
+
     def selftest():
         import tempfile
         global VAULT, MIN_AGE_DAYS
         d = Path(tempfile.mkdtemp())
         VAULT = d
         (d / "inbox").mkdir()
-        (d / "fenced").mkdir()
-    
+        (d / "outside" / "parties").mkdir(parents=True)
+
         def note(rel, origin, created, body, extra=""):
             p = d / rel
             p.parent.mkdir(parents=True, exist_ok=True)
             p.write_text(f"---\ncreated: {created}\nsource: x\norigin: {origin}\n{extra}---\n\n# t\n\n{body}\n")
             return p
-    
+
         note("inbox/a.md", "self", "2026-01-01T10:00:00+00:00", "first thought here")
         note("inbox/b.md", "self", "2026-02-01T10:00:00+00:00", "second thought here")
         note("inbox/c.md", "imported", "2026-03-01T10:00:00+00:00", "an article")
-        note("fenced/d.md", "self", "2026-04-01T10:00:00+00:00", "about a person")
+        note("outside/parties/d.md", "self", "2026-04-01T10:00:00+00:00", "about a person")
         note("inbox/e.md", "self", "2026-05-01T10:00:00+00:00", "old digest", extra="digest: true\n")
-    
+
         pool = candidates()
         names = sorted(p.name for _, p, _ in pool)
-        assert names == ["a.md", "b.md"], f"selection wrong: {names}"   # imported, fenced, digest all excluded
-    
+        assert names == ["a.md", "b.md"], f"selection wrong: {names}"   # imported, behind-the-wall, digest all excluded
+
         picks = sorted(pool, key=lambda t: t[0])
         text = render(picks, len(pool))
         assert "origin:" not in text.split("---")[1], "digest must not claim an origin scope"
         assert "digest: true" in text, "digest must mark itself so it is never resurfaced"
         assert "[[a]]" in text and "[[b]]" in text, "wikilinks missing"
         assert "2026-01-01" in text, "recorded date missing"
-    
+
         MIN_AGE_DAYS = 36500                                            # nothing is that old
         assert candidates() == [], "age floor not applied"
-    
+
         print("selftest OK")
         return 0
-    
-    
+
+
     if __name__ == "__main__":
         sys.exit(selftest() if "--selftest" in sys.argv else main())
+
 ---
 apiVersion: batch/v1
 kind: CronJob
