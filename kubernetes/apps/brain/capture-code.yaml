@@ -61,6 +61,9 @@ data:
     # an orphan instead of context on the reel that prompted it.
     PENDING = {}
     CONTEXT_WINDOW = int(os.environ.get("CONTEXT_WINDOW_SECONDS", "300"))
+    # Imported video: a short clip is the library, a long one is a bookmark. Measured on DURATION, never
+    # on file size — a 3-minute phone clip can outweigh a 40-minute talk. Decided 2026-09-11.
+    MEDIA_KEEP_SECONDS = int(os.environ.get("MEDIA_KEEP_SECONDS", "300"))
     
     
     class BackendDown(Exception):
@@ -431,7 +434,7 @@ data:
         info = next(iter(d.glob("*.info.json")), None)
         j = json.loads(info.read_text()) if info else {}
         media = next((m for m in d.glob("media.*") if m.suffix.lower() in EXT), None)
-        return j.get("title") or url, (j.get("description") or ""), media
+        return j.get("title") or url, (j.get("description") or ""), media, j.get("duration")
     
     
     def tg_send(chat, text, reply_to=None):
@@ -459,6 +462,26 @@ data:
         return " ".join(t.split())[:120] or url
     
     
+    def media_gate(media, duration):
+        """Apply the duration gate to imported media, after the transcript and frames exist.
+    
+        Returns a sentence for the note. The note recording what happened is what keeps this honest:
+        "nothing is deleted silently" means the deletion is written down where he will read it.
+        An unknown duration always keeps the file — deleting on a guess is exactly what that rule
+        forbids.
+        """
+        if media is None or not media.exists():
+            return "no media file"
+        if duration is None:
+            return f"`{media.name}` kept — duration unknown, and nothing is deleted on a guess"
+        if duration <= MEDIA_KEEP_SECONDS:
+            return f"`{media.name}` kept ({int(duration)} s, at or under the {MEDIA_KEEP_SECONDS} s gate)"
+        mb = media.stat().st_size // 1048576
+        media.unlink()
+        return (f"media deleted: {int(duration)} s is over the {MEDIA_KEEP_SECONDS} s gate, {mb} MB freed. "
+                f"The link, the transcript and the frames are kept.")
+    
+    
     def capture_link(url, msg_id, chat, why=""):
         video = is_video_url(url)
         title = video_title(url) if video else page_title(url)
@@ -471,7 +494,7 @@ data:
         try:
             if video:
                 d = capture_dir(slug)
-                vtitle, desc, media = ytdlp(url, d)
+                vtitle, desc, media, duration = ytdlp(url, d)
                 if desc:
                     (d / "caption.txt").write_text(desc, encoding="utf-8")
                 text, verified = transcribe(media) if media else ("", True)
@@ -482,7 +505,9 @@ data:
                     append_section(p, "Caption", desc)
                 if text:
                     append_section(p, "Transcript", text)
-                append_section(p, "Raw", f"`{rel(d)}/` ({nf} frames){'' if verified else ' — transcript not verified'}")
+                gate = media_gate(media, duration)
+                log(f"  media gate: {gate}")
+                append_section(p, "Raw", f"`{rel(d)}/` ({nf} frames){'' if verified else ' — transcript not verified'}\n\n{gate}")
             else:
                 doc = page_to_paperless(url, title)
                 append_section(p, "Paperless", f"document `{doc}` (searchable once consumed)")
