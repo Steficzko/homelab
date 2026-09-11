@@ -25,7 +25,7 @@ spec:
                     operator: DoesNotExist
       containers:
         - name: ollama
-          image: ollama/ollama@sha256:9d30908e41144b1f1da89b9d8e33c07e4aeb43ff41a8660241b1686e2cc330ad
+          image: ollama/ollama@sha256:684d8674b4315fa18f4f0e973a118ec2652ed96f67563277839985175858e0ba
           ports:
             - containerPort: 11434
           env:
