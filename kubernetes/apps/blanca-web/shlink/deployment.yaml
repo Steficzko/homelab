@@ -21,7 +21,7 @@ spec:
         fsGroup: 1000
       containers:
         - name: shlink
-          image: shlinkio/shlink:5.1.5
+          image: shlinkio/shlink:5.1.6
           env:
             - name: DEFAULT_DOMAIN
               value: go.blancadentalcare.com
