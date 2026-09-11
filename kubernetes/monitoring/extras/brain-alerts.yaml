@@ -50,3 +50,18 @@ spec:
           annotations:
             summary: "no brain-capture metrics for 10 minutes"
             description: "The pod is down or the ServiceMonitor lost its target."
+        # The vault is the one irreplaceable thing. longhorn_volume_last_backup_at is 0 until the
+        # first backup ever completes, so this deliberately has NO `> 0` guard: a brain volume that
+        # has never been backed up evaluates to "57 years ago" and fires after 30h — which is the
+        # point. Every other rule in the estate filters those out; this one must not.
+        - alert: BrainVaultBackupMissing
+          expr: (time() - longhorn_volume_last_backup_at{pvc_namespace="brain"}) > 30 * 3600
+          for: 30h
+          labels:
+            severity: critical
+          annotations:
+            summary: "brain volume {{ $labels.pvc }} has no Longhorn backup in the last 30h (or ever)"
+            description: >-
+              The vault, the Syncthing identity and the Obsidian config are Longhorn PVCs in ns brain
+              with the daily-backup label. If this fires, look at the Backup CRs in longhorn-system
+              and the 03:00 recurring job; a volume that never got its first backup is the usual cause.
