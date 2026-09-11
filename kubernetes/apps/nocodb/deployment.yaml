@@ -17,7 +17,7 @@ spec:
         - name: nocodb
           # Pinned to the 2026.08.0 release tag (NocoDB publishes both 0.265.x
           # and calendar tags; the calendar one matches the GitHub release).
-          image: nocodb/nocodb:2026.08.1@sha256:2aacc3c704d4f74b27e2a39ac838ac9019c0b008bbbfff673b541a3a75ee1579
+          image: nocodb/nocodb:2026.09.0@sha256:4ccfc5114506b1725ffc63be56445fc6fe453a6e6d5cb56eb5f88f0540d4e56e
           env:
             # Metadata + table data in Postgres, NOT the bundled SQLite — SQLite
             # on a single PVC is the default and is the thing that makes NocoDB
