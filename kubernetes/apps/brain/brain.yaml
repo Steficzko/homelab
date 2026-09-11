@@ -16,7 +16,7 @@ spec:
     metadata:
       labels: { app: brain }
       annotations:
-        checksum/code: "c0f92d60ba5babf8"   # sha256 of capture.py, set by the regeneration step; a code push rolls the pod
+        checksum/code: "67ffc5e07d81625e"   # sha256 of capture.py, set by the regeneration step; a code push rolls the pod
     spec:
       securityContext:
         fsGroup: 100

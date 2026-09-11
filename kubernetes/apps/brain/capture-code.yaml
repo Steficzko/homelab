@@ -398,12 +398,14 @@ data:
         return post_json(f"{API}/sendMessage", body)["result"]["message_id"]
     
     
-    def capture_link(url, msg_id, chat):
+    def capture_link(url, msg_id, chat, why=""):
         video = is_video_url(url)
         title = url if video else page_title(url)
         slug = slugify(urllib.parse.urlparse(url).path.strip("/").replace("/", "-") or "video") if video else slugify(title)
         ask = tg_send(chat, "What is this about? (reply to this message, optional)", reply_to=msg_id)
         p = write_note("telegram-link", title, f"<{url}>", {"url": url, "telegram_msg": msg_id, "telegram_ask": ask, "tags": []})
+        if why:
+            append_section(p, "Why", why)
         n = STATE["captures"]
         try:
             if video:
@@ -461,8 +463,11 @@ data:
                         if p:
                             append_section(p, "Why", text)
                             tg_send(chat, "✅ added")
-                    elif re.match(r"https?://\S+$", text):
-                        threading.Thread(target=capture_link, args=(text, msg["message_id"], chat), daemon=True).start()
+                    elif (m := re.search(r"https?://\S+", text)):
+                        # a shared link usually arrives with words around it ("look at this https://…");
+                        # the first URL is the capture, the surrounding words are the "why"
+                        url, why = m.group(0).rstrip(".,)"), (text[:m.start()] + text[m.end():]).strip()
+                        threading.Thread(target=capture_link, args=(url, msg["message_id"], chat, why), daemon=True).start()
                     elif text:
                         write_note("telegram-text", first_line_title(text), text, {"telegram_msg": msg["message_id"], "tags": []})
                         tg_send(chat, f"✅ #{STATE['captures']}")
