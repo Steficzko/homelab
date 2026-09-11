@@ -1,0 +1,110 @@
+# Local git history for the vault — ADR-038 amendment 2026-09-11 (BRAIN-46).
+#
+# The Markdown folder is the only durable artefact in the brain, and pass two moves every file and
+# rewrites its path from tags while the staged-correction path has an LLM rewriting note content.
+# The master is Syncthing `sendonly`, so a bad filing pass reaches every read-only mirror within
+# seconds. This gives that an undo and a readable diff, and makes "nothing is deleted silently"
+# verifiable instead of a slogan.
+#
+# NO REMOTE, EVER. "The vault never reaches git" means no remote: nothing is pushed, fetched or
+# hosted, and this history is local state on the same volume as the notes. The job REFUSES TO RUN
+# if it ever finds a remote configured, so the invariant is enforced here and not only in prose.
+#
+# Why a CronJob and not capture.py: the capture container is Alpine with readOnlyRootFilesystem,
+# runAsNonRoot and no git, and cannot acquire one at runtime. Building a custom image would break
+# the rule that keeps this project honest — upstream images only, capture delivered as a ConfigMap
+# so there is no image to build. A script that must run is a Job (DECISIONS.md 2026-09-11).
+#
+# ponytail: commits are time-based, so one commit may bundle several captures and cannot name a
+# capture id. Upgrade path if tracing a single capture ever matters: git inside the capture image
+# and commit per pass. The cheap version already gives the undo and the diff, which is the point.
+#
+# Pinned to k3s-prg-w1 because the vault PVC is ReadWriteOnce and the brain pod holds it there.
+# Needs no network at all; the ns `brain` NetworkPolicy selects app=brain and does not cover this.
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: vault-git
+  namespace: brain
+spec:
+  schedule: "*/15 * * * *"        # no timeZone set on purpose: a */15 schedule is timezone-agnostic
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      ttlSecondsAfterFinished: 3600
+      backoffLimit: 2
+      activeDeadlineSeconds: 300
+      template:
+        metadata:
+          labels:
+            app: vault-git
+        spec:
+          restartPolicy: Never
+          affinity:
+            nodeAffinity:
+              requiredDuringSchedulingIgnoredDuringExecution:
+                nodeSelectorTerms:
+                  - matchExpressions:
+                      - { key: kubernetes.io/hostname, operator: In, values: [k3s-prg-w1] }
+          securityContext:
+            runAsUser: 99          # same as everything else that touches this volume
+            runAsGroup: 100
+            runAsNonRoot: true
+          containers:
+            - name: git
+              image: alpine/git:latest@sha256:6f3b5029566da8e90b24945933dcd806be866b64b1e706f51828bf84faccf21b
+              securityContext:
+                readOnlyRootFilesystem: true
+                allowPrivilegeEscalation: false
+                capabilities: { drop: [ALL] }
+              env:
+                - { name: HOME, value: /tmp }    # git needs a writable HOME; root fs is read-only
+                - { name: TZ,   value: Europe/Prague }
+              command:
+                - /bin/sh
+                - -c
+                - |
+                  set -eu
+                  cd /data/vault
+
+                  if [ ! -d .git ]; then
+                    echo "initialising the vault history"
+                    git init -q
+                    # Local excludes, not a .gitignore: a .gitignore would be a new file IN the vault
+                    # and would sync to every device. info/exclude stays inside .git.
+                    #   lost+found  root-owned mode 0770 on the ext4 volume; uid 99 cannot read it
+                    #   .stfolder   Syncthing's marker
+                    #   workspace*  Obsidian per-device UI state, already in .stignore
+                    printf '%s\n' 'lost+found/' '.stfolder/' '.obsidian/workspace*.json' \
+                                  '.obsidian/cache/' '.trash/' > .git/info/exclude
+                  fi
+
+                  # The invariant, enforced rather than documented.
+                  if [ -n "$(git remote)" ]; then
+                    echo "FATAL: a remote is configured on the vault repository. The vault must never"
+                    echo "reach a remote (ADR-038). Refusing to run; remove the remote deliberately."
+                    git remote -v
+                    exit 1
+                  fi
+
+                  git add -A
+                  if git diff --cached --quiet; then
+                    echo "no change since the last commit"
+                  else
+                    git diff --cached --stat
+                    git commit -q -m "vault $(date -u '+%Y-%m-%dT%H:%M:%SZ')"
+                    echo "committed $(git rev-parse --short HEAD)"
+                  fi
+              volumeMounts:
+                - { name: vault, mountPath: /data/vault }
+                - { name: tmp,   mountPath: /tmp }
+              resources:
+                requests: { memory: 32Mi, cpu: 10m }
+                limits:   { memory: 256Mi, cpu: "500m" }
+          volumes:
+            - name: vault
+              persistentVolumeClaim: { claimName: vault }
+            - name: tmp
+              emptyDir: { sizeLimit: 64Mi }
