@@ -65,7 +65,15 @@ spec:
               memory: 768Mi
               cpu: 250m
             limits:
-              memory: 4Gi
+              # 4Gi OOM-killed this instance twice on 2026-09-11 (exit 137) after the
+              # v3.2.0 upgrade. Matches lightroom, which has never OOMed at 6Gi.
+              # Raising the LIMIT does not reserve memory — requests do — so this does
+              # not change scheduling on nodes already at 76-86% memory.
+              # Treats the symptom: marianna is the only instance failing SmartSearch
+              # jobs, retrying against a CLIP model the ML backend will not serve
+              # (ViT-SO400M-16-SigLIP2-384__webli). Its siblings sit at ~700Mi with zero
+              # restarts on the same 4Gi, so the limit was not the root cause.
+              memory: 6Gi
           readinessProbe:
             httpGet:
               path: /api/server/ping
