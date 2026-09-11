@@ -21,7 +21,7 @@ spec:
         fsGroup: 1001
       containers:
         - name: shlink
-          image: shlinkio/shlink:4.6.0
+          image: shlinkio/shlink:5.1.6
           envFrom:
             - secretRef:
                 name: namo-shlink-secret     # INITIAL_API_KEY
@@ -34,8 +34,6 @@ spec:
               value: sqlite                  # ponytail: SQLite is plenty for a brand's short links
             - name: TIMEZONE
               value: Asia/Baghdad
-            - name: DEFAULT_QR_CODE_FORMAT
-              value: png
             - name: TRUSTED_PROXIES
               value: "0.0.0.0/0"             # real visitor IP arrives via cloudflared -> ingress
             # Visit geolocation. Shlink can only geolocate with MaxMind's GeoLite2 db, which needs
