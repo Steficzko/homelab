@@ -1,5 +1,4 @@
-# ADR-038 security posture. Ingress: metrics for Prometheus, Syncthing from the LAN, browser
-# Obsidian from the tailnet.
+# ADR-038 security posture. Ingress: metrics for Prometheus, Syncthing from the LAN.
 # The GUI (8384) has no ingress rule on purpose: reach it with kubectl port-forward only.
 # Egress: Telegram/yt-dlp/page titles on the internet, LiteLLM, Gotenberg, NFS + Kuma on
 # Unraid, Syncthing to LAN peers, DNS. Nothing else.
@@ -22,15 +21,6 @@ spec:
       ports:
         - { port: 22000, protocol: TCP }
         - { port: 22000, protocol: UDP }
-    - from:
-        # browser Obsidian (NodePort 30301, Local policy keeps the source IP): Stefanos's devices
-        # only, by tailnet address — the tailnet ACL is stock allow-all (SEC-8), so the whole
-        # 100.64.0.0/10 would admit every device on it. Add a device here when it is enrolled.
-        - ipBlock: { cidr: 100.105.157.53/32 }     # poco-f8-ultra (phone)
-        - ipBlock: { cidr: 100.90.68.89/32 }       # waveyavenue (Windows)
-        - ipBlock: { cidr: 100.117.159.42/32 }     # dev-seat
-        - ipBlock: { cidr: 100.82.66.30/32 }       # unraid-repy: Uptime Kuma monitor brain-obsidian (expects 401)
-      ports: [{ port: 3001 }]
   egress:
     - ports: [{ port: 443 }, { port: 80 }]         # Telegram API, yt-dlp, page titles
       to:
