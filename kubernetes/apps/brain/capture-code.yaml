@@ -1,5 +1,6 @@
-# Generated from ~/brain-dev/capture.py (tests: ~/brain-dev/test_capture.py) — edit there, run the
-# tests, regenerate with the command in the phase A plan (Task 4 step 1). ADR-038.
+# Generated from /mnt/devdata/BRAIN-DESIGN/code/capture.py (tests: test_capture.py beside it;
+# ~/brain-dev/*.py are symlinks to those). Edit there, run the tests, regenerate with the
+# command in the phase A plan (Task 4 step 1). ADR-038.
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -49,8 +50,11 @@ data:
     BLOCKLIST = {"thank you.", "thank you for watching.", "thanks for watching.", "dziękuję.", "dziękuję za uwagę.",
                  "υπότιτλοι authorwave", "www.hradeckralove.org", "titulky vytvořil johnyx.", "subtitles by the amara.org community"}
     WORD_P, WORD_DUR, NO_SPEECH, COMPRESSION = 0.15, 0.133, 0.6, 2.4
-    STATE = {"captures": 0, "last_capture": 0.0, "last_cycle": 0.0, "errors": 0, "backend_down": 0}
+    STATE = {"captures": 0, "last_capture": 0.0, "last_cycle": 0.0, "errors": 0, "backend_down": 0, "ignored": 0}
     LOCK = threading.Lock()
+    # Drops the watcher will never pick up, already named in the log. ponytail: an in-memory set, not a
+    # state file — a pod restart re-logs them, which is the right trade: the log is what gets read.
+    IGNORED = set()
     
     
     class BackendDown(Exception):
@@ -317,6 +321,34 @@ data:
                 yield f
     
     
+    def report_unsupported(drops):
+        """Nothing is ignored silently — the sibling of nothing is deleted silently.
+    
+        The watcher only takes audio/video (EXT), so a dropped PDF, Markdown file or folder used to sit
+        there forever with no note, no error and no log line. Name each one once. The file is never
+        touched: the drop zone is Stefanos's, and the pod only ever copies out of it.
+        """
+        for f in sorted(drops.iterdir()):
+            if f.name.startswith(".") or f.name in IGNORED:
+                continue
+            if f.is_file() and f.suffix.lower() in EXT:
+                continue
+            try:
+                if time.time() - f.stat().st_mtime < 15:
+                    continue                      # still being written; look again next cycle
+            except FileNotFoundError:
+                continue                          # vanished between listing and stat
+            IGNORED.add(f.name)
+            STATE["ignored"] += 1
+            if f.is_dir():
+                why = "a folder — batch import is not built yet (one capture per file, shared batch id)"
+            elif f.suffix.lower() == ".pdf":
+                why = "a PDF — documents go to the Paperless consume share, not here"
+            else:
+                why = f"unsupported type {f.suffix.lower() or '(no extension)'}"
+            log(f"drop IGNORED {f.name}: {why}. Left untouched, nothing was deleted.")
+    
+    
     def watcher():
         drops = DATA / "drops"
         drops.mkdir(parents=True, exist_ok=True)
@@ -327,6 +359,7 @@ data:
                         if f.is_file() and f.suffix.lower() in EXT and not f.name.startswith(".")
                         and not already_done(f) and time.time() - f.stat().st_mtime >= 15]
                 work += [("orphan", f) for f in orphans()]
+                report_unsupported(drops)
                 for kind, f in work:
                     try:
                         if kind == "drop":
@@ -513,7 +546,8 @@ data:
                         f"brain_last_capture_timestamp_seconds {STATE['last_capture']}\n"
                         f"brain_last_cycle_timestamp_seconds {STATE['last_cycle']}\n"
                         f"brain_errors_total {STATE['errors']}\n"
-                        f"brain_backend_down_total {STATE['backend_down']}\n").encode()
+                        f"brain_backend_down_total {STATE['backend_down']}\n"
+                        f"brain_drops_ignored_total {STATE['ignored']}\n").encode()
                 self.send_response(200); self.send_header("Content-Type", "text/plain"); self.end_headers(); self.wfile.write(body)
             else:
                 self.send_response(404); self.end_headers()
