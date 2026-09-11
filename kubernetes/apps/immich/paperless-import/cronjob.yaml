@@ -95,6 +95,14 @@ spec:
                       # export at $src, so strip that prefix to get a path we can read.
                       file="$src/${path#/usr/src/app/upload/}"
 
+                      case "$fname" in
+                        IMG-[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]-WA[0-9]*)
+                          # WhatsApp received media. Decided 2026-09-11: Immich already holds it
+                          # with date and sender context; Paperless copies were 46% of the
+                          # stefanos instance and almost all junk OCR. Messenger *screenshots*
+                          # (package-named files) still come through and are curated by hand.
+                          echo "${id}:skipped-whatsapp" >> "$state"; skipped=$((skipped+1)); continue ;;
+                      esac
                       case "$(printf '%s' "$fname" | tr 'A-Z' 'a-z')" in
                         *.heic|*.heif)
                           # Paperless cannot consume HEIC. Recorded so the count stays visible
