@@ -10,11 +10,11 @@ data:
   capture.py: |
     #!/usr/bin/env python3
     """brain-capture (ADR-038, phase A pass one).
-    
+
     A file in the drop zone, a Telegram voice note, a link or a text message becomes one Markdown
     note in the vault within the minute. Raw text stays on the array; web pages become Paperless
     documents. Stdlib only: the image is python + ffmpeg + yt-dlp and nothing else.
-    
+
     Rules this file enforces (ADR-038):
       - pipelines write only under VAULT/inbox/ and under DATA/; the drop folder is never moved
         or deleted from (it is the phone's send-only Syncthing folder);
@@ -28,7 +28,7 @@ data:
     import unicodedata, urllib.error, urllib.parse, urllib.request, uuid
     from datetime import datetime
     from pathlib import Path
-    
+
     VAULT = Path(os.environ.get("VAULT", "/data/vault"))
     DATA = Path(os.environ.get("DATA", "/data/data"))
     PAPERLESS = Path(os.environ.get("PAPERLESS_CONSUME", "/data/paperless-consume"))
@@ -64,49 +64,49 @@ data:
     # Imported video: a short clip is the library, a long one is a bookmark. Measured on DURATION, never
     # on file size — a 3-minute phone clip can outweigh a 40-minute talk. Decided 2026-09-11.
     MEDIA_KEEP_SECONDS = int(os.environ.get("MEDIA_KEEP_SECONDS", "300"))
-    
-    
+
+
     class BackendDown(Exception):
         """Whisper/LiteLLM/Gotenberg unreachable or 5xx: not the file's fault."""
-    
-    
+
+
     def log(m):
         print(f"[{time.strftime('%H:%M:%S')}] {m}", flush=True)
-    
-    
+
+
     # ---------- notes ----------
     def slugify(s):
         s = unicodedata.normalize("NFKD", s or "").encode("ascii", "ignore").decode()
         s = re.sub(r"[^\w\s-]", "", s.lower()).strip()
         s = re.sub(r"[\s_-]+", "-", s).strip("-")[:60].strip("-")
         return s or "note"
-    
-    
+
+
     def first_line_title(text):
         for line in (text or "").splitlines():
             line = line.strip()
             if line:
                 return line[:70]
         return "note"
-    
-    
+
+
     # The one wall. Anything that is not Stefanos's own words lives behind it, so an index can exclude
     # it with a single path rule — `origin` is frontmatter, and frontmatter is invisible to retrieval.
     OUTSIDE = {"imported": "outside/imported", "conversation": "outside/parties"}
-    
-    
+
+
     def note_path(created, slug, folder="inbox"):
         return VAULT / folder / f"{created.strftime('%Y-%m-%d-%H%M')}-{slug}.md"
-    
-    
+
+
     def _fm(v):
         if isinstance(v, bool):
             return "true" if v else "false"
         if isinstance(v, list):
             return "[" + ", ".join(str(x) for x in v) + "]"
         return str(v)
-    
-    
+
+
     def write_note(kind, title, body, extra):
         now = datetime.now().astimezone()
         origin = extra.pop("origin", None) or ("imported" if kind.endswith("-link") else "self")
@@ -126,13 +126,13 @@ data:
             STATE["captures"] += 1
             STATE["last_capture"] = time.time()
         return p
-    
-    
+
+
     def append_section(path, heading, text):
         with open(path, "a", encoding="utf-8") as f:
             f.write(f"\n## {heading}\n\n{(text or '').rstrip()}\n")
-    
-    
+
+
     def find_note_by_ask(ask_id):
         """Scans the WHOLE vault, newest first. It was inbox-only until 2026-09-12, when imported notes
         moved behind the wall into outside/imported — a reply to a link's question then found nothing,
@@ -143,8 +143,8 @@ data:
             if re.search(rf"^telegram_ask: {ask_id}$", head, re.M):
                 return f
         return None
-    
-    
+
+
     # ---------- http ----------
     def multipart(fields, files):
         b = uuid.uuid4().hex
@@ -156,14 +156,14 @@ data:
             out += data + b"\r\n"
         out += f"--{b}--\r\n".encode()
         return bytes(out), f"multipart/form-data; boundary={b}"
-    
-    
+
+
     def http(method, url, data=None, headers=None, timeout=300):
         req = urllib.request.Request(url, data=data, method=method, headers=headers or {})
         with urllib.request.urlopen(req, timeout=timeout) as r:
             return r.read()
-    
-    
+
+
     def backend(method, url, data=None, headers=None, timeout=300):
         """Like http() but a connection failure or 5xx is BackendDown, not a bad input."""
         try:
@@ -174,25 +174,25 @@ data:
             raise
         except (urllib.error.URLError, TimeoutError, ConnectionError, OSError) as e:
             raise BackendDown(f"{url} -> {e}") from e
-    
-    
+
+
     def post_json(url, obj, headers=None, timeout=300):
         h = {"Content-Type": "application/json", **(headers or {})}
         return json.loads(http("POST", url, json.dumps(obj).encode(), h, timeout))
-    
-    
+
+
     def get_json(url, timeout=70):
         return json.loads(http("GET", url, timeout=timeout))
-    
-    
+
+
     AUTH = {"Authorization": f"Bearer {KEY}"}
-    
-    
+
+
     # ---------- transcription (LiteLLM only — ADR-038 rule 4) ----------
     def ff(*a):
         subprocess.run(["ffmpeg", "-y", "-v", "error", *a], check=True)
-    
-    
+
+
     def filter_transcript(vj):
         """Apply the hallucination checks to one verbose_json response.
         Returns (text, verified). verified is False when anything was dropped."""
@@ -222,12 +222,12 @@ data:
                         continue
             kept.append(t)
         return "\n".join(kept).strip(), dropped == 0
-    
-    
+
+
     def progress():
         STATE["last_cycle"] = time.time()  # liveness watches this; long transcriptions must keep it fresh
-    
-    
+
+
     def whisper_chunk(wav):
         progress()
         body, ctype = multipart({"model": "whisper", "response_format": "verbose_json", "timestamp_granularities[]": "word"},
@@ -242,8 +242,8 @@ data:
                 log(f"  whisper attempt {i+1}: {e}")
                 time.sleep(20)
         raise last
-    
-    
+
+
     def transcribe(path):
         """ffmpeg → 16 kHz mono → 10-min chunks → whisper; returns (text, verified)."""
         with tempfile.TemporaryDirectory() as td:
@@ -259,8 +259,8 @@ data:
                 if t:
                     out.append((f"[{(i*CHUNK)//60:02d}:00] " if len(parts) > 1 else "") + t)
             return "\n".join(out).strip(), verified
-    
-    
+
+
     # ---------- raw artefacts ----------
     def frames(media, out):
         if media.suffix.lower() in AUDIO_ONLY:
@@ -276,34 +276,34 @@ data:
         except Exception as e:
             log(f"  frames skipped ({e.__class__.__name__})")  # frames are a bonus; never block the note
         return len(list(out.glob("*.jpg")))
-    
-    
+
+
     def capture_dir(slug):
         d = DATA / "attachments" / datetime.now().strftime("%Y") / f"{datetime.now().strftime('%Y-%m-%d')}-{slug}"
         d.mkdir(parents=True, exist_ok=True)
         return d
-    
-    
+
+
     def rel(p):  # path as stored in notes: relative to the data volume, prefixed for humans
         return "data/" + str(Path(p).relative_to(DATA))
-    
-    
+
+
     # ---------- capture 1: audio ----------
     def audio_dest(name):
         return DATA / "audio" / datetime.now().strftime("%Y") / name
-    
-    
+
+
     def transcript_of(dest):
         return dest.with_suffix(dest.suffix + ".txt")
-    
-    
+
+
     def already_done(f):
         """A drop is done only when its kept copy has a transcript beside it. A copy without a
         transcript means the pod died mid-work; the sweep in watcher() picks it up again."""
         dest = audio_dest(f.name)
         return dest.exists() and dest.stat().st_size == f.stat().st_size and transcript_of(dest).exists()
-    
-    
+
+
     def process_audio_file(dest, source):
         """dest is already the kept copy under DATA/audio/YYYY/."""
         log(f"audio START {dest.name}")
@@ -313,15 +313,15 @@ data:
         p = write_note(source, first_line_title(text), text, {"audio": rel(dest), "verified": verified, "tags": []})
         log(f"audio DONE {p.name} verified={verified}")
         return p
-    
-    
+
+
     def process_drop(path):
         dest = audio_dest(path.name)
         dest.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(str(path), str(dest))  # copy, never move: the drop folder belongs to the phone
         return process_audio_file(dest, "drop")
-    
-    
+
+
     def kuma(status, msg):
         if not KUMA:
             return
@@ -329,8 +329,8 @@ data:
             http("GET", KUMA.replace("status=up", f"status={status}").replace("msg=OK", f"msg={urllib.parse.quote(msg)}"), timeout=10)
         except Exception as e:
             log(f"kuma push failed: {e}")
-    
-    
+
+
     def orphans():
         """Kept copies (drops or Telegram saves) that have no transcript: work interrupted by a
         restart, a liveness kill, or a backend outage. Older than 2 min so in-flight ones are skipped."""
@@ -338,11 +338,11 @@ data:
             if f.is_file() and f.suffix.lower() in EXT and not transcript_of(f).exists() \
                and "_failed" not in f.parts and time.time() - f.stat().st_mtime > 120:
                 yield f
-    
-    
+
+
     def report_unsupported(drops):
         """Nothing is ignored silently — the sibling of nothing is deleted silently.
-    
+
         The watcher only takes audio/video (EXT), so a dropped PDF, Markdown file or folder used to sit
         there forever with no note, no error and no log line. Name each one once. The file is never
         touched: the drop zone is Stefanos's, and the pod only ever copies out of it.
@@ -366,8 +366,8 @@ data:
             else:
                 why = f"unsupported type {f.suffix.lower() or '(no extension)'}"
             log(f"drop IGNORED {f.name}: {why}. Left untouched, nothing was deleted.")
-    
-    
+
+
     def watcher():
         drops = DATA / "drops"
         drops.mkdir(parents=True, exist_ok=True)
@@ -408,13 +408,13 @@ data:
                 log(f"watcher error: {e}")
             kuma(status, msg)
             time.sleep(POLL)
-    
-    
+
+
     # ---------- capture 2: links and text from Telegram ----------
     def is_video_url(url):
         return any(h in url for h in VIDEO_HOSTS)
-    
-    
+
+
     def page_title(url):
         try:
             raw = http("GET", url, headers={"User-Agent": "Mozilla/5.0 brain-capture"}, timeout=20)[:200000].decode("utf-8", "ignore")
@@ -422,8 +422,8 @@ data:
             return html.unescape(m.group(1)).strip()[:120] if m else url
         except Exception:
             return url
-    
-    
+
+
     def page_to_paperless(url, title):
         body, ctype = multipart({"url": url}, {})
         pdf = backend("POST", f"{GOTENBERG}/forms/chromium/convert/url", body, {"Content-Type": ctype}, timeout=120)
@@ -432,8 +432,8 @@ data:
         out.parent.mkdir(parents=True, exist_ok=True)
         out.write_bytes(pdf)
         return name
-    
-    
+
+
     def ytdlp(url, d):
         subprocess.run(["yt-dlp", "-q", "--no-playlist", "-f", "bv*[height<=720]+ba/b", "--write-info-json",
                         "--write-description", "-o", str(d / "media.%(ext)s"), url], check=True, timeout=1800)
@@ -441,15 +441,66 @@ data:
         j = json.loads(info.read_text()) if info else {}
         media = next((m for m in d.glob("media.*") if m.suffix.lower() in EXT), None)
         return j.get("title") or url, (j.get("description") or ""), media, j.get("duration")
-    
-    
-    def tg_send(chat, text, reply_to=None):
+
+
+    def tg_send(chat, text, reply_to=None, buttons=None):
         body = {"chat_id": chat, "text": text}
         if reply_to:
             body["reply_to_message_id"] = reply_to
+        if buttons:
+            body["reply_markup"] = {"inline_keyboard": buttons}
         return post_json(f"{API}/sendMessage", body)["result"]["message_id"]
-    
-    
+
+
+    def tg_edit(chat, message_id, text, buttons=None):
+        """Rewrite a message already sent. Progress lives in ONE message instead of five, and choosing
+        a button replaces the buttons with what was chosen — so the chat reads back as a record of what
+        happened, not a trail of dead keyboards."""
+        body = {"chat_id": chat, "message_id": message_id, "text": text}
+        body["reply_markup"] = {"inline_keyboard": buttons or []}
+        try:
+            post_json(f"{API}/editMessageText", body)
+        except Exception as e:                    # an edit is cosmetic; never lose a capture over one
+            log(f"  edit failed (harmless): {e}")
+
+
+    def tg_answer(callback_id, text=""):
+        """Stops Telegram's spinner. Without it the button shows a loading state until it times out."""
+        try:
+            post_json(f"{API}/answerCallbackQuery", {"callback_query_id": callback_id, "text": text})
+        except Exception as e:
+            log(f"  answerCallbackQuery failed (harmless): {e}")
+
+
+    # What a link is about. The value is the tag written into the note's frontmatter; the label is what
+    # he taps. Two rows of three so every button stays readable on a phone.
+    CATEGORIES = [
+        [("\U0001F6E0 tool", "tool"), ("\U0001F94B bjj", "bjj"), ("\U0001F4A1 idea", "idea")],
+        [("\U0001F4DA read later", "read-later"), ("\U0001F464 person", "person"), ("⬜ skip", "skip")],
+    ]
+    ASKED = {}          # button message_id -> (note path, asked_at). Answer whenever; nothing expires.
+
+
+    def category_buttons():
+        return [[{"text": lbl, "callback_data": val} for lbl, val in row] for row in CATEGORIES]
+
+
+    def add_tag(path, tag):
+        """Write a tag into the existing frontmatter `tags:` line. Frontmatter is flat `key: value`
+        written by write_note, so this is a line edit, not a YAML round-trip — the capture image has no
+        pyyaml and a real parser would reformat the whole file."""
+        text = path.read_text(encoding="utf-8")
+        m = re.search(r"^tags: \[(.*?)\]$", text, re.M)
+        if not m:
+            append_section(path, "Category", tag)
+            return
+        have = [t.strip() for t in m.group(1).split(",") if t.strip()]
+        if tag in have:
+            return
+        have.append(tag)
+        path.write_text(text[:m.start()] + f"tags: [{', '.join(have)}]" + text[m.end():], encoding="utf-8")
+
+
     def video_title(url):
         """Title BEFORE the download, because a note's path is fixed at capture and never changes.
         Costs one metadata call (~4 s measured). Instagram and TikTok return a generic "Video by <user>",
@@ -466,11 +517,11 @@ data:
         if not t or t == url or re.fullmatch(r"video by .+", t, re.I):
             t = desc
         return " ".join(t.split())[:120] or url
-    
-    
+
+
     def media_gate(media, duration):
         """Apply the duration gate to imported media, after the transcript and frames exist.
-    
+
         Returns a sentence for the note. The note recording what happened is what keeps this honest:
         "nothing is deleted silently" means the deletion is written down where he will read it.
         An unknown duration always keeps the file — deleting on a guess is exactly what that rule
@@ -486,12 +537,16 @@ data:
         media.unlink()
         return (f"media deleted: {int(duration)} s is over the {MEDIA_KEEP_SECONDS} s gate, {mb} MB freed. "
                 f"The link, the transcript and the frames are kept.")
-    
-    
+
+
     def capture_link(url, msg_id, chat, why=""):
         video = is_video_url(url)
+        # One status message, edited as the work proceeds — the dental bot's running commentary, which
+        # is the thing worth copying: silence during a 90 s video fetch reads as a broken bot.
+        status = tg_send(chat, "\U0001F4E5 got it — reading the link…", reply_to=msg_id)
         title = video_title(url) if video else page_title(url)
         slug = slugify(title) or "link"
+        short = " ".join(title.split())[:60]
         p = write_note("telegram-link", title, f"<{url}>", {"url": url, "telegram_msg": msg_id, "tags": []})
         PENDING[chat] = (p, time.time())   # the next plain text message is this note's Why. No prompt.
         if why:
@@ -499,6 +554,7 @@ data:
         n = STATE["captures"]
         try:
             if video:
+                tg_edit(chat, status, f"\U0001F3AC “{short}”\nfetching video + transcribing…")
                 d = capture_dir(slug)
                 vtitle, desc, media, duration = ytdlp(url, d)
                 if desc:
@@ -515,20 +571,26 @@ data:
                 log(f"  media gate: {gate}")
                 append_section(p, "Raw", f"`{rel(d)}/` ({nf} frames){'' if verified else ' — transcript not verified'}\n\n{gate}")
             else:
+                tg_edit(chat, status, f"\U0001F4C4 “{short}”\nrendering the page to Paperless…")
                 doc = page_to_paperless(url, title)
                 append_section(p, "Paperless", f"document `{doc}` (searchable once consumed)")
-            tg_send(chat, f"✅ #{n}")
+            done = f"✅ #{n} “{short}”\nWhat is it about?"
+            tg_edit(chat, status, done, category_buttons())
+            ASKED[status] = (p, time.time())
         except BackendDown as e:
             STATE["backend_down"] += 1
             append_section(p, "Capture error", f"backend unavailable: {e}")
-            tg_send(chat, f"⚠️ #{n} backend unavailable, note kept")
+            # Still ask: the note exists and the category is his answer, not the backend's.
+            tg_edit(chat, status, f"⚠️ #{n} backend unavailable — link and note kept.\nWhat is it about?",
+                    category_buttons())
+            ASKED[status] = (p, time.time())
         except Exception as e:
             STATE["errors"] += 1
             append_section(p, "Capture error", str(e)[:300])
-            tg_send(chat, f"⚠️ #{n} failed")
+            tg_edit(chat, status, f"⚠️ #{n} failed: {type(e).__name__} — note kept, nothing lost")
         return p
-    
-    
+
+
     def telegram():
         offset = 0
         log(f"telegram: allowed chats {sorted(ALLOWED_CHATS)}")
@@ -536,6 +598,30 @@ data:
             try:
                 for u in get_json(f"{API}/getUpdates?offset={offset}&timeout=50").get("result", []):
                     offset = u["update_id"] + 1
+                    if (cq := u.get("callback_query")):
+                        # A tapped category button. Arrives as its own update type, not as a message.
+                        cmsg = cq.get("message") or {}
+                        cchat = (cmsg.get("chat") or {}).get("id")
+                        if cchat not in ALLOWED_CHATS:
+                            tg_answer(cq["id"])
+                            continue
+                        bmid, choice = cmsg.get("message_id"), (cq.get("data") or "")
+                        entry = ASKED.pop(bmid, None)
+                        head = (cmsg.get("text") or "").split("\n")[0]
+                        if entry is None:
+                            # The pod restarted, or the button was tapped twice. Say so rather than
+                            # pretending it worked — nothing is ignored silently.
+                            tg_answer(cq["id"], "that one is already answered")
+                            tg_edit(cchat, bmid, f"{head}\n(already answered)")
+                        elif choice == "skip":
+                            tg_answer(cq["id"], "left untagged")
+                            tg_edit(cchat, bmid, f"{head}\nuntagged — reply here any time to add a why")
+                        else:
+                            add_tag(entry[0], choice)
+                            tg_answer(cq["id"], f"tagged {choice}")
+                            tg_edit(cchat, bmid, f"{head}\n\U0001F3F7 {choice}")
+                            log(f"tagged {entry[0].name} as {choice}")
+                        continue
                     msg = u.get("message") or {}
                     chat = (msg.get("chat") or {}).get("id")
                     if chat not in ALLOWED_CHATS:
@@ -576,8 +662,8 @@ data:
                 STATE["errors"] += 1
                 log(f"telegram error: {e}")
                 time.sleep(5)
-    
-    
+
+
     def _voice(dest, chat):
         try:
             process_audio_file(dest, "telegram-voice")
@@ -595,13 +681,13 @@ data:
             STATE["errors"] += 1
             log(f"voice FAILED {dest.name}: {e}")
             tg_send(chat, "⚠️ failed")
-    
-    
+
+
     # ---------- health + metrics ----------
     class H(BaseHTTPRequestHandler):
         def log_message(self, *a):
             pass
-    
+
         def do_GET(self):
             if self.path == "/ready":
                 ok = STATE["last_cycle"] > 0
@@ -619,12 +705,12 @@ data:
                 self.send_response(200); self.send_header("Content-Type", "text/plain"); self.end_headers(); self.wfile.write(body)
             else:
                 self.send_response(404); self.end_headers()
-    
-    
+
+
     def serve():
         ThreadingHTTPServer(("0.0.0.0", 8080), H).serve_forever()
-    
-    
+
+
     if __name__ == "__main__":
         (VAULT / "inbox").mkdir(parents=True, exist_ok=True)
         if not ALLOWED_CHATS:
