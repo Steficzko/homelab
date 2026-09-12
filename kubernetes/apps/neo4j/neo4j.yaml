@@ -32,7 +32,7 @@ spec:
       securityContext: { fsGroup: 7474 }   # the "neo4j" user/group in the image
       containers:
         - name: neo4j
-          image: neo4j:5-community@sha256:037cf5756f0135cbfd66b739b6df7c7c4bb100f9ce11602f6f9538e17e02c74d
+          image: neo4j:5-community@sha256:22ec5cd05a8cbb372fc4bed5e384c30bc75fd92504c72be4462039761b105f61
           envFrom:
             - secretRef: { name: neo4j-auth }        # NEO4J_AUTH=neo4j/<password>
           env:
