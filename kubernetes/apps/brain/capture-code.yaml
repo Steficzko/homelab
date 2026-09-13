@@ -49,7 +49,9 @@ data:
     # (research: ~/adr-drafts/research/whisper-hallucination-detection.md).
     BLOCKLIST = {"thank you.", "thank you for watching.", "thanks for watching.", "dziękuję.", "dziękuję za uwagę.",
                  "υπότιτλοι authorwave", "www.hradeckralove.org", "titulky vytvořil johnyx.", "subtitles by the amara.org community"}
-    WORD_P, WORD_DUR, NO_SPEECH, COMPRESSION = 0.15, 0.133, 0.6, 2.4
+    WORD_P, NO_SPEECH, COMPRESSION = 0.15, 0.6, 2.4
+    # A segment is hallucinated when MOST of it is guesswork, not when one word was said quickly.
+    SEG_BAD_FRACTION = float(os.environ.get("SEG_BAD_FRACTION", "0.6"))
     STATE = {"captures": 0, "last_capture": 0.0, "last_cycle": 0.0, "errors": 0, "backend_down": 0, "ignored": 0}
     LOCK = threading.Lock()
     # Drops the watcher will never pick up, already named in the log. ponytail: an in-memory set, not a
@@ -201,8 +203,6 @@ data:
             t = (vj.get("text") or "").strip()
             return t, bool(t)
         words = vj.get("words") or []
-        bad_words = {(round(w.get("start", 0), 2), (w.get("word") or "").strip()) for w in words
-                     if w.get("probability", 1.0) < WORD_P or (w.get("end", 0) - w.get("start", 0)) < WORD_DUR}
         kept, dropped = [], 0
         for s in segs:
             t = (s.get("text") or "").strip()
@@ -212,14 +212,24 @@ data:
                or t.lower() in BLOCKLIST or re.fullmatch(r"\S+\.(org|com|net|cz|pl|gr)/?", t.lower()):
                 dropped += 1
                 continue
-            if bad_words:
-                bad = {bw[1].strip(".,!?") for bw in bad_words}
-                toks = [w for w in t.split() if w.strip(".,!?") not in bad]
-                if len(toks) < len(t.split()):
-                    dropped += 1
-                    t = " ".join(toks)
-                    if not t:
-                        continue
+            # Word confidence judges the SEGMENT; it never deletes individual words.
+            #
+            # Until 2026-09-13 it did, and it wrecked every transcript. Low-confidence words were
+            # collected into a set of bare strings — the timestamp was thrown away — and then every
+            # occurrence of those strings was deleted from the whole chunk. Short function words are
+            # exactly what trips both thresholds (WORD_DUR was 0.133 s; "to", "a", "the", "you" are
+            # routinely faster than that), so one weak "the" deleted every "the" in the chunk. The
+            # result read like a telegram: "only need these four GitHub repos make any basic website
+            # feel elevated". Content words survived, grammar did not.
+            #
+            # Duration is dropped as a signal entirely — a short word is evidence of fast speech, not
+            # of hallucination. What hallucination actually looks like is a whole invented segment over
+            # silence, which no_speech_prob and compression_ratio above already catch, plus a segment
+            # where most words are low-confidence, which is what this checks.
+            sw = [w for w in words if s.get("start", 0) <= w.get("start", 0) < s.get("end", 0)]
+            if sw and sum(1 for w in sw if w.get("probability", 1.0) < WORD_P) / len(sw) > SEG_BAD_FRACTION:
+                dropped += 1
+                continue
             kept.append(t)
         return "\n".join(kept).strip(), dropped == 0
 
