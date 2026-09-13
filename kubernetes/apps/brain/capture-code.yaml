@@ -63,6 +63,30 @@ data:
     # an orphan instead of context on the reel that prompted it.
     PENDING = {}
     CONTEXT_WINDOW = int(os.environ.get("CONTEXT_WINDOW_SECONDS", "300"))
+    WHY_MAX_CHARS = int(os.environ.get("WHY_MAX_CHARS", "600"))
+
+
+    def looks_like_a_thought(text):
+        """True, or a short phrase naming what it looks like instead.
+
+        A "why" is a sentence or two he typed about a link. It is not a pasted log, a chat export or a
+        document — and the context window, which takes the next plain message, cannot tell the
+        difference on its own. Deciding wrong is not cosmetic: it buries his own chat history inside an
+        imported note, where it pollutes every future index.
+        """
+        t = (text or "").strip()
+        if len(t) > WHY_MAX_CHARS:
+            return f"a {len(t)}-character paste"
+        lines = [l for l in t.splitlines() if l.strip()]
+        if len(lines) > 6:
+            return f"a {len(lines)}-line block"
+        # "[9/11/2026 12:37 AM] Inbox: ..." and friends — a log has timestamps on most of its lines.
+        # The 3-line floor matters: "call him at 15:30 about this" is one line with one timestamp and a
+        # ratio of 1.0. A guard that eats his real writing is worse than the paste it was built to stop.
+        stamped = sum(1 for l in lines if re.search(r"\[?\d{1,2}[:/]\d{2}", l))
+        if len(lines) >= 3 and stamped / len(lines) > 0.5:
+            return "a pasted log"
+        return True
     # Imported video: a short clip is the library, a long one is a bookmark. Measured on DURATION, never
     # on file size — a 3-minute phone clip can outweigh a 40-minute talk. Decided 2026-09-11.
     MEDIA_KEEP_SECONDS = int(os.environ.get("MEDIA_KEEP_SECONDS", "300"))
@@ -135,14 +159,27 @@ data:
             f.write(f"\n## {heading}\n\n{(text or '').rstrip()}\n")
 
 
-    def find_note_by_ask(ask_id):
-        """Scans the WHOLE vault, newest first. It was inbox-only until 2026-09-12, when imported notes
-        moved behind the wall into outside/imported — a reply to a link's question then found nothing,
-        which a test caught. ponytail: a full scan per reply, fine at this size; if it ever costs
-        anything, index the ask ids instead of walking files."""
+    def find_note_by_ask(msg_id):
+        """The note a reply belongs to, matched on EITHER id in its frontmatter:
+
+          telegram_ask  — the bot's own question, the case this always handled;
+          telegram_msg  — HIS original message, the case it never did.
+
+        He replies to his own link, not to the bot's question — Telegram quotes it either way, so both
+        look identical to him. On 2026-09-11 he did exactly that twice; neither reply attached, both
+        became standalone notes, and the reels they explained were left bare. Four orphans, two of them
+        duplicates of a thought already filed a half hour earlier.
+
+        Scans the WHOLE vault, newest first — inbox-only until 2026-09-12, when imported notes moved
+        behind the wall. ponytail: a full scan per reply, fine at this size; index the ids if it ever
+        costs anything.
+        """
         for f in sorted(VAULT.rglob("*.md"), key=lambda x: x.name, reverse=True):
-            head = f.read_text(encoding="utf-8")[:2000]
-            if re.search(rf"^telegram_ask: {ask_id}$", head, re.M):
+            try:
+                head = f.read_text(encoding="utf-8")[:2000]
+            except OSError:
+                continue
+            if re.search(rf"^telegram_(ask|msg): {msg_id}$", head, re.M):
                 return f
         return None
 
@@ -491,6 +528,34 @@ data:
         [("\U0001F4CC keep the video too", "keep")],
     ]
     ASKED = {}          # button message_id -> (note path, asked_at). Answer whenever; nothing expires.
+    # ...but it must survive a restart. It was memory-only until 2026-09-13, and after three pod rolls
+    # a genuinely unanswered link came back "(already answered)" — the bot stating a confident
+    # falsehood about his own capture. The map is small and append-mostly, so a JSON file beside the
+    # data is enough; a database for six rows would be the wrong answer.
+    ASKED_FILE = DATA / "asked.json"
+
+
+    def asked_load():
+        try:
+            for k, v in json.loads(ASKED_FILE.read_text()).items():
+                p = Path(v[0])
+                if p.exists():                      # a note deleted by hand is not an error
+                    ASKED[int(k)] = (p, v[1])
+            log(f"restored {len(ASKED)} unanswered question(s)")
+        except FileNotFoundError:
+            pass
+        except Exception as e:
+            log(f"could not restore asked.json, starting empty: {e}")
+
+
+    def asked_save():
+        try:
+            ASKED_FILE.parent.mkdir(parents=True, exist_ok=True)
+            tmp = ASKED_FILE.with_suffix(".tmp")
+            tmp.write_text(json.dumps({str(k): [str(v[0]), v[1]] for k, v in ASKED.items()}))
+            tmp.replace(ASKED_FILE)                 # atomic: never leave a half-written map
+        except OSError as e:
+            log(f"could not persist asked.json (buttons still work until restart): {e}")
     HELD = {}           # note path -> (media file, duration, held_since). Retention waits on the answer.
     MEDIA_HOLD_SECONDS = int(os.environ.get("MEDIA_HOLD_SECONDS", "86400"))
 
@@ -641,14 +706,14 @@ data:
                 append_section(p, "Paperless", f"document `{doc}` (searchable once consumed)")
             done = f"✅ #{n} “{short}”\nWhat is it about?"
             tg_edit(chat, status, done, category_buttons())
-            ASKED[status] = (p, time.time())
+            ASKED[status] = (p, time.time()); asked_save()
         except BackendDown as e:
             STATE["backend_down"] += 1
             append_section(p, "Capture error", f"backend unavailable: {e}")
             # Still ask: the note exists and the category is his answer, not the backend's.
             tg_edit(chat, status, f"⚠️ #{n} backend unavailable — link and note kept.\nWhat is it about?",
                     category_buttons())
-            ASKED[status] = (p, time.time())
+            ASKED[status] = (p, time.time()); asked_save()
         except Exception as e:
             STATE["errors"] += 1
             append_section(p, "Capture error", str(e)[:300])
@@ -658,6 +723,7 @@ data:
 
     def telegram():
         offset = 0
+        asked_load()
         log(f"telegram: allowed chats {sorted(ALLOWED_CHATS)}")
         while True:
             try:
@@ -672,6 +738,7 @@ data:
                             continue
                         bmid, choice = cmsg.get("message_id"), (cq.get("data") or "")
                         entry = ASKED.pop(bmid, None)
+                        asked_save()
                         head = (cmsg.get("text") or "").split("\n")[0]
                         if entry is None:
                             # The pod restarted, or the button was tapped twice. Say so rather than
@@ -717,12 +784,33 @@ data:
                         # note, no log, no reply. Any message sent as a reply — a link included — was
                         # simply lost. Now a missed ask falls through to the URL and text branches, so a
                         # message always becomes something. Nothing is ignored silently.
-                    elif text and (pend := PENDING.pop(chat, None)) is not None \
+                    elif reply_to and text:
+                        # A reply that matched nothing. It used to fall through and become its own note:
+                        # two replies of "." on 2026-09-13 were filed as notes titled ".". A reply is
+                        # always ABOUT something — if we cannot find what, say so rather than invent a
+                        # note. Nothing is ignored silently, and nothing is filed under a lie either.
+                        log(f"reply to {reply_to} matched no note; not filed")
+                        tg_send(chat, "❓ I can't tell which note that replies to — nothing was filed. "
+                                      "Send it on its own and it becomes a note, or reply to the link itself.",
+                                reply_to=msg["message_id"])
+                    elif text and (pend := PENDING.get(chat)) is not None \
                             and time.time() - pend[1] < CONTEXT_WINDOW \
                             and not re.search(r"https?://\S+", text):
-                        # He types the thought as a new message rather than replying. Take it either way.
-                        append_section(pend[0], "Why", text)
-                        tg_send(chat, f"\u2705 added to \u201c{pend[0].stem[16:56]}\u2026\u201d")
+                        # He types the thought as a new message rather than replying. Take it either way
+                        # \u2014 but only when it LOOKS like a thought. On 2026-09-13 he pasted a Telegram
+                        # chat log a minute after sending a link, and 4 000 characters of "[9/11/2026
+                        # 12:37 AM] Inbox: \u2705 #1" became that reel's Why. The window cannot tell a
+                        # reflection from a paste, so it now declines instead of guessing, and the
+                        # pending note is only consumed when the text is actually taken.
+                        if (why := looks_like_a_thought(text)) is not True:
+                            log(f"context window declined ({why}); nothing filed")
+                            tg_send(chat, f"\u2753 that looks like {why}, not a thought about the link \u2014 "
+                                          f"nothing was filed. Reply to the link itself to attach it.",
+                                    reply_to=msg["message_id"])
+                        else:
+                            PENDING.pop(chat, None)
+                            append_section(pend[0], "Why", text)
+                            tg_send(chat, f"\u2705 added to \u201c{pend[0].stem[16:56]}\u2026\u201d")
                     elif (m := re.search(r"https?://\S+", text)):
                         # a shared link usually arrives with words around it ("look at this https://…");
                         # the first URL is the capture, the surrounding words are the "why"
