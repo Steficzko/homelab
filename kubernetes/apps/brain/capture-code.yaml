@@ -379,6 +379,7 @@ data:
                         and not already_done(f) and time.time() - f.stat().st_mtime >= 15]
                 work += [("orphan", f) for f in orphans()]
                 report_unsupported(drops)
+                sweep_held()
                 for kind, f in work:
                     try:
                         if kind == "drop":
@@ -477,8 +478,28 @@ data:
     CATEGORIES = [
         [("\U0001F6E0 tool", "tool"), ("\U0001F94B bjj", "bjj"), ("\U0001F4A1 idea", "idea")],
         [("\U0001F4DA read later", "read-later"), ("\U0001F464 person", "person"), ("⬜ skip", "skip")],
+        [("\U0001F4CC keep the video too", "keep")],
     ]
     ASKED = {}          # button message_id -> (note path, asked_at). Answer whenever; nothing expires.
+    HELD = {}           # note path -> (media file, duration, held_since). Retention waits on the answer.
+    MEDIA_HOLD_SECONDS = int(os.environ.get("MEDIA_HOLD_SECONDS", "86400"))
+
+
+    def sweep_held(now=None):
+        """Imported media he never categorised. The rule's default is deletion, so an unanswered
+        question must not become a permanent keep — that is how the array filled up with reels. One day
+        to answer, then the default applies and the note records it."""
+        now = now or time.time()
+        for p, (media, duration, since) in list(HELD.items()):
+            if now - since < MEDIA_HOLD_SECONDS:
+                continue
+            HELD.pop(p, None)
+            gate = media_gate(media, duration, None)
+            log(f"  held media expired for {p.name}: {gate}")
+            try:
+                append_section(p, "Retention", f"{gate} (no category given within {MEDIA_HOLD_SECONDS // 3600} h)")
+            except OSError as e:
+                log(f"  could not record retention on {p.name}: {e}")
 
 
     def category_buttons():
@@ -519,24 +540,53 @@ data:
         return " ".join(t.split())[:120] or url
 
 
-    def media_gate(media, duration):
-        """Apply the duration gate to imported media, after the transcript and frames exist.
+    def probe_duration(media):
+        """Duration from the downloaded file. yt-dlp reports none for Instagram, which used to leave
+        every reel as "unknown" and therefore kept forever. Reading it off the file makes it a measured
+        fact rather than a guess, which is what the retention rule needs to fire at all."""
+        if media is None or not media.exists():
+            return None
+        try:
+            out = subprocess.run(["ffprobe", "-v", "error", "-show_entries", "format=duration",
+                                  "-of", "default=nw=1:nk=1", str(media)],
+                                 capture_output=True, text=True, timeout=30, check=True).stdout.strip()
+            return float(out)
+        except Exception as e:
+            log(f"  ffprobe failed, duration stays unknown: {e}")
+            return None
 
-        Returns a sentence for the note. The note recording what happened is what keeps this honest:
-        "nothing is deleted silently" means the deletion is written down where he will read it.
-        An unknown duration always keeps the file — deleting on a guess is exactly what that rule
-        forbids.
+
+    def media_gate(media, duration, category=None):
+        """Retention for IMPORTED media, applied once he says what the thing is.
+
+        The rule (DECISIONS 2026-09-11, glossary "Grace period"): imported media is DELETED once
+        processed and the note keeps the URL. BJJ technique videos are the single exception — kept when
+        they run MEDIA_KEEP_SECONDS or less, because a short clip is the library while a long
+        instructional is only a bookmark. A `keep` tap overrides the gate outright.
+
+        Until 2026-09-13 this applied the duration gate to *everything* and kept anything whose
+        duration was unknown, which inverted the rule: Instagram reports no duration, so every reel was
+        kept forever. Deletion is the default; keeping is what has to be earned.
+
+        Returns a sentence for the note — "nothing is deleted silently" means the deletion is written
+        where he will read it.
         """
         if media is None or not media.exists():
             return "no media file"
-        if duration is None:
-            return f"`{media.name}` kept — duration unknown, and nothing is deleted on a guess"
-        if duration <= MEDIA_KEEP_SECONDS:
-            return f"`{media.name}` kept ({int(duration)} s, at or under the {MEDIA_KEEP_SECONDS} s gate)"
-        mb = media.stat().st_size // 1048576
+        size = f"{media.stat().st_size // 1048576} MB"
+        if category == "keep":
+            return f"`{media.name}` kept ({size}) — you asked to keep it, which overrides the gate"
+        if category == "bjj":
+            if duration is None:
+                return f"`{media.name}` kept ({size}) — BJJ, and the duration is unknown; nothing is deleted on a guess"
+            if duration <= MEDIA_KEEP_SECONDS:
+                return f"`{media.name}` kept ({int(duration)} s, at or under the {MEDIA_KEEP_SECONDS} s BJJ gate)"
+            media.unlink()
+            return (f"media deleted: BJJ but {int(duration)} s, over the {MEDIA_KEEP_SECONDS} s gate, {size} freed. "
+                    f"The link, the transcript and the frames are kept.")
         media.unlink()
-        return (f"media deleted: {int(duration)} s is over the {MEDIA_KEEP_SECONDS} s gate, {mb} MB freed. "
-                f"The link, the transcript and the frames are kept.")
+        why = "imported media is deleted once processed" if category else "no category given"
+        return f"media deleted ({size} freed) — {why}. The link, the transcript and the frames are kept."
 
 
     def capture_link(url, msg_id, chat, why=""):
@@ -567,9 +617,14 @@ data:
                     append_section(p, "Caption", desc)
                 if text:
                     append_section(p, "Transcript", text)
-                gate = media_gate(media, duration)
-                log(f"  media gate: {gate}")
-                append_section(p, "Raw", f"`{rel(d)}/` ({nf} frames){'' if verified else ' — transcript not verified'}\n\n{gate}")
+                if duration is None:
+                    duration = probe_duration(media)
+                # The category decides whether this survives, and he has not answered yet — so the file
+                # is HELD, not gated, and the gate runs on the button press (or on the sweep below if he
+                # never answers). Deleting first and asking after would make the keep button a lie.
+                HELD[p] = (media, duration, time.time())
+                append_section(p, "Raw", f"`{rel(d)}/` ({nf} frames){'' if verified else ' — transcript not verified'}\n\n"
+                                         f"media held until you say what this is")
             else:
                 tg_edit(chat, status, f"\U0001F4C4 “{short}”\nrendering the page to Paperless…")
                 doc = page_to_paperless(url, title)
@@ -613,14 +668,22 @@ data:
                             # pretending it worked — nothing is ignored silently.
                             tg_answer(cq["id"], "that one is already answered")
                             tg_edit(cchat, bmid, f"{head}\n(already answered)")
-                        elif choice == "skip":
-                            tg_answer(cq["id"], "left untagged")
-                            tg_edit(cchat, bmid, f"{head}\nuntagged — reply here any time to add a why")
                         else:
-                            add_tag(entry[0], choice)
-                            tg_answer(cq["id"], f"tagged {choice}")
-                            tg_edit(cchat, bmid, f"{head}\n\U0001F3F7 {choice}")
-                            log(f"tagged {entry[0].name} as {choice}")
+                            note = entry[0]
+                            if choice != "skip":
+                                add_tag(note, choice)
+                            # Retention runs HERE, because the answer is what decides it.
+                            line = ""
+                            if (held := HELD.pop(note, None)) is not None:
+                                gate = media_gate(held[0], held[1], choice)
+                                append_section(note, "Retention", gate)
+                                log(f"  {note.name}: {gate}")
+                                line = "\n" + ("\U0001F5D1 video deleted, link + transcript kept"
+                                               if "deleted" in gate else "\U0001F4CC video kept")
+                            label = "untagged" if choice == "skip" else f"\U0001F3F7 {choice}"
+                            tg_answer(cq["id"], "left untagged" if choice == "skip" else f"tagged {choice}")
+                            tg_edit(cchat, bmid, f"{head}\n{label}{line}")
+                            log(f"tagged {note.name} as {choice}")
                         continue
                     msg = u.get("message") or {}
                     chat = (msg.get("chat") or {}).get("id")
