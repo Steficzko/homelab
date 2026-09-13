@@ -42,11 +42,22 @@ data:
 
       # Tier 2 — the wired local GPU. These are the exact params `chat` used
       # before the TUF went in front of it.
+      # ollama_chat/ + think:false here too. These were the exact params `chat`
+      # carried before the TUF went in front of it, and they were already wrong —
+      # this is an inherited bug, not one the chain introduced. Measured
+      # 2026-09-14, prompt "Say the word pong":
+      #   ollama/ (no think:false)      max_tokens=8   -> EMPTY, 8 tokens burned
+      #                                 max_tokens=64  -> "pong", 49 tokens
+      #   ollama_chat/ + think:false    any budget     -> "pong", 2 tokens
+      # So it wasted ~25x the tokens on hidden thinking and returned nothing at
+      # all on a small budget. That matters more now than it used to: this is the
+      # tier that serves every request while the TUF laptop is asleep.
       - model_name: chat-gpu
         litellm_params:
-          model: ollama/gemma4:12b
+          model: ollama_chat/gemma4:12b
           api_base: http://ollama-gpu.ai.svc.cluster.local:11434
           timeout: 180
+          think: false
       - model_name: gemma4
         litellm_params:
           model: ollama/gemma4:12b
