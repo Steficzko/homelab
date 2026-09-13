@@ -25,11 +25,19 @@ data:
       # roughly doubles a short completion. First call was 5.7s (cold model load).
       # It is a laptop in another country: expect it to be asleep sometimes. That
       # is what the 60s cooldown and the chain below are for.
+      #
+      # timeout 15, NOT 180. An offline tailnet peer BLACKHOLES — it does not
+      # refuse — so an asleep laptop burns the full timeout on every attempt.
+      # Measured 2026-09-14 with the TUF asleep: `chat` took 542s to answer
+      # (180s x 3 attempts) while chat-gpu answered in 1.5s. That is ADR-014's
+      # rejected outcome exactly: a degraded-performance failure turned into a
+      # total one. 15s covers the 5.7s cold model load with margin, so worst
+      # case is ~45s once, then cooldown_time (60s) skips this tier.
       - model_name: chat
         litellm_params:
           model: ollama_chat/gemma4:12b
           api_base: http://100.69.56.89:11434
-          timeout: 180
+          timeout: 15
           think: false
 
       # Tier 2 — the wired local GPU. These are the exact params `chat` used
