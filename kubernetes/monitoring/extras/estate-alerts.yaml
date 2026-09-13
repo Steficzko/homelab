@@ -150,15 +150,24 @@ spec:
         # `for: 30m` is what stops this being a monthly false alarm rather than
         # the threshold itself. If it still proves noisy, delete this rule and
         # keep the critical one below, which self-calibrates.
+        #
+        # Aggregated to ONE series per host, deliberately. Unaggregated this is
+        # per-sensor, and a CPU heating up heats every core at once: on
+        # 2026-09-13 a routine parity check sent NINE identical messages, one
+        # per coretemp sensor, for a single physical condition. max by (instance)
+        # keeps the signal (the hottest sensor is the one that matters) and drops
+        # eight duplicate pages. The chip/sensor labels are lost from the summary
+        # as a result — that is the trade, and the critical rule below still
+        # names the exact sensor.
         - alert: NASTemperatureHigh
-          expr: node_hwmon_temp_celsius{job="unraid-node-exporter"} > 60
+          expr: max by (instance, job) (node_hwmon_temp_celsius{job="unraid-node-exporter"}) > 60
           for: 30m
           labels:
             severity: warning
           annotations:
             summary: >-
-              {{ $labels.instance }} sensor {{ $labels.chip }}/{{ $labels.sensor }}
-              at {{ $value | printf "%.0f" }} C for 30m
+              {{ $labels.instance }} hottest sensor at
+              {{ $value | printf "%.0f" }} C for 30m
             description: >-
               Sustained, not a spike. A parity check will do this legitimately; a
               failed fan will do it permanently. Check which.
@@ -167,6 +176,9 @@ spec:
         # crit value the hardware itself reports, so a CPU rated to 105 C and an
         # NVMe rated to 94.85 C get thresholds that mean the same thing.
         - alert: NASTemperatureCritical
+          # NOT aggregated: at the critical tier you want the specific sensor
+          # named, and a real thermal event is rare enough that duplicate pages
+          # are a price worth paying.
           expr: >-
             node_hwmon_temp_celsius{job="unraid-node-exporter"}
             >= 0.85 * node_hwmon_temp_crit_celsius{job="unraid-node-exporter"}
