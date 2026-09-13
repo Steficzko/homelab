@@ -383,6 +383,75 @@ spec:
               replicas in the Longhorn UI and, if none can be salvaged, restore
               from the backup shown on the Backups dashboard.
 
+        # Both rules below watch the SAME disk from two directions, because
+        # Longhorn stops accepting work for two different reasons and the
+        # existing Degraded/Faulted rules only fire AFTER something has already
+        # broken. Neither of these existed; nothing in the estate alerted on a
+        # Longhorn node running out of room to schedule.
+        #
+        # Executed against Prometheus before committing, per this file's rule.
+        #
+        # (1) SCHEDULING CEILING. Longhorn refuses a new replica when scheduled
+        # bytes would exceed (capacity - reservation) x over-provisioning. This
+        # is about RESERVATIONS, not data: 55 volumes reserve ~1077 GB while
+        # holding ~115 GB, and ADR-024 makes a PVC un-shrinkable, so this only
+        # ever goes up. Current: r1 94.4%, g2 93.1%, b3 87.6%, w1 81.2%,
+        # w2 72.5% — so 85% fires on three nodes at the first evaluation, which
+        # is the point. The symptom otherwise is a PVC stuck Pending and a
+        # confused hour.
+        #
+        # The 1.5 MUST track setting storage-over-provisioning-percentage (150
+        # today). There is no metric for it; if that setting changes, change it
+        # here too or this rule silently measures the wrong thing.
+        - alert: LonghornNodeSchedulingCeiling
+          expr: >-
+            100 * longhorn_node_storage_scheduled_bytes
+            / ((longhorn_node_storage_capacity_bytes - longhorn_node_storage_reservation_bytes) * 1.5)
+            > 85
+          for: 30m
+          labels:
+            severity: warning
+          annotations:
+            summary: >-
+              Longhorn on {{ $labels.node }} is {{ $value | printf "%.0f" }}% of its
+              replica scheduling ceiling
+            description: >-
+              New volumes will fail to schedule a replica on this node once it
+              reaches 100%, and with 3 replicas needing 3 distinct nodes the
+              tightest node sets the largest PVC the cluster can create at all.
+              This counts reserved space, not used space — the fix is fewer or
+              smaller PVC requests, not deleting files. ADR-024: a PVC cannot be
+              shrunk, so recovering space means create-new, copy, cut over.
+
+        # (2) REAL FREE SPACE. Independent of the above: Longhorn marks a disk
+        # unschedulable when actual free space drops below
+        # storage-minimal-available-percentage (25 today). Current free: g2
+        # 28.6%, w2 31.5%, b3 31.8%, w1 39.0%, r1 42.1% — g2 is under four
+        # points from tripping. Fires at 28% to give a little warning rather
+        # than announcing it after the fact.
+        #
+        # NodeFilesystemSpaceFillingUp cannot cover this: it triggers below 15%
+        # and these disks sit at 27-42%, so it would never fire for this.
+        # /var/lib/longhorn also shares the single 238 GB NVMe with the OS,
+        # containerd images and logs, so an image pull can move this number.
+        - alert: LonghornNodeDiskNearlyUnschedulable
+          expr: >-
+            100 * (longhorn_node_storage_capacity_bytes - longhorn_node_storage_usage_bytes)
+            / longhorn_node_storage_capacity_bytes
+            < 28
+          for: 30m
+          labels:
+            severity: warning
+          annotations:
+            summary: >-
+              Longhorn disk on {{ $labels.node }} has {{ $value | printf "%.0f" }}%
+              real free space
+            description: >-
+              Below 25% Longhorn marks the disk unschedulable and stops placing
+              replicas on this node, which degrades rebuilds cluster-wide rather
+              than just here. This is actual bytes on disk — freeing data or
+              trimming container images helps, unlike the ceiling rule above.
+
     # ----------------------------------------------------------------- apps
     - name: estate-apps
       rules:
