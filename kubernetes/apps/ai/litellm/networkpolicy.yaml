@@ -48,6 +48,21 @@ spec:
             cidr: 192.168.1.224/32
         - ipBlock:
             cidr: 192.168.1.225/32
+    # The TUF laptop's RTX 4080 in Iraq, over tailscale. This rule is the whole
+    # reason TM-TUF/cluster/README.md concluded "pods can't route to tailnet IPs"
+    # and designed a hostNetwork socat bridge: an UNRESTRICTED pod reaches
+    # 100.69.56.89:11434 fine (verified from w1, w2, g2, b3 on 2026-09-13), but
+    # litellm is egress-restricted and was being dropped by THIS policy, not by
+    # routing. Symptom was silent: litellm fell straight through to the next
+    # fallback and still returned 200, so only /health named it —
+    # "Cannot connect to host 100.69.56.89:11434".
+    # Single /32, not 100.64.0.0/10: opening the whole tailnet to the inference
+    # gateway is a bigger grant than one GPU needs.
+    - ports:
+        - port: 11434
+      to:
+        - ipBlock:
+            cidr: 100.69.56.89/32
     - ports:
         - port: 443
         - port: 80
