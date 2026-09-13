@@ -6,7 +6,35 @@ metadata:
 data:
   config.yaml: |
     model_list:
+      # `chat` is a three-tier chain, best hardware first:
+      #   chat (TUF 4080, Iraq) -> chat-gpu (.224, wired) -> chat-fallback (in-cluster CPU)
+      # Wired in router_settings.fallbacks below, not here.
+      #
+      # Tier 1 — the TUF laptop's RTX 4080, reached over tailscale at its tailnet
+      # IP. NOT via a Service: TM-TUF/cluster/README.md designed a hostNetwork
+      # socat bridge on the premise that pods cannot route to 100.64/10. That
+      # premise is false — verified 2026-09-13 from pods on w2, g2 and b3, all
+      # 200. So the bridge is unnecessary and is deliberately not deployed.
+      #
+      # ollama_chat/ + think:false, NOT ollama/. Reproduced on the TUF the same
+      # trap already documented on chat-json below: /api/generate returned an
+      # EMPTY string while still burning 10 eval tokens. The chat route with
+      # thinking off returns content.
+      #
+      # Measured 2026-09-13: 1.11s warm vs 0.55s on .224 — the cross-country hop
+      # roughly doubles a short completion. First call was 5.7s (cold model load).
+      # It is a laptop in another country: expect it to be asleep sometimes. That
+      # is what the 60s cooldown and the chain below are for.
       - model_name: chat
+        litellm_params:
+          model: ollama_chat/gemma4:12b
+          api_base: http://100.69.56.89:11434
+          timeout: 180
+          think: false
+
+      # Tier 2 — the wired local GPU. These are the exact params `chat` used
+      # before the TUF went in front of it.
+      - model_name: chat-gpu
         litellm_params:
           model: ollama/gemma4:12b
           api_base: http://ollama-gpu.ai.svc.cluster.local:11434
@@ -70,7 +98,9 @@ data:
       num_retries: 1
       timeout: 90
       cooldown_time: 60
-      fallbacks: [{"chat": ["chat-fallback"]}, {"gemma4": ["chat-fallback"]}, {"whisper": ["whisper-fallback"]}]
+      # chat falls through TUF -> local GPU -> in-cluster CPU. gemma4 is the
+      # explicit "use the local GPU" alias, so it keeps its single fallback.
+      fallbacks: [{"chat": ["chat-gpu", "chat-fallback"]}, {"gemma4": ["chat-fallback"]}, {"whisper": ["whisper-fallback"]}]
 
     general_settings:
       master_key: os.environ/LITELLM_MASTER_KEY
