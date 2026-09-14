@@ -6,34 +6,42 @@ metadata:
 data:
   config.yaml: |
     model_list:
-      # `chat` is a three-tier chain, best hardware first:
-      #   chat (TUF 4080, Iraq) -> chat-gpu (.224, wired) -> chat-fallback (in-cluster CPU)
+      # `chat` is the wired local GPU, falling back to the in-cluster CPU.
       # Wired in router_settings.fallbacks below, not here.
       #
-      # Tier 1 — the TUF laptop's RTX 4080, reached over tailscale at its tailnet
-      # IP. NOT via a Service: TM-TUF/cluster/README.md designed a hostNetwork
-      # socat bridge on the premise that pods cannot route to 100.64/10. That
-      # premise is false — verified 2026-09-13 from pods on w2, g2 and b3, all
-      # 200. So the bridge is unnecessary and is deliberately not deployed.
+      # It used to be a three-tier chain with the TUF laptop's RTX 4080 in front.
+      # That is reverted as of 2026-09-15 and the TUF is now `chat-tuf`, an
+      # opt-in name nothing falls through to. Two measurements killed it:
       #
-      # ollama_chat/ + think:false, NOT ollama/. Reproduced on the TUF the same
-      # trap already documented on chat-json below: /api/generate returned an
-      # EMPTY string while still burning 10 eval tokens. The chat route with
-      # thinking off returns content.
+      #   warm, 2026-09-13:  TUF 1.11s  vs  .224 0.55s
+      #   asleep, 2026-09-15: `chat` 39.6s end to end, answered by .224 anyway
       #
-      # Measured 2026-09-13: 1.11s warm vs 0.55s on .224 — the cross-country hop
-      # roughly doubles a short completion. First call was 5.7s (cold model load).
-      # It is a laptop in another country: expect it to be asleep sometimes. That
-      # is what the 60s cooldown and the chain below are for.
+      # It is SLOWER than the tier behind it when healthy, because the request
+      # crosses a continent to reach it, and it is a laptop in Iraq that was
+      # `offline, last seen 8h ago` when this was written. An offline tailnet
+      # peer BLACKHOLES rather than refusing (`tx 312 rx 0`), so every call paid
+      # timeout x attempts before falling through. Dropping the timeout 180 -> 15
+      # cut that from 542s to 40s, which is a fix for the symptom: a first tier
+      # that is never the fastest and is usually absent has no business being
+      # first. ADR-014 again — do not turn degraded performance into an outage.
       #
-      # timeout 15, NOT 180. An offline tailnet peer BLACKHOLES — it does not
-      # refuse — so an asleep laptop burns the full timeout on every attempt.
-      # Measured 2026-09-14 with the TUF asleep: `chat` took 542s to answer
-      # (180s x 3 attempts) while chat-gpu answered in 1.5s. That is ADR-014's
-      # rejected outcome exactly: a degraded-performance failure turned into a
-      # total one. 15s covers the 5.7s cold model load with margin, so worst
-      # case is ~45s once, then cooldown_time (60s) skips this tier.
+      # ollama_chat/ + think:false, NOT ollama/. See the note on gemma4 below.
       - model_name: chat
+        litellm_params:
+          model: ollama_chat/gemma4:12b
+          api_base: http://ollama-gpu.ai.svc.cluster.local:11434
+          timeout: 180
+          think: false
+
+      # The TUF laptop's RTX 4080 over tailscale, reached at its tailnet IP and
+      # NOT via a Service: TM-TUF/cluster/README.md designed a hostNetwork socat
+      # bridge on the premise that pods cannot route to 100.64/10. That premise
+      # is false — verified 2026-09-13 from pods on w2, g2 and b3, all 200 — so
+      # the bridge is unnecessary and is deliberately not deployed.
+      #
+      # timeout 15 because of the blackhole above: ask for this one by name and
+      # you get a fast answer or a fast failure into chat, never a 9-minute hang.
+      - model_name: chat-tuf
         litellm_params:
           model: ollama_chat/gemma4:12b
           api_base: http://100.69.56.89:11434
@@ -58,27 +66,46 @@ data:
           api_base: http://ollama-gpu.ai.svc.cluster.local:11434
           timeout: 180
           think: false
+      # All four carry ollama_chat/ + think:false for the same reason chat and
+      # chat-json do. They were left on the bare ollama/ route when those two
+      # were fixed, and two of them were silently broken by it. Measured
+      # 2026-09-15, prompt "Say the word pong":
+      #
+      #   gemma4     max_tokens=32  -> ''     32 completion tokens burned
+      #              max_tokens=256 -> 'Pong' 29 tokens
+      #   DrGemmaQ4  max_tokens=32  -> ''     32 tokens burned
+      #              max_tokens=256 -> 'pong' 215 tokens
+      #   gemma4-26b / DrGemmaQ8    -> 'pong'  2 tokens, unaffected
+      #
+      # An empty string and a full bill is the worst failure shape available: the
+      # call returns 200 and the caller cannot tell it got nothing. The two that
+      # were fine are converted too — a route that is only correct because of
+      # which model happens to sit behind it is a trap waiting for the next pull.
       - model_name: gemma4
         litellm_params:
-          model: ollama/gemma4:12b
+          model: ollama_chat/gemma4:12b
           api_base: http://ollama-gpu.ai.svc.cluster.local:11434
           timeout: 180
+          think: false
       - model_name: gemma4-26b
         litellm_params:
-          model: ollama/gemma4:latest
+          model: ollama_chat/gemma4:latest
           api_base: http://ollama-gpu.ai.svc.cluster.local:11434
           timeout: 180
+          think: false
 
       - model_name: DrGemmaQ4
         litellm_params:
-          model: ollama/DrGemmaQ4:latest
+          model: ollama_chat/DrGemmaQ4:latest
           api_base: http://ollama-gpu.ai.svc.cluster.local:11434
           timeout: 180
+          think: false
       - model_name: DrGemmaQ8
         litellm_params:
-          model: ollama/gemma4-q8:latest
+          model: ollama_chat/gemma4-q8:latest
           api_base: http://ollama-gpu.ai.svc.cluster.local:11434
           timeout: 180
+          think: false
 
       - model_name: chat-fallback
         litellm_params:
@@ -117,9 +144,11 @@ data:
       num_retries: 1
       timeout: 90
       cooldown_time: 60
-      # chat falls through TUF -> local GPU -> in-cluster CPU. gemma4 is the
-      # explicit "use the local GPU" alias, so it keeps its single fallback.
-      fallbacks: [{"chat": ["chat-gpu", "chat-fallback"]}, {"gemma4": ["chat-fallback"]}, {"whisper": ["whisper-fallback"]}]
+      # chat falls through local GPU -> in-cluster CPU. chat-gpu is kept as an
+      # alias of chat so existing callers do not break; nothing falls through to
+      # chat-tuf, which is opt-in only, but asking for it by name still degrades
+      # into the cluster rather than failing outright.
+      fallbacks: [{"chat": ["chat-fallback"]}, {"chat-gpu": ["chat-fallback"]}, {"chat-tuf": ["chat", "chat-fallback"]}, {"gemma4": ["chat-fallback"]}, {"whisper": ["whisper-fallback"]}]
 
     general_settings:
       master_key: os.environ/LITELLM_MASTER_KEY
