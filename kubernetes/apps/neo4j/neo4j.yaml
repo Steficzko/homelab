@@ -3,17 +3,30 @@ kind: Namespace
 metadata:
   name: neo4j
 ---
+# neo4j-data-v2 replaces the original 20Gi neo4j-data, which reserved 64.5 GB across
+# three replicas to hold 526 MB — the single largest waster in the cluster. Kubernetes
+# cannot shrink a PVC, so the only route is a new claim, a copy and a cutover. The old
+# claim is deliberately NOT deleted here: it stays as the rollback until someone removes
+# it by hand after verifying the new one.
+#
+# 3Gi is ~6x the current data, not a round number. allowVolumeExpansion is true on this
+# StorageClass, so growing later is a one-line edit with no downtime, while shrinking is
+# this entire dance. Provision small, expand on evidence.
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: neo4j-data
+  name: neo4j-data-v2
   namespace: neo4j
   labels:
+    # The explicit per-job label is what actually reaches the backup. The
+    # `default` GROUP label does nothing: recurringjob daily-backup has
+    # `groups: []`, which is why 13 volumes carrying only the group label have
+    # never been backed up once.
     recurring-job.longhorn.io/daily-backup: "enabled"
 spec:
   accessModes: [ReadWriteOnce]
   storageClassName: longhorn
-  resources: { requests: { storage: 20Gi } }
+  resources: { requests: { storage: 3Gi } }
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -68,7 +81,7 @@ spec:
           volumeMounts:
             - { name: data, mountPath: /data }
       volumes:
-        - { name: data, persistentVolumeClaim: { claimName: neo4j-data } }
+        - { name: data, persistentVolumeClaim: { claimName: neo4j-data-v2 } }
 ---
 apiVersion: v1
 kind: Service
