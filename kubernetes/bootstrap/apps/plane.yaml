@@ -99,7 +99,16 @@ spec:
             image: quay.io/minio/minio@sha256:14cea493d9a34af32f524e538b8346cf79f3321eff8e708c1e2960462bd8936e
             image_mc: quay.io/minio/mc@sha256:a7fe349ef4bd8521fb8497f55c6042871b2ae640607cf99d9bede5e9bdf11727
             storageClass: longhorn
-            volumeSize: 20Gi          # raw transcripts attached to issues
+            # Was 20Gi, holding 4.9 MB. A StatefulSet volumeClaimTemplate is
+            # IMMUTABLE, so this value alone changes nothing: the StatefulSet must be
+            # deleted and recreated for a new template to take. Its
+            # persistentVolumeClaimRetentionPolicy is Retain/Retain, so deleting it
+            # leaves the claim alone, and a recreated StatefulSet ADOPTS an existing
+            # claim whose name matches <template>-<sts>-<ordinal>. That is how this
+            # was migrated on 2026-09-14 with the data copied out and back first:
+            # the 3Gi claim already existed and populated before the StatefulSet
+            # returned, so MinIO never saw an empty /data.
+            volumeSize: 3Gi           # raw transcripts attached to issues
             env:
               # Forces presigned upload URLs to https. Without it, storage.py falls
               # back to `request.scheme`, and although Plane sets
