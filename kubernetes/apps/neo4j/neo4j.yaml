@@ -18,6 +18,14 @@ metadata:
   name: neo4j-data-v2
   namespace: neo4j
   labels:
+    # BOTH of these are required and neither is optional.
+    #
+    # source=enabled is what makes Longhorn PROPAGATE a PVC's recurring-job
+    # labels onto the Volume at all. Without it the daily-backup label sits on
+    # the PVC looking correct and the Volume never receives it — verified on
+    # this very volume on 2026-09-14, which came back from the migration with
+    # no backup label until this line was added.
+    recurring-job.longhorn.io/source: "enabled"
     # The explicit per-job label is what actually reaches the backup. The
     # `default` GROUP label does nothing: recurringjob daily-backup has
     # `groups: []`, which is why 13 volumes carrying only the group label have
