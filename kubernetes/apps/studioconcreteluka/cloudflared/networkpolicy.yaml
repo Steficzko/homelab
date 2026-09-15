@@ -17,8 +17,20 @@ spec:
         - podSelector:
             matchLabels:
               app: wordpress
+    # cloudflared reaches the Cloudflare edge on 7844. It needs BOTH transports
+    # listed explicitly, because the port alone is not enough: a NetworkPolicy port
+    # entry defaults to TCP, so "7844 UDP" permits QUIC only.
+    #
+    # This broke on 2026-09-15: commit e35fdcd moved every tunnel to --protocol http2,
+    # which dials TCP/7844. The other five tunnels live in namespace cloudflare-tunnel,
+    # which has NO NetworkPolicy, so they were unaffected and the change looked clean.
+    # This one is the only tunnel with an egress policy of its own, so it alone lost
+    # the edge -- studioconcreteluka.com served HTTP 530 for ~3.5h, with ~1500
+    # "connection refused" lines per pod and nothing alerting on it.
     - ports:
         - port: 443
+        - port: 7844
+          protocol: TCP
         - port: 7844
           protocol: UDP
       to:
