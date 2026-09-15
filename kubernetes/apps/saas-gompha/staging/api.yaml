@@ -26,8 +26,10 @@
 # hand-written INSERT (permissions.md §12.8).
 #
 # ⏰ Consequence while autosync stays OFF: the cached licence expires on its
-# own date with no renewal and no warning. Staging's expires 2026-08-31T23:19:58Z
-# (grace 3 → writes 403 from 2026-09-03T23:19:58Z), chosen deliberately.
+# own date with no renewal and no warning. Staging's expires 2026-09-23T13:30:00Z
+# (grace 3 → writes 403 from 2026-09-26T13:30:00Z) — reissued 2026-09-15 on an
+# 8-day leash, chosen deliberately. ⚠ This line goes stale at every renewal;
+# LEDGER.md is the source of truth, this is the reminder.
 # Turning autosync ON is not a one-liner: it also needs GOMPHA_LICENCE_FETCH_URL
 # and GOMPHA_INSTANCE_CREDENTIAL plus the clinic→licensing NetworkPolicy
 # (networkpolicies.yaml, still commented out) — which trades against ADR-026.
@@ -57,7 +59,7 @@ spec:
         # migration 0001 as gompha_owner — the ONLY step that does DDL; the
         # migration's GRANT block then hands table privileges to gompha_app.
         - name: migrate
-          image: ghcr.io/steficzko/gompha-clinic:clinic-v0.1.36
+          image: ghcr.io/steficzko/gompha-clinic:clinic-v0.1.37
           # Wait for Postgres first — same loop, same reason as the reaper
           # (cronjob-reaper.yaml): on a FIRST sync the database is still running
           # initdb (TCP not listening yet) and kube-router has not admitted this
@@ -80,7 +82,7 @@ spec:
             limits: {memory: 128Mi}
       containers:
         - name: api
-          image: ghcr.io/steficzko/gompha-clinic:clinic-v0.1.36
+          image: ghcr.io/steficzko/gompha-clinic:clinic-v0.1.37
           ports: [{containerPort: 8000, name: http}]
           env:
             # runtime role — subject to FORCE RLS (never the owner)
