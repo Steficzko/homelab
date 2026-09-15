@@ -33,3 +33,24 @@ spec:
         - namespaceSelector:
             matchLabels:
               kubernetes.io/metadata.name: kube-system
+    # The TUF laptop's ollama over the tailnet, as a DIRECT Ollama connection
+    # rather than through LiteLLM. Deliberate exception to the one-gateway rule:
+    # LiteLLM publishes a hand-written list of model names, and the ask here is
+    # to see whatever is on that box without editing a manifest every time
+    # something is pulled. Only Open-WebUI's own /api/tags fetch needs this.
+    #
+    # Same allow litellm already carries (added 2026-09-13). Pods CAN route to
+    # 100.64/10 -- the socat bridge in TM-TUF/cluster/README.md was written on
+    # the premise that they cannot, which is false.
+    #
+    # KNOWN COST: Open-WebUI re-fetches the Ollama model list on EVERY page
+    # load, and an offline tailnet peer blackholes instead of refusing
+    # (measured `tx 312 rx 0` on 2026-09-15). So while the laptop is asleep,
+    # every page load stalls on that fetch. The previous value was
+    # host.docker.internal, which only ever failed instantly because DNS said
+    # no -- so the errors were free. These will not be.
+    - ports:
+        - port: 11434
+      to:
+        - ipBlock:
+            cidr: 100.69.56.89/32
