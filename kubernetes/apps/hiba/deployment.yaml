@@ -1,0 +1,74 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hiba
+  namespace: hiba
+spec:
+  replicas: 1          # RWO volume, single writer/reader; the content is tiny and cached by Cloudflare
+  strategy:
+    type: Recreate     # Longhorn RWO: the old pod must release the volume first
+  selector:
+    matchLabels:
+      app: hiba
+  template:
+    metadata:
+      labels:
+        app: hiba
+      annotations:
+        checksum/nginx-conf: "v1"
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 101          # nginx user in the alpine image
+        runAsGroup: 101
+        fsGroup: 101
+        seccompProfile:
+          type: RuntimeDefault
+      automountServiceAccountToken: false
+      containers:
+        - name: nginx
+          # Static file server only: no PHP, no CGI, no upstream. Pinned by digest.
+          image: nginx:1.31-alpine@sha256:72ba65eb42c10344912a84ff42408db7d34f2feb642204570ab8fc5ffd29f1d3
+          ports:
+            - containerPort: 8080
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: [ALL]
+          volumeMounts:
+            - name: content
+              mountPath: /usr/share/nginx/html
+            - name: conf
+              mountPath: /etc/nginx/nginx.conf
+              subPath: nginx.conf
+              readOnly: true
+            - name: tmp
+              mountPath: /tmp
+            - name: cache
+              mountPath: /var/cache/nginx
+          resources:
+            requests:
+              cpu: 10m
+              memory: 24Mi
+            limits:
+              memory: 96Mi
+          readinessProbe:
+            httpGet: { path: /healthz, port: 8080 }
+            initialDelaySeconds: 3
+            periodSeconds: 15
+          livenessProbe:
+            httpGet: { path: /healthz, port: 8080 }
+            initialDelaySeconds: 10
+            periodSeconds: 30
+      volumes:
+        - name: content
+          persistentVolumeClaim:
+            claimName: hiba-content
+        - name: conf
+          configMap:
+            name: hiba-nginx
+        - name: tmp
+          emptyDir: {}
+        - name: cache
+          emptyDir: {}
