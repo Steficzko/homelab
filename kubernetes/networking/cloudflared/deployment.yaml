@@ -26,6 +26,14 @@ spec:
           args:
             - tunnel
             - --no-autoupdate
+            # QUIC (UDP/7844) is being mangled on this uplink: every tunnel in the cluster was
+            # logging "failed to accept QUIC stream: timeout: no recent network activity" and
+            # re-dialling every ~2 min (1310 events in 5000 log lines on 2026-09-15), which shows
+            # up to visitors as intermittent 502s — worst from far-away colos, since all four
+            # connections land in prg/vie. http2 rides TCP/443 instead. Revert if the flapping
+            # turns out to be Cloudflare-side rather than the uplink.
+            - --protocol
+            - http2
             - run
             - --token
             - $(TUNNEL_TOKEN)
