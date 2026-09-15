@@ -26,6 +26,17 @@ spec:
           args:
             - tunnel
             - --no-autoupdate
+            # Off QUIC 2026-09-15: the Vodafone CPE rebooted at 00:26 UTC into new
+            # firmware and its NAT now drops our long-lived UDP mappings; all tunnels then
+            # flap in lockstep. Not packet loss -- UDP measures 0% and HTTP/3 runs at
+            # 7.8 MB/s. See kubernetes/networking/cloudflared/deployment.yaml for the full
+            # evidence. http2 rides TCP/7844 and re-establishes through it transparently.
+            - --protocol
+            - http2
+            # No IPv6 default route on any node; without this, AAAA dials burn connection
+            # slots failing "network is unreachable".
+            - --edge-ip-version
+            - "4"
             - run
             - --token
             - $(TUNNEL_TOKEN)

@@ -26,14 +26,38 @@ spec:
           args:
             - tunnel
             - --no-autoupdate
-            # QUIC (UDP/7844) is being mangled on this uplink: every tunnel in the cluster was
-            # logging "failed to accept QUIC stream: timeout: no recent network activity" and
-            # re-dialling every ~2 min (1310 events in 5000 log lines on 2026-09-15), which shows
-            # up to visitors as intermittent 502s — worst from far-away colos, since all four
-            # connections land in prg/vie. http2 rides TCP/443 instead. Revert if the flapping
-            # turns out to be Cloudflare-side rather than the uplink.
+            # Forced off QUIC on 2026-09-15. ROOT CAUSE, confirmed from the router's own
+            # status page: the Vodafone CPE at 192.168.0.1 rebooted itself at 00:26 UTC
+            # (uptime 18h56m read at 21:22 local = 19:22 UTC), almost certainly an
+            # operator-pushed firmware update -- AR01.05.063.13. The FIRST QUIC timeout in
+            # these logs is 00:25:30Z, i.e. the tunnels dropped as it went down and have
+            # flapped ever since it came back with different NAT behaviour.
+            #
+            # It is NOT packet loss, which an earlier pass concluded and this disproves:
+            # UDP measured 0% loss from node AND pod network, small and 1139-byte datagrams,
+            # 60s sustained; real HTTP/3 to Cloudflare ran at 7.8 MB/s; a single UDP socket
+            # survived 180s idle; CPU throttling was 0.02%. The tell is that all six tunnels,
+            # on three nodes, across 20 edge IPs and 4 POPs, fail inside the SAME 1-2 seconds
+            # -- 166 times in 8 hours. Loss cannot synchronise like that; shared NAT state
+            # being dropped can.
+            #
+            # http2 rides TCP/7844 (NOT 443 -- verified in the dial logs). TCP re-establishes
+            # through lost NAT state transparently; QUIC sees silence and tears the
+            # connection down. We cannot tune the CPE -- it is operator-managed and we have
+            # no access -- so this is containment, not a repair. The real fix is bridge mode
+            # on the CPE so the OpenWrt box holds the public IP and this double NAT goes away.
+            # Needs physical access.
+            #
+            # Cost accepted: TCP head-of-line blocking, and no UDP/ICMP origin proxying.
+            # warp-routing is false on every tunnel here, so nothing actually uses those.
             - --protocol
             - http2
+            # The nodes have ZERO IPv6 default routes, but cloudflared defaults to trying
+            # both families, so every AAAA dial fails "network is unreachable" and burns a
+            # connection slot retrying. One main-tunnel pod was thrashing 2 of its 4
+            # connections on this alone.
+            - --edge-ip-version
+            - "4"
             - run
             - --token
             - $(TUNNEL_TOKEN)
