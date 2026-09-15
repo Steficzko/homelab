@@ -107,6 +107,33 @@ data:
           timeout: 180
           think: false
 
+      # qwen3.5-abliterated 9.7B Q4_K_M, pulled 2026-09-15. Additive on purpose:
+      # `chat` stays on gemma4:12b until this has more than one afternoon of
+      # evidence behind it. Measured head to head on .224 the same day:
+      #
+      #   throughput   47.8 vs 33.4 tok/s   (+43%, consistent over 5 prompts)
+      #   prose        tie
+      #   shell/k8s    qwen clearly better - gemma emitted invalid jsonpath
+      #   python spec  gemma clearly better - qwen retried 4xx it was told not to
+      #
+      # So: faster and lighter, quality a wash with different failure modes.
+      #
+      # temperature pinned. This model ships a DEFAULT OF 1 (gemma and the qwen3
+      # 14b both default to 0.6), which is too hot for anything factual, and an
+      # inherited default that differs per model is how you get results you
+      # cannot reproduce.
+      #
+      # It cannot share the card with gemma4:12b - 6.59 + 7.56 = 14.15 GB against
+      # 12 GB of VRAM - so switching between this and `chat` evicts and reloads,
+      # ~8-12s each way. That is the cost of keeping both; it is not a fault.
+      - model_name: qwen9b
+        litellm_params:
+          model: ollama_chat/huihui_ai/qwen3.5-abliterated:9b
+          api_base: http://ollama-gpu.ai.svc.cluster.local:11434
+          timeout: 180
+          think: false
+          temperature: 0.6
+
       - model_name: chat-fallback
         litellm_params:
           model: ollama/gemma3:4b
@@ -148,7 +175,7 @@ data:
       # alias of chat so existing callers do not break; nothing falls through to
       # chat-tuf, which is opt-in only, but asking for it by name still degrades
       # into the cluster rather than failing outright.
-      fallbacks: [{"chat": ["chat-fallback"]}, {"chat-gpu": ["chat-fallback"]}, {"chat-tuf": ["chat", "chat-fallback"]}, {"gemma4": ["chat-fallback"]}, {"whisper": ["whisper-fallback"]}]
+      fallbacks: [{"chat": ["chat-fallback"]}, {"qwen9b": ["chat-fallback"]}, {"chat-gpu": ["chat-fallback"]}, {"chat-tuf": ["chat", "chat-fallback"]}, {"gemma4": ["chat-fallback"]}, {"whisper": ["whisper-fallback"]}]
 
     general_settings:
       master_key: os.environ/LITELLM_MASTER_KEY
