@@ -3,6 +3,21 @@ kind: PersistentVolumeClaim
 metadata:
   name: hiba-content
   namespace: hiba
+  # DELIBERATELY NOT BACKED UP. Decided 2026-09-15; do not "fix" this in an audit.
+  #
+  # It carries no recurring-job.longhorn.io/daily-backup label and no dump CronJob,
+  # so lastBackupAt is empty and a coverage sweep will flag it every time. That is
+  # expected: the source of truth is /mnt/devdata/Hiba/brain/pack OUTSIDE the
+  # cluster, and publish_site.sh regenerates this volume wholesale. Backing it up
+  # would protect a derived copy of data that already lives somewhere else.
+  #
+  # NOTE the label it DOES carry is recurring-job-group.longhorn.io/default, which
+  # looks like coverage and is inert -- recurringjob daily-backup has `groups: []`,
+  # so the group label reaches nothing. 14 volumes carry it and none of them are
+  # backed up by it. This PVC inherited it from that default, not from a decision.
+  # If this volume ever stops being regenerable, it needs the real pair:
+  #   recurring-job.longhorn.io/source: "enabled"      <- makes Longhorn propagate
+  #   recurring-job.longhorn.io/daily-backup: "enabled"
 spec:
   # The site is a static export of /mnt/devdata/Hiba/brain/pack (~2.2 MB, 520 files),
   # pushed in by pipelines/publish_site.sh. Nothing in the cluster ever writes here.
