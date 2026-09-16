@@ -17,6 +17,15 @@ loki:
           period: 24h
   limits_config:
     retention_period: 744h  # 31 days
+  # retention_period alone does NOTHING. Loki only deletes when the compactor has
+  # retention_enabled, and this block was missing from 2026-06-02 to 2026-09-16:
+  # the 10Gi volume grew unbounded to 8.5Gi (~95Mi/day) with 106 days of logs on
+  # it. delete_request_store is mandatory once retention is on (filesystem = the
+  # same PVC). Deletions land ~2h after marking (retention_delete_delay default).
+  compactor:
+    retention_enabled: true
+    delete_request_store: filesystem
+    working_directory: /var/loki/compactor
 
 singleBinary:
   replicas: 1
