@@ -72,14 +72,10 @@ spec:
               # move together now, and the tag matches the app release so a
               # Postgres upgrade cannot silently outrun its own backup.
               #
-              # ⚠ DELIBERATELY ONE TAG BEHIND (2026-09-15, clinic-v0.1.37): the
-              # backup image did not build for .37 — its Dockerfile pulls
-              # `minio/mc:latest` from Docker Hub, which no longer resolves (MinIO
-              # is a retired project; owner ruling 2026-09-12). app/backup/ is
-              # byte-identical between .36 and .37, so this image IS the .37 backup.
-              # Re-pin to the app tag the moment app/backup/Dockerfile stops
-              # depending on minio/mc — that fix is owed, not this pin.
-              image: ghcr.io/steficzko/gompha-backup:clinic-v0.1.36
+              # Back on the app tag since clinic-v0.1.38: the recipe now takes mc
+              # from quay.io, pinned to the release that was already running. .37
+              # was deliberately held at .36 because Docker Hub dropped minio/mc.
+              image: ghcr.io/steficzko/gompha-backup:clinic-v0.1.38
               command: ["/bin/sh", "-ec"]
               args:
                 - |
