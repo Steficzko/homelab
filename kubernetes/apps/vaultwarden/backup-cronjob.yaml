@@ -84,7 +84,33 @@ spec:
                 - -c
                 - |
                   set -eu
-                  apk add --no-cache sqlite >/dev/null
+                  # Retry the package install. This is the ONLY step that needs the
+                  # internet, and on 2026-09-16 at 01:15Z it is what lost a night's
+                  # backup: DNS returned "transient error" for dl-cdn.alpinelinux.org,
+                  # apk reported `sqlite (no such package)`, and all three pod retries
+                  # died the same way inside 47 seconds. The Job failed, ArgoCD flipped
+                  # the app to Degraded, and the xyOps ArgoCD check alerted every 30
+                  # minutes -- but the ACTUAL damage was silent: no vaultwarden backup
+                  # for two days, while the watchdog still read UP because the previous
+                  # object was only 22h old.
+                  #
+                  # Root cause is cluster-wide: Tailscale owns /etc/resolv.conf on the
+                  # nodes, CoreDNS does `forward . /etc/resolv.conf`, and one of the two
+                  # nameservers it inherits is IPv6 (fd7a:115c:a1e0::53) on nodes that
+                  # have no IPv6 route at all. Every AAAA lookup fails or times out.
+                  # Fixing that properly is a separate change; this makes the backup
+                  # survive it.
+                  #
+                  # Six tries over ~2.5 minutes. Still not bulletproof -- a backup that
+                  # needs a public CDN to run is the wrong shape, and the real fix is an
+                  # image with sqlite already in it. Tracked separately.
+                  ok=0
+                  for i in 1 2 3 4 5 6; do
+                    if apk add --no-cache sqlite >/dev/null 2>&1; then ok=1; break; fi
+                    echo "    apk attempt $i failed (DNS?), retrying in $((i*5))s"
+                    sleep $((i*5))
+                  done
+                  [ "$ok" = "1" ] || { echo "FATAL: could not install sqlite after 6 attempts"; exit 1; }
                   TS=$(date +%Y%m%d-%H%M%S)
                   OUT=/work/vaultwarden-${TS}
                   mkdir -p "$OUT"
