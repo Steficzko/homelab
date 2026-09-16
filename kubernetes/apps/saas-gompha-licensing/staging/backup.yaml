@@ -1,0 +1,131 @@
+# Hourly logical backup of the LICENSING control plane — the database that holds
+# every issued licence, every tenant and every provider account.
+#
+# Written 2026-09-16 after the money-lane go-live reality check found this
+# namespace had NO backup at all while the clinic app beside it had an hourly
+# dump and a drilled restore: lose `licensing-postgres-data` and every licence
+# goes with it, the clinic drops to read-only when its cached blob lapses, and
+# there is no re-issue path. Same pipeline as saas-gompha/staging/backup.yaml —
+# pg_dump -Fc -> age (encrypt to a PUBLIC key) -> mc pipe -> MinIO on the LAN,
+# mirrored to Greece (ADR-011/013) — deliberately NOT a new mechanism.
+#
+# Two things differ from the clinic job, on purpose:
+#   * its OWN MinIO user and prefix (`gompha-licensing-postgres/`). The clinic
+#     credential is scoped to its own prefix and a write here is DENIED (probed
+#     2026-09-16). Least privilege, kept: `licensing-backup-s3-secret` carries a
+#     credential that can write ONLY this prefix — see Gompha
+#     ops/runbooks/licensing-deploy.md "Backup" for the user + policy recipe.
+#   * :35 past the hour — the clinic dumps at :20, dental-clinic at :00, and the
+#     Greece replication pass runs at :45; :35 leaves the admit-wait loop and the
+#     dump ten minutes of headroom before that pass, so a fresh dump ships in the
+#     same hour it was taken.
+#   * NO `--exclude-extension=pg_stat_statements`: this database never installs
+#     it (the clinic's reason is clinic-specific). Do not "sync" it in.
+#
+# The age RECIPIENT is the same public key the clinic backups use: one private
+# key in the owner's custody restores both, which is one thing to keep safe
+# rather than two. The restore procedure is Gompha ops/runbooks/restore-drill.md
+# with the prefix and namespace swapped; drill it before prod carries a licence.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: licensing-backup-config
+  namespace: saas-gompha-licensing-staging
+data:
+  AGE_RECIPIENT: "age186vffu4fdvtaejmd8lm69vmafh7q6m5swkcnfdxth7pjh7cd5s7s8l00jh"
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: licensing-postgres-backup
+  namespace: saas-gompha-licensing-staging
+spec:
+  schedule: "35 * * * *"
+  timeZone: Asia/Baghdad
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      # A pod that never starts (missing secret, bad pull) sits Pending forever,
+      # never FAILS, and under `Forbid` blocks every later tick — invisibly, in
+      # `kubectl get cronjob`. A deadline turns that into a failed job that clears.
+      activeDeadlineSeconds: 1800
+      ttlSecondsAfterFinished: 10800
+      template:
+        metadata:
+          labels:
+            app: licensing-backup
+            licensing-db-access: "true"   # Postgres ingress policy selector
+        spec:
+          restartPolicy: OnFailure
+          automountServiceAccountToken: false
+          imagePullSecrets: [{name: ghcr-pull}]   # the SECRET's name, not the sops filename
+          containers:
+            - name: backup
+              # The clinic's backup image: pg_dump 17 + age + mc, pinned one tag
+              # behind the app for the reason written in saas-gompha/staging/backup.yaml.
+              # It carries no clinic code — only the three tools.
+              image: ghcr.io/steficzko/gompha-backup:clinic-v0.1.36
+              command: ["/bin/sh", "-ec"]
+              args:
+                - |
+                  ts="$(date +%Y%m%dT%H%M%S)"
+                  mc alias set minio "$S3_ENDPOINT" "$S3_ACCESS_KEY" "$S3_SECRET_KEY"
+                  for i in $(seq 1 40); do
+                    pg_isready -d "$DATABASE_URL" -t 5 >/dev/null 2>&1 && break
+                    sleep 3
+                  done
+                  pg_dump -Fc "$DATABASE_URL" \
+                    | age -r "$AGE_RECIPIENT" \
+                    | mc pipe "minio/clinic-backups/gompha-licensing-postgres/${ts}.dump.age"
+                  size="$(mc stat --json "minio/clinic-backups/gompha-licensing-postgres/${ts}.dump.age" | sed -n 's/.*"size":\([0-9]*\).*/\1/p')"
+                  echo "uploaded ${ts}.dump.age size=${size}"
+                  # the licensing database is small; an age header alone is ~200 B,
+                  # so anything under 1 KiB is an empty or truncated dump
+                  [ "${size:-0}" -gt 1024 ] || { echo "backup too small — treating as FAILED"; exit 1; }
+              env:
+                # ponytail: this is the namespace's SINGLE role (postgres.yaml).
+                # When the owner/app split lands, this DSN must move to the
+                # OWNER — a restricted role dumps incompletely and still succeeds.
+                - name: DATABASE_URL
+                  valueFrom: {secretKeyRef: {name: licensing-api-secret, key: LICENSING_DATABASE_URL}}
+                - name: AGE_RECIPIENT
+                  valueFrom: {configMapKeyRef: {name: licensing-backup-config, key: AGE_RECIPIENT}}
+                - name: S3_ENDPOINT
+                  valueFrom: {secretKeyRef: {name: licensing-backup-s3-secret, key: S3_ENDPOINT}}
+                - name: S3_ACCESS_KEY
+                  valueFrom: {secretKeyRef: {name: licensing-backup-s3-secret, key: S3_ACCESS_KEY}}
+                - name: S3_SECRET_KEY
+                  valueFrom: {secretKeyRef: {name: licensing-backup-s3-secret, key: S3_SECRET_KEY}}
+              resources:
+                requests: {cpu: 25m, memory: 64Mi}
+                limits: {memory: 256Mi}
+---
+# The backup pod is the ONE workload in this namespace allowed to reach the LAN
+# MinIO. Scoped to app=licensing-backup, to the database, and to the single
+# MinIO host:port. No ingress at all — nothing calls a backup job.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: licensing-backup
+  namespace: saas-gompha-licensing-staging
+spec:
+  podSelector:
+    matchLabels: {app: licensing-backup}
+  policyTypes: [Ingress, Egress]
+  egress:
+    - to:
+        - podSelector: {matchLabels: {app: licensing-postgres}}
+      ports:
+        - {protocol: TCP, port: 5432}
+    - to:
+        - ipBlock: {cidr: 192.168.1.100/32}
+      ports:
+        - {protocol: TCP, port: 9100}
+    - to:
+        - namespaceSelector:
+            matchLabels: {kubernetes.io/metadata.name: kube-system}
+      ports:
+        - {protocol: UDP, port: 53}
+        - {protocol: TCP, port: 53}

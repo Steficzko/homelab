@@ -52,6 +52,9 @@ spec:
   failedJobsHistoryLimit: 3
   jobTemplate:
     spec:
+      # A pod that never starts sits Pending forever, never FAILS, and under
+      # `Forbid` silently blocks every later tick (manifest-reviewer, 2026-09-16).
+      activeDeadlineSeconds: 1800
       ttlSecondsAfterFinished: 10800   # stops one-off failures re-alerting forever
       template:
         metadata:
