@@ -66,7 +66,7 @@ spec:
               # The clinic's backup image: pg_dump 17 + age + mc, pinned one tag
               # behind the app for the reason written in saas-gompha/staging/backup.yaml.
               # It carries no clinic code — only the three tools.
-              image: ghcr.io/steficzko/gompha-backup:clinic-v0.1.36
+              image: ghcr.io/steficzko/gompha-backup:clinic-v0.1.38
               command: ["/bin/sh", "-ec"]
               args:
                 - |
