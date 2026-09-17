@@ -87,6 +87,14 @@ spec:
                   set -u
                   mc alias set src "$SRC_ENDPOINT" "$SRC_ACCESS_KEY" "$SRC_SECRET_KEY" >/dev/null
                   mc alias set dst "$DST_ENDPOINT" "$DST_ACCESS_KEY" "$DST_SECRET_KEY" >/dev/null
+                  # push URL — succeed only if Kuma acknowledged it. Kuma answers an UNKNOWN
+                  # push path with its web app's HTML and HTTP 200, so `curl -f` alone cannot
+                  # tell a delivered heartbeat from a typo: the gompha-clinic key was malformed
+                  # from 2026-08-18 to 2026-09-17 and this script printed UP for a month while
+                  # monitor 79 never saw a beat. A real push returns {"ok":true}.
+                  push() {
+                    curl -fsS --max-time 10 "$1" 2>/dev/null | grep -q '"ok":true'
+                  }
                   # check NAME PATH MIN_BYTES MAX_AGE_SEC PUSH_URL
                   check() {
                     j=$(mc ls --json "$2" 2>/dev/null | jq -s 'sort_by(.lastModified)|last // empty')
@@ -94,8 +102,9 @@ spec:
                     lm=$(printf '%s' "$j" | jq -r '.lastModified // empty')
                     age=999999; [ -n "$lm" ] && age=$(( $(date +%s) - $(date -d "$lm" +%s) ))
                     if [ "${sz:-0}" -ge "$3" ] && [ "$age" -le "$4" ]; then
-                      curl -fsS --max-time 10 "$5?status=up&msg=$1-ok-${sz}b-$((age/60))m" >/dev/null 2>&1 \
-                        && echo "  $1: UP (size=${sz}B age=$((age/60))m)"
+                      push "$5?status=up&msg=$1-ok-${sz}b-$((age/60))m" \
+                        && echo "  $1: UP (size=${sz}B age=$((age/60))m)" \
+                        || echo "  $1: healthy (size=${sz}B age=$((age/60))m) but KUMA DID NOT ACK THE PUSH -> check the push URL"
                     else
                       echo "  $1: UNHEALTHY (size=${sz:-0}B age=$((age/60))m) -> withholding ping; Kuma will alert"
                     fi
@@ -173,8 +182,9 @@ spec:
                         | jq -r --argjson cutoff "$(( $(date +%s) - $4 ))" \
                           'select((.lastModified | sub("\\.[0-9]+Z$";"Z") | fromdateiso8601) > $cutoff) | .key' 2>/dev/null | wc -l)
                     if [ "${n:-0}" -ge "$3" ]; then
-                      curl -fsS --max-time 10 "$5?status=up&msg=$1-ok-${n}-objects" >/dev/null 2>&1 \
-                        && echo "  $1: UP (${n} objects written in window)"
+                      push "$5?status=up&msg=$1-ok-${n}-objects" \
+                        && echo "  $1: UP (${n} objects written in window)" \
+                        || echo "  $1: healthy (${n} objects) but KUMA DID NOT ACK THE PUSH -> check the push URL"
                     else
                       echo "  $1: UNHEALTHY (only ${n:-0} recent objects) -> withholding ping"
                     fi
