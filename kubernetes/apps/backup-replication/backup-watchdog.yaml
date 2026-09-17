@@ -91,9 +91,10 @@ spec:
                   # push path with its web app's HTML and HTTP 200, so `curl -f` alone cannot
                   # tell a delivered heartbeat from a typo: the gompha-clinic key was malformed
                   # from 2026-08-18 to 2026-09-17 and this script printed UP for a month while
-                  # monitor 79 never saw a beat. A real push returns {"ok":true}.
+                  # monitor 79 never saw a beat. A real push returns {"ok":true}. jq, not grep:
+                  # this nixery image ships shell + mc + curl + jq and nothing else.
                   push() {
-                    curl -fsS --max-time 10 "$1" 2>/dev/null | grep -q '"ok":true'
+                    curl -fsS --max-time 10 "$1" 2>/dev/null | jq -e '.ok == true' >/dev/null 2>&1
                   }
                   # check NAME PATH MIN_BYTES MAX_AGE_SEC PUSH_URL
                   check() {
