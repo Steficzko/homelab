@@ -1,0 +1,28 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: coredns
+  namespace: argocd
+spec:
+  project: default
+  # CoreDNS itself stays a k3s packaged addon (see kubernetes/bootstrap/coredns/
+  # hpa.yaml for why). This Application owns exactly one object: the HPA that
+  # holds CoreDNS at two replicas across k3s restarts. It was kubectl-applied
+  # by hand on 2026-09-16 and adopted here on 2026-09-17 so a cluster rebuild
+  # gets it back without anyone remembering.
+  source:
+    repoURL: https://github.com/Steficzko/homelab.git
+    targetRevision: HEAD
+    path: kubernetes/bootstrap/coredns
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: kube-system
+  syncPolicy:
+    automated:
+      # Same rule as the other bootstrap Applications (ADR-036): kube-system is
+      # full of objects this repo does not describe. Never prune here.
+      prune: false
+      selfHeal: true
+    syncOptions:
+      - ServerSideApply=true
+      - CreateNamespace=false

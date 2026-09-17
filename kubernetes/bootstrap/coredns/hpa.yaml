@@ -1,0 +1,43 @@
+# CoreDNS replica floor — the only thing about CoreDNS this repo manages.
+#
+# k3s deploys CoreDNS as a packaged addon and REGENERATES
+# /var/lib/rancher/k3s/server/manifests/coredns.yaml from its embedded template
+# on every server start (verified 2026-09-16 on all three servers: the file's
+# mtime is the k3s ActiveEnterTimestamp + 1 s). The template carries no
+# replicas field, so the addon controller's apply defaults it to 1 — a plain
+# `kubectl scale` and any edit to that file are both undone at the next restart.
+#
+# This HPA is a separate object k3s never touches. min == max == 2 on purpose:
+# it is a floor, not autoscaling. Whenever k3s re-applies replicas: 1, the HPA
+# controller raises the Deployment back to 2 within its sync period (~15 s).
+# The packaged Deployment already has a DoNotSchedule hostname spread
+# constraint, so the two pods land on different nodes. Proven 2026-09-16: two
+# pods (w1 + b3), one killed, resolution kept answering every 2 s during the
+# replacement; survived the b3 server restart the same day.
+#
+# Deliberately NOT done: `coredns.yaml.skip` + the whole CoreDNS manifest in
+# git. That disowns the ConfigMap, the Service with its pinned ClusterIP and
+# the RBAC all at once, and makes this repo responsible for CoreDNS's upgrade
+# path across every future k3s version — on a stack slated for Talos + Flux.
+# See Plane NET-17 and ~/dns-hardening-plan.md (dev-seat) for the full story.
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: coredns
+  namespace: kube-system
+  labels:
+    k8s-app: kube-dns
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: coredns
+  minReplicas: 2
+  maxReplicas: 2
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 80
