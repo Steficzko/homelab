@@ -77,6 +77,8 @@ spec:
                   valueFrom: { secretKeyRef: { name: kuma-push, key: PAPERLESS } }
                 - name: PUSH_NEO4J
                   valueFrom: { secretKeyRef: { name: kuma-push, key: NEO4J } }
+                - name: PUSH_LICENSING
+                  valueFrom: { secretKeyRef: { name: kuma-push, key: LICENSING } }
                 - name: HC_WATCHDOG
                   valueFrom: { secretKeyRef: { name: kuma-push, key: HC_WATCHDOG } }
               command: ["/bin/sh", "-c"]
@@ -145,6 +147,13 @@ spec:
                   # shipped a 40 B dump of an EMPTY graph past the old 100 B floor; the job now
                   # refuses an empty graph itself, and this floor catches a truncated one.
                   check neo4j       "src/app-backups/neo4j/"              300000 93600 "$PUSH_NEO4J"        # daily 02:15
+                  # The licensing control plane (every issued licence). Hourly at :35 since
+                  # 2026-09-16; it shipped with no watch and no credential, and the first 15
+                  # runs failed unnoticed by anything but KubeJobFailed. Dumps are ~34 KB
+                  # (34,408 B on 2026-09-17); 17000 is the half-size rule. NOTE the job's own
+                  # size check uses `mc stat`, which needs ListBucket on the bucket — see the
+                  # policy comment in saas-gompha-licensing/staging/backup.yaml.
+                  check gompha-licensing "src/clinic-backups/gompha-licensing-postgres/" 17000 5400 "$PUSH_LICENSING"  # ~34 KB hourly :35
 
                   # Longhorn's block-level backups — the foundation ADR-011 rests on, and the
                   # last backup job in the fleet with no watch. It needs its own check function:
