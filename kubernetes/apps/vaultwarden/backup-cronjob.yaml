@@ -72,6 +72,9 @@ spec:
               envFrom:
                 - secretRef: { name: backup-s3-secret }   # AWS_ACCESS_KEY_ID / AWS_SECRET_ACCESS_KEY / AWS_ENDPOINTS
               env:
+                # mc writes its config under $HOME; uid 1000 has no home in this image
+                # and / is read-only to it. Point it at the emptyDir instead.
+                - { name: MC_CONFIG_DIR, value: /work/.mc }
                 - { name: BUCKET,    value: app-backups }
                 - { name: PREFIX,    value: vaultwarden }
                 - { name: RETENTION, value: "30d" }
