@@ -13,6 +13,12 @@
 #   2. VERIFY, then upload. Every step checks its output is non-empty and the
 #      archive is readable before anything is sent, and the job exits non-zero if
 #      not. A backup job that cannot fail loudly is how you get 19 empty files.
+#   3. NO runtime package installs. Until 2026-09-16 this ran `apk add sqlite`
+#      on every execution, so a backup of the password manager depended on a
+#      public CDN resolving at 03:15. Cluster DNS broke (Tailscale-owned
+#      resolv.conf, see the DNS hardening on that date) and the job lost two
+#      nights. The image below has sqlite3, mc, tar and grep baked in, pinned by
+#      digest -- same pattern as backup/backup-watchdog.
 #
 # Restore: mc cp the archive down, `tar xzf`, stop vaultwarden, replace /data
 # contents, start. rsa_key.pem MUST be restored — it signs auth tokens; without
@@ -38,8 +44,8 @@ spec:
             app: vaultwarden-backup   # deliberately NOT app: vaultwarden — that
                                       # label is selected by the namespace
                                       # NetworkPolicy, whose egress allows only
-                                      # 53 and 587. This pod needs 443 (apk) and
-                                      # 9100 (MinIO), so it stays unselected.
+                                      # 53 and 587. This pod needs 9100 (MinIO),
+                                      # so it stays unselected.
         spec:
           restartPolicy: Never
           # The data PVC is ReadWriteOnce on Longhorn, so this pod must land on
@@ -55,24 +61,14 @@ spec:
             runAsUser: 1000
             runAsGroup: 1000
             fsGroup: 1000
-          initContainers:
-            - name: copy-mc
-              image: quay.io/minio/mc@sha256:a7fe349ef4bd8521fb8497f55c6042871b2ae640607cf99d9bede5e9bdf11727
-              securityContext:
-                runAsUser: 0                  # mc is 0711 root-owned
-              command: ["/bin/sh", "-c", "cp /usr/bin/mc /tools/mc && chmod 0755 /tools/mc"]
-              volumeMounts:
-                - { name: tools, mountPath: /tools }
           containers:
             - name: backup
-              image: alpine:3.24
-              securityContext:
-                # root ONLY because `apk add sqlite` needs to write the apk db.
-                # Safe here: /data is mounted readOnly below, so this container
-                # physically cannot alter Vaultwarden's data, and /work is an
-                # emptyDir that dies with the pod.
-                runAsUser: 0
-                runAsGroup: 0
+              # nixery builds an image from the named nix packages: sh + coreutils
+              # (shell), sqlite3, mc, GNU tar, gzip, GNU grep. Pinned by digest so
+              # the build is reproducible; re-resolve deliberately, never `latest`.
+              # Runs as the pod-level uid 1000 -- /data is 1000-owned and mounted
+              # readOnly, /work is an emptyDir. No root, no package manager.
+              image: nixery.dev/shell/sqlite/minio-client/gnutar/gzip/gnugrep@sha256:36ef0c8afbc6d27df0ed0c52a2ee115cb46b2186211a4653c2d4e0bb5d3bf92c
               envFrom:
                 - secretRef: { name: backup-s3-secret }   # AWS_ACCESS_KEY_ID / AWS_SECRET_ACCESS_KEY / AWS_ENDPOINTS
               env:
@@ -84,33 +80,6 @@ spec:
                 - -c
                 - |
                   set -eu
-                  # Retry the package install. This is the ONLY step that needs the
-                  # internet, and on 2026-09-16 at 01:15Z it is what lost a night's
-                  # backup: DNS returned "transient error" for dl-cdn.alpinelinux.org,
-                  # apk reported `sqlite (no such package)`, and all three pod retries
-                  # died the same way inside 47 seconds. The Job failed, ArgoCD flipped
-                  # the app to Degraded, and the xyOps ArgoCD check alerted every 30
-                  # minutes -- but the ACTUAL damage was silent: no vaultwarden backup
-                  # for two days, while the watchdog still read UP because the previous
-                  # object was only 22h old.
-                  #
-                  # Root cause is cluster-wide: Tailscale owns /etc/resolv.conf on the
-                  # nodes, CoreDNS does `forward . /etc/resolv.conf`, and one of the two
-                  # nameservers it inherits is IPv6 (fd7a:115c:a1e0::53) on nodes that
-                  # have no IPv6 route at all. Every AAAA lookup fails or times out.
-                  # Fixing that properly is a separate change; this makes the backup
-                  # survive it.
-                  #
-                  # Six tries over ~2.5 minutes. Still not bulletproof -- a backup that
-                  # needs a public CDN to run is the wrong shape, and the real fix is an
-                  # image with sqlite already in it. Tracked separately.
-                  ok=0
-                  for i in 1 2 3 4 5 6; do
-                    if apk add --no-cache sqlite >/dev/null 2>&1; then ok=1; break; fi
-                    echo "    apk attempt $i failed (DNS?), retrying in $((i*5))s"
-                    sleep $((i*5))
-                  done
-                  [ "$ok" = "1" ] || { echo "FATAL: could not install sqlite after 6 attempts"; exit 1; }
                   TS=$(date +%Y%m%d-%H%M%S)
                   OUT=/work/vaultwarden-${TS}
                   mkdir -p "$OUT"
@@ -160,17 +129,16 @@ spec:
                   echo "    archive ${SIZE} bytes, contents verified"
 
                   echo "==> uploading"
-                  /tools/mc alias set s3 "$AWS_ENDPOINTS" "$AWS_ACCESS_KEY_ID" "$AWS_SECRET_ACCESS_KEY"
-                  /tools/mc cp "$ARCHIVE" "s3/${BUCKET}/${PREFIX}/"
+                  mc alias set s3 "$AWS_ENDPOINTS" "$AWS_ACCESS_KEY_ID" "$AWS_SECRET_ACCESS_KEY"
+                  mc cp "$ARCHIVE" "s3/${BUCKET}/${PREFIX}/"
                   # confirm it actually landed, at the right size
-                  REMOTE=$(/tools/mc stat "s3/${BUCKET}/${PREFIX}/vaultwarden-${TS}.tar.gz" --json | grep -o '"size":[0-9]*' | cut -d: -f2)
+                  REMOTE=$(mc stat "s3/${BUCKET}/${PREFIX}/vaultwarden-${TS}.tar.gz" --json | grep -o '"size":[0-9]*' | cut -d: -f2)
                   [ "$REMOTE" = "$SIZE" ] || { echo "ERROR: uploaded size ${REMOTE} != local ${SIZE}"; exit 1; }
 
                   echo "==> pruning > ${RETENTION}"
-                  /tools/mc rm --recursive --force --older-than "$RETENTION" "s3/${BUCKET}/${PREFIX}/" || true
+                  mc rm --recursive --force --older-than "$RETENTION" "s3/${BUCKET}/${PREFIX}/" || true
                   echo "==> done: s3://${BUCKET}/${PREFIX}/vaultwarden-${TS}.tar.gz (${SIZE}B)"
               volumeMounts:
-                - { name: tools, mountPath: /tools }
                 - { name: work,  mountPath: /work }
                 # subPath: data MUST match the Deployment's own mount. Without it
                 # this lands on the PVC root and sees only `data/` and
@@ -178,7 +146,6 @@ spec:
                 # producing nothing.
                 - { name: data,  mountPath: /data, subPath: data, readOnly: true }
           volumes:
-            - { name: tools, emptyDir: {} }
             - { name: work,  emptyDir: {} }
             - name: data
               persistentVolumeClaim:
