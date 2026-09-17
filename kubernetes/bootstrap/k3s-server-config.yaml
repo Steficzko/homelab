@@ -26,6 +26,13 @@ disable:
                    # for the same reason — one node without it re-creates the addon
                    # when it restarts.
 
+# 2026-09-16 (DNS hardening, ADR-040 draft): kubelet's resolv.conf for CoreDNS and every
+# dnsPolicy:Default pod. NOT /etc/resolv.conf — Tailscale owns that file and used to write
+# an IPv6 nameserver these nodes cannot route to. The referenced file holds
+# 192.168.1.1, 1.1.1.1, 9.9.9.9 with `options timeout:2 attempts:2`, and must exist on
+# every node (servers AND agents; w1/w2 have a config.yaml containing only this key).
+resolv-conf: /etc/k3s-resolv.conf
+
 kubelet-arg:
   # 2026-08-20: raised from 1Gi. The control planes are schedulable, and the
   # PreferNoSchedule taint that used to steer work away from them caused an outage
