@@ -1,6 +1,20 @@
 # The importer runs in the immich namespace because immich-postgres' NetworkPolicy admits
 # only that namespace. It therefore needs its own claims on the two Paperless-side shares;
 # the paperless namespace has separate PVs onto the same exports.
+#
+# nosharecache on the import-state PV, added 2026-09-17. It is a SUBDIRECTORY of the
+# Paperless-ngx export, mounted once an hour by a Job, on a node that also holds long-lived
+# mounts of the same export (paperless media). By default the NFS client shares one
+# superblock per export, so the hourly mount reuses the cached directory handle instead of
+# looking the path up again. Unraid's user-share FUSE layer forgets an inode ~330s after
+# last use and then answers ESTALE for the old handle; the client never recovers, and from
+# then on EVERY mount of that path on that node is "Stale file handle" at container
+# creation. Seen on w1 from 2026-09-17 01:20Z: seven consecutive failed runs, reproduced
+# by hand (w1 stale on every mount, w2 fine), cleared by dropping w1's dentry cache.
+# nosharecache gives each mount its own superblock and a fresh lookup. Cost: none that
+# matters for two files.
+# The consume PV is left alone: /mnt/user/Xartura is an export ROOT, which nfsd pins, so
+# its handle cannot be forgotten the same way.
 apiVersion: v1
 kind: PersistentVolume
 metadata:
@@ -43,7 +57,7 @@ spec:
   nfs:
     server: 192.168.1.100
     path: /mnt/user/Paperless-ngx/import-state
-  mountOptions: [hard, nfsvers=4.1]
+  mountOptions: [hard, nfsvers=4.1, nosharecache]
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
