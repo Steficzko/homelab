@@ -93,7 +93,7 @@ spec:
         - name: postgres
           # 17: schema developed + tested against PG17. Digest-pinned (review
           # N1; sibling licensing/dental pin the same way).
-          image: postgres:17-alpine@sha256:18cfe3ef5e6815560c98237d6216d1e5119702fb0f3894c8785dd58b8bbe5d73
+          image: postgres:17-alpine@sha256:b0f9560a2de083e2cc7382e75f808c7381a32852a7ec49117deedb300e552b24
           ports: [{containerPort: 5432}]
           # Observability (data.md "measure before indexing"; operating.md).
           # pg_stat_statements normalises constants, so it never holds a
