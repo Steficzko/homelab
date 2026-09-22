@@ -30,6 +30,10 @@ data:
   tailnet.server: |
     taila09f30.ts.net:53 {
         errors
+        # Same listener as the main block: coredns_dns_requests_total{zone="taila09f30.ts.net."}
+        # shows this block answering. Without it the zone is invisible in Prometheus and a
+        # broken import would look like "no traffic" instead of "queries going upstream".
+        prometheus :9153
         template IN ANY taila09f30.ts.net {
             rcode NXDOMAIN
             authority "taila09f30.ts.net. 300 IN SOA ns.taila09f30.ts.net. hostmaster.taila09f30.ts.net. 1 3600 600 86400 300"
