@@ -38,8 +38,8 @@ Applying the wildcard deny first, then carving out apps in sequence in a single 
 ## Consequences
 
 **Wins:**
-- Every app on `*.kostikidis.net` is behind authentication. No subdomain is reachable without passing Cloudflare Access or Tailscale.
-- Audit log: Cloudflare Access logs every authentication event. This is the first time the homelab has an auth audit trail.
+- Every app on `*.kostikidis.net` is behind authentication **on the public path**. *Corrected 2026-09-22: the original sentence claimed no subdomain was reachable without Access or Tailscale. That is false and always was — the ingress-nginx LoadBalancer (`192.168.1.201`–`.205`, ports 80/443) admits `192.168.1.0/24` and `100.64.0.0/10` via `loadBalancerSourceRanges`, so any LAN or tailnet client that resolves a hostname to a node IP gets the app with a valid Let's Encrypt certificate and no Access check (verified live: argocd, vault, plane all answer 200). This is deliberate for LAN reachability and is tracked as SEC-9; it is not covered by this ADR.*
+- Audit log: Cloudflare Access logs every authentication event on the public path. This is the first time the homelab has an auth audit trail — for internet-originated access only; LAN and tailnet hits at the LB IPs leave no Access record.
 - No router firewall rules required. Access policy enforcement happens at Cloudflare's edge, not in-cluster.
 - The mobile app constraint (Immich) is addressed cleanly: Tailscale already covers those devices at the network layer.
 

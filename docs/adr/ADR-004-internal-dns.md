@@ -39,7 +39,7 @@ Two failure modes motivated this decision:
 
 The fix requires a DNS server that:
 - Runs independently of the router
-- Can override `*.kostikidis.net` to resolve to the internal kube-vip VIP (192.168.1.200)
+- Can override `*.kostikidis.net` to resolve to the internal kube-vip VIP (192.168.1.200) — *correction 2026-09-22: `.200` is the kube-vip **apiserver** VIP and serves no ingress; ingress-nginx is exposed by k3s ServiceLB on every node IP (`.201`–`.205`). There is no floating ingress VIP, so any future split-DNS record needs one first*
 - Serves the entire LAN via router DHCP
 
 ## Decision
@@ -90,7 +90,7 @@ All other resolution forwarded to upstream DoH resolvers (Cloudflare 1.1.1.1 / G
 - Router reboot / ISP update: zero DNS impact for LAN devices
 - Internet down: all `*.kostikidis.net` apps still resolve and load locally
 - New cluster apps get internal resolution automatically (wildcard covers all subdomains)
-- Unraid going down takes out internal DNS — mitigation: Unraid is on a UPS and is the most stable machine in the setup
+- Unraid going down takes out internal DNS — the original text claimed a UPS as mitigation; **neither NAS has ever had a UPS** (corrected 2026-09-22). This was an unmitigated single point of failure for the whole LAN's DNS while AdGuard ran
 - All LAN devices must use AdGuard as DNS — set in router DHCP as DNS server field
 
 ## Alternatives considered
