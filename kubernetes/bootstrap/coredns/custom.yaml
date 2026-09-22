@@ -1,0 +1,37 @@
+# Stub zone for the Tailscale search suffix — answered locally, never forwarded.
+#
+# Until 2026-09-16 the nodes' resolv.conf came from Tailscale, so kubelet gave
+# every pod the search list "<ns>.svc.cluster.local svc.cluster.local
+# cluster.local taila09f30.ts.net". A pod's resolv.conf is fixed at sandbox
+# creation, so every pod started before that date still carries the suffix.
+# With ndots:5 an in-cluster FQDN such as postgres.bjj.svc.cluster.local is
+# tried as postgres.bjj.svc.cluster.local.taila09f30.ts.net UPSTREAM before the
+# bare name; musl (Alpine: n8n, WordPress, Firefly, ...) turns the first
+# SERVFAIL into EAI_AGAIN and never reaches the bare name. On 2026-09-20 that
+# was ~70% of all CoreDNS upstream traffic and every n8n "DNS server returned
+# an error" failure during WAN packet-loss episodes.
+#
+# NXDOMAIN (not SERVFAIL) is what makes the resolver move on to the next
+# search candidate. Nothing in this cluster resolves tailnet names: every
+# tailnet host in kubernetes/ is a raw 100.x address (ADR-040).
+#
+# k3s's packaged Corefile does `import /etc/coredns/custom/*.server` from this
+# ConfigMap (optional mount, never regenerated), so this survives k3s restarts
+# and upgrades. Remove once every pod has been recreated after 2026-09-16 and
+# the suffix is gone from all sandboxes — or keep it; it costs nothing.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: coredns-custom
+  namespace: kube-system
+  labels:
+    k8s-app: kube-dns
+data:
+  tailnet.server: |
+    taila09f30.ts.net:53 {
+        errors
+        template IN ANY taila09f30.ts.net {
+            rcode NXDOMAIN
+            authority "taila09f30.ts.net. 300 IN SOA ns.taila09f30.ts.net. hostmaster.taila09f30.ts.net. 1 3600 600 86400 300"
+        }
+    }
