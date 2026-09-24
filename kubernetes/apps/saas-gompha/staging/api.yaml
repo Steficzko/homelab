@@ -26,9 +26,9 @@
 # hand-written INSERT (permissions.md §12.8).
 #
 # ⏰ Consequence while autosync stays OFF: the cached licence expires on its
-# own date with no renewal and no warning. Staging's expires 2026-09-23T13:30:00Z
-# (grace 3 → writes 403 from 2026-09-26T13:30:00Z) — reissued 2026-09-15 on an
-# 8-day leash, chosen deliberately. ⚠ This line goes stale at every renewal;
+# own date with no renewal and no warning. Staging's expires 2026-10-24T19:33:52Z
+# (grace 3 → writes 403 from 2026-10-27T19:33:52Z) — reissued 2026-09-24 for
+# 30 days; the 8-day leash had done its job (it lapsed once, for real). ⚠ This line goes stale at every renewal;
 # LEDGER.md is the source of truth, this is the reminder.
 # Turning autosync ON is not a one-liner: it also needs GOMPHA_LICENCE_FETCH_URL
 # and GOMPHA_INSTANCE_CREDENTIAL plus the clinic→licensing NetworkPolicy
