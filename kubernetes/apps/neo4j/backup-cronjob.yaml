@@ -32,7 +32,7 @@ spec:
             - name: copy-mc
               image: nixery.dev/shell/minio-client/curl/jq@sha256:96f52222657dd7bf2aca0f61568da7a6c7061dbdf78b480c89d7a9c867aed72f   # was quay.io/minio/mc — Quay gated anonymous pulls 2026-09-24
               securityContext: { runAsUser: 0 }
-              command: ["/bin/sh", "-c", "cp $(command -v mc) /tools/mc && chmod 0755 /tools/mc"]
+              command: ["/bin/sh", "-c", "set -e; curl -fsSL --retry 3 --max-time 120 https://github.com/minio/mc/releases/download/RELEASE.2025-08-13T08-35-41Z/mc.linux-amd64.RELEASE.2025-08-13T08-35-41Z -o /tools/mc && echo 01f866e9c5f9b87c2b09116fa5d7c06695b106242d829a8bb32990c00312e891\ \ /tools/mc | sha256sum -c - && chmod 0755 /tools/mc"]
               volumeMounts: [{ name: tools, mountPath: /tools }]
           containers:
             - name: dump
