@@ -46,16 +46,50 @@ spec:
                 - /bin/sh
                 - -c
                 - |
-                  set -eu
-                  mc alias set src "$SRC_ENDPOINT" "$SRC_ACCESS_KEY" "$SRC_SECRET_KEY"
-                  mc alias set dst "$DST_ENDPOINT" "$DST_ACCESS_KEY" "$DST_SECRET_KEY"
+                  set -u
+                  mc alias set src "$SRC_ENDPOINT" "$SRC_ACCESS_KEY" "$SRC_SECRET_KEY" || exit 1
+                  mc alias set dst "$DST_ENDPOINT" "$DST_ACCESS_KEY" "$DST_SECRET_KEY" || exit 1
+                  FAILED=""
+                  # Hardened 2026-09-24 after one 349 MiB object froze all seven buckets for 7 h:
+                  # (1) a failing bucket no longer aborts the run — every bucket is attempted and
+                  #     the job exits 1 at the end if any failed;
+                  # (2) when the streamed mirror fails, the objects still pending are copied via a
+                  #     local staging file. mc mirror streams src -> dst and retries a multipart part
+                  #     from an already-consumed stream ("ContentLength=... with Body length ..."),
+                  #     which cannot succeed once Greece is slow; a copy from a local file retries
+                  #     safely. Verified 2026-09-24: streamed copy failed 4/4, staged copy succeeded.
+                  mirror_bucket() {   # $1 bucket, remaining args = extra mc mirror flags
+                    b=$1; shift
+                    if mc mirror --overwrite "$@" "src/${b}" "dst/${b}"; then return 0; fi
+                    echo "   streamed mirror of ${b} failed -> staged fallback for the objects still pending"
+                    mc mirror --overwrite "$@" --dry-run --json "src/${b}" "dst/${b}" \
+                      | jq -r 'select(.source != null) | .source' \
+                      | sed -E "s#^.*/${b}/##" \
+                      | while IFS= read -r key; do
+                          [ -n "$key" ] || continue
+                          f="/stage/$(basename "$key")"
+                          if mc cp --quiet "src/${b}/${key}" "$f" && mc cp --quiet "$f" "dst/${b}/${key}"; then
+                            echo "   staged: ${key}"
+                          else
+                            echo "   STAGED COPY FAILED: ${key}"
+                          fi
+                          rm -f "$f"
+                        done
+                    # final streamed pass: only leftovers remain, and it is the pass/fail verdict
+                    mc mirror --overwrite "$@" "src/${b}" "dst/${b}"
+                  }
                   echo "==> ${BUCKET}: mirror (accumulate, cap ${RETENTION}) ..."
-                  mc mirror --overwrite "src/${BUCKET}" "dst/${BUCKET}"
+                  mirror_bucket "${BUCKET}" || FAILED="${FAILED} ${BUCKET}"
                   mc rm --recursive --force --older-than "$RETENTION" "dst/${BUCKET}" || true
                   for b in $EXTRA_BUCKETS; do
                     echo "==> ${b}: faithful versioned mirror Prague -> Greece ..."
                     mc mb --ignore-existing "dst/${b}"
                     mc version enable "dst/${b}" || true
-                    mc mirror --overwrite --remove "src/${b}" "dst/${b}"
+                    mirror_bucket "${b}" --remove || FAILED="${FAILED} ${b}"
                   done
+                  if [ -n "$FAILED" ]; then echo "==> Replication FAILED for:${FAILED}"; exit 1; fi
                   echo "==> Replication done."
+              volumeMounts:
+                - { name: stage, mountPath: /stage }
+          volumes:
+            - { name: stage, emptyDir: {} }   # staged-copy fallback scratch, node disk
