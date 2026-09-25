@@ -19,7 +19,7 @@ spec:
         - name: myinvoice
           # Digest-pinned. Upstream's own compose says to pin a version in
           # production; :latest would silently roll an invoicing app.
-          image: ghcr.io/radekhulan/myinvoice:4.57.0@sha256:0e9c5b9e6690d638b7f2717d5d337fcf243b977dd7019b2696cd61570ee244d9
+          image: ghcr.io/radekhulan/myinvoice:4.58.0@sha256:01039e226e04d6302021a5f70fae34870d23efd3ee8794d8150c3f18dc4b1367
           env:
             - name: TZ
               value: Europe/Prague
