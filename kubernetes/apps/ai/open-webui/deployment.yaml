@@ -15,6 +15,14 @@ spec:
       labels:
         app: open-webui
     spec:
+      affinity:                              # ADR-030 pattern: prefer workers, soft fallback
+        nodeAffinity:                        # 2026-10-02: CPs at 76-80% mem, w1 at 25% after its 32 GB upgrade
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              preference:
+                matchExpressions:
+                  - key: node-role.kubernetes.io/control-plane
+                    operator: DoesNotExist
       containers:
         - name: open-webui
           image: ghcr.io/open-webui/open-webui@sha256:1a6399d237dc392a2313e0ca826020b3fd5d22536357840eb63393d18dc8b924

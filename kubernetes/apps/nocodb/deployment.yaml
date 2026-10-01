@@ -13,6 +13,14 @@ spec:
     metadata:
       labels: { app: nocodb }
     spec:
+      affinity:                              # ADR-030 pattern: prefer workers, soft fallback
+        nodeAffinity:                        # 2026-10-02: CPs at 76-80% mem, w1 at 25% after its 32 GB upgrade
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              preference:
+                matchExpressions:
+                  - key: node-role.kubernetes.io/control-plane
+                    operator: DoesNotExist
       containers:
         - name: nocodb
           # Pinned to the 2026.08.0 release tag (NocoDB publishes both 0.265.x

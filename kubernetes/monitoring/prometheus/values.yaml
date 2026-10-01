@@ -225,6 +225,15 @@ prometheus:
     # is a 30Gi PVC, not a bigger number here against the same volume.
     retention: 7d
     retentionSize: 14GiB
+    # ADR-030: prefer workers. 3.2Gi, the single biggest pod — was on r1 (etcd node) at 76% mem.
+    affinity:
+      nodeAffinity:
+        preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            preference:
+              matchExpressions:
+                - key: node-role.kubernetes.io/control-plane
+                  operator: DoesNotExist
     # Added 2026-08-20 after Prometheus was OOM-killed (exit 137) on k3s-prg-w2.
     # It ran with no requests/limits at all, which meant two things: the scheduler
     # counted it as consuming nothing when placing pods, and under node memory
