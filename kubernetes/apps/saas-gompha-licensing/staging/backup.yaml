@@ -71,11 +71,19 @@ spec:
               args:
                 - |
                   ts="$(date +%Y%m%dT%H%M%S)"
-                  mc alias set minio "$S3_ENDPOINT" "$S3_ACCESS_KEY" "$S3_SECRET_KEY"
                   for i in $(seq 1 40); do
                     pg_isready -d "$DATABASE_URL" -t 5 >/dev/null 2>&1 && break
                     sleep 3
                   done
+                  # MinIO is behind the SAME admission lag, and `mc alias set` was the
+                  # FIRST network call — before the wait above — so under `set -e` it
+                  # died and the container restarted (chronic 1–3 restarts per run,
+                  # found by the homelab session 2026-10-01). Wait for it the same way.
+                  for i in $(seq 1 40); do
+                    mc alias set minio "$S3_ENDPOINT" "$S3_ACCESS_KEY" "$S3_SECRET_KEY" >/dev/null 2>&1 && break
+                    sleep 3
+                  done
+                  mc alias set minio "$S3_ENDPOINT" "$S3_ACCESS_KEY" "$S3_SECRET_KEY"
                   pg_dump -Fc "$DATABASE_URL" \
                     | age -r "$AGE_RECIPIENT" \
                     | mc pipe "minio/clinic-backups/gompha-licensing-postgres/${ts}.dump.age"

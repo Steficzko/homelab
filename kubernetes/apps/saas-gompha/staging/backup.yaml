@@ -83,7 +83,6 @@ spec:
               args:
                 - |
                   ts="$(date +%Y%m%dT%H%M%S)"
-                  mc alias set minio "$S3_ENDPOINT" "$S3_ACCESS_KEY" "$S3_SECRET_KEY"
                   # Wait for the database first. kube-router takes ~30-45s to admit
                   # a freshly created pod through to clinic-postgres; without this
                   # the dump runs too early and uploads an EMPTY file that looks
@@ -93,6 +92,15 @@ spec:
                     pg_isready -d "$DATABASE_URL" -t 5 >/dev/null 2>&1 && break
                     sleep 3
                   done
+                  # MinIO is behind the SAME admission lag, and `mc alias set` was the
+                  # FIRST network call — before the wait above — so under `set -e` it
+                  # died and the container restarted (chronic 1–3 restarts per run,
+                  # found by the homelab session 2026-10-01). Wait for it the same way.
+                  for i in $(seq 1 40); do
+                    mc alias set minio "$S3_ENDPOINT" "$S3_ACCESS_KEY" "$S3_SECRET_KEY" >/dev/null 2>&1 && break
+                    sleep 3
+                  done
+                  mc alias set minio "$S3_ENDPOINT" "$S3_ACCESS_KEY" "$S3_SECRET_KEY"
                   # -Fc: custom format, so a single table can be restored without
                   # replaying the whole dump. set -e means a pg_dump failure fails
                   # the job rather than piping an empty stream into an object.
