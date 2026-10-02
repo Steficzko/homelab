@@ -81,7 +81,7 @@ quietly overwritten. The ones I got wrong are still here on purpose.
 |---|---|---|
 | [021](ADR-021-cluster-memory-management-via-pod-placement.md) | Memory management via pod placement, not hardware | Accepted (partially superseded by 030) |
 | [030](ADR-030-dedicated-worker-nodes-topology-split.md) | Dedicated worker nodes: topology split, not RAM upgrade | Accepted (enacted) |
-| [030-amend](ADR-030-amendment-16gib-workers.md) | 16 GiB workers, tier-A → preferred, rebalance enacted | Accepted |
+| [030-amend](ADR-030-amendment-16gib-workers.md) | 16 GiB workers, tier-A → preferred, rebalance enacted; 2026-10-02 update: W1 → 32 GiB, worker preference widened | Accepted |
 | [035](ADR-035-scheduling-by-requests-not-taints.md) | Placement governed by requests + affinity, not taints | Proposed |
 
 ## Observability

@@ -170,6 +170,33 @@ build-before-delete (never drops redundancy), but only at whole-node/disk granul
 have drained an entire control-plane node, over-correcting. Delete-and-rebuild gave per-volume
 control at the cost of a bounded, serialized ≥2-copy window. Accepted that trade.
 
+## Update 2026-10-02 — W1 upgraded to 32 GiB; worker preference widened to 13 more workloads
+
+**W1 RAM upgraded 2026-10-01** (the "worker RAM upgrade" path left open under *Alternatives*):
+2×16 GB DDR4-3200 SODIMM (Samsung M471A1K43CB1-CTD), the M920q's 2-slot / 32 GB maximum.
+`free -h` reports 31 Gi. **W2 is still 16 GiB.** So the cluster now has one worker that can,
+on its own, hold the ~18 GiB app working-set from §1 — single-worker-failover survivability
+holds **only if W2 is the one lost**. §1's "explicitly unsupported" stands until W2 matches.
+
+**The 2 TB Longhorn disk planned for W1 is not installed yet.** The M920q has one M.2 storage
+slot (holding the boot NVMe) and a 2.5" SATA bay; per the 2026-09-15 hardware check no node has a
+SATA device linked, so the disk needs the bay bracket + SATA cable.
+
+**Worker preference widened** — the same ADR-030 soft rule (`preferred`, weight 100,
+`node-role.kubernetes.io/control-plane DoesNotExist`), so control planes stay a fallback:
+
+- `5e657d3`: prometheus (3.2 Gi), immich-postgres, cal, open-webui, nocodb, n8n,
+  studioconcreteluka wordpress + mariadb.
+- `cfe6da9`: penpot-backend (via Helm values), namo-apps n8n + shlink, gompha n8n,
+  blanca-dental-care wordpress.
+
+Effect, `kubectl top nodes` memory: r1 76→47 %, b3 77→61 %, g2 79→61 %, w1 25→56 %, w2 66→64 %.
+
+**Why affinity and not the descheduler:** `LowNodeUtilization` scores on *requests* ÷ allocatable.
+After the upgrade W1's CPU requests already read 56 %, so the descheduler classed it "appropriately
+utilized" and moved nothing more, while its real memory sat at 25 %. Placement toward a specific
+tier needs affinity; the descheduler only equalises (same finding as 2026-08-29).
+
 ---
 
 *Amends: ADR-030 (Dedicated Worker Nodes: Topology Split). Relates to: ADR-021 (Cluster Memory
