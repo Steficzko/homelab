@@ -102,8 +102,17 @@ spec:
             # pullPolicy is IfNotPresent, so no node pulls. Stopgap until MinIO is
             # replaced (upstream stopped publishing community images). DO NOT change
             # these digests without putting the new image on every node first.
-            image: quay.io/minio/minio@sha256:14cea493d9a34af32f524e538b8346cf79f3321eff8e708c1e2960462bd8936e
-            image_mc: quay.io/minio/mc@sha256:a7fe349ef4bd8521fb8497f55c6042871b2ae640607cf99d9bede5e9bdf11727
+            #
+            # 2026-10-02: repo switched quay.io -> docker.io, SAME digests. IfNotPresent
+            # is not enough on k8s 1.35: kubelet keeps a pull record per image
+            # (/var/lib/kubelet/image_manager/pulled) and, under the default
+            # NeverVerifyPreloadedImages policy, re-pulls to verify access when the
+            # requested NAME is not in that record. r1/g2/w2 recorded these as
+            # docker.io/minio/*, so the quay name made r1 HEAD quay.io -> 401 and
+            # plane-minio sat in ImagePullBackOff for 5h. KNOWN GAP: w1's record for
+            # minio is quay-only, so plane-minio cannot start on w1 under either name.
+            image: docker.io/minio/minio@sha256:14cea493d9a34af32f524e538b8346cf79f3321eff8e708c1e2960462bd8936e
+            image_mc: docker.io/minio/mc@sha256:a7fe349ef4bd8521fb8497f55c6042871b2ae640607cf99d9bede5e9bdf11727
             storageClass: longhorn
             # Was 20Gi, holding 4.9 MB. A StatefulSet volumeClaimTemplate is
             # IMMUTABLE, so this value alone changes nothing: the StatefulSet must be
