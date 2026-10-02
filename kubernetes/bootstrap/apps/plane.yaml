@@ -237,6 +237,14 @@ spec:
         # recreating the Job: recreating re-runs the migrator for a cosmetic label,
         # and the chart will do this again on every future version bump.
         - /spec/template/metadata/labels/helm.sh~1chart
+        # 2026-10-02: per-field entries kept losing — 1.8.0 -> 1.8.4 (#64) changed the
+        # app.kubernetes.io/version label, and switching image_mc (1f43c0a) changed
+        # the bucket Job's image, so BOTH Jobs went unpatchable again. A Job's pod
+        # template can never be patched, so a diff there can never be applied: ignore
+        # all of it. Same reasoning as above — do not delete/recreate to "fix" sync.
+        # CAVEAT: Job names end in .Release.Revision, which is always 1 under ArgoCD,
+        # so a planeVersion bump does NOT re-run the migrator — run it by hand.
+        - /spec/template
     # Longhorn reports actual size back onto the claim
     - group: ""
       kind: PersistentVolumeClaim
