@@ -12,6 +12,7 @@
   "labels": [
     "renovate"
   ],
+  "ignoreTests": true,
   "argocd": {
     "fileMatch": [
       "kubernetes/bootstrap/apps/.+\\.yaml$"
