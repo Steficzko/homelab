@@ -29,6 +29,14 @@ spec:
           # this workload. Sized from measured steady state (backend 1503Mi,
           # exporter 185Mi, frontend 177Mi, mcp 128Mi).
           backend:
+            affinity:                        # ADR-030: prefer workers — was on g2 (etcd) at 74% mem, 2026-10-02
+              nodeAffinity:
+                preferredDuringSchedulingIgnoredDuringExecution:
+                  - weight: 100
+                    preference:
+                      matchExpressions:
+                        - key: node-role.kubernetes.io/control-plane
+                          operator: DoesNotExist
             resources:
               requests:
                 memory: 1Gi

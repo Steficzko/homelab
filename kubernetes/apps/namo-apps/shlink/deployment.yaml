@@ -15,6 +15,14 @@ spec:
       labels:
         app: shlink
     spec:
+      affinity:                              # ADR-030 pattern: prefer workers, soft fallback
+        nodeAffinity:                        # 2026-10-02: g2 (etcd) at 74% mem, w1 at 50%
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              preference:
+                matchExpressions:
+                  - key: node-role.kubernetes.io/control-plane
+                    operator: DoesNotExist
       securityContext:
         runAsUser: 1001      # the image's own uid; without fsGroup the fresh longhorn volume
         runAsGroup: 0        # mounts root-owned and shlink cannot create data/cache
