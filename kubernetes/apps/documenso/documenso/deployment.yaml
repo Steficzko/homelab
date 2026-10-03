@@ -15,6 +15,14 @@ spec:
       labels:
         app: documenso
     spec:
+      affinity:                              # ADR-030 pattern: prefer workers, soft fallback
+        nodeAffinity:                        # 2026-10-03: CPs back at 54-76% after the w1 outage; target <50%
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              preference:
+                matchExpressions:
+                  - key: node-role.kubernetes.io/control-plane
+                    operator: DoesNotExist
       containers:
         - name: documenso
           image: documenso/documenso:v2.18.0@sha256:126976b9e3be54193e1a3be8d22130af1913aaa894c550b98870a2cc4c422650

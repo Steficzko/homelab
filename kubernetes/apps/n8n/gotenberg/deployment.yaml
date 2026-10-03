@@ -15,6 +15,14 @@ spec:
       labels:
         app: gotenberg
     spec:
+      affinity:                              # ADR-030 pattern: prefer workers, soft fallback
+        nodeAffinity:                        # 2026-10-03: CPs back at 54-76% after the w1 outage; target <50%
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              preference:
+                matchExpressions:
+                  - key: node-role.kubernetes.io/control-plane
+                    operator: DoesNotExist
       containers:
         - name: gotenberg
           image: gotenberg/gotenberg:8.36

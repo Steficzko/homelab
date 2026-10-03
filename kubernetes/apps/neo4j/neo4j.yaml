@@ -51,6 +51,14 @@ spec:
       # crash-loops. Same collision class as paperless; kill the legacy link vars.
       enableServiceLinks: false
       securityContext: { fsGroup: 7474 }   # the "neo4j" user/group in the image
+      affinity:                              # ADR-030 pattern: prefer workers, soft fallback
+        nodeAffinity:                        # 2026-10-03: CPs back at 54-76% after the w1 outage; target <50%
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              preference:
+                matchExpressions:
+                  - key: node-role.kubernetes.io/control-plane
+                    operator: DoesNotExist
       containers:
         - name: neo4j
           image: neo4j:5-community@sha256:d9cfe82983d27f5a75b3aaae8f316d04f9a698a3b7f6103a508f7caf8362f255

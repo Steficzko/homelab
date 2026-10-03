@@ -17,6 +17,14 @@ spec:
     spec:
       securityContext:
         fsGroup: 33          # www-data — so the longhorn PVC is writable for uploads/plugins
+      affinity:                              # ADR-030 pattern: prefer workers, soft fallback
+        nodeAffinity:                        # 2026-10-03: CPs back at 54-76% after the w1 outage; target <50%
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              preference:
+                matchExpressions:
+                  - key: node-role.kubernetes.io/control-plane
+                    operator: DoesNotExist
       containers:
         - name: wordpress
           image: wordpress:php8.3-apache
