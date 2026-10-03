@@ -173,7 +173,7 @@ spec:
             limits: { memory: 32Mi }
       containers:
         - name: sql-exporter
-          image: burningalchemist/sql_exporter:0.24.8
+          image: burningalchemist/sql_exporter:0.24.9
           args:
             - "-config.file=/config/sql_exporter.yml"
             - "-web.listen-address=:9399"
