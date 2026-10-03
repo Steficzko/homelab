@@ -43,6 +43,24 @@ kubelet-arg:
   - "kube-reserved=memory=1Gi"
 
 # ---------------------------------------------------------------------------
+# Drop-in on ALL FIVE nodes (servers AND workers), NOT in config.yaml above:
+#   /etc/rancher/k3s/config.yaml.d/50-image-gc.yaml
+#
+#     kubelet-arg+:
+#       - "image-gc-high-threshold=70"
+#       - "image-gc-low-threshold=60"
+#
+# CLSTR-23, applied 2026-10-03 with ~/bin/k3s-image-gc.sh (one node at a time,
+# workers first; verified via configz: 70/60 everywhere, CP reservations kept).
+# Image GC must fire BEFORE Longhorn's storage-minimal-available-percentage
+# (25% free = 75% used) marks the shared root disk unschedulable. Kubelet defaults
+# (85/80) never ran: w2 hit LonghornNodeDiskNearlyUnschedulable with 118G of cached
+# images vs 41G of Longhorn data. `kubelet-arg+:` APPENDS to the list above — a plain
+# `kubelet-arg:` in a drop-in would replace it and drop the memory reservations.
+# Revisit once STOR-32 gives Longhorn its own disk; see ADR-042 draft (registry cache).
+# ---------------------------------------------------------------------------
+
+# ---------------------------------------------------------------------------
 # Per-node deviations — verified live 2026-09-01. NOT represented above.
 #
 # g2 (.202) and b3 (.203) additionally carry:
