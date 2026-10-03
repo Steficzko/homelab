@@ -61,6 +61,22 @@ kubelet-arg:
 # ---------------------------------------------------------------------------
 
 # ---------------------------------------------------------------------------
+# Hardware watchdog — systemd, NOT k3s, on ALL FIVE nodes:
+#   /etc/systemd/system.conf.d/50-watchdog.conf
+#
+#     [Manager]
+#     RuntimeWatchdogSec=60s
+#     RebootWatchdogSec=10min
+#
+# CLSTR-25, applied 2026-10-04 with ~/bin/node-watchdog.sh (`systemctl daemon-reexec`,
+# no reboot). Every node is an M920q with iTCO_wdt; verified RuntimeWatchdogUSec=1min and
+# /sys/class/watchdog/watchdog0/state=active on all five. w1 hard-froze 2026-10-03 08:33
+# (no panic, no OOM, memtest passed) and stayed dead 7h18m until power-cycled by hand; a
+# frozen node now resets itself in ~60s, and Longhorn's node-down-pod-deletion-policy
+# (822f324) moves its volume-backed pods meanwhile. A node rebuild must restore this file.
+# ---------------------------------------------------------------------------
+
+# ---------------------------------------------------------------------------
 # Per-node deviations — verified live 2026-09-01. NOT represented above.
 #
 # g2 (.202) and b3 (.203) additionally carry:
