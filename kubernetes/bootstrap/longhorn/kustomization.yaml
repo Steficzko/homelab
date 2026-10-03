@@ -15,3 +15,4 @@ namespace: longhorn-system
 
 resources:
   - https://raw.githubusercontent.com/longhorn/longhorn/v1.12.1/deploy/longhorn.yaml
+  - setting-node-down-pod-deletion-policy.yaml    # STOR-42
