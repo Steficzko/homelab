@@ -19,6 +19,11 @@ spec:
     spec:
       ttlSecondsAfterFinished: 10800   # auto-clean finished jobs (stops one-off failures re-alerting forever)
       backoffLimit: 1
+      # 2026-10-04: the 23:30Z run hung >30 min in the Longhorn `mc ls --recursive` and, with
+      # concurrencyPolicy Forbid and no deadline, blocked every later run -> healthchecks.io
+      # backup-watchdog DOWN. A normal run takes ~2 min; the deadline turns a hang into a
+      # failed job (KubeJobFailed) instead of a silently frozen watchdog.
+      activeDeadlineSeconds: 900
       template:
         spec:
           restartPolicy: OnFailure
@@ -98,7 +103,7 @@ spec:
                   }
                   # check NAME PATH MIN_BYTES MAX_AGE_SEC PUSH_URL
                   check() {
-                    j=$(mc ls --json "$2" 2>/dev/null | jq -s 'sort_by(.lastModified)|last // empty')
+                    j=$(timeout 120 mc ls --json "$2" 2>/dev/null | jq -s 'sort_by(.lastModified)|last // empty')
                     sz=$(printf '%s' "$j" | jq -r '.size // 0')
                     lm=$(printf '%s' "$j" | jq -r '.lastModified // empty')
                     age=999999; [ -n "$lm" ] && age=$(( $(date +%s) - $(date -d "$lm" +%s) ))
@@ -179,7 +184,7 @@ spec:
                   # For backups that write a TREE of objects rather than one file, where the
                   # signal is "how much was written recently", not "how big is the newest".
                   countcheck() {
-                    n=$(mc ls --recursive --json "$2" 2>/dev/null \
+                    n=$(timeout 300 mc ls --recursive --json "$2" 2>/dev/null \
                         | jq -r --argjson cutoff "$(( $(date +%s) - $4 ))" \
                           'select((.lastModified | sub("\\.[0-9]+Z$";"Z") | fromdateiso8601) > $cutoff) | .key' 2>/dev/null | wc -l)
                     if [ "${n:-0}" -ge "$3" ]; then
