@@ -43,7 +43,7 @@ data:
     FILEAPI = f"https://api.telegram.org/file/bot{TOKEN}"
     EXT = {".mp4", ".mov", ".mkv", ".webm", ".avi", ".m4a", ".mp3", ".wav", ".aac", ".opus", ".ogg", ".oga", ".flac"}
     AUDIO_ONLY = {".m4a", ".mp3", ".wav", ".aac", ".opus", ".ogg", ".oga", ".flac"}
-    CHUNK = 600  # ponytail: whisper container OOMs on long files at 6 GiB; 10-min chunks, as ingest.py
+    CHUNK = 300  # ponytail: RYZEN large-v3 on CPU is slower than real time; 10-min chunks blew LiteLLM's 600s timeout (2026-10-04)
     VIDEO_HOSTS = ("youtube.com", "youtu.be", "instagram.com", "tiktok.com", "vimeo.com", "facebook.com/reel")
     # Whisper large-v3 invents these on silence, confidently, in all four languages
     # (research: ~/adr-drafts/research/whisper-hallucination-detection.md).

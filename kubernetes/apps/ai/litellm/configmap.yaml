@@ -160,12 +160,8 @@ data:
           api_base: http://whisper-ryzen.ai.svc.cluster.local:8000/v1
           api_key: dummy
           timeout: 600
-      - model_name: whisper-fallback
-        litellm_params:
-          model: openai/Systran/faster-whisper-large-v3
-          api_base: http://whisper.ai.svc.cluster.local:8000/v1
-          api_key: dummy
-          timeout: 600
+      # No whisper fallback: the cluster pod is CPU too and timed out on the same
+      # chunks, burning w2 (2026-10-04). Dental calls ai/whisper directly.
 
     router_settings:
       num_retries: 1
@@ -175,7 +171,7 @@ data:
       # alias of chat so existing callers do not break; nothing falls through to
       # chat-tuf, which is opt-in only, but asking for it by name still degrades
       # into the cluster rather than failing outright.
-      fallbacks: [{"chat": ["chat-fallback"]}, {"qwen9b": ["chat-fallback"]}, {"chat-gpu": ["chat-fallback"]}, {"chat-tuf": ["chat", "chat-fallback"]}, {"gemma4": ["chat-fallback"]}, {"whisper": ["whisper-fallback"]}]
+      fallbacks: [{"chat": ["chat-fallback"]}, {"qwen9b": ["chat-fallback"]}, {"chat-gpu": ["chat-fallback"]}, {"chat-tuf": ["chat", "chat-fallback"]}, {"gemma4": ["chat-fallback"]}]
 
     general_settings:
       master_key: os.environ/LITELLM_MASTER_KEY
