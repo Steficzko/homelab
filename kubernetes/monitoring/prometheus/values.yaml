@@ -414,6 +414,12 @@ alertmanager:
         - matchers:
             - alertname = "InfoInhibitor"
           receiver: "null"
+        # severity=info is never actionable from a phone (e.g. CPUThrottlingHigh
+        # paged on 2026-10-06 for n8n bursting past its CPU limit). Prometheus still
+        # shows them; only warning/critical reach Telegram.
+        - matchers:
+            - severity = "info"
+          receiver: "null"
         # Watchdog fires forever by design. It used to go to "null" alongside
         # InfoInhibitor, which meant NOTHING ever exercised the pager end to end:
         # Prometheus evaluating -> Alertmanager routing -> Telegram token -> phone.
