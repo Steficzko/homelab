@@ -25,7 +25,7 @@ spec:
                     operator: DoesNotExist
       containers:
         - name: gotenberg
-          image: gotenberg/gotenberg:8.36
+          image: gotenberg/gotenberg:8.37
           args:
             - gotenberg
             - --api-timeout=30s
