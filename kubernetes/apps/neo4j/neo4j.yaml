@@ -61,7 +61,7 @@ spec:
                     operator: DoesNotExist
       containers:
         - name: neo4j
-          image: neo4j:5-community@sha256:d9cfe82983d27f5a75b3aaae8f316d04f9a698a3b7f6103a508f7caf8362f255
+          image: neo4j:5-community@sha256:c7d25c0eeebfe125718d58b72ed5d663c85d0479047733845eb2237c67ce8069
           envFrom:
             - secretRef: { name: neo4j-auth }        # NEO4J_AUTH=neo4j/<password>
           env:
