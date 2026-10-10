@@ -252,7 +252,7 @@ spec:
             runAsNonRoot: true
           containers:
             - name: digest
-              image: ghcr.io/jauderho/yt-dlp:latest@sha256:cf9c9e2ed632592f80b8170685483d990bdd85a1070df0049274461fc7eab22b
+              image: ghcr.io/jauderho/yt-dlp:latest@sha256:90cd9016efc4451153c8bc35cc7a0d9a8cba0e796818e52f3b4d28b9736ac91c
               command: ["python3", "/app/digest.py"]
               securityContext:
                 readOnlyRootFilesystem: true
