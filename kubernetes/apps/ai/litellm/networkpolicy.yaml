@@ -48,6 +48,8 @@ spec:
             cidr: 192.168.1.224/32
         - ipBlock:
             cidr: 192.168.1.225/32
+        - ipBlock:
+            cidr: 192.168.1.228/32   # LXC 114 rtx-whisper (GTX 1660)
     # The TUF laptop's RTX 4080 in Iraq, over tailscale. This rule is the whole
     # reason TM-TUF/cluster/README.md concluded "pods can't route to tailnet IPs"
     # and designed a hostNetwork socat bridge: an UNRESTRICTED pod reaches
