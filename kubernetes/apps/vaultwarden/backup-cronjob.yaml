@@ -69,6 +69,7 @@ spec:
               # Runs as the pod-level uid 1000 -- /data is 1000-owned and mounted
               # readOnly, /work is an emptyDir. No root, no package manager.
               image: nixery.dev/shell/sqlite/minio-client/gnutar/gzip/gnugrep@sha256:36ef0c8afbc6d27df0ed0c52a2ee115cb46b2186211a4653c2d4e0bb5d3bf92c
+              imagePullPolicy: IfNotPresent   # digest-only refs default to Always; nixery outage 2026-10-14 (STOR-51)
               envFrom:
                 - secretRef: { name: backup-s3-secret }   # AWS_ACCESS_KEY_ID / AWS_SECRET_ACCESS_KEY / AWS_ENDPOINTS
               env:
