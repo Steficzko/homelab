@@ -25,6 +25,21 @@ spec:
           # Digest-pinned. Upstream's own compose says to pin a version in
           # production; :latest would silently roll an invoicing app.
           image: ghcr.io/radekhulan/myinvoice:4.57.0@sha256:0e9c5b9e6690d638b7f2717d5d337fcf243b977dd7019b2696cd61570ee244d9
+          # The PDF page footer is hardcoded to the vendor credit (MIT, removal
+          # allowed). Swap it for the supplier's "Zápis v rejstříku" text and drop
+          # that field's second copy under the body. ponytail: sed on the image's
+          # template; if an upgrade changes the line the sed no-ops and the credit
+          # simply comes back — check the PDF after bumping the tag.
+          command:
+            - /sbin/tini
+            - --
+            - sh
+            - -c
+            - |
+              T=/var/www/html/api/templates/invoice/invoice.twig
+              sed -i -e '/Používá fakturační systém/c\    {{ supplier.commercial_register }}' \
+                     -e '/<div class="commercial-register">/d' "$T"
+              exec /var/www/html/docker/entrypoint-alpine.sh
           env:
             - name: TZ
               value: Europe/Prague
