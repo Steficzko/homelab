@@ -15,6 +15,11 @@ spec:
       labels:
         app: myinvoice
     spec:
+      # php-fpm runs as www-data (82); the fresh PVC is root:755, so PDF
+      # generation failed ("/data/storage/cache/mpdf not writable", 2026-10-14).
+      securityContext:
+        fsGroup: 82
+        fsGroupChangePolicy: OnRootMismatch
       containers:
         - name: myinvoice
           # Digest-pinned. Upstream's own compose says to pin a version in
