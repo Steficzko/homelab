@@ -5,10 +5,8 @@ metadata:
   namespace: vikunja
   annotations:
     cert-manager.io/cluster-issuer: letsencrypt-prod
-    nginx.ingress.kubernetes.io/ssl-redirect: "false"
-    nginx.ingress.kubernetes.io/proxy-body-size: "0"
 spec:
-  ingressClassName: nginx
+  ingressClassName: traefik
   tls:
     - hosts: [todo.kostikidis.net]
       secretName: vikunja-tls

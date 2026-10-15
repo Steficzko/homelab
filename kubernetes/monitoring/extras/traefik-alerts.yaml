@@ -1,0 +1,70 @@
+# Traefik is the ingress for every app that has moved off ingress-nginx (CLSTR-29).
+# The Kuma monitors cannot see a broken move: every *.kostikidis.net host sits behind
+# Cloudflare Access, so Kuma follows the 302 to the Access login page and gets a 200
+# whatever the origin does. These rules watch Traefik's own view of the backends.
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: traefik-alerts
+  namespace: monitoring
+  labels:
+    release: kube-prometheus-stack   # required by the Prometheus ruleSelector
+spec:
+  groups:
+    - name: traefik
+      rules:
+        - alert: TraefikDown
+          expr: kube_deployment_status_replicas_available{namespace="traefik",deployment="traefik"} < 1
+          for: 2m
+          labels:
+            severity: critical
+          annotations:
+            summary: "Traefik has no available pods: every migrated app is down"
+            description: >-
+              `kubectl -n traefik get pods` and `kubectl -n traefik logs deploy/traefik`.
+              Fast rollback for one app: revert its commit and delete its hostname rule
+              from the Cloudflare tunnel, so the *.kostikidis.net wildcard sends it to nginx again.
+
+        - alert: TraefikDegraded
+          expr: kube_deployment_status_replicas_available{namespace="traefik",deployment="traefik"} < 2
+          for: 15m
+          labels:
+            severity: warning
+          annotations:
+            summary: "Traefik running on {{ $value }} of 2 pods"
+            description: One more pod loss takes every migrated app down.
+
+        - alert: TraefikConfigReloadFailing
+          expr: traefik_config_last_reload_success == 0
+          for: 5m
+          labels:
+            severity: warning
+          annotations:
+            summary: "Traefik pod {{ $labels.pod }} cannot load its config"
+            description: >-
+              A bad Ingress or Middleware is being rejected; the pod keeps serving the
+              last good config, so new or changed routes are not live.
+
+        # The netpol trap: an app whose NetworkPolicy does not admit namespace traefik
+        # answers 502 instantly on the first request. Fires on a handful of 502/503/504,
+        # so it catches it even for low-traffic personal apps.
+        - alert: TraefikBackendErrors
+          expr: sum by (service) (increase(traefik_service_requests_total{code=~"502|503|504"}[10m])) > 3
+          labels:
+            severity: warning
+          annotations:
+            summary: "{{ $labels.service }}: {{ $value | printf \"%.0f\" }} gateway errors in 10m via Traefik"
+            description: >-
+              502 = backend refused (check the app NetworkPolicy admits namespace traefik,
+              then the pod). 503 = no ready endpoints. 504 = backend timeout.
+
+        - alert: TraefikHigh5xxRatio
+          expr: >-
+            sum by (service) (rate(traefik_service_requests_total{code=~"5.."}[10m]))
+            / sum by (service) (rate(traefik_service_requests_total[10m])) > 0.2
+            and sum by (service) (rate(traefik_service_requests_total[10m])) > 0.02
+          for: 10m
+          labels:
+            severity: warning
+          annotations:
+            summary: "{{ $labels.service }}: {{ $value | humanizePercentage }} of requests are 5xx"

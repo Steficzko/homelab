@@ -16,9 +16,8 @@ metadata:
     # have two conflicting Certificates pointing to the same secret").
     # The explicit Certificate is the one to keep — it also covers the apex,
     # which the shim's copy does not. Re-adding this annotation re-creates the clash.
-    nginx.ingress.kubernetes.io/ssl-redirect: "false"
 spec:
-  ingressClassName: nginx
+  ingressClassName: traefik
   tls:
     - hosts: ["*.kostikidis.net"]
       secretName: travel-wildcard-tls
