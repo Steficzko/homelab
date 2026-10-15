@@ -49,22 +49,22 @@ spec:
         # answers 502 instantly on the first request. Fires on a handful of 502/503/504,
         # so it catches it even for low-traffic personal apps.
         - alert: TraefikBackendErrors
-          expr: sum by (service) (increase(traefik_service_requests_total{code=~"502|503|504"}[10m])) > 3
+          expr: sum by (exported_service) (increase(traefik_service_requests_total{code=~"502|503|504"}[10m])) > 3
           labels:
             severity: warning
           annotations:
-            summary: "{{ $labels.service }}: {{ $value | printf \"%.0f\" }} gateway errors in 10m via Traefik"
+            summary: "{{ $labels.exported_service }}: {{ $value | printf \"%.0f\" }} gateway errors in 10m via Traefik"
             description: >-
               502 = backend refused (check the app NetworkPolicy admits namespace traefik,
               then the pod). 503 = no ready endpoints. 504 = backend timeout.
 
         - alert: TraefikHigh5xxRatio
           expr: >-
-            sum by (service) (rate(traefik_service_requests_total{code=~"5.."}[10m]))
-            / sum by (service) (rate(traefik_service_requests_total[10m])) > 0.2
-            and sum by (service) (rate(traefik_service_requests_total[10m])) > 0.02
+            sum by (exported_service) (rate(traefik_service_requests_total{code=~"5.."}[10m]))
+            / sum by (exported_service) (rate(traefik_service_requests_total[10m])) > 0.2
+            and sum by (exported_service) (rate(traefik_service_requests_total[10m])) > 0.02
           for: 10m
           labels:
             severity: warning
           annotations:
-            summary: "{{ $labels.service }}: {{ $value | humanizePercentage }} of requests are 5xx"
+            summary: "{{ $labels.exported_service }}: {{ $value | humanizePercentage }} of requests are 5xx"

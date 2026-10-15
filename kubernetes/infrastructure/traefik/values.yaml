@@ -49,6 +49,17 @@ service:
     # comes over in that final step.
     type: ClusterIP
 
+providers:
+  kubernetesIngress:
+    # With a ClusterIP Service, publishedService copies an EMPTY load-balancer status
+    # onto every Ingress, and Argo holds Ingresses without an address at Progressing
+    # forever. Publish the in-cluster name instead (it is what cloudflared dials).
+    # Switch back to publishedService when the LoadBalancer moves over (final step).
+    publishedService:
+      enabled: false
+    ingressEndpoint:
+      hostname: traefik.traefik.svc.cluster.local
+
 metrics:
   prometheus:
     service:
