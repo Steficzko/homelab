@@ -1,0 +1,67 @@
+# Traefik replaces ingress-nginx (retired upstream March 2026, CLSTR-29, decided 2026-10-15).
+# Installed ALONGSIDE nginx: it serves only Ingresses with ingressClassName: traefik, and
+# all 53 existing Ingresses say nginx, so this changes no live traffic. Apps move over
+# category by category; cloudflared origins are switched per hostname as each one moves.
+#
+# Argo-managed chart in its own namespace, NOT the k3s-bundled Traefik. That one stays
+# disabled in bootstrap/k3s-server-config.yaml, so it is versioned and upgraded like
+# every other app, and k3s cannot re-apply or remove it on a server restart.
+
+deployment:
+  # Same reasoning as ingress-nginx: one pod is a cluster-wide SPOF for every public
+  # host, and a drain needs somewhere to move it. Two replicas + PDB minAvailable 1.
+  replicas: 2
+
+podDisruptionBudget:
+  enabled: true
+  minAvailable: 1
+
+affinity:
+  podAntiAffinity:
+    preferredDuringSchedulingIgnoredDuringExecution:
+      - weight: 100
+        podAffinityTerm:
+          topologyKey: kubernetes.io/hostname
+          labelSelector:
+            matchLabels:
+              app.kubernetes.io/name: traefik
+              app.kubernetes.io/instance: traefik-traefik
+
+ingressClass:
+  enabled: true
+  # NOT default while nginx lives: two default classes make a class-less Ingress
+  # land on whichever controller wins. Flip when nginx is removed.
+  isDefaultClass: false
+  name: traefik
+
+# Gateway API comes later (the reason Traefik was picked over a second nginx); off until
+# something actually uses it.
+gateway:
+  enabled: false
+gatewayClass:
+  enabled: false
+
+service:
+  spec:
+    # ClusterIP for now: cloudflared reaches ingress in-cluster, and the LAN LB IPs
+    # (.201-.205 :80/:443) belong to ingress-nginx until the last category moves. The
+    # LoadBalancer (with nginx's loadBalancerSourceRanges and no NodePorts, F-001)
+    # comes over in that final step.
+    type: ClusterIP
+
+metrics:
+  prometheus:
+    service:
+      enabled: true
+    serviceMonitor:
+      enabled: true
+      # Prometheus CR's serviceMonitorSelector ignores monitors without this label.
+      additionalLabels:
+        release: kube-prometheus-stack
+
+resources:
+  requests:
+    cpu: 50m
+    memory: 64Mi
+  limits:
+    memory: 256Mi
