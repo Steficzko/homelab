@@ -65,3 +65,36 @@ resources:
     memory: 64Mi
   limits:
     memory: 256Mi
+
+ports:
+  web:
+    transport:
+      respondingTimeouts:
+        # Traefik v3 cuts a request read at 60s by default, which kills large Immich /
+        # Nextcloud / Paperless uploads mid-stream. nginx had no such cap (body-size 0
+        # on 22 Ingresses, read timeouts up to 3600s). 0 = no limit, same as before.
+        readTimeout: 0
+  websecure:
+    transport:
+      respondingTimeouts:
+        readTimeout: 0
+    http:
+      # nginx emitted HSTS globally but only over HTTPS; on this entrypoint only =
+      # the same behaviour (faktury via the tunnel's https origin, and LAN https).
+      middlewares:
+        - traefik-hsts@kubernetescrd
+
+# Not ported on purpose: ssl-redirect (all 49 annotations say "false"), body-size 0 and
+# proxy-buffering off (Traefik's defaults already). Per-app body LIMITS (1m, 25m, 64k…)
+# become a Buffering middleware in that app's namespace when the app moves.
+extraObjects:
+  - apiVersion: traefik.io/v1alpha1
+    kind: Middleware
+    metadata:
+      name: hsts
+      namespace: traefik
+    spec:
+      headers:
+        stsSeconds: 31536000
+        stsIncludeSubdomains: true
+        stsPreload: false   # deliberate, see the ingress-nginx values comment
