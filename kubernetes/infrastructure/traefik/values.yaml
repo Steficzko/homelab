@@ -31,7 +31,7 @@ ingressClass:
   enabled: true
   # NOT default while nginx lives: two default classes make a class-less Ingress
   # land on whichever controller wins. Flip when nginx is removed.
-  isDefaultClass: false
+  isDefaultClass: true   # sole controller since CLSTR-29
   name: traefik
 
 # Gateway API comes later (the reason Traefik was picked over a second nginx); off until
@@ -54,7 +54,8 @@ providers:
     # With a ClusterIP Service, publishedService copies an EMPTY load-balancer status
     # onto every Ingress, and Argo holds Ingresses without an address at Progressing
     # forever. Publish the in-cluster name instead (it is what cloudflared dials).
-    # Switch back to publishedService when the LoadBalancer moves over (final step).
+    # Permanent: Traefik stays ClusterIP (tunnels only); the LAN LoadBalancer was
+    # retired with ingress-nginx, nothing on the LAN used it (CLSTR-29).
     publishedService:
       enabled: false
     ingressEndpoint:

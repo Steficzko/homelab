@@ -1,3 +1,7 @@
+# SOAK (CLSTR-29, 2026-10-16): every Ingress and all five Cloudflare tunnels are on
+# Traefik; nginx served zero real requests after the move. Scaled to 0 with its
+# LoadBalancer (.201-.205:80/443) and admission webhook removed, so nothing can reach
+# or depend on it. Rollback = revert this commit. Next step: delete the Argo app.
 controller:
   # A single ingress controller is a cluster-wide SPOF: every app's HTTP path dies if
   # that one pod or its node goes, and a plain `kubectl drain` of its node has nowhere
@@ -6,7 +10,9 @@ controller:
   # chart (4.15.1) creates the PDB automatically once replicaCount > 1.
   # Anti-affinity is SOFT (preferred): normally the two land on different nodes, but a
   # single schedulable node still gets both rather than leaving one Pending.
-  replicaCount: 2
+  replicaCount: 0
+  admissionWebhooks:
+    enabled: false   # a webhook with no controller behind it would reject every Ingress write
   minAvailable: 1
   # The controller shipped with NO metrics port at all (container ports were only
   # http/https/webhook), so Prometheus held zero nginx_* series — no request rates,
@@ -15,7 +21,7 @@ controller:
   # The ServiceMonitor needs release=kube-prometheus-stack or the Prometheus CR's
   # serviceMonitorSelector ignores it silently.
   metrics:
-    enabled: true
+    enabled: false
     serviceMonitor:
       enabled: true
       additionalLabels:
@@ -77,6 +83,7 @@ controller:
     # some of which legitimately embed.
     global-allowed-response-headers: "X-Frame-Options,X-Content-Type-Options,Referrer-Policy,Permissions-Policy,Strict-Transport-Security,Cross-Origin-Opener-Policy,Cross-Origin-Resource-Policy,Content-Security-Policy,Content-Security-Policy-Report-Only"
   service:
+    enabled: false
     # F-001 fix: do NOT allocate NodePorts.
     # The LoadBalancer NodePort path (node-IP:3xxxx) listens on 0.0.0.0 on every
     # node and is NOT covered by loadBalancerSourceRanges. It let any LAN/Tailscale
