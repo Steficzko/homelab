@@ -1,6 +1,6 @@
-# On Traefik (CLSTR-29); the dental-clinic *.kostikidis.net wildcard catch-all is
-# still on ingress-nginx. When it moves too, exact hosts outrank wildcards in Traefik
-# as well, so padle.kostikidis.net keeps landing here.
+# On Traefik (CLSTR-29). No *.kostikidis.net wildcard Ingress exists any more (the
+# dental-clinic one was narrowed to exact staging hosts 2026-08-22), so nothing competes
+# for padle.kostikidis.net. The *.kostikidis.net in tls: below is only the cert.
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:

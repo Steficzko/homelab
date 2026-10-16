@@ -47,7 +47,16 @@ spec:
           ingress:
             enabled: true
             appHost: plane.kostikidis.net
+            # "traefik*" makes the chart render IngressRoutes (templates/ingress-traefik.yaml)
+            # instead of an Ingress, so ingress_annotations below are NOT used (CLSTR-29).
             ingressClass: traefik
+            traefik:
+              # Derived default is websecure-only because tls_secret_name is set, but
+              # cloudflared reaches Traefik over plain http on `web` -> 404 without this.
+              entryPoints: [web, websecure]
+              # The chart puts a Buffering middleware on every route (default 20 MiB).
+              # nginx had no limit; Cloudflare caps a request at 100 MB, so match that.
+              maxRequestBodyBytes: 104857600
             # Left empty deliberately: setting either publishes an admin console
             # through the tunnel. RabbitMQ management and the MinIO console stay
             # in-cluster, reachable only by port-forward.
@@ -55,16 +64,7 @@ spec:
             rabbitmqHost: ""
             ingress_annotations:
               cert-manager.io/cluster-issuer: letsencrypt-prod
-              # The admin container's nginx does an ABSOLUTE redirect for the bare
-              # directory path: GET /god-mode returns
-              #   Location: http://plane.kostikidis.net:3000/god-mode/
-              # (its own listen port, over http), which hangs in the browser. Under
-              # ingress-nginx a proxy-redirect rewrote it; Traefik has no Location
-              # rewrite, so the middleware answers /god-mode itself with a 301 to
-              # https://<host>/god-mode/ before the request reaches the pod. It is the
-              # only path that does this (/god-mode/..., /spaces are relative or 200).
-              # Middleware: kubernetes/apps/plane/traefik-middleware.yaml (CLSTR-29).
-              traefik.ingress.kubernetes.io/router.middlewares: plane-godmode-slash@kubernetescrd
+              # Bare /god-mode: see kubernetes/apps/plane/traefik-middleware.yaml.
           ssl:
             tls_secret_name: plane-tls   # cert-manager owns the cert, not the chart
             createIssuer: false
