@@ -85,6 +85,14 @@ grafana:
                 operator: DoesNotExist
   deploymentStrategy:
     type: Recreate
+  # 2026-10-16: no limit let Grafana grow ~11 GB in 16 s under 20 concurrent
+  # unauthenticated GETs (302 to /login) and freeze w2, then w1. A limit makes the
+  # kernel OOM-kill Grafana alone instead of starving the node.
+  resources:
+    requests:
+      memory: 256Mi
+    limits:
+      memory: 1Gi
   additionalDataSources:
     - name: Loki
       type: loki
