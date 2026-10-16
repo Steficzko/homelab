@@ -16,7 +16,7 @@ spec:
       serviceAccountName: kube-vip
       containers:
         - name: kube-vip
-          image: ghcr.io/kube-vip/kube-vip@sha256:2fcdbb014a2e217b9ea1b6dacac53d6851b185af323cdd28d100ad82d74bc79a
+          image: ghcr.io/kube-vip/kube-vip@sha256:57603c01702ac2c62e31112306a1c34d46047231fe03716dfb8b363c33284649
           args:
             - manager
           env:
