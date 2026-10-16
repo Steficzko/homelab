@@ -4,9 +4,8 @@ metadata:
   name: shlink
   namespace: blanca-dental-care
   annotations:
-    nginx.ingress.kubernetes.io/ssl-redirect: "false"
 spec:
-  ingressClassName: nginx
+  ingressClassName: traefik
   rules:
     # Via the BlancaDentalClinic tunnel — TLS terminates at Cloudflare.
     - host: go.blancadentalcare.com

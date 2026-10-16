@@ -27,7 +27,7 @@ spec:
               command:
                 - /bin/sh
                 - -c
-                # via the INGRESS, not the wordpress svc — pod-to-pod got CNI-rejected
+                # via the INGRESS (Traefik since CLSTR-29), not the wordpress svc — pod-to-pod got CNI-rejected
                 # after a pod roll on namosocks (2026-08-01) despite a correct netpol
                 # allow; the ingress path is what real traffic uses and is always
                 # exercised. Host colon must stay inside quotes.
@@ -41,7 +41,7 @@ spec:
                 # failure was pure noise. retry-max-time 100 + -m 110 worst-cases at 210s,
                 # inside activeDeadlineSeconds 240. --retry-all-errors is needed because -f
                 # turns a 502 during a pod roll into exit 22, which plain --retry ignores.
-                - 'curl -fsS -m 110 --retry 4 --retry-delay 10 --retry-all-errors --retry-max-time 100 -H "Host: blancadentalcare.com" "http://ingress-nginx-controller.ingress-nginx.svc.cluster.local/wp-cron.php?doing_wp_cron" > /dev/null'
+                - 'curl -fsS -m 110 --retry 4 --retry-delay 10 --retry-all-errors --retry-max-time 100 -H "Host: blancadentalcare.com" "http://traefik.traefik.svc.cluster.local/wp-cron.php?doing_wp_cron" > /dev/null'
               resources:
                 requests: { memory: 16Mi, cpu: 10m }
                 limits: { memory: 64Mi, cpu: 100m }
