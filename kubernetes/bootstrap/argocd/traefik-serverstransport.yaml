@@ -1,0 +1,11 @@
+# argocd-server serves HTTPS on its own self-signed cert. Traefik talks HTTPS to it
+# without verifying that cert — same as ingress-nginx's backend-protocol HTTPS did
+# (proxy_ssl_verify off). Wired up by the Service annotations patched in
+# kustomization.yaml (CLSTR-29).
+apiVersion: traefik.io/v1alpha1
+kind: ServersTransport
+metadata:
+  name: argocd-server
+  namespace: argocd
+spec:
+  insecureSkipVerify: true

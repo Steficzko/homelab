@@ -24,6 +24,8 @@ spec:
     - from:
         - namespaceSelector:
             matchLabels: { kubernetes.io/metadata.name: ingress-nginx }
+        - namespaceSelector:   # Traefik (CLSTR-29); nginx kept until it is removed
+            matchLabels: { kubernetes.io/metadata.name: traefik }
         # n8n calls the NocoDB API for the Drive/Zoom automations.
         - namespaceSelector:
             matchLabels: { kubernetes.io/metadata.name: n8n }

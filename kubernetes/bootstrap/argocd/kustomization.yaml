@@ -12,8 +12,19 @@ namespace: argocd
 
 resources:
   - https://raw.githubusercontent.com/argoproj/argo-cd/v3.4.2/manifests/install.yaml
+  - traefik-serverstransport.yaml
 
 patches:
+  # Traefik reaches argocd-server over HTTPS (CLSTR-29; see traefik-serverstransport.yaml).
+  - target:
+      kind: Service
+      name: argocd-server
+    patch: |-
+      - op: add
+        path: /metadata/annotations
+        value:
+          traefik.ingress.kubernetes.io/service.serversscheme: https
+          traefik.ingress.kubernetes.io/service.serverstransport: argocd-argocd-server@kubernetescrd
   # Keep the application controller off the control-plane/etcd nodes. It is the
   # single largest movable pod in the cluster (~1.35Gi) and it was living on r1,
   # an etcd member, which sat at 85% memory until 2026-08-29. Preferred, not

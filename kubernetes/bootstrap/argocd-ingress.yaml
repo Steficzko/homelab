@@ -5,10 +5,10 @@ metadata:
   namespace: argocd
   annotations:
     cert-manager.io/cluster-issuer: letsencrypt-prod
-    nginx.ingress.kubernetes.io/ssl-redirect: "false"
-    nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"  # ArgoCD server speaks HTTPS internally
+    # ArgoCD server speaks HTTPS internally: Traefik uses the scheme + ServersTransport
+    # annotated on Service argocd-server (bootstrap/argocd/kustomization.yaml).
 spec:
-  ingressClassName: nginx
+  ingressClassName: traefik
   tls:
     - hosts:
         - argocd.kostikidis.net

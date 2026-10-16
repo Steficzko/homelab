@@ -8,13 +8,10 @@ metadata:
   namespace: nocodb
   annotations:
     cert-manager.io/cluster-issuer: letsencrypt-prod
-    # REQUIRED: cloudflared reaches ingress-nginx over plain HTTP; without this
-    # the 308 http->https bounces back through Cloudflare and loops.
-    nginx.ingress.kubernetes.io/ssl-redirect: "false"
-    # Attachments: Drive copies and Zoom transcripts.
-    nginx.ingress.kubernetes.io/proxy-body-size: "100m"
+    # Traefik (CLSTR-29): no http->https redirect on the tunnel hop. Attachments
+    # (Drive copies, Zoom transcripts) have no proxy body limit; Cloudflare caps 100 MB.
 spec:
-  ingressClassName: nginx
+  ingressClassName: traefik
   tls:
     - hosts: [topmountain.kostikidis.net]
       secretName: topmountain-kostikidis-net-tls

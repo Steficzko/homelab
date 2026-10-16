@@ -30,10 +30,9 @@ spec:
             clusterRoleName: view
           ingress:
             enabled: true
-            ingressClassName: nginx
+            ingressClassName: traefik
             annotations:
               cert-manager.io/cluster-issuer: letsencrypt-prod
-              nginx.ingress.kubernetes.io/ssl-redirect: "false"
             hosts:
               - host: k8s.kostikidis.net
                 paths:

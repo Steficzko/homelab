@@ -1,0 +1,12 @@
+# Bare /god-mode -> /god-mode/ on the public origin, before plane-admin can answer
+# with its own absolute http://...:3000/ Location. See bootstrap/apps/plane.yaml.
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: godmode-slash
+  namespace: plane
+spec:
+  redirectRegex:
+    regex: "^https?://([^/]+)/god-mode(\\?.*)?$"
+    replacement: "https://${1}/god-mode/${2}"
+    permanent: true

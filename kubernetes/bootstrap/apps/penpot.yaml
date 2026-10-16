@@ -95,11 +95,9 @@ spec:
               existingClaim: penpot-assets-pvc
           ingress:
             enabled: true
-            className: nginx
+            className: traefik
             annotations:
               cert-manager.io/cluster-issuer: letsencrypt-prod
-              nginx.ingress.kubernetes.io/ssl-redirect: "false"
-              nginx.ingress.kubernetes.io/proxy-body-size: "0"
             hosts:
               - design.kostikidis.net
             tls:
