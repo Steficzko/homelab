@@ -65,7 +65,8 @@ spec:
               cpu: 100m
             limits:
               memory: 2Gi          # 768Mi OOMKilled repeatedly during site build (2026-08-06)
-              cpu: 1000m
+              # No CPU limit: at 1 core, bursty PHP workers were CFS-throttled 85% while
+              # averaging 0.5 core, so 5 concurrent visitors stalled pages to ~12 s (2026-10-16).
           readinessProbe:
             httpGet:
               path: /wp-login.php
@@ -75,6 +76,7 @@ spec:
                   value: blancadentalcare.com
             initialDelaySeconds: 15
             periodSeconds: 10
+            timeoutSeconds: 5      # 1 s default dropped the only replica under load = full 503
           livenessProbe:
             tcpSocket:
               port: 80
