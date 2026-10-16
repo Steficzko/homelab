@@ -69,7 +69,7 @@ spec:
             - {name: LICENSING_MAIL_MASTER_KEY_ID, value: staging-mail-1}
             - {name: LICENSING_APP_BASE_URL, value: "https://licensing-staging.gompha.com"}
             # "*" governs uvicorn's proxy-headers only and is safe because the
-            # NetworkPolicy admits nobody but ingress-nginx (they move
+            # NetworkPolicy admits nobody but the ingress controller (Traefik; ingress-nginx until removed) (they move
             # together). It does NOT deliver the true client — behind the
             # tunnel everyone arrives as the cloudflared pod IP; per-caller
             # identity for rate buckets comes from CF-Connecting-IP in the app

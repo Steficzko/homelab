@@ -102,7 +102,7 @@ spec:
             # PWA so the redeem page loads same-origin.
             - {name: GOMPHA_APP_BASE_URL, value: "https://app-staging.gompha.com"}
             # "*" governs uvicorn's proxy-headers only; safe because the
-            # NetworkPolicy admits nobody but ingress-nginx (they move together).
+            # NetworkPolicy admits nobody but the ingress controller (Traefik; ingress-nginx until removed) (they move together).
             # Per-caller rate identity comes from CF-Connecting-IP in the app
             # (_client_key), not from this.
             - {name: FORWARDED_ALLOW_IPS, value: "*"}

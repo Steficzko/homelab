@@ -16,14 +16,18 @@ metadata:
   name: landing-manual
   namespace: gompha
   annotations:
-    nginx.ingress.kubernetes.io/ssl-redirect: "false"
     # Security response headers — see security-headers.yaml. Set separately here
     # because this is its own Ingress object: /manual would otherwise be the one
     # bare path on the apex, and it is the only one behind a gate. It also spans
     # *.gompha.com, so tenant subdomains get the headers on /manual too.
-    nginx.ingress.kubernetes.io/custom-headers: "gompha/landing-security-headers"
+    traefik.ingress.kubernetes.io/router.middlewares: gompha-landing-security-headers@kubernetescrd
+    # Traefik ranks routers by rule length unless told otherwise. 20 beats the
+    # dental-clinic *.gompha.com tenant wildcard (10), so <slug>.gompha.com/manual
+    # lands here, and loses to every exact host (auto., licensing-staging., app-staging.
+    # rules are >= 36 chars) so their /manual stays theirs — the ingress-nginx behaviour.
+    traefik.ingress.kubernetes.io/router.priority: "20"
 spec:
-  ingressClassName: nginx
+  ingressClassName: traefik
   rules:
     - host: gompha.com
       http:

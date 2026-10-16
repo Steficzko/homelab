@@ -39,6 +39,8 @@ spec:
     - from:
         - namespaceSelector:
             matchLabels: {kubernetes.io/metadata.name: ingress-nginx}
+        - namespaceSelector:   # Traefik (CLSTR-29); nginx kept until it is removed
+            matchLabels: { kubernetes.io/metadata.name: traefik }
       ports: [{port: 8000}]
   egress:
     - to:
@@ -68,6 +70,8 @@ spec:
     - from:
         - namespaceSelector:
             matchLabels: {kubernetes.io/metadata.name: ingress-nginx}
+        - namespaceSelector:   # Traefik (CLSTR-29); nginx kept until it is removed
+            matchLabels: { kubernetes.io/metadata.name: traefik }
       ports: [{port: 80}]
 ---
 # clinic-cron (idempotency reaper): out to Postgres only.

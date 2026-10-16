@@ -50,12 +50,11 @@ metadata:
   name: clinic
   namespace: saas-gompha-staging
   annotations:
-    nginx.ingress.kubernetes.io/ssl-redirect: "false"
     # 1m for this slice (invite/login bodies are tiny). The X-ray / photo upload
     # slice will need a larger cap ON THE /v1 PATH — revisit then, do not blanket-raise.
-    nginx.ingress.kubernetes.io/proxy-body-size: "1m"
+    traefik.ingress.kubernetes.io/router.middlewares: saas-gompha-staging-body-1m@kubernetescrd
 spec:
-  ingressClassName: nginx
+  ingressClassName: traefik
   rules:
     - host: app-staging.gompha.com
       http:
@@ -74,3 +73,16 @@ spec:
             pathType: Prefix
             backend:
               service: {name: clinic-web, port: {number: 80}}
+---
+# app-staging: invite/login bodies are tiny; raise ON THE /v1 PATH only when uploads land.
+# Same cap ingress-nginx's proxy-body-size enforced (413 above it). Buffering also
+# holds the response until complete; fine for these small replies, never reuse it
+# on a streaming endpoint (CLSTR-29).
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: body-1m
+  namespace: saas-gompha-staging
+spec:
+  buffering:
+    maxRequestBodyBytes: 1048576

@@ -22,10 +22,14 @@ metadata:
     # have two conflicting Certificates pointing to the same secret").
     # The explicit Certificate is the one to keep — it also covers the apex,
     # which the shim's copy does not. Re-adding this annotation re-creates the clash.
-    nginx.ingress.kubernetes.io/ssl-redirect: "false"
-    nginx.ingress.kubernetes.io/proxy-body-size: "25m"
+    traefik.ingress.kubernetes.io/router.middlewares: dental-clinic-body-25m@kubernetescrd
+    # Traefik ranks routers by rule LENGTH, and the *.gompha.com HostRegexp is longer
+    # than most exact-host rules, so without this the tenant wildcard would swallow
+    # auto./licensing-staging./app-staging.gompha.com and the landing's /manual.
+    # 10 = below everything else; the kostikidis.net exact hosts here have no rivals.
+    traefik.ingress.kubernetes.io/router.priority: "10"
 spec:
-  ingressClassName: nginx
+  ingressClassName: traefik
   tls:
     - hosts: ["*.kostikidis.net"]
       secretName: blanka-wildcard-tls

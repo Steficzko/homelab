@@ -1,0 +1,12 @@
+# dental-clinic SPA + tenant wildcard: the 25m cap ingress-nginx enforced.
+# Same cap ingress-nginx's proxy-body-size enforced (413 above it). Buffering also
+# holds the response until complete; fine for these small replies, never reuse it
+# on a streaming endpoint (CLSTR-29).
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: body-25m
+  namespace: dental-clinic
+spec:
+  buffering:
+    maxRequestBodyBytes: 26214400

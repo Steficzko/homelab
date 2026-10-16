@@ -9,11 +9,10 @@ metadata:
   name: landing
   namespace: gompha
   annotations:
-    nginx.ingress.kubernetes.io/ssl-redirect: "false"
     # Security response headers — see security-headers.yaml for values and why.
-    nginx.ingress.kubernetes.io/custom-headers: "gompha/landing-security-headers"
+    traefik.ingress.kubernetes.io/router.middlewares: gompha-landing-security-headers@kubernetescrd
 spec:
-  ingressClassName: nginx
+  ingressClassName: traefik
   rules:
     - host: gompha.com
       http:

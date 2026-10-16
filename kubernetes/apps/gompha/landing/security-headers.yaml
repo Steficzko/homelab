@@ -48,3 +48,20 @@ data:
   # unknown inline-style usage; a policy written blind would either be a lie
   # (unsafe-inline everything) or break the page. Write it when the landing
   # markup is next touched, from what the page actually loads.
+---
+# The same five headers as a Traefik middleware (CLSTR-29), referenced by the landing
+# and landing-manual Ingresses. Values MUST match the ConfigMap above while
+# ingress-nginx still exists; the ConfigMap goes when nginx does.
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: landing-security-headers
+  namespace: gompha
+spec:
+  headers:
+    customResponseHeaders:
+      X-Frame-Options: "SAMEORIGIN"
+      X-Content-Type-Options: "nosniff"
+      Referrer-Policy: "strict-origin-when-cross-origin"
+      Permissions-Policy: "geolocation=(), microphone=(), camera=(), payment=(), usb=()"
+      Strict-Transport-Security: "max-age=31536000; includeSubDomains"
