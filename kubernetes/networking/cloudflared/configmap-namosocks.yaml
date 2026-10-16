@@ -24,13 +24,13 @@ data:
       connectTimeout: 30s
     ingress:
       # warehouse has a real LE cert on the ingress (cert-manager) — the in-cluster hop is
-      # TLS end-to-end for it. Other hosts still terminate at Cloudflare (plain http origin).
+      # TLS end-to-end for it (Traefik websecure since CLSTR-29). Other hosts still terminate at Cloudflare (plain http origin).
       - hostname: warehouse.namosocks.com
-        service: https://ingress-nginx-controller.ingress-nginx.svc.cluster.local:443
+        service: https://traefik.traefik.svc.cluster.local:443
         originRequest:
           originServerName: warehouse.namosocks.com
       - hostname: staging.namosocks.com
-        service: http://ingress-nginx-controller.ingress-nginx.svc.cluster.local:80
+        service: http://traefik.traefik.svc.cluster.local:80
       - hostname: "*.namosocks.com"
-        service: http://ingress-nginx-controller.ingress-nginx.svc.cluster.local:80
+        service: http://traefik.traefik.svc.cluster.local:80
       - service: http_status:404

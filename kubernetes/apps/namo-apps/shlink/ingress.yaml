@@ -6,7 +6,7 @@ metadata:
   name: shlink
   namespace: namo-apps
 spec:
-  ingressClassName: nginx
+  ingressClassName: traefik
   rules:
     - host: go.namosocks.com
       http:

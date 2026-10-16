@@ -103,7 +103,7 @@ metadata:
   annotations:
     cert-manager.io/issuer: letsencrypt-http01   # NOT the ClusterIssuer — see issuer.yaml
 spec:
-  ingressClassName: nginx
+  ingressClassName: traefik
   tls:
     - hosts: [warehouse.namosocks.com]
       secretName: warehouse-ui-tls

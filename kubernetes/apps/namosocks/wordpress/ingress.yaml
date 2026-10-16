@@ -4,10 +4,8 @@ metadata:
   name: wordpress
   namespace: namosocks
   annotations:
-    nginx.ingress.kubernetes.io/ssl-redirect: "false"
-    nginx.ingress.kubernetes.io/proxy-body-size: "64m"
 spec:
-  ingressClassName: nginx
+  ingressClassName: traefik
   rules:
     # kostikidis.net build host removed 2026-08-01 ("as if it never existed") — the client's
     # domain via the client's tunnel is the only door. TLS ends at Cloudflare; at launch add

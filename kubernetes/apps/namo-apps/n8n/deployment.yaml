@@ -45,7 +45,7 @@ spec:
             - name: GENERIC_TIMEZONE
               value: Asia/Baghdad          # Namo's clock, not ours
             - name: N8N_TRUST_PROXY
-              value: "true"                # behind cloudflared -> ingress-nginx
+              value: "true"                # behind cloudflared -> Traefik
             - name: N8N_DIAGNOSTICS_ENABLED
               value: "false"
             # Execution history. These were previously unset and running on n8n's

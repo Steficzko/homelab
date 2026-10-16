@@ -5,10 +5,8 @@ metadata:
   name: n8n
   namespace: namo-apps
   annotations:
-    nginx.ingress.kubernetes.io/proxy-body-size: "32m"
-    nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"    # long-running workflow editors
 spec:
-  ingressClassName: nginx
+  ingressClassName: traefik
   rules:
     - host: automation.namosocks.com
       http:
