@@ -14,5 +14,8 @@ spec:
         - namespaceSelector:
             matchLabels:
               kubernetes.io/metadata.name: ingress-nginx
+        - namespaceSelector:   # Traefik (CLSTR-29); nginx kept until it is removed
+            matchLabels:
+              kubernetes.io/metadata.name: traefik
       ports:
         - port: 2283
