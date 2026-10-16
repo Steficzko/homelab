@@ -51,9 +51,6 @@ spec:
             # instead of an Ingress, so ingress_annotations below are NOT used (CLSTR-29).
             ingressClass: traefik
             traefik:
-              # Derived default is websecure-only because tls_secret_name is set, but
-              # cloudflared reaches Traefik over plain http on `web` -> 404 without this.
-              entryPoints: [web, websecure]
               # The chart puts a Buffering middleware on every route (default 20 MiB).
               # nginx had no limit; Cloudflare caps a request at 100 MB, so match that.
               maxRequestBodyBytes: 104857600
@@ -66,7 +63,11 @@ spec:
               cert-manager.io/cluster-issuer: letsencrypt-prod
               # Bare /god-mode: see kubernetes/apps/plane/traefik-middleware.yaml.
           ssl:
-            tls_secret_name: plane-tls   # cert-manager owns the cert, not the chart
+            # TLS terminates at Cloudflare; cloudflared forwards cleartext to Traefik's
+            # `web` entrypoint. externalTermination keeps WEB_URL https:// and emits no
+            # tls: block. A tls_secret_name here would make the chart's IngressRoutes
+            # TLS-only and bind them to websecure, so every tunnel request 404s (CLSTR-29).
+            externalTermination: true
             createIssuer: false
             generateCerts: false
 
