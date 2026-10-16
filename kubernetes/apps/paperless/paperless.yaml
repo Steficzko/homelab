@@ -152,6 +152,7 @@ spec:
   ingress:
     - from:
         - namespaceSelector: { matchLabels: { kubernetes.io/metadata.name: ingress-nginx } }
+        - namespaceSelector: { matchLabels: { kubernetes.io/metadata.name: traefik } }   # Traefik (CLSTR-29)
       ports: [{ port: 8000 }]
   egress:
     - to: [{ podSelector: { matchLabels: { app: postgres } } }]

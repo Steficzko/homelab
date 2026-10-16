@@ -1,5 +1,6 @@
-# Exact host takes precedence over the dental-clinic *.kostikidis.net wildcard
-# catch-all (ingress-nginx exact-host priority), so padle.kostikidis.net lands here.
+# On Traefik (CLSTR-29); the dental-clinic *.kostikidis.net wildcard catch-all is
+# still on ingress-nginx. When it moves too, exact hosts outrank wildcards in Traefik
+# as well, so padle.kostikidis.net keeps landing here.
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
@@ -15,9 +16,8 @@ metadata:
     # have two conflicting Certificates pointing to the same secret").
     # The explicit Certificate is the one to keep — it also covers the apex,
     # which the shim's copy does not. Re-adding this annotation re-creates the clash.
-    nginx.ingress.kubernetes.io/ssl-redirect: "false"
 spec:
-  ingressClassName: nginx
+  ingressClassName: traefik
   tls:
     - hosts: ["*.kostikidis.net"]
       secretName: padle-wildcard-tls

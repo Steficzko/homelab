@@ -5,10 +5,8 @@ metadata:
   namespace: paperless
   annotations:
     cert-manager.io/cluster-issuer: letsencrypt-prod
-    nginx.ingress.kubernetes.io/ssl-redirect: "false"
-    nginx.ingress.kubernetes.io/proxy-body-size: "0"   # scans and multi-page PDFs
 spec:
-  ingressClassName: nginx
+  ingressClassName: traefik
   tls:
     - hosts: [xartura.kostikidis.net]
       secretName: paperless-tls
