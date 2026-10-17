@@ -34,7 +34,7 @@ spec:
           # 17: the schema was developed and tested against PG17.
           # Digest-pinned (review N1 — renovate updates existing digests but
           # never adds one; the sibling dental postgres is pinned the same way).
-          image: postgres:17-alpine@sha256:18cfe3ef5e6815560c98237d6216d1e5119702fb0f3894c8785dd58b8bbe5d73
+          image: postgres:17-alpine@sha256:b0f9560a2de083e2cc7382e75f808c7381a32852a7ec49117deedb300e552b24
           ports: [{containerPort: 5432}]
           env:
             - {name: POSTGRES_DB, value: licensing}
