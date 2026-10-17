@@ -62,7 +62,7 @@ spec:
           resources:
             requests:
               memory: 512Mi
-              cpu: 100m
+              cpu: 500m            # client site: a real CPU share when the node is busy
             limits:
               memory: 2Gi          # 768Mi OOMKilled repeatedly during site build (2026-08-06)
               # No CPU limit: at 1 core, bursty PHP workers were CFS-throttled 85% while

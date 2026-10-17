@@ -60,10 +60,10 @@ spec:
           resources:
             requests:
               memory: 256Mi
-              cpu: 100m
+              cpu: 500m            # client site: a real CPU share when the node is busy
             limits:
-              memory: 768Mi
-              cpu: 1000m
+              memory: 1Gi          # idle 455Mi of 768Mi left no room for WooCommerce bursts (2026-10-17)
+              # No CPU limit: at 1 core PHP was CFS-throttled 90% while using 0.3 core (2026-10-17).
           readinessProbe:
             httpGet:
               path: /wp-login.php
@@ -73,6 +73,7 @@ spec:
                   value: staging.namosocks.com
             initialDelaySeconds: 15
             periodSeconds: 10
+            timeoutSeconds: 5      # 1 s default drops the only replica under load = full 503
           livenessProbe:
             tcpSocket:
               port: 80
