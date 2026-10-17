@@ -25,7 +25,7 @@ spec:
                     operator: DoesNotExist
       containers:
         - name: open-webui
-          image: ghcr.io/open-webui/open-webui@sha256:e597ba2ca4425ff40f1f677930baae1278cc1e44cea399d5f588d5ce53611910
+          image: ghcr.io/open-webui/open-webui@sha256:4860ba005ae8f19f08d1e12b0868855b7b339ea0dad9927f196820fc0de04575
           ports:
             - containerPort: 8080
           env:
