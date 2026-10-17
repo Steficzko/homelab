@@ -29,7 +29,7 @@ spec:
           restartPolicy: OnFailure
           containers:
             - name: watchdog
-              image: nixery.dev/shell/minio-client/curl/jq@sha256:96f52222657dd7bf2aca0f61568da7a6c7061dbdf78b480c89d7a9c867aed72f   # mc + curl + jq in one
+              image: nixery.dev/shell/minio-client/curl/jq@sha256:06f2e7ad141e31f4f29809da337f6430b852db47f8786c1e24de2cf1e88be5f6   # mc + curl + jq in one
               imagePullPolicy: IfNotPresent   # digest-only refs default to Always; nixery outage 2026-10-14 (STOR-51)
               envFrom:
                 - secretRef: { name: minio-replication-secret }   # SRC_/DST_ ACCESS_KEY + SECRET_KEY
