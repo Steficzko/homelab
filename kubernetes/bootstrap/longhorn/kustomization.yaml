@@ -16,3 +16,21 @@ namespace: longhorn-system
 resources:
   - https://raw.githubusercontent.com/longhorn/longhorn/v1.12.1/deploy/longhorn.yaml
   - setting-node-down-pod-deletion-policy.yaml    # STOR-42
+
+patches:
+  # Request = 14d p95, 2026-10-18 (CLSTR-15). longhorn-manager is the only Longhorn
+  # workload in longhorn.yaml: instance-managers (5 x ~1.5Gi) and the CSI sidecars are
+  # created at runtime and take no requests from git — that ~8.5Gi stays invisible to
+  # the scheduler; node system-reserved is the only knob. No limit: an OOM-killed
+  # manager detaches volumes.
+  - target: {kind: DaemonSet, name: longhorn-manager}
+    patch: |-
+      apiVersion: apps/v1
+      kind: DaemonSet
+      metadata: {name: longhorn-manager}
+      spec:
+        template:
+          spec:
+            containers:
+              - name: longhorn-manager
+                resources: {requests: {memory: 384Mi, cpu: 50m}}   # p95 310Mi, max 345Mi

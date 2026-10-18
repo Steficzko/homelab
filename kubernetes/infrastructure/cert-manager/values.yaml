@@ -1,2 +1,7 @@
 crds:
   enabled: true
+
+# Request = 14d p95 117Mi, 2026-10-18 (CLSTR-15). ponytail: webhook + cainjector
+# (~70Mi each) left BestEffort; add if CLSTR-6 eviction order matters.
+resources:
+  requests: {memory: 128Mi, cpu: 10m}

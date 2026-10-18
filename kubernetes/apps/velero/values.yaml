@@ -60,3 +60,7 @@ schedules:
         matchExpressions:
           - key: "velero.io/exclude-from-backup"
             operator: DoesNotExist
+
+# Request = 14d p95 204Mi, 2026-10-18 (CLSTR-15).
+resources:
+  requests: {memory: 256Mi, cpu: 50m}

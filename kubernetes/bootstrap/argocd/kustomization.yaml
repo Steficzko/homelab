@@ -58,3 +58,21 @@ patches:
                     matchLabels:
                       app.kubernetes.io/part-of: argocd
                   topologyKey: kubernetes.io/hostname
+  # Requests = 14d p95, 2026-10-18 (CLSTR-15). No limits: an OOM-killed controller
+  # stalls every sync. ponytail: only containers over ~100Mi; the other five sum to
+  # ~350Mi. Add them if BestEffort eviction order (CLSTR-6) ever bites.
+  - target: {kind: StatefulSet, name: argocd-application-controller}
+    patch: |-
+      - op: add
+        path: /spec/template/spec/containers/0/resources
+        value: {requests: {memory: 1Gi, cpu: 100m}}      # p95 974Mi, max 1226Mi
+  - target: {kind: Deployment, name: argocd-repo-server}
+    patch: |-
+      - op: add
+        path: /spec/template/spec/containers/0/resources
+        value: {requests: {memory: 256Mi, cpu: 50m}}     # p95 180Mi
+  - target: {kind: Deployment, name: argocd-dex-server}
+    patch: |-
+      - op: add
+        path: /spec/template/spec/containers/0/resources
+        value: {requests: {memory: 128Mi, cpu: 10m}}     # p95 115Mi
