@@ -5,7 +5,7 @@
 
 ## Context
 
-ADR-003 established `cloudflared` as the public ingress path: a wildcard tunnel route `*.kostikidis.net` → ingress-nginx with no ports open on the router. That was the right transport decision. It left one layer unaddressed: authentication. Until this decision, every subdomain on `*.kostikidis.net` was reachable by anyone on the internet with no authentication gate.
+ADR-003 established `cloudflared` as the public ingress path: a wildcard tunnel route `*.kostikidis.net` → ingress-nginx (Traefik since 2026-10-16, ADR-044) with no ports open on the router. That was the right transport decision. It left one layer unaddressed: authentication. Until this decision, every subdomain on `*.kostikidis.net` was reachable by anyone on the internet with no authentication gate.
 
 The cluster runs apps across a wide range of sensitivity: professional photo archives (Lightroom Immich), personal documents (Paperless-ngx), a client portfolio site (studioconcreteluka.com), and operational tooling (ArgoCD, Grafana, Longhorn). A flat open posture is not appropriate for this mix.
 
@@ -38,7 +38,7 @@ Applying the wildcard deny first, then carving out apps in sequence in a single 
 ## Consequences
 
 **Wins:**
-- Every app on `*.kostikidis.net` is behind authentication **on the public path**. *Corrected 2026-09-22: the original sentence claimed no subdomain was reachable without Access or Tailscale. That is false and always was — the ingress-nginx LoadBalancer (`192.168.1.201`–`.205`, ports 80/443) admits `192.168.1.0/24` and `100.64.0.0/10` via `loadBalancerSourceRanges`, so any LAN or tailnet client that resolves a hostname to a node IP gets the app with a valid Let's Encrypt certificate and no Access check (verified live: argocd, vault, plane all answer 200). This is deliberate for LAN reachability and is tracked as SEC-9; it is not covered by this ADR.*
+- Every app on `*.kostikidis.net` is behind authentication **on the public path**. *Corrected 2026-09-22: the original sentence claimed no subdomain was reachable without Access or Tailscale. That is false and always was — the ingress-nginx LoadBalancer (`192.168.1.201`–`.205`, ports 80/443) admits `192.168.1.0/24` and `100.64.0.0/10` via `loadBalancerSourceRanges`, so any LAN or tailnet client that resolves a hostname to a node IP gets the app with a valid Let's Encrypt certificate and no Access check (verified live: argocd, vault, plane all answer 200). This is deliberate for LAN reachability and is tracked as SEC-9; it is not covered by this ADR.* *Closed 2026-10-16: ADR-044 retired that LoadBalancer. Verified 2026-10-17: `.201`, `.203` and `.205` give no answer on 80 or 443, and the only LoadBalancer Services left are promtail-syslog (1514) and brain-syncthing (22000).*
 - Audit log: Cloudflare Access logs every authentication event on the public path. This is the first time the homelab has an auth audit trail — for internet-originated access only; LAN and tailnet hits at the LB IPs leave no Access record.
 - No router firewall rules required. Access policy enforcement happens at Cloudflare's edge, not in-cluster.
 - The mobile app constraint (Immich) is addressed cleanly: Tailscale already covers those devices at the network layer.

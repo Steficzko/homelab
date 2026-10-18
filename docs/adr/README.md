@@ -20,7 +20,7 @@ quietly overwritten. The ones I got wrong are still here on purpose.
 |---|---|---|
 | [001](ADR-001-gitops-toolchain.md) | GitOps toolchain | Accepted |
 | [002](ADR-002-infrastructure-split.md) | Infrastructure split (K3s / Unraid / ML machine) | Accepted |
-| [003](ADR-003-networking.md) | Cluster networking stack | Accepted |
+| [003](ADR-003-networking.md) | Cluster networking stack | Accepted (ingress part **superseded** by 044) |
 | [004](ADR-004-internal-dns.md) | Internal DNS: AdGuard over Pi-hole | **Superseded** (deployed, removed 2026-07-11) |
 | [006](ADR-006-dev-environment.md) | Dev environment: Debian VM on Unraid + Syncthing | Accepted |
 | [036](ADR-036-bootstrap-components-under-gitops.md) | ArgoCD and Longhorn manage themselves (pinned base, no prune) | Proposed |
@@ -28,6 +28,7 @@ quietly overwritten. The ones I got wrong are still here on purpose.
 ## Networking & security
 | ADR | Decision | Status |
 |---|---|---|
+| [044](ADR-044-traefik-replaces-ingress-nginx.md) | Traefik replaces ingress-nginx; ClusterIP only, tunnels are the sole entry | Accepted |
 | [010](ADR-010-cloudflare-zero-trust.md) | Cloudflare Zero Trust: wildcard deny + per-app carve-outs | Accepted |
 | [010-amend](ADR-010-amendment-cross-tenant-wpadmin.md) | Cross-tenant CF Access on studioconcreteluka `/wp-admin` | Proposed |
 | [025](ADR-025-wordpress-security-model.md) | WordPress security: Tunnel + ZT, not obscurity | Accepted |

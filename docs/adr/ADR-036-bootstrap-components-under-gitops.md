@@ -141,7 +141,7 @@ reconciled against it.
 1. `argocd-application-controller` still declares **no resource requests** (BestEffort QoS). It is
    the cluster's reconciler and is first in line for eviction under node pressure. Now that the
    StatefulSet is in git, this is a one-line fix — see ADR-035 follow-up 3.
-2. ~~Consider the same treatment for `cert-manager` and `ingress-nginx`.~~ **Checked 2026-08-30:
+2. ~~Consider the same treatment for `cert-manager` and `ingress-nginx`.~~ *(ingress-nginx replaced by Traefik, also an Argo Helm app, 2026-10-16, ADR-044.)* **Checked 2026-08-30:
    both already have ArgoCD Applications backed by their official Helm charts and both report
    Synced.** ArgoCD and Longhorn were the only two bootstrap components outside GitOps, and the
    gap is now closed. Recorded because "we should check the others" is the kind of follow-up that

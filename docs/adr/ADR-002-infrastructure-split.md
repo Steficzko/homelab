@@ -51,7 +51,7 @@ Hosts all apps that do not require direct filesystem access to media:
 - Nextcloud — file sync and source of truth for voice memos and photo dumps
 - Vaultwarden, Paperless-ngx, n8n, Obsidian LiveSync (CouchDB)
 - Homepage dashboard, Prometheus + Grafana monitoring
-- Cloudflare Tunnel, cert-manager, ingress-nginx
+- Cloudflare Tunnel, cert-manager, ingress-nginx *(Traefik since 2026-10-16, ADR-044)*
 - **Light ML tier:** small/short voice memos processed by a Whisper pod on the cluster CPUs (always-on, no wake cost)
 
 ### ML Machine (Debian, AMD Ryzen 7 3800X, 32 GB RAM, RX 6700 XT 12 GB VRAM) — Heavy GPU Inference

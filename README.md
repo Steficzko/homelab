@@ -53,10 +53,10 @@ application memory spikes can't threaten etcd — the goal is a production-grade
 self-hosted stack, the kind you'd run at a small company, but at home, on hardware
 I can touch.
 
-**Stack:** K3s · kube-vip · Longhorn · ingress-nginx · cert-manager ·
+**Stack:** K3s · kube-vip · Longhorn · Traefik · cert-manager ·
 Cloudflare Tunnel · ArgoCD · Prometheus + Grafana · Velero · SOPS + age
 
-**Public access:** Cloudflare Tunnel → Nginx Ingress → `*.kostikidis.net`
+**Public access:** Cloudflare Tunnel → Traefik → `*.kostikidis.net`
 
 **Secrets:** Encrypted with SOPS + age before they reach git — every `*.sops.yaml`
 file here is safe to commit. Full disclosure: one plaintext key leaked into history once

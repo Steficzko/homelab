@@ -35,7 +35,7 @@ Deploy a dedicated stack in a new `bjj` namespace:
 3. **nginx pod as reverse proxy and static host** — serves the static HTML/JS frontend
    and proxies `/api/*` requests to the n8n internal service. This is the only component
    reachable from the public ingress path.
-4. **Cloudflare Tunnel → ingress-nginx → nginx pod** — exposes `app.teamelwany.com`
+4. **Cloudflare Tunnel → ingress-nginx → nginx pod** *(the cluster ingress is Traefik since 2026-10-16, ADR-044; the nginx pod is unchanged)* — exposes `app.teamelwany.com`
    via the existing tunnel. The n8n service is never exposed publicly; all external
    traffic enters through the nginx pod.
 
@@ -44,7 +44,7 @@ Deploy a dedicated stack in a new `bjj` namespace:
 ```
 Coach's phone (browser)
   → app.teamelwany.com (Cloudflare Tunnel)
-    → ingress-nginx (K3s cluster)
+    → Traefik (K3s cluster; ingress-nginx until 2026-10-16)
       → nginx pod (static files + /api/* proxy)
         → n8n internal service (webhook handlers)
           → PostgreSQL (bjj namespace)

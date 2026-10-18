@@ -39,7 +39,7 @@ Two failure modes motivated this decision:
 
 The fix requires a DNS server that:
 - Runs independently of the router
-- Can override `*.kostikidis.net` to resolve to the internal kube-vip VIP (192.168.1.200) — *correction 2026-09-22: `.200` is the kube-vip **apiserver** VIP and serves no ingress; ingress-nginx is exposed by k3s ServiceLB on every node IP (`.201`–`.205`). There is no floating ingress VIP, so any future split-DNS record needs one first*
+- Can override `*.kostikidis.net` to resolve to the internal kube-vip VIP (192.168.1.200) — *correction 2026-09-22: `.200` is the kube-vip **apiserver** VIP and serves no ingress; ingress-nginx is exposed by k3s ServiceLB on every node IP (`.201`–`.205`). There is no floating ingress VIP, so any future split-DNS record needs one first. Since 2026-10-16 the ingress is ClusterIP-only Traefik (ADR-044) and nothing answers on `.201`–`.205` ports 80/443 at all*
 - Serves the entire LAN via router DHCP
 
 ## Decision
