@@ -1,0 +1,41 @@
+# Ollama on the AMD LXCs (110 xt-ml, 113 DrGemma) falls back to CPU silently when
+# /dev/kfd is not accessible: HTTP stays 200, LiteLLM and Kuma stay green, replies
+# just take 120 s instead of 5 s. That happened after every Proxmox cold boot until
+# the devN passthrough fix of 2026-10-18, and nothing noticed for hours.
+#
+# The one reliable signal is Ollama's own startup line, which the LXCs already ship
+# to Loki via syslog:  msg="inference compute" ... library=cpu   (GPU => library=ROCm)
+# so the alert is a Loki ruler rule, not a Prometheus one.
+#
+# ponytail: counts cpu lines in the last 2h, so the alert lingers up to 2h after a
+# fix restart; a "latest line is cpu" rule would need log-to-metric plumbing. Fine.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: loki-rules-ollama
+  namespace: monitoring
+  labels:
+    loki_rule: ""                            # picked up by the loki-sc-rules sidecar
+  annotations:
+    k8s-sidecar-target-directory: "fake"     # relative to /rules => /rules/fake (single tenant)
+data:
+  ollama-gpu.yaml: |
+    groups:
+      - name: ollama-gpu
+        rules:
+          - alert: OllamaRunningOnCPU
+            expr: |
+              sum by (host) (
+                count_over_time({job="syslog", app="ollama"} |= "inference compute" |= "library=cpu" [2h])
+              ) > 0
+            for: 5m
+            labels:
+              severity: warning
+            annotations:
+              summary: "Ollama on {{ $labels.host }} started without the GPU"
+              description: >-
+                Ollama logged `inference compute library=cpu` on {{ $labels.host }} in the
+                last 2h, so models run on CPU (~120 s per reply). Check /dev/kfd inside the
+                LXC (`runuser -u ollama -- head -c0 /dev/kfd`), the pct devN passthrough in
+                /etc/pve/lxc/<id>.conf, and `curl <host>:11434/api/ps` (size_vram must be > 0).
+                Restarting the container after a fix clears it.

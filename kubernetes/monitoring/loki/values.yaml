@@ -26,6 +26,21 @@ loki:
     retention_enabled: true
     delete_request_store: filesystem
     working_directory: /var/loki/compactor
+  # Ruler: evaluate LogQL alert rules and send them to Alertmanager. The chart's
+  # default rulerConfig has no storage and no alertmanager_url, so the rules the
+  # sidecar drops into /rules were never read. Rules live in ConfigMaps labelled
+  # `loki_rule` in this namespace (see extras/loki-rules-*.yaml); single-tenant
+  # Loki reads them from /rules/fake, hence the sidecar target-directory annotation.
+  rulerConfig:
+    wal:
+      dir: /var/loki/ruler-wal
+    storage:
+      type: local
+      local:
+        directory: /rules
+    rule_path: /var/loki/ruler-scratch   # scratch dir; must NOT be the rules dir
+    alertmanager_url: http://kube-prometheus-stack-alertmanager.monitoring.svc:9093
+    enable_api: true
 
 singleBinary:
   replicas: 1
