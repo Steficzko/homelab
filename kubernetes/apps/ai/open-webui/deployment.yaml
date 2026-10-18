@@ -64,7 +64,7 @@ spec:
             failureThreshold: 5
           resources:
             requests:
-              memory: 500Mi
+              memory: 1Gi        # 2026-10-18: 14d p95 = max 1016Mi (CLSTR-28); limit unchanged
               cpu: "250m"
             limits:
               memory: 3Gi

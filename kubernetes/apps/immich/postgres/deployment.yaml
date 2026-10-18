@@ -75,7 +75,7 @@ spec:
             - maintenance_work_mem=256MB
           resources:
             requests:
-              memory: 1Gi
+              memory: 1.5Gi      # 2026-10-18: 14d p95 1374Mi (CLSTR-28); limit unchanged
               cpu: 100m
             limits:
               memory: 6Gi

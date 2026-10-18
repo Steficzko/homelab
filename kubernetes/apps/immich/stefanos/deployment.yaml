@@ -62,7 +62,7 @@ spec:
               value: http://immich-ml.immich.svc.cluster.local:3003
           resources:
             requests:
-              memory: 1Gi
+              memory: 2Gi        # 2026-10-18: 14d p95 1727Mi (CLSTR-28); limit unchanged
               cpu: 250m
             limits:
               memory: 4Gi

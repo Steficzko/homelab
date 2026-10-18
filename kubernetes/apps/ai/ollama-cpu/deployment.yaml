@@ -23,6 +23,15 @@ spec:
                 matchExpressions:
                   - key: node-role.kubernetes.io/control-plane
                     operator: DoesNotExist
+            # 2026-10-18 (CLSTR-28): prefer the 32 GiB worker. This is the one 8Gi-limit
+            # tenant, and its Longhorn replica already lives on w1 since the g2->w1
+            # rebalance. Preferred, not required — it still schedules anywhere.
+            - weight: 50
+              preference:
+                matchExpressions:
+                  - key: kubernetes.io/hostname
+                    operator: In
+                    values: [k3s-prg-w1]
       containers:
         - name: ollama
           image: ollama/ollama@sha256:265409e1d931028a8f7d5a32bcbafddd7bffbc6cc629d77efe9560adf692a5e7
@@ -53,7 +62,10 @@ spec:
               # four cores when a fallback inference actually runs.
               cpu: 250m
             limits:
-              memory: 12Gi
+              # 2026-10-18: 14d max 3.85Gi with the fallback model loaded (p95 280Mi
+              # idle). 12Gi was 3x the largest thing it has ever held and the single
+              # biggest line in w2's 236%-of-RAM limit stack (CLSTR-28).
+              memory: 8Gi
               cpu: "4"
           volumeMounts:
             - name: data
