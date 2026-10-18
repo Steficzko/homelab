@@ -41,7 +41,7 @@ spec:
     spec:
       containers:
         - name: postgres
-          image: postgres:16-alpine@sha256:cf78e76683b9ca8c5733cbbdce6c9262b45b6767934dd0a95e671f9a0fc20685
+          image: postgres:16-alpine@sha256:721873c34ceb9f8d8fc265984940dc982404c105f19ad51be9fdc5970a6080ea
           env:
             - { name: POSTGRES_DB, value: warehouse }
             - { name: POSTGRES_USER, value: warehouse }
@@ -99,7 +99,7 @@ spec:
           restartPolicy: Never
           initContainers:
             - name: copy-mc
-              image: nixery.dev/shell/minio-client/curl/jq@sha256:96f52222657dd7bf2aca0f61568da7a6c7061dbdf78b480c89d7a9c867aed72f   # was quay.io/minio/mc — Quay gated anonymous pulls 2026-09-24
+              image: nixery.dev/shell/minio-client/curl/jq@sha256:06f2e7ad141e31f4f29809da337f6430b852db47f8786c1e24de2cf1e88be5f6   # was quay.io/minio/mc — Quay gated anonymous pulls 2026-09-24
               imagePullPolicy: IfNotPresent   # digest-only refs default to Always; nixery outage 2026-10-14 (STOR-51)
               securityContext:
                 runAsUser: 0
@@ -108,7 +108,7 @@ spec:
                 - { name: tools, mountPath: /tools }
           containers:
             - name: dump
-              image: postgres:16-alpine@sha256:cf78e76683b9ca8c5733cbbdce6c9262b45b6767934dd0a95e671f9a0fc20685
+              image: postgres:16-alpine@sha256:721873c34ceb9f8d8fc265984940dc982404c105f19ad51be9fdc5970a6080ea
               envFrom:
                 - secretRef: { name: backup-s3-secret }   # AWS_ACCESS_KEY_ID / AWS_SECRET_ACCESS_KEY / AWS_ENDPOINTS
               env:
