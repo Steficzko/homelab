@@ -99,7 +99,13 @@ spec:
           volumeMounts:
             - name: data
               mountPath: /var/lib/postgresql/data
+            - name: dshm
+              mountPath: /dev/shm
       volumes:
         - name: data
           persistentVolumeClaim:
             claimName: immich-postgres-pvc
+        - name: dshm                     # 2026-10-19: k8s default /dev/shm is 64 MB; Immich v3.3.3 vacuum
+          emptyDir:                      # failed "could not resize shared memory segment" (268 MB) on lightroom
+            medium: Memory
+            sizeLimit: 1Gi
