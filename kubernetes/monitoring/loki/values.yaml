@@ -44,6 +44,16 @@ loki:
 
 singleBinary:
   replicas: 1
+  # 2026-10-18: p95 420Mi, max 515Mi over 14d. The LIMIT is deliberate: Loki grows
+  # without bound under query load and shares w2 with Immich; the Grafana freeze of
+  # 2026-10-16 showed eviction is too slow for that shape. 2Gi = 4x observed max,
+  # enough for WAL replay and compaction after a restart.
+  resources:
+    requests:
+      memory: 512Mi
+      cpu: 50m
+    limits:
+      memory: 2Gi
   persistence:
     enabled: true
     storageClass: longhorn
@@ -83,6 +93,17 @@ bloomCompactor:
   replicas: 0
 bloomGateway:
   replicas: 0
+
+# Requests = 14d p95 (2026-10-18); these three had none.
+sidecar:
+  resources:
+    requests: {memory: 96Mi, cpu: 10m}     # loki-sc-rules p95 89Mi
+lokiCanary:
+  resources:
+    requests: {memory: 64Mi, cpu: 10m}     # p95 52Mi
+gateway:
+  resources:
+    requests: {memory: 32Mi, cpu: 10m}     # nginx p95 13Mi
 
 # Caches are only useful in distributed/microservices mode — disable in SingleBinary
 chunksCache:
