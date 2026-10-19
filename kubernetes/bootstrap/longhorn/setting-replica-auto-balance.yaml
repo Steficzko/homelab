@@ -1,0 +1,16 @@
+# Disabled on purpose (2026-10-18 23:36 CEST incident). With auto-balance on, a longhorn-manager
+# rollout (DaemonSet maxUnavailable 100%, all five restart at once) let b3's manager see r1
+# "not ready" for ~7 s and "evict" 30 replicas (122 GiB) onto g2, then delete the r1 copies —
+# g2 hit its 99% scheduling ceiling and the morning's manual rebalance was undone.
+#
+# It never helped here anyway: every volume is 2 replicas on 2 distinct nodes with no zones,
+# so the per-volume balancer has nothing to balance. Node imbalance is fixed by hand
+# (allowScheduling=false on the non-target nodes, delete replica, wait healthy).
+#
+# Setting CR because the live value was hand-applied least-effort and not in git.
+apiVersion: longhorn.io/v1beta2
+kind: Setting
+metadata:
+  name: replica-auto-balance
+  namespace: longhorn-system
+value: disabled

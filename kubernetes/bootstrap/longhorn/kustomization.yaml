@@ -16,6 +16,7 @@ namespace: longhorn-system
 resources:
   - https://raw.githubusercontent.com/longhorn/longhorn/v1.12.1/deploy/longhorn.yaml
   - setting-node-down-pod-deletion-policy.yaml    # STOR-42
+  - setting-replica-auto-balance.yaml            # disabled, see file
 
 patches:
   # Request = 14d p95, 2026-10-18 (CLSTR-15). longhorn-manager is the only Longhorn
