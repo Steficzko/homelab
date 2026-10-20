@@ -1,0 +1,121 @@
+# Nightly catch-up for Longhorn volumes that missed their daily-backup.
+#
+# 2026-10-20: the daily-backup recurring job (01:00Z) opens with an API call to
+# longhorn-backend that k3s's kube-router REJECTs until it has learned the new pod's
+# IP ("connection refused", 14/14 nights in Loki). Longhorn's job does not retry a
+# volume, so on a bad night one volume silently skips its backup and
+# LonghornVolumeBackupStale pages 26h later (vikunja 2026-10-17, nocodb 2026-10-20).
+# The first fix (e91bfb0) opened the manager API to the whole pod CIDR — an
+# unauthenticated API that can delete volumes, reachable from 29 namespaces without
+# egress policy. Reverted. This job takes the other road: 90 minutes after the
+# recurring job, any daily-backup volume whose last backup is older than
+# MAX_AGE_HOURS gets a Snapshot CR + Backup CR through the Kubernetes API (the same
+# recipe used by hand on 2026-10-20), so nothing here touches port 9500 and nothing
+# is exposed. It also covers every other reason a night is missed (backupstore lock,
+# manager restart during the run). Snapshots carry RecurringJob=daily-backup so the
+# recurring job's retain=30 prunes them like its own.
+#
+# Manual run for one volume:
+#   kubectl -n longhorn-system create job --from=cronjob/backup-catchup catchup-now
+#   (set MAX_AGE_HOURS=0 and VOLUME_SELECTOR=longhornvolume=<pvc-…> on the Job to force one)
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: backup-catchup
+  namespace: longhorn-system
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: backup-catchup
+  namespace: longhorn-system
+rules:
+  - apiGroups: ["longhorn.io"]
+    resources: ["volumes"]
+    verbs: ["get", "list"]
+  - apiGroups: ["longhorn.io"]
+    resources: ["snapshots", "backups"]
+    verbs: ["get", "list", "create"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: backup-catchup
+  namespace: longhorn-system
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: backup-catchup
+subjects:
+  - kind: ServiceAccount
+    name: backup-catchup
+    namespace: longhorn-system
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: backup-catchup
+  namespace: longhorn-system
+spec:
+  schedule: "30 2 * * *"            # 90 min after daily-backup (01:00Z), before the 26h alert
+  timeZone: Etc/UTC
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      backoffLimit: 0
+      activeDeadlineSeconds: 5400
+      template:
+        spec:
+          serviceAccountName: backup-catchup
+          restartPolicy: Never
+          containers:
+            - name: catchup
+              image: nixery.dev/shell/kubectl/jq/coreutils@sha256:01b76bb0a908f290bad6d43be08f43ce27981bfcd8d61880347eb254550d4611
+              env:
+                - name: MAX_AGE_HOURS
+                  value: "20"
+                - name: VOLUME_SELECTOR
+                  value: "recurring-job.longhorn.io/daily-backup=enabled"
+              resources:
+                requests: {cpu: 20m, memory: 64Mi}
+                limits: {memory: 256Mi}
+              command: ["bash", "-euo", "pipefail", "-c"]
+              args:
+                - |
+                  now=$(date +%s); cutoff=$(( MAX_AGE_HOURS * 3600 )); day=$(date -u +%Y%m%d)
+                  stale=0; fixed=0; failed=0
+                  kubectl get volumes.longhorn.io -l "$VOLUME_SELECTOR" -o json \
+                    | jq -r '.items[] | select((.status.lastBackupAt // "") != "")
+                             | [.metadata.name, .status.lastBackupAt, .status.state, .status.robustness] | @tsv' \
+                    | while IFS=$'\t' read -r vol last state robustness; do
+                        age=$(( now - $(date -d "$last" +%s) ))
+                        [ "$age" -ge "$cutoff" ] || continue
+                        echo "STALE $vol last=$last age=$((age/3600))h state=$state robustness=$robustness"
+                        if [ "$state" != attached ]; then echo "  skip: volume not attached"; continue; fi
+                        name="catchup-${day}-${vol#pvc-}"; name=${name:0:24}
+                        kubectl apply -f - <<EOF
+                  apiVersion: longhorn.io/v1beta2
+                  kind: Snapshot
+                  metadata: {name: ${name}, labels: {RecurringJob: daily-backup}}
+                  spec: {volume: ${vol}, createSnapshot: true}
+                  EOF
+                        for i in $(seq 1 60); do
+                          [ "$(kubectl get snapshot "$name" -o jsonpath='{.status.readyToUse}')" = true ] && break; sleep 5
+                        done
+                        [ "$(kubectl get snapshot "$name" -o jsonpath='{.status.readyToUse}')" = true ] \
+                          || { echo "  FAIL: snapshot not ready after 5m"; continue; }
+                        kubectl apply -f - <<EOF
+                  apiVersion: longhorn.io/v1beta2
+                  kind: Backup
+                  metadata: {name: ${name}, labels: {backup-volume: ${vol}}}
+                  spec: {snapshotName: ${name}, labels: {RecurringJob: daily-backup}}
+                  EOF
+                        for i in $(seq 1 360); do
+                          s=$(kubectl get backup "$name" -o jsonpath='{.status.state}')
+                          case "$s" in Completed) break;; Error) break;; esac; sleep 5
+                        done
+                        echo "  backup $name state=$s error=$(kubectl get backup "$name" -o jsonpath='{.status.error}')"
+                      done
+                  echo "catch-up finished"

@@ -40,13 +40,18 @@ spec:
               Act now — at 100% every LXC/VM on local-lvm loses write access together
               and filesystems can corrupt. Free space or stop a container.
 
+        # critical since 2026-10-20: pve and all five ML LXCs were off the network for
+        # 11 minutes during the switch swap and nobody was paged — at warning/15m this
+        # only reached the 12h digest. The exporter is the only probe of the hypervisor,
+        # so "exporter down" is "pve down" until proven otherwise.
         - alert: PVEExporterDown
           expr: up{job="pve-exporter"} == 0
-          for: 15m
+          for: 5m
           labels:
-            severity: warning
+            severity: critical
           annotations:
-            summary: "pve-exporter is down — pve is unmonitored again"
+            summary: "pve-exporter is down — pve (and the ML LXCs on it) may be off the network"
             description: >-
-              Without this exporter nothing watches the thin pool. That blind spot is
-              how it reached 92.6% unnoticed.
+              Check pve itself first (ping 192.168.1.122, LXCs .224-.228), then the
+              exporter pod. Without it nothing watches the thin pool either; that blind
+              spot is how it reached 92.6% unnoticed.
