@@ -35,3 +35,23 @@ patches:
             containers:
               - name: longhorn-manager
                 resources: {requests: {memory: 384Mi, cpu: 50m}}   # p95 310Mi, max 345Mi
+
+  # 2026-10-20: the nightly daily-backup pod's FIRST call to longhorn-backend:9500 was
+  # "connection refused" on 14 of the last 14 nights (Loki). The upstream policy admits
+  # recurring-job pods by pod label; k3s's kube-router has to learn the new pod's IP
+  # into an ipset first, and until then it REJECTs with icmp-port-unreachable, which is
+  # exactly what the client prints. Usually the API-client retry absorbs it; when it
+  # does not, the first volume in the list silently gets no backup and
+  # LonghornVolumeBackupStale pages 26h later (vikunja 10-17, nocodb 10-20). An ipBlock
+  # rule is a static iptables match with no learning lag. 29 namespaces have egress
+  # policies, so "any pod" is in practice Longhorn's own pods plus the handful of
+  # namespaces without egress rules.
+  - target: {kind: NetworkPolicy, name: longhorn-manager}
+    patch: |-
+      - op: add
+        path: /spec/ingress/-
+        value:
+          from:
+            - ipBlock: {cidr: 10.42.0.0/16}      # k3s pod CIDR
+          ports:
+            - {port: 9500, protocol: TCP}        # manager API only
