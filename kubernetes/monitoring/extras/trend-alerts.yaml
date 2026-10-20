@@ -14,11 +14,12 @@
 # over steps is noise, and LonghornNodeSchedulingCeiling at 85% is the right
 # tool for it.
 #
-# Each rule also requires the 1d slope to point the same way. Day one taught
-# why: the Immich v3.3.3 migration ate 1.6 GB of immich-postgres-pvc in one
-# step and the ryzen-ml cleanup gave the thin pool 14 points back in one step;
-# a 3d linear fit through a single step predicted "full in 14d" for two days
-# on a disk that had stopped moving. A real drift moves in the last day too.
+# Each rule also requires the value to be worse than it was 6h ago. Day one
+# taught why: the Immich v3.3.3 migration ate 1.6 GB of immich-postgres-pvc in
+# one step and the ryzen-ml cleanup gave the thin pool 14 points back in one
+# step; a linear fit through a single step (3d or 1d window, tried both)
+# predicted "full in 14d" for two days on a disk that had stopped moving. A
+# real drift is still moving six hours later; a step is not.
 apiVersion: monitoring.coreos.com/v1
 kind: PrometheusRule
 metadata:
@@ -35,7 +36,8 @@ spec:
           expr: >-
             100 * predict_linear(pve_disk_usage_bytes{id="storage/pve/local-lvm"}[3d], 14*86400)
             / pve_disk_size_bytes{id="storage/pve/local-lvm"} > 100
-            and deriv(pve_disk_usage_bytes{id="storage/pve/local-lvm"}[1d]) > 0
+            and pve_disk_usage_bytes{id="storage/pve/local-lvm"}
+                > pve_disk_usage_bytes{id="storage/pve/local-lvm"} offset 6h
           for: 2h
           labels:
             severity: warning
@@ -55,7 +57,7 @@ spec:
           expr: >-
             predict_linear(kubelet_volume_stats_available_bytes[3d], 14*86400) < 0
             and (kubelet_volume_stats_used_bytes / kubelet_volume_stats_capacity_bytes > 0.5)
-            and deriv(kubelet_volume_stats_available_bytes[1d]) < 0
+            and kubelet_volume_stats_available_bytes < kubelet_volume_stats_available_bytes offset 6h
           for: 2h
           labels:
             severity: warning
@@ -75,7 +77,8 @@ spec:
             predict_linear(node_filesystem_avail_bytes{job="unraid-node-exporter",mountpoint=~"/mnt/(disk[0-9]+|user)"}[3d], 14*86400) < 0
             and (node_filesystem_avail_bytes{job="unraid-node-exporter",mountpoint=~"/mnt/(disk[0-9]+|user)"}
                  / node_filesystem_size_bytes{job="unraid-node-exporter",mountpoint=~"/mnt/(disk[0-9]+|user)"} < 0.3)
-            and deriv(node_filesystem_avail_bytes{job="unraid-node-exporter",mountpoint=~"/mnt/(disk[0-9]+|user)"}[1d]) < 0
+            and node_filesystem_avail_bytes{job="unraid-node-exporter",mountpoint=~"/mnt/(disk[0-9]+|user)"}
+                < node_filesystem_avail_bytes{job="unraid-node-exporter",mountpoint=~"/mnt/(disk[0-9]+|user)"} offset 6h
           for: 2h
           labels:
             severity: warning
