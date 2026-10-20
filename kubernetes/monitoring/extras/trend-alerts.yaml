@@ -1,0 +1,80 @@
+# Trend alerts (2026-10-20). Everything that hurt in October was a slow drift
+# that was only noticed at the cliff: the pve thin pool (76% -> 82% in six days,
+# VG has 0 free extents so it cannot grow), the Longhorn scheduling ceiling,
+# swap quietly re-enabled, an Unraid share pinned to two disks at 90%. The
+# threshold rules in estate-alerts.yaml / pve-alerts.yaml say "it is full now";
+# these say "it will be full in N days at the current rate", which is the only
+# version that leaves time to act. All warning: they land in the 12h digest.
+#
+# predict_linear over 3d: Prometheus keeps 7d, and a 3d window is long enough
+# to ignore a nightly backup burst but short enough to notice a change this
+# week. Each expression was run live before being written here; the match
+# count at that time is noted. Deliberately NOT here: Longhorn scheduled bytes.
+# That moves in steps when a PVC is created or a replica rebuilt, a linear fit
+# over steps is noise, and LonghornNodeSchedulingCeiling at 85% is the right
+# tool for it.
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: trend-alerts
+  namespace: monitoring
+  labels:
+    release: kube-prometheus-stack   # required by the Prometheus ruleSelector
+spec:
+  groups:
+    - name: trend-capacity
+      rules:
+        # 1 series. Was predicting 105.9% in 14d on 2026-10-20 (ryzen-ml LXC at 95%).
+        - alert: PVEThinPoolFullIn14d
+          expr: >-
+            100 * predict_linear(pve_disk_usage_bytes{id="storage/pve/local-lvm"}[3d], 14*86400)
+            / pve_disk_size_bytes{id="storage/pve/local-lvm"} > 100
+          for: 2h
+          labels:
+            severity: warning
+          annotations:
+            summary: >-
+              pve thin pool local-lvm reaches 100% within 14 days at the current rate
+              (predicted {{ $value | printf "%.0f" }}%)
+            description: >-
+              The VG cannot auto-extend. Find the LXC whose disk is growing
+              (`lvs -o lv_name,data_percent` on pve), prune images / logs inside it
+              (mountoptions=discard returns the space to the pool), or move a volume.
+
+        # 141 series scanned, 1 matched on 2026-10-20. Only volumes already past
+        # 50% count: an empty volume filling its first gigabyte extrapolates to
+        # anything.
+        - alert: PVCFullIn14d
+          expr: >-
+            predict_linear(kubelet_volume_stats_available_bytes[3d], 14*86400) < 0
+            and (kubelet_volume_stats_used_bytes / kubelet_volume_stats_capacity_bytes > 0.5)
+          for: 2h
+          labels:
+            severity: warning
+          annotations:
+            summary: >-
+              {{ $labels.namespace }}/{{ $labels.persistentvolumeclaim }} will be full
+              within 14 days at the current rate
+            description: >-
+              Longhorn volumes can be expanded but never shrunk (ADR-024); NFS-backed
+              PVCs report the Unraid share behind them, so the fix may be on the NAS
+              (share include list, mover) rather than in Kubernetes.
+
+        # 0 matched on 2026-10-20. Array disks and the user share on both NAS boxes,
+        # only once below 30% free so a quiet disk does not extrapolate.
+        - alert: UnraidFilesystemFullIn14d
+          expr: >-
+            predict_linear(node_filesystem_avail_bytes{job="unraid-node-exporter",mountpoint=~"/mnt/(disk[0-9]+|user)"}[3d], 14*86400) < 0
+            and (node_filesystem_avail_bytes{job="unraid-node-exporter",mountpoint=~"/mnt/(disk[0-9]+|user)"}
+                 / node_filesystem_size_bytes{job="unraid-node-exporter",mountpoint=~"/mnt/(disk[0-9]+|user)"} < 0.3)
+          for: 2h
+          labels:
+            severity: warning
+          annotations:
+            summary: >-
+              {{ $labels.instance }} {{ $labels.mountpoint }} will be full within
+              14 days at the current rate
+            description: >-
+              An array disk does not spill onto the next one. Check which share is
+              pinned to it (shareInclude in /boot/config/shares/*.cfg) and widen the
+              include list or move data with the mover.

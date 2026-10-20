@@ -467,6 +467,27 @@ alertmanager:
           # floor small and let repeat_interval alone set the cadence.
           group_interval: 5m
           repeat_interval: 24h
+        # KubeJobFailed alerts once per failed Job OBJECT. With hourly CronJobs and
+        # failedJobsHistoryLimit 3, one broken image (nixery 2026-10-14) produced 104
+        # firings in a day and told us nothing BackupJobStale / BackupWatchdogStale /
+        # LonghornVolumeBackupStale had not already said. Black hole.
+        - matchers:
+            - alertname = "KubeJobFailed"
+          receiver: "null"
+        # Digest tier (2026-10-20). 223 Telegram messages in the week of 10-14..10-20;
+        # two real incidents and a week of rollouts, and the owner stopped reading
+        # them. Warnings are never "act in the next five minutes": they are grouped
+        # into ONE message per severity and re-sent at most every 12h, so the phone
+        # sees a morning and an evening digest. Critical still falls through to the
+        # default route below and pages immediately. Same group_interval/repeat trap
+        # as Watchdog: group_interval is the floor, 24h is a multiple of 12h.
+        - matchers:
+            - severity = "warning"
+          receiver: telegram
+          group_by: ['severity']
+          group_wait: 10m
+          group_interval: 12h
+          repeat_interval: 24h
     receivers:
       - name: "null"
       # Dead-man switch. healthchecks.io expects a ping every hour (30m grace) and
@@ -495,3 +516,8 @@ alertmanager:
       - source_matchers: ['severity = "critical"']
         target_matchers: ['severity =~ "warning|info"']
         equal: ['namespace', 'alertname']
+      # PVEExporterDown and the stock TargetDown{job=pve-exporter} are one outage
+      # described twice (22h of both on 2026-10-17). Keep the one with the estate
+      # wording, mute the generic one while it fires.
+      - source_matchers: ['alertname = "PVEExporterDown"']
+        target_matchers: ['alertname = "TargetDown"', 'job = "pve-exporter"']

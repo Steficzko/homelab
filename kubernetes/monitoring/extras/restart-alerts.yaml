@@ -1,6 +1,11 @@
 # Slow-spaced container crashes (e.g. OOMKills hours apart) never trip the stock
 # KubePodCrashLooping alert — blanca-web wordpress died 3x on 2026-08-06 with no
-# signal anywhere. This fires on ANY container restart, cluster-wide.
+# signal anywhere. First version fired on ANY single restart: 114 firings in the
+# week of 2026-10-14 (boot-time svclb/node-sysctl restarts, rollouts, one-off
+# self-heals) and it became wallpaper. Now: 3+ restarts of one container in 24h,
+# which still catches the blanca-web case and ignores a container that died once
+# and came back. kube-system excluded: svclb/kube-vip/node-sysctl restart on
+# every node boot by design. Single restarts stay visible in Grafana.
 apiVersion: monitoring.coreos.com/v1
 kind: PrometheusRule
 metadata:
@@ -13,13 +18,14 @@ spec:
     - name: container-restarts
       rules:
         - alert: ContainerRestarted
-          expr: increase(kube_pod_container_status_restarts_total[15m]) > 0
+          expr: increase(kube_pod_container_status_restarts_total{namespace!="kube-system"}[24h]) >= 3
+          for: 10m
           labels:
             severity: warning
           annotations:
             summary: >-
               Container {{ $labels.namespace }}/{{ $labels.pod }}/{{ $labels.container }} restarted
             description: >-
-              {{ $value | humanize }} restart(s) in the last 15m — check
+              {{ $value | humanize }} restarts in the last 24h — check
               `kubectl -n {{ $labels.namespace }} describe pod {{ $labels.pod }}`
               for the Last State reason (OOMKilled, Error, ...).
