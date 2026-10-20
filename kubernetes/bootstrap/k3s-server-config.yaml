@@ -67,9 +67,13 @@ kubelet-arg:
 #       - "kube-reserved=memory=1Gi"
 #       - "eviction-hard=memory.available<500Mi,nodefs.available<10%,imagefs.available<15%,nodefs.inodesFree<5%"
 #
-# plus swap OFF (swapoff -a, swap line commented in /etc/fstab). 2026-10-16: workers had
-# no reservation and 12G swap, so a runaway pod (Grafana, no limit) froze w2 for 8 min
-# in swap thrash with zero OOM kills. All four disk thresholds are listed because a
+# plus swap OFF: swapoff -a, swap line commented in /etc/fstab, AND the swap partition
+# retyped (`sfdisk --part-type /dev/nvme0n1 3 0FC63DAF-8483-4772-8E79-3D69D8477DE4`).
+# The fstab comment alone is not enough on a GPT disk: systemd-gpt-auto-generator
+# activates any "Linux swap"-typed partition at boot, which is how w1/w2 got their 12G
+# swap back at the 2026-10-17 power-loss reboot. NodeSwapEnabled alerts if it returns.
+# 2026-10-16: workers had no reservation and 12G swap, so a runaway pod (Grafana, no
+# limit) froze w2 for 8 min in swap thrash with zero OOM kills. All four disk thresholds are listed because a
 # partial eviction-hard can drop the unlisted defaults. Verify with configz.
 # ---------------------------------------------------------------------------
 

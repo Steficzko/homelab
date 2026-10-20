@@ -301,6 +301,50 @@ spec:
               the manifests, not the data. The data lives in the Longhorn backups
               and the application dumps, which have their own rules above.
 
+        # KubeJobFailed went to the null receiver on 2026-10-20 (one alert per failed
+        # Job OBJECT: 104 firings during the nixery outage). That left 12 CronJobs
+        # whose names dodge the *backup* regex above with no failure signal at all
+        # (vault-git, brain-digest, descheduler, immich-reaper, paperless-import,
+        # nextcloud-cron, both wp-cron, licensing-mark-lapsed, clinic-idempotency-
+        # reaper). This is the replacement: ONE alert per CronJob, for as long as its
+        # latest scheduled run has not produced a success. 2h absorbs a run that is
+        # still in progress; nothing here legitimately runs longer. 32/32 CronJobs
+        # expose both metrics (verified 2026-10-20).
+        - alert: CronJobLastRunFailed
+          expr: >-
+            kube_cronjob_status_last_schedule_time
+            - on (namespace, cronjob) kube_cronjob_status_last_successful_time > 0
+          for: 2h
+          labels:
+            severity: warning
+          annotations:
+            summary: >-
+              CronJob {{ $labels.namespace }}/{{ $labels.cronjob }} has not succeeded
+              since its last scheduled run ({{ $value | humanizeDuration }} ago)
+            description: >-
+              `kubectl -n {{ $labels.namespace }} get jobs -l job-name` for the failed
+              Job and its pod logs. Resolves on the next successful run.
+
+    # ---------------------------------------------------------------- nodes
+    - name: estate-nodes
+      rules:
+        # Swap was switched off on the workers on 2026-10-16 (w2 thrash) and came
+        # back silently on 2026-10-17: the fstab line was commented, but the GPT
+        # partition type was still "Linux swap" and systemd-gpt-auto re-enabled it
+        # at the power-loss reboot. Found by luck two days later. 5 series, all 0.
+        - alert: NodeSwapEnabled
+          expr: node_memory_SwapTotal_bytes{job="node-exporter"} > 0
+          for: 10m
+          labels:
+            severity: warning
+          annotations:
+            summary: "{{ $labels.instance }} has {{ $value | humanize1024 }}B of swap enabled"
+            description: >-
+              Swap hides memory pressure as I/O stall and lets a runaway pod freeze
+              the node (w2, 2026-10-16). `swapoff -a`, then make sure nothing turns
+              it back on: no fstab line AND partition type not "Linux swap"
+              (`sfdisk --part-type /dev/nvme0n1 3 0FC63DAF-8483-4772-8E79-3D69D8477DE4`).
+
     # --------------------------------------------------------- certificates
     - name: estate-certificates
       rules:

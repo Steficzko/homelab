@@ -476,15 +476,19 @@ alertmanager:
           receiver: "null"
         # Digest tier (2026-10-20). 223 Telegram messages in the week of 10-14..10-20;
         # two real incidents and a week of rollouts, and the owner stopped reading
-        # them. Warnings are never "act in the next five minutes": they are grouped
-        # into ONE message per severity and re-sent at most every 12h, so the phone
-        # sees a morning and an evening digest. Critical still falls through to the
-        # default route below and pages immediately. Same group_interval/repeat trap
-        # as Watchdog: group_interval is the floor, 24h is a multiple of 12h.
+        # them. Warnings are never "act in the next five minutes": one message per
+        # alertname, re-sent at most every 12h. Grouped by alertname, NOT severity:
+        # with group_by severity a warning that never resolves (the pve thin pool)
+        # keeps the group open and every NEW warning waits up to 12h for the next
+        # tick (contrarian, 2026-10-20). Per alertname a new kind of problem arrives
+        # after group_wait; more instances of the same kind batch into its 12h
+        # digest. Critical still falls through to the default route below and pages
+        # immediately. Same group_interval/repeat trap as Watchdog: group_interval
+        # is the floor, 24h is a multiple of 12h.
         - matchers:
             - severity = "warning"
           receiver: telegram
-          group_by: ['severity']
+          group_by: ['alertname']
           group_wait: 10m
           group_interval: 12h
           repeat_interval: 24h

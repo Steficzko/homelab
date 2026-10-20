@@ -22,7 +22,7 @@ spec:
       # 2026-10-04: the 23:30Z run hung >30 min in the Longhorn `mc ls --recursive` and, with
       # concurrencyPolicy Forbid and no deadline, blocked every later run -> healthchecks.io
       # backup-watchdog DOWN. A normal run takes ~2 min; the deadline turns a hang into a
-      # failed job (KubeJobFailed) instead of a silently frozen watchdog.
+      # failed job (BackupWatchdogStale / CronJobLastRunFailed) instead of a silently frozen watchdog.
       activeDeadlineSeconds: 900
       template:
         spec:
@@ -165,7 +165,7 @@ spec:
                   check neo4j       "src/app-backups/neo4j/"              300000 93600 "$PUSH_NEO4J"        # daily 02:15
                   # The licensing control plane (every issued licence). Hourly at :35 since
                   # 2026-09-16; it shipped with no watch and no credential, and the first 15
-                  # runs failed unnoticed by anything but KubeJobFailed. Dumps are ~34 KB
+                  # runs failed unnoticed by anything but the CronJob staleness rules. Dumps are ~34 KB
                   # (34,408 B on 2026-09-17); 17000 is the half-size rule. NOTE the job's own
                   # size check uses `mc stat`, which needs ListBucket on the bucket — see the
                   # policy comment in saas-gompha-licensing/staging/backup.yaml.
