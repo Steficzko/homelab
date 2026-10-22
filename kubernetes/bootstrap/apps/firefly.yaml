@@ -6,7 +6,7 @@ metadata:
 spec:
   project: default
   # Firefly III — full multi-currency (IQD + CZK) finance manager at money.kostikidis.net.
-  # App (fireflyiii/core 6.6.6) + dedicated Postgres. SMTP (Gmail) wired; upload dir
+  # App (fireflyiii/core 6.7.9) + dedicated Postgres. SMTP (Gmail) wired; upload dir
   # perms fixed via initContainer; netpol allows SMTP egress. Behind *.kostikidis.net
   # Cloudflare Access wildcard. Secrets in SOPS, applied out-of-band.
   source:

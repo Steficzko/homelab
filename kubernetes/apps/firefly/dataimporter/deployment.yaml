@@ -17,7 +17,8 @@ spec:
     spec:
       containers:
         - name: dataimporter
-          image: fireflyiii/data-importer:version-2.3.4
+          # Tag+digest pin: PHP2Shell (CVE-2026-109618/109619), PHP 8.5.12.
+          image: fireflyiii/data-importer:version-2.3.5@sha256:59f2f26ddf6eb55e84ce0d571259c9aabd6ddfcc23dd4d3825ab01ad79e34930
           envFrom:
             - secretRef:
                 name: dataimporter-secret   # FIREFLY_III_ACCESS_TOKEN (+ NORDIGEN_* later)
