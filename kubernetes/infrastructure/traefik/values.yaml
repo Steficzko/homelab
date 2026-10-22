@@ -54,6 +54,13 @@ service:
       spec:
         type: LoadBalancer
         loadBalancerClass: kube-vip.io/kube-vip-class
+        # k3s ServiceLB still rewrites status on EVERY LoadBalancer (its status loop does
+        # not check the class) and blanks kube-vip's IP. kube-proxy follows externalIPs
+        # from spec, so the VIP keeps working whatever ends up in status.
+        externalIPs:
+          - 192.168.1.210
+        # No NodePort on every node (F-001): the VIP is the only way in.
+        allocateLoadBalancerNodePorts: false
       annotations:
         kube-vip.io/loadbalancerIPs: 192.168.1.210
 
