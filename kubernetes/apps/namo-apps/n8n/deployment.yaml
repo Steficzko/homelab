@@ -29,7 +29,8 @@ spec:
         fsGroup: 1000
       containers:
         - name: n8n
-          image: n8nio/n8n:2.39.4
+          # Tag+digest pin, stable channel only (2.45.x was pre-release).
+          image: n8nio/n8n:2.44.6@sha256:d02752c6ab446ae9db8deec2f9cc887c378f77cdcad31650814df936b7386dfb
           envFrom:
             - secretRef:
                 name: namo-n8n-secret     # N8N_ENCRYPTION_KEY
