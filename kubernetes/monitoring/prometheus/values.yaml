@@ -324,6 +324,19 @@ prometheus:
             labels:
               site: greece
               nas: ptolemaida
+      # The house edge router (Beelink ME mini, OpenWrt, "wrt-edge"). Lua node
+      # exporter bound to its LAN address only; adds WAN throughput, conntrack,
+      # load and per-interface (per-VLAN) counters. Liveness is NOT this job's job:
+      # if the router dies Prometheus loses the internet too, so the dead-man is the
+      # healthchecks.io check `wrt-edge`, pinged from Greece over the tailnet.
+      - job_name: router-node-exporter
+        metrics_path: /metrics
+        scrape_interval: 60s
+        static_configs:
+          - targets: ["192.168.1.1:9100"]
+            labels:
+              site: prague
+              instance: wrt-edge
 
       # ---------------------------------------------------------------------
       # PROPOSED, NOT ENABLED. Both blocks below are commented out because each
