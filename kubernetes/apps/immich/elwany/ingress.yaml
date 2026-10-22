@@ -4,8 +4,16 @@ metadata:
   name: immich-elwany
   namespace: immich
   annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    # `lan` = direct LAN path at home (traefik values, ADR-044 amendment 2026-10-22).
+    traefik.ingress.kubernetes.io/router.entrypoints: web,websecure,lan
 spec:
   ingressClassName: traefik
+  # Needed only for the LAN path (Cloudflare terminates TLS for the tunnel).
+  tls:
+    - hosts:
+        - gallery.teamelwany.com
+      secretName: immich-elwany-gallery-tls
   rules:
     - host: gallery.teamelwany.com
       http:

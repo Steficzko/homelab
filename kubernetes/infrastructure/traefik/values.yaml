@@ -48,6 +48,14 @@ service:
     # LoadBalancer (with nginx's loadBalancerSourceRanges and no NodePorts, F-001)
     # comes over in that final step.
     type: ClusterIP
+  additionalServices:
+    # Only the `lan` entrypoint; VIP announced by kube-vip (class-only mode).
+    lan:
+      spec:
+        type: LoadBalancer
+        loadBalancerClass: kube-vip.io/kube-vip-class
+      annotations:
+        kube-vip.io/loadbalancerIPs: 192.168.1.210
 
 providers:
   kubernetesIngress:
@@ -80,6 +88,9 @@ resources:
 
 ports:
   web:
+    # Routers without an explicit entrypoint stay on web/websecure only, so nothing
+    # lands on `lan` unless its Ingress opts in.
+    asDefault: true
     transport:
       respondingTimeouts:
         # Traefik v3 cuts a request read at 60s by default, which kills large Immich /
@@ -87,12 +98,31 @@ ports:
         # on 22 Ingresses, read timeouts up to 3600s). 0 = no limit, same as before.
         readTimeout: 0
   websecure:
+    asDefault: true
     transport:
       respondingTimeouts:
         readTimeout: 0
     http:
       # nginx emitted HSTS globally but only over HTTPS; on this entrypoint only =
       # the same behaviour (faktury via the tunnel's https origin, and LAN https).
+      middlewares:
+        - traefik-hsts@kubernetescrd
+  # Split horizon at home (ADR-044 amendment 2026-10-22): the router's DNS answers the
+  # Immich hosts with 192.168.1.210, so uploads skip Cloudflare's 100 MB request cap.
+  # Opt-in only (not asDefault): an Ingress joins via router.entrypoints, so a LAN
+  # client cannot reach Access-gated apps by sending their Host/SNI here.
+  lan:
+    port: 8444
+    exposedPort: 443
+    expose:
+      default: false
+      lan: true
+    transport:
+      respondingTimeouts:
+        readTimeout: 0
+    http:
+      tls:
+        enabled: true
       middlewares:
         - traefik-hsts@kubernetescrd
 

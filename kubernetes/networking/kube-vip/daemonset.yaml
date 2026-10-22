@@ -38,6 +38,13 @@ spec:
               value: "10"
             - name: vip_retryperiod
               value: "2"
+            # Service VIPs, ONLY for Services that ask for loadBalancerClass
+            # kube-vip.io/kube-vip-class. k3s ServiceLB skips those and keeps the rest
+            # (brain-syncthing, promtail-syslog). First user: traefik-lan (Immich at home).
+            - name: svc_enable
+              value: "true"
+            - name: lb_class_only
+              value: "true"
           securityContext:
             capabilities:
               add:
