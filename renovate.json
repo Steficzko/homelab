@@ -56,14 +56,35 @@
       "enabled": false
     },
     {
-      "description": "DEFAULT: digest and patch bumps auto-merge. These are the redis/ollama-style updates that drown the important PRs.",
+      "description": "Pin every image by digest. A tag (even 'php8.3-apache' or '11.8') is rebuilt in place upstream for security fixes; only a digest makes that rebuild visible as a PR (PHP2Shell 2026-10-22: three WordPress sites sat on a vulnerable PHP for this reason, CLSTR-40).",
+      "matchDatasources": [
+        "docker"
+      ],
+      "pinDigests": true
+    },
+    {
+      "description": "DEFAULT: digest and patch bumps auto-merge, and so does pinning (same image, digest added). These are the redis/ollama-style updates that drown the important PRs.",
       "matchUpdateTypes": [
         "digest",
-        "patch"
+        "patch",
+        "pin",
+        "pinDigest"
       ],
       "automerge": true,
       "automergeType": "pr",
       "platformAutomerge": true
+    },
+    {
+      "description": "Security rebuilds should not wait for the weekend: digest/patch/pin run nightly. Minors and majors keep the weekend schedule.",
+      "matchUpdateTypes": [
+        "digest",
+        "patch",
+        "pin",
+        "pinDigest"
+      ],
+      "schedule": [
+        "* 0-6 * * *"
+      ]
     },
     {
       "description": "Remaining minors group into one weekend PR. Placed BEFORE the infra/db rules: Renovate gives later rules precedence, so infra/database minors fall through to their own groups instead of landing here.",
