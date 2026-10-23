@@ -32,7 +32,7 @@ spec:
           # Self-built: upstream (now calcom/cal.diy) stopped publishing images after v6.2.0
           # and its Dockerfile is still node:20 (EOL, CVE-2026-111497). Same tag, rebuilt on
           # a patched Node by github.com/Steficzko/cal-image; rerun that workflow for the next CVE.
-          image: ghcr.io/steficzko/cal:v6.2.0-node22.23.4@sha256:070fa740ed240ecf2ae21f441c69625e751dd01ae9a62d99ba37069e572aa108
+          image: ghcr.io/steficzko/cal:v6.2.0-node22.23.4-next16.4.3@sha256:86dff19abd1578175775b48fa47d1308d2e4fc2b39e74dcdb1f64c698e63497a
           envFrom:
             - secretRef:
                 name: cal-secret
