@@ -29,7 +29,7 @@ spec:
         fsGroup: 1001
       containers:
         - name: shlink
-          image: shlinkio/shlink:5.1.7
+          image: shlinkio/shlink:5.1.7@sha256:844e1f2b6455331c5b49207bad3a2455ccd65e62bb9daa09a6c57afff26bd9c8
           envFrom:
             - secretRef:
                 name: namo-shlink-secret     # INITIAL_API_KEY

@@ -147,7 +147,7 @@ spec:
         # Renders the template into an emptyDir with the password injected. Keeps the
         # credential out of Git and out of the ConfigMap, without inventing a new Secret.
         - name: render-config
-          image: busybox:1.38.0
+          image: busybox:1.38.0@sha256:fd7dc98638c8e305f4dc34e979f1c0fdfdcaeb0fbf8fcff77ae834b6da3d7e6e
           command:
             - sh
             - -c
@@ -173,7 +173,7 @@ spec:
             limits: { memory: 32Mi }
       containers:
         - name: sql-exporter
-          image: burningalchemist/sql_exporter:0.24.10
+          image: burningalchemist/sql_exporter:0.24.10@sha256:3dabcb7c74e9d7f15c42d51987f8e960efe43d6a234bee5abf2ec97461d27480
           args:
             - "-config.file=/config/sql_exporter.yml"
             - "-web.listen-address=:9399"

@@ -26,7 +26,7 @@ spec:
                   topologyKey: kubernetes.io/hostname
           initContainers:
             - name: fix-permissions
-              image: busybox:1.38
+              image: busybox:1.38@sha256:fd7dc98638c8e305f4dc34e979f1c0fdfdcaeb0fbf8fcff77ae834b6da3d7e6e
               command: ["sh", "-c", "chown -R 33:33 /data && chmod 0770 /data"]
               securityContext:
                 runAsUser: 0
