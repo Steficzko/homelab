@@ -15,6 +15,27 @@ resources:
   - traefik-serverstransport.yaml
 
 patches:
+  # k3s ServiceLB blanks status.loadBalancer on every LoadBalancer, kube-vip's included,
+  # so the stock check held traefik-lan at Progressing forever (CLSTR-37). A LoadBalancer
+  # with spec.externalIPs is reachable via kube-proxy whatever its status says.
+  - patch: |-
+      apiVersion: v1
+      kind: ConfigMap
+      metadata:
+        name: argocd-cm
+      data:
+        resource.customizations.health.Service: |
+          hs = {status = "Healthy"}
+          if obj.spec ~= nil and obj.spec.type == "LoadBalancer" then
+            local st = obj.status
+            local hasIngress = st ~= nil and st.loadBalancer ~= nil and st.loadBalancer.ingress ~= nil and #st.loadBalancer.ingress > 0
+            local hasExternal = obj.spec.externalIPs ~= nil and #obj.spec.externalIPs > 0
+            if not hasIngress and not hasExternal then
+              hs.status = "Progressing"
+              hs.message = "Waiting for a load balancer address"
+            end
+          end
+          return hs
   # Traefik reaches argocd-server over HTTPS (CLSTR-29; see traefik-serverstransport.yaml).
   - target:
       kind: Service
