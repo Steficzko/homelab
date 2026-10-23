@@ -279,8 +279,8 @@ data:
           icon: sh-linkding
           href: https://links.kostikidis.net
           description: Bookmark manager
-      - Wallabag:
-          icon: sh-wallabag
+      - Readeck:
+          icon: sh-readeck
           href: https://read.kostikidis.net
           description: Read-later
 

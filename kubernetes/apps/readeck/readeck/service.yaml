@@ -1,11 +1,11 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: wallabag
-  namespace: wallabag
+  name: readeck
+  namespace: readeck
 spec:
   selector:
-    app: wallabag
+    app: readeck
   ports:
     - port: 80
-      targetPort: 80
+      targetPort: 8000

@@ -14,7 +14,7 @@ staged: **A** capture and find (now), **B** chat over everything (later), **C** 
 
 What already runs (verified 2026-09-10): Obsidian LiveSync CouchDB (`obsidian.kostikidis.net`),
 LiteLLM with GPU-first routing, Whisper on ryzen-ml, in-cluster Ollama, Open WebUI, n8n,
-Paperless, Neo4j, linkding, wallabag, FreshRSS, Nextcloud, SearXNG. The Telegram → Whisper →
+Paperless, Neo4j, linkding, Readeck (replaced wallabag 2026-10-23), FreshRSS, Nextcloud, SearXNG. The Telegram → Whisper →
 `json-extract` → vault pipeline (June 2026) was parked on one open question: how to write into
 the vault.
 

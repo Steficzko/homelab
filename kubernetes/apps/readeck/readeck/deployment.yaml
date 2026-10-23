@@ -1,0 +1,68 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: readeck
+  namespace: readeck
+spec:
+  replicas: 1
+  revisionHistoryLimit: 2
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: readeck
+  template:
+    metadata:
+      labels:
+        app: readeck
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+      containers:
+        - name: readeck
+          # Replaces wallabag (PHP 8.1 EOL, never used) — owner decision 2026-10-23.
+          # Secret key is generated into /readeck/config.toml on first start (on the PVC).
+          image: codeberg.org/readeck/readeck:0.23.5@sha256:17dea468f4f713930338062f58a3a5e0d04e37d2961ddb827792e223f3db91b4
+          ports:
+            - containerPort: 8000
+          env:
+            - name: READECK_SERVER_HOST
+              value: 0.0.0.0
+            - name: READECK_SERVER_PORT
+              value: "8000"
+            - name: READECK_ALLOWED_HOSTS
+              value: read.kostikidis.net
+            # Traefik pods (pod CIDR) set X-Forwarded-For/Proto.
+            - name: READECK_TRUSTED_PROXIES
+              value: 10.42.0.0/16
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: [ALL]
+          readinessProbe:
+            tcpSocket:
+              port: 8000
+            initialDelaySeconds: 5
+            periodSeconds: 15
+          livenessProbe:
+            tcpSocket:
+              port: 8000
+            initialDelaySeconds: 30
+            periodSeconds: 30
+            failureThreshold: 5
+          resources:
+            requests:
+              cpu: 25m
+              memory: 64Mi
+            limits:
+              memory: 512Mi
+          volumeMounts:
+            - name: data
+              mountPath: /readeck
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: readeck-data-pvc

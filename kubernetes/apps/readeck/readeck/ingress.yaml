@@ -1,8 +1,8 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: wallabag
-  namespace: wallabag
+  name: readeck
+  namespace: readeck
   annotations:
     cert-manager.io/cluster-issuer: letsencrypt-prod
 spec:
@@ -19,6 +19,6 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: wallabag
+                name: readeck
                 port:
                   number: 80
