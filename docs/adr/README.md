@@ -29,6 +29,11 @@ quietly overwritten. The ones I got wrong are still here on purpose.
 | ADR | Decision | Status |
 |---|---|---|
 | [044](ADR-044-traefik-replaces-ingress-nginx.md) | Traefik replaces ingress-nginx; ClusterIP only, tunnels are the sole entry | Accepted |
+| [044-amend](ADR-044-amendment-2026-10-22-lan-path-immich.md) | A LAN path for Immich only (VIP `.210`, Traefik `lan` entrypoint) | Draft |
+| [039](ADR-039-network-segmentation-opnsense-vlans.md) | Network segmentation: OPNsense, managed switch, VLANs | Draft (replanned, to be superseded) |
+| [040](ADR-040-cluster-dns-independent-of-host-dns.md) | Cluster DNS no longer inherits the nodes' resolv.conf | Draft (running since 2026-09-16) |
+| [043](ADR-043-edge-router-beelink-to-flint.md) | Edge router: Beelink interim, Flint 2 as the permanent edge | Draft |
+| [045](ADR-045-managed-25g-switch-keeplink.md) | Managed 2.5 GbE switch (KeepLink) as the rack core | Draft |
 | [010](ADR-010-cloudflare-zero-trust.md) | Cloudflare Zero Trust: wildcard deny + per-app carve-outs | Accepted |
 | [010-amend](ADR-010-amendment-cross-tenant-wpadmin.md) | Cross-tenant CF Access on studioconcreteluka `/wp-admin` | Proposed |
 | [025](ADR-025-wordpress-security-model.md) | WordPress security: Tunnel + ZT, not obscurity | Accepted |
@@ -43,6 +48,8 @@ quietly overwritten. The ones I got wrong are still here on purpose.
 | [022](ADR-022-unraid-shared-service-layer.md) | Unraid as intentional shared service layer (DNS/NFS/backup) | Accepted |
 | [023](ADR-023-nfs-pv-capacity-labels.md) | NFS PV capacity labels are documentation, not enforcement | Accepted |
 | [024](ADR-024-pvc-lifecycle-size-once.md) | PVC lifecycle: size once with headroom, treat as immutable | Accepted |
+| [041](ADR-041-longhorn-hdd-secondary-tier.md) | Longhorn HDD tier for secondary data; databases stay on SSD | Draft (decided, not built) |
+| [042](ADR-042-registry-pull-through-cache.md) | Registry pull-through cache for the cluster | Parked |
 
 ## Immich & media
 | ADR | Decision | Status |
@@ -55,6 +62,7 @@ quietly overwritten. The ones I got wrong are still here on purpose.
 | ADR | Decision | Status |
 |---|---|---|
 | [007](ADR-007-proxmox-ml-node-architecture.md) | Proxmox ML node: GPU inference + CPU transcription split | Accepted |
+| [007-amend](ADR-007-amendment-ml-share-to-martunia-over-tailscale.md) | Sharing the ML boxes to martunia over Tailscale | Draft |
 | [009](ADR-009-litellm-inference-gateway.md) | LiteLLM as unified inference gateway with tiered fallback | Accepted |
 | [014](ADR-014-litellm-resilience-gpu-fallback.md) | LiteLLM resilience: circuit-breaker cooldown + GPU fallback | Accepted (decision 2 withdrawn) |
 | [015](ADR-015-open-webui-embedding-engine-builtin.md) | Open WebUI embedding engine: switch to built-in | Accepted |
@@ -66,6 +74,8 @@ quietly overwritten. The ones I got wrong are still here on purpose.
 |---|---|---|
 | [026](ADR-026-bjj-gym-database-architecture.md) | BJJ gym management: PostgreSQL + n8n + nginx proxy | Accepted |
 | [013](ADR-013-paperless-drali-isolated-exam-instance.md) | Isolated Paperless-ngx for a client's exam KB | Decommissioned |
+| [037](ADR-037-paperless-multiuser-with-llm-enrichment.md) | Paperless-ngx: multi-user store with LLM metadata enrichment | Draft (not deployed) |
+| [038](ADR-038-second-brain-files-first.md) | Second brain: a Markdown folder is the store, everything else disposable | Draft (phase A deployed) |
 
 ## Backups & disaster recovery
 | ADR | Decision | Status |
@@ -84,6 +94,7 @@ quietly overwritten. The ones I got wrong are still here on purpose.
 | [030](ADR-030-dedicated-worker-nodes-topology-split.md) | Dedicated worker nodes: topology split, not RAM upgrade | Accepted (enacted) |
 | [030-amend](ADR-030-amendment-16gib-workers.md) | 16 GiB workers, tier-A → preferred, rebalance enacted; 2026-10-02 update: W1 → 32 GiB, worker preference widened | Accepted |
 | [035](ADR-035-scheduling-by-requests-not-taints.md) | Placement governed by requests + affinity, not taints | Proposed |
+| [046](ADR-046-portable-cage-two-leg-unraid.md) | Portable homelab cage: fixed inside, adaptive access leg | Draft |
 
 ## Observability
 | ADR | Decision | Status |
