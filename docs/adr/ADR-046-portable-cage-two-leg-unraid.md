@@ -32,7 +32,9 @@ The cage is wired to be self-contained:
    is pinned by a reservation on the router, not on Unraid.
 3. **dev-seat (VM on Unraid) is the jump host.** It gets a second vNIC on eth2's side (bridged), so a laptop
    on the outside network reaches dev-seat directly, and dev-seat reaches every node on `192.168.1.x`.
-   *(Not built yet — requires bridging eth2 and a VM stop.)*
+   *(Built 2026-10-23: Unraid `br2` on eth2; dev-seat `cage-leg` enp2s0 on br0 = `192.168.1.191` static,
+   never-default; `access-leg` enp4s0 on br2 = DHCP, keeps the gateway and is the VM's internet. At home the
+   router reservation `dev-seat-access` pins it to `192.168.10.50`, same rule as Unraid's `.10.100`.)*
 4. **Router-as-DNS on the nodes is intentional** (closes NET-19): `.1` is "whatever router the cage is
    plugged behind". At home AdGuard answers on every VLAN (full query log), but **filtering is off for
    VLAN 1 and IoT** (per-client setting), so no blocklist can break the cluster; nodes keep the
@@ -50,13 +52,19 @@ The cage is wired to be self-contained:
 - the cluster keeps running internally (pods, Longhorn, NFS to Unraid all work over the cage switch);
 - the cage side has **no internet**: no gateway at `192.168.1.1` → Cloudflare tunnels, Tailscale on the
   nodes, image pulls and Unraid's own internet are down (Unraid's default route stays on br0);
-- access is **only** via eth2: Unraid at its local DHCP address, and the cluster through dev-seat once
-  decision 3 is built. Without the dev-seat leg, only Unraid is reachable;
+- access is **only** via eth2: Unraid and dev-seat at their local DHCP addresses, the cluster through dev-seat;
 - giving the cage internet there would need Unraid to route/NAT for it — a separate decision, not taken here.
 
 **At home:**
 - eth2 sits on VLAN 10 (workstations) at `192.168.10.100`; workstations reach Unraid directly (2.5G) without
   a router hop. NET-42 (lockdown) must account for this: the router firewall does not see that traffic.
+  Router DNS hands VLAN 10 clients `.10.100` for `unraid.home.arpa` and every Unraid app name (ADR-047).
+- **Nothing on the access leg is static.** Anything that must work wherever the cage lands follows eth2's
+  DHCP address (host networking or the VM's own DHCP leg), never a fixed `192.168.10.x` set on Unraid.
+  A container with a fixed br2 address works only at home.
+- Tailscale's direct path at home: the router forwards WAN UDP 41642 → dev-seat and 41643 → Unraid, so remote
+  peers on hard NAT connect without a relay. Abroad these forwards do not exist; Tailscale falls back to hole
+  punching or relays.
 
 ## Arrival checklist (new location)
 
