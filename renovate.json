@@ -133,6 +133,13 @@
       "automerge": false
     },
     {
+      "description": "LiteLLM is manual: 1.107.0 was a supply-chain compromise (2026-10-21) and the image is pinned by digest only, so an automerged digest bump can swap the release with no version visible in the PR (it did, #107, 2026-10-23).",
+      "matchPackageNames": [
+        "/litellm/"
+      ],
+      "automerge": false
+    },
+    {
       "matchPackageNames": [
         "cloudflare/cloudflared"
       ],
