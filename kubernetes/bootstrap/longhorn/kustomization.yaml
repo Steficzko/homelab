@@ -14,7 +14,7 @@ kind: Kustomization
 namespace: longhorn-system
 
 resources:
-  - https://raw.githubusercontent.com/longhorn/longhorn/v1.12.1/deploy/longhorn.yaml
+  - https://raw.githubusercontent.com/longhorn/longhorn/v1.13.0/deploy/longhorn.yaml
   - setting-node-down-pod-deletion-policy.yaml    # STOR-42
   - setting-replica-auto-balance.yaml            # disabled, see file
   - backup-catchup.yaml                          # re-backs volumes the nightly job skipped, see file

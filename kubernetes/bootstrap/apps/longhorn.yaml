@@ -52,4 +52,4 @@ spec:
   # Longhorn does NOT support skipping minor versions — one rung at a time, and
   # confirm every volume is healthy before the next. If a sync ever wedges the
   # manager, ArgoCD cannot fix it; apply a known-good tag by hand:
-  #   kubectl apply -f https://raw.githubusercontent.com/longhorn/longhorn/v1.12.1/deploy/longhorn.yaml
+  #   kubectl apply -f https://raw.githubusercontent.com/longhorn/longhorn/v1.13.0/deploy/longhorn.yaml
