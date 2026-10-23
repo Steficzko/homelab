@@ -25,7 +25,7 @@ spec:
                     operator: DoesNotExist
       containers:
         - name: linkding
-          image: sissbruecker/linkding:1.46.2
+          image: sissbruecker/linkding:1.46.2@sha256:0c0a9a04c7ebd644293c37f98710872fe7cdff0ea1ff7fd9be4d235e4c4678d2
           ports:
             - containerPort: 9090
           env:

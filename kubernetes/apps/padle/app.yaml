@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: app
-          image: ghcr.io/steficzko/padle:v0.2.0
+          image: ghcr.io/steficzko/padle:v0.2.0@sha256:66a292130a60dc88244e82d1619c2e8bd238ff1be8458c4291a437a85b78a3ac
           ports:
             - containerPort: 8000
               name: http
