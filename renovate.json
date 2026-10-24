@@ -94,6 +94,15 @@
       "groupName": "app minor updates"
     },
     {
+      "description": "n8n gets its own PR and never auto-merges. Its Docker tags carry no pre-release marker: a whole minor line (2.45.x, 2.39.x) ships as GitHub 'Pre-release' for about a week before it becomes stable, and Renovate cannot see that. The release age keeps beta lines out; the bump also has to go to the Greece DR pins first (project memory: DR version parity).",
+      "matchPackageNames": [
+        "n8nio/n8n"
+      ],
+      "groupName": "n8n (check GitHub pre-release badge + Greece pins first)",
+      "minimumReleaseAge": "14 days",
+      "automerge": false
+    },
+    {
       "description": "Infrastructure NEVER auto-merges — a bad cert-manager or ingress bump locks you out of everything downstream, and ArgoCD auto-syncs whatever lands on main.",
       "matchPackageNames": [
         "/cert-manager/",
