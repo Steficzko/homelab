@@ -14,27 +14,27 @@
   ],
   "ignoreTests": true,
   "argocd": {
-    "fileMatch": [
-      "kubernetes/bootstrap/apps/.+\\.yaml$"
+    "managerFilePatterns": [
+      "/kubernetes/bootstrap/apps/.+\\.yaml$/"
     ]
   },
   "helm-values": {
-    "fileMatch": [
-      "kubernetes/.+/values\\.yaml$",
-      "kubernetes/bootstrap/apps/.+\\.yaml$"
+    "managerFilePatterns": [
+      "/kubernetes/.+/values\\.yaml$/",
+      "/kubernetes/bootstrap/apps/.+\\.yaml$/"
     ]
   },
   "kubernetes": {
-    "fileMatch": [
-      "kubernetes/.+\\.yaml$"
+    "managerFilePatterns": [
+      "/kubernetes/.+\\.yaml$/"
     ]
   },
   "customManagers": [
     {
-      "description": "Longhorn is installed with kubectl apply, not Helm or ArgoCD, so no standard manager can see it. Track the version pinned in its README instead \u2014 this is the only reason it sat 5 minor versions behind.",
+      "description": "Longhorn is installed with kubectl apply, not Helm or ArgoCD, so no standard manager can see it. Track the version pinned in its README instead — this is the only reason it sat 5 minor versions behind.",
       "customType": "regex",
-      "fileMatch": [
-        "^kubernetes/infrastructure/longhorn/README\\.md$"
+      "managerFilePatterns": [
+        "/^kubernetes/infrastructure/longhorn/README\\.md$/"
       ],
       "matchStrings": [
         "longhorn/longhorn/(?<currentValue>v[0-9]+\\.[0-9]+\\.[0-9]+)/deploy/longhorn\\.yaml"
@@ -45,7 +45,7 @@
   ],
   "packageRules": [
     {
-      "description": "Majors stay off \u2014 they need reading, not a PR queue.",
+      "description": "Majors stay off — they need reading, not a PR queue.",
       "matchManagers": [
         "kubernetes",
         "helm-values"
@@ -94,7 +94,7 @@
       "groupName": "app minor updates"
     },
     {
-      "description": "Infrastructure NEVER auto-merges \u2014 a bad cert-manager or ingress bump locks you out of everything downstream, and ArgoCD auto-syncs whatever lands on main.",
+      "description": "Infrastructure NEVER auto-merges — a bad cert-manager or ingress bump locks you out of everything downstream, and ArgoCD auto-syncs whatever lands on main.",
       "matchPackageNames": [
         "/cert-manager/",
         "/kube-vip/",
@@ -113,7 +113,7 @@
       "groupName": "infrastructure (manual review)"
     },
     {
-      "description": "Data stores never auto-merge \u2014 any image bump restarts the pod, and a restart mid-backup silently produces empty dumps (see the netpol pod-admission lag).",
+      "description": "Data stores never auto-merge — any image bump restarts the pod, and a restart mid-backup silently produces empty dumps (see the netpol pod-admission lag).",
       "matchPackageNames": [
         "/postgres/",
         "/mariadb/",
@@ -146,11 +146,11 @@
       "automerge": false
     },
     {
-      "description": "Longhorn gets its OWN PR, never mixed into the infrastructure group: merging its bump only edits the README pin \u2014 the actual upgrade is a manual, sequential-minor kubectl apply. A grouped merge would make the README lie about what is deployed.",
+      "description": "Longhorn gets its OWN PR, never mixed into the infrastructure group: merging its bump only edits the README pin — the actual upgrade is a manual, sequential-minor kubectl apply. A grouped merge would make the README lie about what is deployed.",
       "matchPackageNames": [
         "longhorn/longhorn"
       ],
-      "groupName": "longhorn (docs pin \u2014 upgrade is manual)",
+      "groupName": "longhorn (docs pin — upgrade is manual)",
       "automerge": false
     }
   ]
