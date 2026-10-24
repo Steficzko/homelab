@@ -568,3 +568,52 @@ spec:
               own normal. Either the line is degraded or something on the LAN is
               saturating it — check the media stack and any running replication
               before calling the ISP.
+
+    # ---------------------------------------------------------------- drift
+    # CLSTR-19 / STOR-48 (2026-10-24): on 10-24 Argo selfHeal quietly put the `longhorn`
+    # StorageClass back to Delete and nothing noticed for 8h. These catch git and the
+    # cluster disagreeing. Checked against Prometheus at write time: 61 apps Synced/Healthy,
+    # `longhorn` Retain, 73 PVs Bound and 0 Released, so all three are silent today.
+    - name: estate-drift
+      rules:
+        # argocd_app_info carries both statuses as labels, one series per app.
+        # Progressing during a normal rollout clears well inside 30m.
+        - alert: ArgoAppNotSyncedHealthy
+          expr: argocd_app_info{sync_status!="Synced"} or argocd_app_info{health_status!="Healthy"}
+          for: 30m
+          labels:
+            severity: warning
+          annotations:
+            summary: "Argo app {{ $labels.name }} is {{ $labels.sync_status }} / {{ $labels.health_status }}"
+            description: >-
+              Git and the cluster have disagreed for 30 minutes. `kubectl -n argocd get app
+              {{ $labels.name }}` and the app's diff in the Argo UI show which resource.
+
+        # Only the dynamic `longhorn` class: `longhorn-static` binds PVs created by hand, which
+        # carry their own reclaimPolicy (still Delete, undecided). A new default class from a
+        # Longhorn bump must fail this too, hence the default-class annotation is not relied on.
+        - alert: StorageClassNotRetain
+          expr: kube_storageclass_info{storageclass="longhorn",reclaim_policy!="Retain"}
+          for: 5m
+          labels:
+            severity: critical
+          annotations:
+            summary: "StorageClass longhorn is {{ $labels.reclaim_policy }}, not Retain"
+            description: >-
+              New PVCs will lose their data when deleted or pruned. The Retain override is a
+              kustomize patch in kubernetes/bootstrap/longhorn; a Longhorn bump that changed the
+              upstream ConfigMap is the usual cause. Existing PVs are not affected.
+
+        # Released is what Retain is for: the PVC is gone, the data is not. It is a to-do,
+        # not an outage: re-bind it or delete the PV + Longhorn volume once the data is unneeded.
+        - alert: PersistentVolumeReleased
+          expr: kube_persistentvolume_status_phase{phase="Released"} == 1
+          for: 1h
+          labels:
+            severity: warning
+          annotations:
+            summary: "PV {{ $labels.persistentvolume }} is Released (its PVC was deleted)"
+            description: >-
+              The data is still on disk and still uses Longhorn space. Check what the PVC was
+              (`kubectl get pv {{ $labels.persistentvolume }} -o yaml`, spec.claimRef), then
+              re-bind it or remove the PV and its Longhorn volume by hand.
