@@ -16,11 +16,15 @@ spec:
       labels:
         app: nextcloud
     spec:
-      # SEC-12 (2026-10-24): whole pod as www-data so the NextCloud export can root_squash.
-      # The old root init container (chown -R 33:33 /data) is gone: every file was already 33,
-      # and a squashed root chown would fail and block the start. Apache binds :80 as uid 33
-      # because containerd 2.x sets ip_unprivileged_port_start=0 in pods (tested in a throwaway pod).
-      securityContext: { runAsUser: 33, runAsGroup: 33, runAsNonRoot: true }
+      initContainers:
+        - name: fix-permissions
+          image: busybox:1.38@sha256:fd7dc98638c8e305f4dc34e979f1c0fdfdcaeb0fbf8fcff77ae834b6da3d7e6e
+          command: ["sh", "-c", "chown -R 33:33 /data && chmod 0770 /data"]
+          securityContext:
+            runAsUser: 0
+          volumeMounts:
+            - name: data
+              mountPath: /data
       containers:
         - name: nextcloud
           image: nextcloud:35.0.2-apache@sha256:89af7ee7a96ff5e9668280566209268ae6b2d02327f6ef6d56f6d68228cf9431
