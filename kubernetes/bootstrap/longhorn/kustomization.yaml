@@ -37,6 +37,38 @@ patches:
               - name: longhorn-manager
                 resources: {requests: {memory: 384Mi, cpu: 50m}}   # p95 310Mi, max 345Mi
 
+  # STOR-48: new volumes keep their data when a PVC is deleted or pruned. Longhorn builds
+  # the `longhorn` StorageClass from this ConfigMap; upstream ships Delete, and a hand
+  # edit is undone by selfHeal on the next sync (2026-10-24). Copy of the v1.13.0 content
+  # with only reclaimPolicy changed: re-diff it against upstream on every Longhorn bump.
+  - target: {kind: ConfigMap, name: longhorn-storageclass}
+    patch: |-
+      apiVersion: v1
+      kind: ConfigMap
+      metadata: {name: longhorn-storageclass}
+      data:
+        storageclass.yaml: |
+          kind: StorageClass
+          apiVersion: storage.k8s.io/v1
+          metadata:
+            name: longhorn
+            annotations:
+              storageclass.kubernetes.io/is-default-class: "true"
+          provisioner: driver.longhorn.io
+          allowVolumeExpansion: true
+          reclaimPolicy: "Retain"
+          volumeBindingMode: Immediate
+          parameters:
+            numberOfReplicas: "3"
+            staleReplicaTimeout: "30"
+            fromBackup: ""
+            fsType: "ext4"
+            dataLocality: "disabled"
+            unmapMarkSnapChainRemoved: "ignored"
+            disableRevisionCounter: "true"
+            dataEngine: "v1"
+            backupTargetName: "default"
+
   # NOT here, deliberately: an ipBlock 10.42.0.0/16 rule on the longhorn-manager
   # NetworkPolicy (e91bfb0, reverted the same day). It fixed the nightly "connection
   # refused" race of the daily-backup pod, but port 9500 is an unauthenticated API that

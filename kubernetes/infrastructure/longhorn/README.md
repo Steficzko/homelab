@@ -37,10 +37,9 @@ The Longhorn project publishes `longhorn.yaml` as the primary install method. Us
 - `numberOfReplicas: 3`
 - `fsType: ext4`
 - `reclaimPolicy: Retain` (since 2026-10-24, STOR-48: a deleted PVC or an Argo prune must not destroy data).
-  Set in the `longhorn-storageclass` ConfigMap, which Longhorn turns into the StorageClass. **The upstream
-  `longhorn.yaml` ships `Delete`, so every Longhorn upgrade resets it:** after `kubectl apply` of a new
-  version, re-run
-  `kubectl -n longhorn-system get cm longhorn-storageclass -o json | jq '.data["storageclass.yaml"] |= sub("reclaimPolicy: \"Delete\""; "reclaimPolicy: \"Retain\"")' | kubectl apply -f -`
-  and check `kubectl get sc longhorn`. Existing PVs were patched to `Retain` one by one; a deleted PVC now
+  Set in the `longhorn-storageclass` ConfigMap, which Longhorn turns into the StorageClass. The upstream
+  `longhorn.yaml` ships `Delete`, and the ArgoCD `longhorn` app (selfHeal) reverts a hand edit, so the
+  override is a kustomize patch in `kubernetes/bootstrap/longhorn/kustomization.yaml`. On a Longhorn bump,
+  re-diff that patch against the new upstream ConfigMap. Existing PVs were patched to `Retain` one by one; a deleted PVC now
   leaves a `Released` PV and its Longhorn volume, to be removed by hand once the data is not needed.
 - `dataLocality: disabled`
