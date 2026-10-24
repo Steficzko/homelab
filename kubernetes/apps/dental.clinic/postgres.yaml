@@ -132,9 +132,11 @@ spec:
                     pg_isready -d "$DATABASE_URL_SUPERUSER" -t 5 >/dev/null 2>&1 && break
                     sleep 3
                   done
+                  # --part-size: mc pipe reserves 528 MiB per part by default (mc 2025-08-13); with THP=always
+                  # on the nodes that OOM-killed these jobs at their 256Mi limit (2026-10-24). Dumps are ~1.5 MB.
                   pg_dump -Fc "$DATABASE_URL_SUPERUSER" \
                     | age -r "$AGE_RECIPIENT" \
-                    | mc pipe "minio/clinic-backups/clinic-postgres/${ts}.dump.age"
+                    | mc pipe --part-size 16MiB "minio/clinic-backups/clinic-postgres/${ts}.dump.age"
               env:
                 - name: DATABASE_URL_SUPERUSER
                   valueFrom: {secretKeyRef: {name: clinic-postgres-secret, key: DATABASE_URL_SUPERUSER}}

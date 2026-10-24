@@ -107,9 +107,11 @@ spec:
                   # pg_stat_statements is observability, not schema, and it is an
                   # UNTRUSTED extension: the restore drill runs as gompha_owner
                   # into an empty database and could not recreate it.
+                  # --part-size: mc pipe reserves 528 MiB per part by default (mc 2025-08-13); with THP=always
+                  # on the nodes that OOM-killed these jobs at their 256Mi limit (2026-10-24). Dumps are ~1.5 MB.
                   pg_dump -Fc --exclude-extension=pg_stat_statements "$DATABASE_URL" \
                     | age -r "$AGE_RECIPIENT" \
-                    | mc pipe "minio/clinic-backups/gompha-clinic-postgres/${ts}.dump.age"
+                    | mc pipe --part-size 16MiB "minio/clinic-backups/gompha-clinic-postgres/${ts}.dump.age"
                   # prove something non-trivial landed: an empty or truncated
                   # object is the failure mode that otherwise reports success
                   size="$(mc stat --json "minio/clinic-backups/gompha-clinic-postgres/${ts}.dump.age" | sed -n 's/.*"size":\([0-9]*\).*/\1/p')"
