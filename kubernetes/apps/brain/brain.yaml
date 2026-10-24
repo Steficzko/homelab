@@ -72,7 +72,7 @@ spec:
             requests: { memory: 256Mi, cpu: 100m }
             limits:   { memory: 2Gi, cpu: "2" }     # ffmpeg scene detection on 720p video
         - name: syncthing
-          image: syncthing/syncthing:2.1.6@sha256:4d0281bdcb4ed9baf503d251d0544ddd856f49fce3f114056257ae172b7fb670
+          image: syncthing/syncthing:2.1.7@sha256:2b71da7c0d0a91a6ae5285ad079226fecc0a365d08b27720e1f7037b018f7546
           env:
             - { name: STGUIADDRESS, value: "0.0.0.0:8384" }
             - { name: STNOUPGRADE, value: "1" }      # Renovate bumps the tag, not the binary
