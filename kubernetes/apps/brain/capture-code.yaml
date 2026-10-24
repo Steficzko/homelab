@@ -52,7 +52,8 @@ data:
     WORD_P, NO_SPEECH, COMPRESSION = 0.15, 0.6, 2.4
     # A segment is hallucinated when MOST of it is guesswork, not when one word was said quickly.
     SEG_BAD_FRACTION = float(os.environ.get("SEG_BAD_FRACTION", "0.6"))
-    STATE = {"captures": 0, "last_capture": 0.0, "last_cycle": 0.0, "errors": 0, "backend_down": 0, "ignored": 0}
+    STATE = {"captures": 0, "last_capture": 0.0, "last_cycle": 0.0, "errors": 0, "backend_down": 0, "ignored": 0,
+             "tg_last_ok": 0.0, "tg_net_errors": 0}
     LOCK = threading.Lock()
     # Drops the watcher will never pick up, already named in the log. ponytail: an in-memory set, not a
     # state file — a pod restart re-logs them, which is the right trade: the log is what gets read.
@@ -721,13 +722,19 @@ data:
         return p
 
 
+    def is_net_error(e):
+        return isinstance(e, (urllib.error.URLError, ConnectionError, TimeoutError))
+
+
     def telegram():
         offset = 0
         asked_load()
         log(f"telegram: allowed chats {sorted(ALLOWED_CHATS)}")
         while True:
             try:
-                for u in get_json(f"{API}/getUpdates?offset={offset}&timeout=50").get("result", []):
+                updates = get_json(f"{API}/getUpdates?offset={offset}&timeout=50").get("result", [])
+                STATE["tg_last_ok"] = time.time()
+                for u in updates:
                     offset = u["update_id"] + 1
                     if (cq := u.get("callback_query")):
                         # A tapped category button. Arrives as its own update type, not as a message.
@@ -820,7 +827,9 @@ data:
                         write_note("telegram-text", first_line_title(text), text, {"telegram_msg": msg["message_id"], "tags": []})
                         tg_send(chat, f"✅ #{STATE['captures']}")
             except Exception as e:
-                STATE["errors"] += 1
+                # A dropped long-poll is retried with the same offset, so Telegram re-sends anything
+                # pending: count it apart from real failures. BrainTelegramDown watches tg_last_ok.
+                STATE["tg_net_errors" if is_net_error(e) else "errors"] += 1
                 log(f"telegram error: {e}")
                 time.sleep(5)
 
@@ -861,6 +870,8 @@ data:
                         f"brain_last_capture_timestamp_seconds {STATE['last_capture']}\n"
                         f"brain_last_cycle_timestamp_seconds {STATE['last_cycle']}\n"
                         f"brain_errors_total {STATE['errors']}\n"
+                        f"brain_telegram_last_ok_timestamp_seconds {STATE['tg_last_ok']}\n"
+                        f"brain_telegram_net_errors_total {STATE['tg_net_errors']}\n"
                         f"brain_backend_down_total {STATE['backend_down']}\n"
                         f"brain_drops_ignored_total {STATE['ignored']}\n").encode()
                 self.send_response(200); self.send_header("Content-Type", "text/plain"); self.end_headers(); self.wfile.write(body)

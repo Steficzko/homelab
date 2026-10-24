@@ -32,6 +32,19 @@ spec:
             description: >-
               Files that failed on their own content are parked under data/audio/_failed with a .err
               file next to each; a burst usually means a format the pipeline does not handle.
+              Dropped Telegram long-polls are not counted here (brain_telegram_net_errors_total).
+        # A reset getUpdates is retried with the same offset, so nothing is lost; only a poll that
+        # has not succeeded for 10 minutes means messages are not arriving (2026-10-24, item 39).
+        - alert: BrainTelegramDown
+          expr: time() - brain_telegram_last_ok_timestamp_seconds > 600
+          for: 0m
+          labels:
+            severity: warning
+          annotations:
+            summary: "brain-capture has not polled Telegram successfully for {{ $value | printf \"%.0f\" }}s"
+            description: >-
+              Telegram messages are queued upstream and arrive once polling recovers. Check
+              `kubectl logs -n brain deploy/brain -c capture | grep telegram` and egress to api.telegram.org.
         - alert: BrainBackendDown
           expr: increase(brain_backend_down_total[30m]) > 2
           for: 0m
