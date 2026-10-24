@@ -23,7 +23,10 @@ spec:
                     operator: DoesNotExist
       containers:
         - name: litellm
-          image: ghcr.io/berriai/litellm@sha256:7294b90f868c5c38c99b83021c7ba46f9b439e95f8e32964c925c7d2563a03f7
+          # v1.106.3: post-incident rebuild (2026-10-21 supply-chain attack), new signing key, eMudhra root removed.
+          # Digest verified 2026-10-24: cosign verify --key <litellm commit e82a3c6>/cosign.pub
+          # (pub sha256 e3fe3e08...). Verify the next bump the same way before pinning.
+          image: ghcr.io/berriai/litellm:v1.106.3@sha256:74d0696a9f0afcc993c7659d246f0c542f003368298633e852228250779f1032
           args:
             - --config
             - /app/config.yaml
