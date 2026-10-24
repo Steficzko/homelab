@@ -23,6 +23,9 @@ spec:
                 matchExpressions:
                   - key: node-role.kubernetes.io/control-plane
                     operator: DoesNotExist
+      # SEC-12 (2026-10-24): non-root so the Unraid export can root_squash. 99:100 is Unraid's
+      # nobody:users, which already owned most Immich files; the rest were chowned on Unraid first.
+      securityContext: { runAsUser: 99, runAsGroup: 100, runAsNonRoot: true }
       containers:
         - name: immich-server
           image: ghcr.io/immich-app/immich-server:v3.3.5@sha256:485d546a2e31d6a8b4db8423fcba5c109de8c218d93410af115fd1ccfc4352a6
