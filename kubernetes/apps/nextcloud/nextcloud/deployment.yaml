@@ -16,15 +16,21 @@ spec:
       labels:
         app: nextcloud
     spec:
+      # SEC-12 (2026-10-24): whole pod as www-data so the NextCloud export can root_squash.
+      # The old root init container (chown -R 33:33 /data) is gone: every file was already 33,
+      # and a squashed root chown would fail and block the start. Apache binds :80 as uid 33
+      # because containerd 2.x sets ip_unprivileged_port_start=0 in pods.
+      # The entrypoint writes redis-session.ini into PHP's root-owned conf.d (crash-looped on
+      # the first try, 610e8a3), so conf.d is an emptyDir seeded from the image. Re-check on a
+      # Nextcloud major bump: a new image's conf.d is picked up, it is copied on every start.
+      securityContext: { runAsUser: 33, runAsGroup: 33, runAsNonRoot: true }
       initContainers:
-        - name: fix-permissions
-          image: busybox:1.38@sha256:fd7dc98638c8e305f4dc34e979f1c0fdfdcaeb0fbf8fcff77ae834b6da3d7e6e
-          command: ["sh", "-c", "chown -R 33:33 /data && chmod 0770 /data"]
-          securityContext:
-            runAsUser: 0
+        - name: php-conf
+          image: nextcloud:35.0.2-apache@sha256:89af7ee7a96ff5e9668280566209268ae6b2d02327f6ef6d56f6d68228cf9431
+          command: ["sh", "-c", "cp -r /usr/local/etc/php/conf.d/. /conf.d/"]
           volumeMounts:
-            - name: data
-              mountPath: /data
+            - name: php-conf
+              mountPath: /conf.d
       containers:
         - name: nextcloud
           image: nextcloud:35.0.2-apache@sha256:89af7ee7a96ff5e9668280566209268ae6b2d02327f6ef6d56f6d68228cf9431
@@ -90,7 +96,11 @@ spec:
               mountPath: /var/www/html
             - name: data
               mountPath: /var/www/html/data
+            - name: php-conf
+              mountPath: /usr/local/etc/php/conf.d
       volumes:
+        - name: php-conf
+          emptyDir: {}
         - name: app
           persistentVolumeClaim:
             claimName: nextcloud-app-pvc
