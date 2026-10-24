@@ -1,6 +1,11 @@
 deploymentMode: SingleBinary
 
 loki:
+  # Chart 7.3.0 pins 3.6.11; 3.6.19 is the same minor line rebuilt on Go 1.26.10 ([SECURITY], 2026-10-24).
+  # Drop this override when the chart's own default catches up.
+  image:
+    tag: 3.6.19
+    digest: sha256:0f9cbc340cbe33ee498e654075034336962057db072f57b37f253e14d476443a
   auth_enabled: false
   commonConfig:
     replication_factor: 1
