@@ -1,0 +1,45 @@
+# SEC-10/SEC-12 (2026-10-25): Prague Unraid must not answer NFS (2049) or rpcbind (111) on its
+# tailnet address. /boot/config/scripts/nfs-lan-only.sh drops them in the raw table, run from the
+# go file; nothing else would notice if a reboot, an Unraid upgrade or a network-settings change
+# lost it. Probed from a pod because traffic from Unraid to its own 100.x goes over lo and never
+# meets the tailscale1 rule. Pods reach the tailnet through the node's tailscale0.
+# Kuma (:3001) is the control: if it does not answer either, the probe is blind and fails too.
+# Alert: NfsTailnetProbeFailing (estate-alerts.yaml) on last successful run older than 2h.
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: nfs-tailnet-probe
+  namespace: monitoring
+spec:
+  schedule: "17 * * * *"
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 1
+  jobTemplate:
+    spec:
+      backoffLimit: 0
+      ttlSecondsAfterFinished: 86400
+      template:
+        spec:
+          restartPolicy: Never
+          securityContext: { runAsUser: 65534, runAsGroup: 65534, runAsNonRoot: true }
+          containers:
+            - name: probe
+              image: busybox:1.38@sha256:fd7dc98638c8e305f4dc34e979f1c0fdfdcaeb0fbf8fcff77ae834b6da3d7e6e
+              command:
+                - sh
+                - -c
+                - |
+                  H=100.82.66.30
+                  # fresh pods are refused for ~30-45s until kube-router learns their IP
+                  i=0; until nc -z -w 4 $H 3001; do
+                    i=$((i+1)); [ $i -ge 20 ] && { echo "BLIND: $H:3001 unreachable, cannot judge"; exit 2; }; sleep 5
+                  done
+                  rc=0
+                  for p in 2049 111; do
+                    if nc -z -w 4 $H $p; then echo "OPEN: $H:$p answers over the tailnet"; rc=1; else echo "ok: $H:$p closed"; fi
+                  done
+                  exit $rc
+              resources:
+                requests: { memory: 8Mi, cpu: 5m }
+                limits: { memory: 32Mi }

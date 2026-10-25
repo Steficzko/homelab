@@ -604,6 +604,41 @@ spec:
               kustomize patch in kubernetes/bootstrap/longhorn; a Longhorn bump that changed the
               upstream ConfigMap is the usual cause. Existing PVs are not affected.
 
+        # CLSTR-44 (2026-10-25): a sync operation can fail while the app still reads Synced
+        # (hooks, a rejected resource, a timed-out wave). Only phase=Succeeded series existed at
+        # write time; the Error/Failed series is born on the first failure at value 1, which
+        # increase() never sees, hence the `unless offset` arm for a series that is new this hour.
+        - alert: ArgoSyncFailed
+          expr: >-
+            (increase(argocd_app_sync_total{phase=~"Error|Failed"}[1h]) > 0)
+            or (argocd_app_sync_total{phase=~"Error|Failed"}
+                unless argocd_app_sync_total{phase=~"Error|Failed"} offset 1h)
+          for: 0m
+          labels:
+            severity: warning
+          annotations:
+            summary: "Argo sync of {{ $labels.name }} ended {{ $labels.phase }} in the last hour"
+            description: >-
+              `kubectl -n argocd get app {{ $labels.name }} -o jsonpath='{.status.operationState.message}'`
+              shows why. Resolves an hour after the last failed sync.
+
+        # SEC-10/SEC-12 (2026-10-25): nfs-tailnet-probe (extras/nfs-tailnet-probe.yaml) runs hourly
+        # and fails if Unraid answers NFS/rpcbind on its tailnet address, or cannot judge.
+        # Last success older than 2h = two missed or failed runs. Absent series = never ran.
+        - alert: NfsTailnetProbeFailing
+          expr: >-
+            (time() - kube_cronjob_status_last_successful_time{namespace="monitoring",cronjob="nfs-tailnet-probe"} > 7200)
+            or absent(kube_cronjob_status_last_successful_time{namespace="monitoring",cronjob="nfs-tailnet-probe"})
+          for: 30m
+          labels:
+            severity: critical
+          annotations:
+            summary: "NFS may be reachable over Tailscale on Prague Unraid (probe failing)"
+            description: >-
+              `kubectl -n monitoring logs job/<latest nfs-tailnet-probe>` says OPEN (re-run
+              /boot/config/scripts/nfs-lan-only.sh on Unraid, check the go file) or BLIND
+              (100.82.66.30:3001 unreachable from pods: tailscale on the node or Unraid is down).
+
         # Released is what Retain is for: the PVC is gone, the data is not. It is a to-do,
         # not an outage: re-bind it or delete the PV + Longhorn volume once the data is unneeded.
         - alert: PersistentVolumeReleased
