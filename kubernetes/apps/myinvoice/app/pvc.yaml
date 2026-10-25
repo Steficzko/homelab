@@ -6,6 +6,8 @@ kind: PersistentVolumeClaim
 metadata:
   name: myinvoice-data
   namespace: myinvoice
+  labels:
+    recurring-job.longhorn.io/daily-backup: "enabled"   # 2026-10-25: was only in app dumps
 spec:
   accessModes: [ReadWriteOnce]
   storageClassName: longhorn

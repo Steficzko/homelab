@@ -51,6 +51,9 @@ spec:
           volumeMounts:
             - name: data
               mountPath: /var/lib/mysql
+  # daily Longhorn backup: the live PVC carries recurring-job.longhorn.io/daily-backup=enabled,
+  # set with kubectl label (2026-10-25). volumeClaimTemplates are immutable on an existing
+  # StatefulSet, so the label cannot live here without recreating it.
   volumeClaimTemplates:
     - metadata:
         name: data
