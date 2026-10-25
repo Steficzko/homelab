@@ -104,9 +104,15 @@ sidecar:
   resources:
     requests: {memory: 96Mi, cpu: 10m}     # loki-sc-rules p95 89Mi
 lokiCanary:
+  image:                                   # same pin as loki.image (chart default = appVersion 3.6.12)
+    tag: 3.6.19
+    digest: sha256:43f68b496f2cdf49177dfa1136cc962afbf43f45ed34393ec345dab3701b0e88
   resources:
     requests: {memory: 64Mi, cpu: 10m}     # p95 52Mi
 gateway:
+  image:                                   # CLSTR-40: chart floats 1.29-alpine; same bytes, now pinned
+    tag: 1.29.8-alpine
+    digest: sha256:0c79d56aee561a1d81c63f00eee5fb5fe29279560cdc55e91425133104c7fbe6
   resources:
     requests: {memory: 32Mi, cpu: 10m}     # nginx p95 13Mi
 
