@@ -1,0 +1,64 @@
+# Firefly III's daily cron: recurring transactions, exchange rates, auto-budgets, bill warnings.
+# Missing until 2026-10-25: the 7 recurrences set up in July (first date 08-01) never fired;
+# Aug-Oct were backfilled by hand with `php artisan firefly-iii:cron --create-recurring --force --date=YYYY-MM-01`.
+# Runs the app image itself (no STATIC_CRON_TOKEN / HTTP hop). Own label, so the firefly
+# Service never routes to it; the postgres netpol admits app=firefly-cron.
+# backoffLimit covers the kube-router netpol admission lag on fresh Job pods.
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: firefly-cron
+  namespace: firefly
+spec:
+  schedule: "0 6 * * *"
+  timeZone: Europe/Prague
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      backoffLimit: 4
+      ttlSecondsAfterFinished: 604800
+      template:
+        metadata:
+          labels:
+            app: firefly-cron
+        spec:
+          restartPolicy: Never
+          containers:
+            - name: cron
+              image: fireflyiii/core:version-6.7.9@sha256:4409f9f0f87378ba95d40811352f4f49338d276bb638c1e6d18a5579f332fbe8
+              command: ["php", "/var/www/html/artisan", "firefly-iii:cron"]
+              envFrom:
+                - secretRef:
+                    name: firefly-secret        # APP_KEY, DB_PASSWORD, MAIL_PASSWORD
+              env:
+                - { name: APP_URL, value: "https://money.kostikidis.net" }
+                - { name: TZ, value: "Europe/Prague" }
+                - { name: DB_CONNECTION, value: "pgsql" }
+                - { name: DB_HOST, value: "postgres.firefly.svc.cluster.local" }
+                - { name: DB_PORT, value: "5432" }
+                - { name: DB_DATABASE, value: "firefly" }
+                - { name: DB_USERNAME, value: "firefly" }
+                - { name: MAIL_MAILER, value: "smtp" }
+                - { name: MAIL_HOST, value: "smtp.gmail.com" }
+                - { name: MAIL_PORT, value: "587" }
+                - { name: MAIL_ENCRYPTION, value: "tls" }
+                - { name: MAIL_USERNAME, value: "kostikidis.network@gmail.com" }
+                - { name: MAIL_FROM, value: "kostikidis.network@gmail.com" }
+              resources:
+                requests: { memory: 128Mi, cpu: "50m" }
+                limits: { memory: 512Mi }
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata: { name: firefly-cron, namespace: firefly }
+spec:
+  podSelector: { matchLabels: { app: firefly-cron } }
+  policyTypes: [Ingress, Egress]
+  egress:
+    - ports: [{ port: 5432 }]
+      to: [{ podSelector: { matchLabels: { app: postgres } } }]
+    - ports: [{ port: 53, protocol: UDP }, { port: 53, protocol: TCP }]   # DNS
+    - ports: [{ port: 443, protocol: TCP }]                                # HTTPS (exchange rates)
+    - ports: [{ port: 587, protocol: TCP }]                                # SMTP (bill warnings)
