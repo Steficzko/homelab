@@ -82,7 +82,7 @@ spec:
                 - { name: tools, mountPath: /tools }
           containers:
             - name: export
-              image: bitnamilegacy/kubectl:1.33@sha256:cd354d5b25562b195b277125439c23e4046902d7f1abc0dc3c75aad04d298c17
+              image: alpine/kubectl:1.37.1@sha256:a5d0fbecab3f7b6c2ab7398f1daa73a3e0ed6ece18556d21698233e9e3759cc7   # STOR-30: bitnamilegacy is frozen; kubectl cp needs tar (busybox has it)
               envFrom:
                 - secretRef: { name: backup-s3-secret }   # AWS_ACCESS_KEY_ID / AWS_SECRET_ACCESS_KEY / AWS_ENDPOINTS
               env:
