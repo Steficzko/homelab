@@ -53,6 +53,14 @@ The drill can **never** leave production pointed at Greece:
 
 Not theoretical — the cutover is exercised and benchmarked:
 - **Cutover works and fails back clean** — DNS returns to Prague, the standby is torn down, and Prague's n8n is never disrupted.
-- **User-facing downtime measured at ~0 s** — every probe sample across the DNS flip hit a live origin (Cloudflare's proxied DNS flip is near-instant, and both origins were healthy through the transition).
+- **Real webhooks served from Greece, 2026-10-26** (`greece/drill-webhooks.sh`): 92 webhook
+  workflows live on Greece, a public webhook probed every second across failover and failback,
+  **324/324 samples 200**, 170 of them answered by Greece (counted in Greece's own execution log).
+  Earlier drills (June) checked only `/healthz`; they could not have caught the n8n 2.44 publish
+  bug that left every Greece webhook at 404.
 
-**Honest scope:** the ~0 s figure is the cutover *mechanism* with Prague still up. In a real Prague outage, expect **RTO ≈ 1-2 min** (warm-standby startup) and **RPO ≈ 1 h** (hourly backup). Coverage is `auto.kostikidis.net` (n8n); the standby is warm, not hot.
+**Honest scope:** proven with Prague still up and no writes during the window. In a real Prague
+outage expect **RTO ≈ 2 min** (measured: restore ~35 s, stack start ~25 s, Cloudflare edge ~1 min)
+and **RPO ≈ 1 h** (hourly backup). Not yet drilled: schedule/Telegram workflows on Greece, Prague
+actually down, failback after Greece took writes. Coverage is `auto.kostikidis.net` (n8n); the
+standby is warm, not hot.

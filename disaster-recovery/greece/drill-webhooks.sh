@@ -39,6 +39,7 @@ cleanup(){
   [ -n "$PROBE_PID" ] && kill $PROBE_PID
   gsh 'docker rm -f bjj-failover-cloudflared n8n >/dev/null 2>&1; true'
   profile off
+  gsh 'bash /mnt/user/appdata/bjj-failover/restore-from-minio.sh n8n 2>&1 | grep -E "published|pruned|vacuum"'   # back to failover-ready (all Prague-active published)
   log "standby restored: $(gsh 'docker ps --format "{{.Names}}" | grep -E "^(n8n|bjj-failover-cloudflared|bjj-postgres|gotenberg)$" | tr "\n" " "')"
   writes > $S/writes_after.txt
   log "WRITES during window (table=delta):"
@@ -57,11 +58,11 @@ PY
 trap cleanup EXIT
 
 log "1/7 fresh restore from Greece MinIO"
-gsh 'bash /mnt/user/appdata/bjj-failover/restore-from-minio.sh 2>&1 | grep -E "restoring|imported|Done"'
+gsh 'bash /mnt/user/appdata/bjj-failover/restore-from-minio.sh 2>&1 | grep -E "restoring|imported|published|pruned|vacuum|refusing|Done"'
 writes > $S/writes_before.txt
-log "2/7 publish $(python3 -c "import json;print(len(json.load(open('$S/wh_ids.json'))))") webhook-only workflows (one-off container, n8n not running yet)"
-IDS=$(python3 -c "import json;print(' '.join(json.load(open('$S/wh_ids.json'))))")
-gsh "cd /mnt/user/appdata/bjj-failover && . ./.env && docker run --rm --user 1000:1000 -e N8N_ENCRYPTION_KEY=\$N8N_ENCRYPTION_KEY -v \$PWD/n8n:/home/node/.n8n --entrypoint sh $IMG -c 'ok=0; for id in $IDS; do n8n publish:workflow --id=\$id >/dev/null 2>&1 && ok=\$((ok+1)); done; echo published \$ok'"
+log "2/7 restore already published Prague's active set; unpublish all but the $(python3 -c "import json;print(len(json.load(open('$S/wh_ids.json'))))") webhook-only (no double-fired schedules / Telegram re-registration while Prague is up)"
+IDS=$(python3 -c "import json;print(','.join(\"'\"+i+\"'\" for i in json.load(open('$S/wh_ids.json'))))")
+gsh "cd /mnt/user/appdata/bjj-failover && docker run --rm --user 1000:1000 -v \$PWD/n8n:/home/node/.n8n --entrypoint node $IMG -e \"const s=require('/usr/local/lib/node_modules/n8n/node_modules/sqlite3');const d=new s.Database('/home/node/.n8n/database.sqlite');d.run(\\\"UPDATE workflow_entity SET active=0, activeVersionId=NULL WHERE activeVersionId IS NOT NULL AND id NOT IN ($IDS)\\\",function(e){console.log('   unpublished for drill:',e?e.message:this.changes)})\""
 log "3/7 failover profile ON"
 profile on || exit 1
 log "4/7 wait for n8n healthz + tunnel healthy + probe webhook registered on origin"

@@ -34,32 +34,20 @@ cd /mnt/user/appdata/bjj-failover && ./restore-from-minio.sh        # both
    `COMPOSE_PROFILES=failover` → **Update the stack**. (CLI equivalent:
    `docker compose --profile failover up -d` in the stack dir.)
    This starts `n8n` + `bjj-app`.
-3. **Re-activate workflows.** They import deactivated **and unpublished**; on n8n 2.27 a
-   workflow's triggers/webhooks register only when it is BOTH active and published.
-   `update:workflow --active=true` is DEPRECATED here and does NOT publish — using it leaves
-   every webhook returning 404. Use `publish:workflow`, which sets a workflow active **and**
-   published in one step (verified: `unpublish` clears both, `publish` restores both):
-   ```bash
-   # publish (= activate + publish) every restored workflow, then restart so triggers register
-   docker exec n8n sh -c 'for id in $(n8n list:workflow --onlyId); do n8n publish:workflow --id="$id"; done'
-   docker restart n8n
-   ```
-   Publishing ~100 workflows this way takes a few minutes (each CLI call cold-starts n8n) —
-   it's the sanctioned path. Then verify a key webhook is live:
+3. **Workflows are already published.** Since 2026-10-26 `restore-from-minio.sh`
+   publishes exactly the workflows active in Prague (sets `active` + `activeVersionId`,
+   the same write `n8n publish:workflow` makes) on every run, so step 1 leaves Greece
+   failover-ready. The stack's `N8N_USE_WORKFLOW_PUBLICATION_SERVICE=false` is what makes
+   n8n 2.44 honour that on startup. **Never remove it without re-drilling:** without it
+   every webhook 404s while `/healthz` stays green. Verify a key webhook is live:
    ```bash
    curl -s -o /dev/null -w '%{http_code}\n' -X POST https://auto.kostikidis.net/webhook/ledger-login
-   # 200/401 = registered & healthy; 404 = not registered yet
+   # 200/401 = registered & healthy; 404 = not registered
    ```
-   (Or publish only the ones you need with `n8n publish:workflow --id=<id>` / the n8n UI.)
+   **Drilling while Prague is up:** use `drill-webhooks.sh`. It unpublishes everything
+   except webhook-only workflows (schedules would double-fire, Telegram triggers would
+   re-register the bots), and its cleanup re-runs the n8n restore to go back to ready.
 
-   ⚠ **n8n ≥ 2.44:** CLI-published workflows only go live because the stack sets
-   `N8N_USE_WORKFLOW_PUBLICATION_SERVICE=false`. Without it the new publication service
-   never activates them and every webhook 404s, even though `publish` reports success.
-   Never remove that env var without re-drilling.
-
-   **Drilling while Prague is up:** publish ONLY the webhook-only workflows. Schedule
-   triggers would double-fire alongside Prague, and Telegram triggers would re-register
-   the bots' webhooks. In a real outage, publish everything.
 4. **Send traffic to Greece** — run the sticky DNS flip:
    ```bash
    ./disaster-recovery/greece/failover.sh    # needs CF API token in ~/.cloudflare_token
@@ -76,6 +64,6 @@ cd /mnt/user/appdata/bjj-failover && ./restore-from-minio.sh        # both
 ## Notes
 - `n8n` runs as uid 1000; `/mnt/user/appdata/bjj-failover/n8n` is chowned 1000:1000.
 - Postgres data persists at `/mnt/user/appdata/bjj-failover/postgres` (subPath `pgdata`).
-- RPO ≈ 1 hour (hourly replication). RTO ≈ minutes for steps 1–2 + 4; add a few minutes
-  for step 3 (publishing ~100 workflows on 2.27 is sequential). Execution history is NOT
+- RPO ≈ 1 hour (hourly replication). RTO measured 2026-10-26: restore ~35 s + stack start to
+  webhooks live ~25 s + Cloudflare edge picking up the DNS flip ~1 min, so about 2 min. Execution history is NOT
   replicated — only workflows + credentials — so past run logs don't survive failover.

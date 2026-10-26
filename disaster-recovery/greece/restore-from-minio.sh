@@ -42,13 +42,23 @@ restore_n8n() {
   local run="docker run --rm --user 1000:1000 -e N8N_ENCRYPTION_KEY=$N8N_ENCRYPTION_KEY -v $BASE/n8n:/home/node/.n8n -v /tmp/n8nrestore:/restore:ro n8nio/n8n:2.44.6@sha256:d02752c6ab446ae9db8deec2f9cc887c378f77cdcad31650814df936b7386dfb"
   $run import:workflow --separate --input=/restore/workflows
   $run import:credentials --input=/restore/credentials.json
-  # import only adds/updates: drop workflows Prague no longer has (cascades their history),
-  # then VACUUM — every 6h re-import otherwise leaves ~100 MB of free pages a day.
-  local keep; keep=$(ls /tmp/n8nrestore/workflows | sed -n 's/\.json$//p' | sed "s/.*/'&'/" | paste -sd,)
-  [ -n "$keep" ] && docker run --rm --user 1000:1000 -v $BASE/n8n:/home/node/.n8n --entrypoint node n8nio/n8n:2.44.6@sha256:d02752c6ab446ae9db8deec2f9cc887c378f77cdcad31650814df936b7386dfb -e "
+  # import only adds/updates and leaves everything unpublished. Make Greece an exact,
+  # failover-ready mirror: drop workflows Prague no longer has (cascades their history),
+  # publish exactly the ones active in Prague (= what `publish:workflow` writes:
+  # active + activeVersionId, guarded on the version existing; one statement instead of
+  # ~9 min of CLI cold starts), then VACUUM (6h re-imports otherwise grow ~100 MB/day).
+  # Failover then only has to start n8n.
+  docker run --rm --user 1000:1000 -v $BASE/n8n:/home/node/.n8n -v /tmp/n8nrestore:/restore:ro --entrypoint node n8nio/n8n:2.44.6@sha256:d02752c6ab446ae9db8deec2f9cc887c378f77cdcad31650814df936b7386dfb -e "
+const fs=require('fs'),dir='/restore/workflows';
+const wfs=fs.readdirSync(dir).filter(f=>f.endsWith('.json')).map(f=>JSON.parse(fs.readFileSync(dir+'/'+f)));
+if(wfs.length<10){console.log('    export has',wfs.length,'workflows - refusing to prune/publish');process.exit(1)}
+const q=a=>a.map(w=>\"'\"+w.id+\"'\").join(','), all=q(wfs), act=q(wfs.filter(w=>w.active));
 const s=require('/usr/local/lib/node_modules/n8n/node_modules/sqlite3');const d=new s.Database('/home/node/.n8n/database.sqlite');
+const log=m=>function(e){console.log('    '+m+':',e?e.message:(this.changes??'ok'))};
 d.serialize(()=>{d.run('PRAGMA foreign_keys=ON');
-d.run(\"DELETE FROM workflow_entity WHERE id NOT IN ($keep)\",function(e){console.log('    pruned stale workflows:',e?e.message:this.changes)});
+d.run('DELETE FROM workflow_entity WHERE id NOT IN ('+all+')',log('pruned stale workflows'));
+d.run('UPDATE workflow_entity SET active=0, activeVersionId=NULL WHERE id NOT IN ('+act+')',log('unpublished (inactive in Prague)'));
+d.run('UPDATE workflow_entity SET active=1, activeVersionId=versionId WHERE isArchived=0 AND id IN ('+act+') AND EXISTS (SELECT 1 FROM workflow_history h WHERE h.workflowId=workflow_entity.id AND h.versionId=workflow_entity.versionId)',log('published (active in Prague, expect '+act.split(',').length+')'));
 d.run('VACUUM',e=>console.log('    vacuum:',e?e.message:'ok'))})"
   rm -rf /tmp/n8nrestore
   echo "    n8n restored (workflows + credentials)."
