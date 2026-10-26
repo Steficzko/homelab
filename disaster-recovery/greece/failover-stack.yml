@@ -50,6 +50,11 @@ services:
       WEBHOOK_URL: https://auto.kostikidis.net/
       GENERIC_TIMEZONE: Europe/Prague
       N8N_TRUST_PROXY: "true"
+      # n8n 2.44's publication service never activates workflows published via the CLI
+      # (`publish:workflow`, which FAILOVER.md step 3 uses): its outbox stays empty and every
+      # webhook 404s. The legacy activation path reads activeVersionId directly. Found in the
+      # 2026-10-26 drill.
+      N8N_USE_WORKFLOW_PUBLICATION_SERVICE: "false"
     volumes:
       - /mnt/user/appdata/bjj-failover/n8n:/home/node/.n8n
     networks:

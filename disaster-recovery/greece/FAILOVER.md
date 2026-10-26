@@ -51,6 +51,15 @@ cd /mnt/user/appdata/bjj-failover && ./restore-from-minio.sh        # both
    # 200/401 = registered & healthy; 404 = not registered yet
    ```
    (Or publish only the ones you need with `n8n publish:workflow --id=<id>` / the n8n UI.)
+
+   ⚠ **n8n ≥ 2.44:** CLI-published workflows only go live because the stack sets
+   `N8N_USE_WORKFLOW_PUBLICATION_SERVICE=false`. Without it the new publication service
+   never activates them and every webhook 404s, even though `publish` reports success.
+   Never remove that env var without re-drilling.
+
+   **Drilling while Prague is up:** publish ONLY the webhook-only workflows. Schedule
+   triggers would double-fire alongside Prague, and Telegram triggers would re-register
+   the bots' webhooks. In a real outage, publish everything.
 4. **Send traffic to Greece** — run the sticky DNS flip:
    ```bash
    ./disaster-recovery/greece/failover.sh    # needs CF API token in ~/.cloudflare_token
