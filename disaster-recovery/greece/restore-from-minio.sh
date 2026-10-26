@@ -42,6 +42,14 @@ restore_n8n() {
   local run="docker run --rm --user 1000:1000 -e N8N_ENCRYPTION_KEY=$N8N_ENCRYPTION_KEY -v $BASE/n8n:/home/node/.n8n -v /tmp/n8nrestore:/restore:ro n8nio/n8n:2.44.6@sha256:d02752c6ab446ae9db8deec2f9cc887c378f77cdcad31650814df936b7386dfb"
   $run import:workflow --separate --input=/restore/workflows
   $run import:credentials --input=/restore/credentials.json
+  # import only adds/updates: drop workflows Prague no longer has (cascades their history),
+  # then VACUUM — every 6h re-import otherwise leaves ~100 MB of free pages a day.
+  local keep; keep=$(ls /tmp/n8nrestore/workflows | sed -n 's/\.json$//p' | sed "s/.*/'&'/" | paste -sd,)
+  [ -n "$keep" ] && docker run --rm --user 1000:1000 -v $BASE/n8n:/home/node/.n8n --entrypoint node n8nio/n8n:2.44.6@sha256:d02752c6ab446ae9db8deec2f9cc887c378f77cdcad31650814df936b7386dfb -e "
+const s=require('/usr/local/lib/node_modules/n8n/node_modules/sqlite3');const d=new s.Database('/home/node/.n8n/database.sqlite');
+d.serialize(()=>{d.run('PRAGMA foreign_keys=ON');
+d.run(\"DELETE FROM workflow_entity WHERE id NOT IN ($keep)\",function(e){console.log('    pruned stale workflows:',e?e.message:this.changes)});
+d.run('VACUUM',e=>console.log('    vacuum:',e?e.message:'ok'))})"
   rm -rf /tmp/n8nrestore
   echo "    n8n restored (workflows + credentials)."
 }
