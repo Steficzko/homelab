@@ -149,6 +149,16 @@ grafana:
         gnetId: 1860         # Node Exporter Full — disks, network, temps, per-node
         revision: 45
         datasource: Prometheus
+      # Unraid NAS boxes (2026-10-27): containers via cAdvisor (job unraid-cadvisor, pick it in
+      # the job variable; kubelet's cAdvisor shows up there too) and disks via smartctl-exporter.
+      docker-containers:
+        gnetId: 15798        # Docker monitoring (cAdvisor)
+        revision: 16
+        datasource: Prometheus
+      smartctl:
+        gnetId: 22604        # SMARTctl Exporter Dashboard
+        revision: 4
+        datasource: Prometheus
   # Everything the dashboard sidecar picked up landed in (General): 25 stock chart
   # dashboards plus every dashboard we ship as a ConfigMap. (General) is where
   # dashboards go to be un-findable, and a hiring manager opening Grafana sees one
@@ -324,6 +334,37 @@ prometheus:
             labels:
               site: greece
               nas: ptolemaida
+      # Per-container metrics (cAdvisor, :9111) and disk health (smartctl-exporter, :9633)
+      # on both NAS boxes, added 2026-10-27 in Portainer stack 27 next to node-exporter.
+      # SMART was a blind spot: Unraid's own disk warnings reached nobody until the same day.
+      - job_name: unraid-cadvisor
+        metrics_path: /metrics
+        scrape_interval: 60s
+        relabel_configs:
+          - source_labels: [nas]
+            target_label: instance
+        metric_relabel_configs:
+          # docker_only still exports the cgroup tree roots (id="/", "/docker"); keep containers
+          - source_labels: [name]
+            regex: ""
+            action: drop
+        static_configs:
+          - targets: ["192.168.1.100:9111"]
+            labels: { site: prague, nas: repy }
+          - targets: ["100.85.129.88:9111"]
+            labels: { site: greece, nas: ptolemaida }
+      - job_name: unraid-smartctl
+        metrics_path: /metrics
+        scrape_interval: 300s   # the exporter itself polls every 300s, and skips spun-down disks
+        scrape_timeout: 60s
+        relabel_configs:
+          - source_labels: [nas]
+            target_label: instance
+        static_configs:
+          - targets: ["192.168.1.100:9633"]
+            labels: { site: prague, nas: repy }
+          - targets: ["100.85.129.88:9633"]
+            labels: { site: greece, nas: ptolemaida }
       # The house edge router (Beelink ME mini, OpenWrt, "wrt-edge"). Lua node
       # exporter bound to its LAN address only; adds WAN throughput, conntrack,
       # load and per-interface (per-VLAN) counters. Liveness is NOT this job's job:

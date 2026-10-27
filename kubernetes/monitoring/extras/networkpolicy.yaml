@@ -27,7 +27,7 @@ spec:
               kubernetes.io/metadata.name: homepage
       ports:
         - port: 9090
-    # Unraid syslog -> promtail:1514.
+    # Unraid syslog -> promtail:1514, and container logs -> :3500.
     # kube-proxy's KUBE-EXT chain MASQUERADEs external traffic, so promtail sees the
     # NODE ip as the source, never the NAS ip — allowlisting 192.168.1.100 /
     # 100.85.129.88 alone silently rejects every packet (RST, not a timeout).
@@ -63,6 +63,7 @@ spec:
             cidr: 192.168.1.191/32   # dev-seat (Debian dev VM)
       ports:
         - port: 1514
+        - port: 3500   # Unraid container logs (Alloy -> promtail loki_push_api)
 
     # Grafana from the k3s nodes themselves, port 3000.
     #

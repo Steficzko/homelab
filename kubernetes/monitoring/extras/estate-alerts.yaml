@@ -195,6 +195,57 @@ spec:
               airflow.
 
     # -------------------------------------------------------------- backups
+    # Disk health + containers on both NAS boxes (smartctl-exporter, cAdvisor; 2026-10-27).
+    # SMART alerts fire on CHANGE, not on level: at rollout Greece's pool disks already had
+    # 1398 reallocated (sdg, WD4003FRYZ V6KZKE6D) and 2 pending (sdc, WD40EFRX WCC7K7VCR571)
+    # sectors. A level alert would page forever about a known state; growth is the signal.
+    # Spun-down array disks are skipped by the exporter (standby check), so their series
+    # pause while they sleep; increase() over 1d spans their next spin-up.
+    - name: estate-unraid-health
+      rules:
+        - alert: UnraidDiskSmartFailed
+          expr: smartctl_device_smart_status{job="unraid-smartctl"} == 0
+          for: 0m
+          labels:
+            severity: critical
+          annotations:
+            summary: "{{ $labels.instance }} {{ $labels.device }}: SMART overall health FAILED"
+            description: The drive itself reports imminent failure. Replace it; check the Unraid array/pool status first.
+        - alert: UnraidNvmeCriticalWarning
+          expr: smartctl_device_critical_warning{job="unraid-smartctl"} > 0
+          for: 0m
+          labels:
+            severity: critical
+          annotations:
+            summary: "{{ $labels.instance }} {{ $labels.device }}: NVMe critical warning {{ $value }}"
+        - alert: UnraidDiskSectorsGrowing
+          expr: >-
+            increase(smartctl_device_attribute{job="unraid-smartctl",attribute_value_type="raw",
+              attribute_name=~"Reallocated_Sector_Ct|Current_Pending_Sector|Offline_Uncorrectable|Reported_Uncorrect"}[1d]) > 0
+          for: 0m
+          labels:
+            severity: warning
+          annotations:
+            summary: "{{ $labels.instance }} {{ $labels.device }}: {{ $labels.attribute_name }} grew in the last day"
+            description: >-
+              Bad sectors are increasing. One step is noise; a steady climb means the disk is
+              going. `smartctl -a /dev/{{ $labels.device }}` on the NAS, and plan a replacement.
+        - alert: UnraidNvmeMediaErrors
+          expr: increase(smartctl_device_media_errors{job="unraid-smartctl"}[1d]) > 0
+          for: 0m
+          labels:
+            severity: warning
+          annotations:
+            summary: "{{ $labels.instance }} {{ $labels.device }}: new NVMe media errors"
+        - alert: UnraidContainerRestarting
+          expr: changes(container_start_time_seconds{job="unraid-cadvisor"}[1h]) > 3
+          for: 0m
+          labels:
+            severity: warning
+          annotations:
+            summary: "{{ $labels.instance }}: container {{ $labels.name }} restarted {{ $value }}x in 1h"
+            description: Crash loop on the NAS. Logs in Grafana Explore, Loki {job="docker", nas="{{ $labels.instance }}", container="{{ $labels.name }}"}.
+
     - name: estate-backups
       rules:
         # The failure this whole file exists for. A CronJob whose last Job

@@ -26,6 +26,16 @@ config:
             target_label: severity
           - source_labels: ['__syslog_message_app_name']
             target_label: app
+      # Unraid container logs (2026-10-27): Grafana Alloy on each NAS (Portainer stack 27)
+      # tails the Docker socket and pushes here. Write-only receiver on the same LB path as
+      # syslog; Loki's own API stays cluster-internal. Labels come from the sender:
+      # job=docker, nas, container.
+      - job_name: unraid-docker
+        loki_push_api:
+          server:
+            http_listen_port: 3500
+            grpc_listen_port: 0
+          use_incoming_timestamp: true
 
 # klipper-lb publishes this on every node IP, so both Unraids can reach it on the LAN
 # and Greece can reach it over the tailnet.
@@ -41,6 +51,14 @@ extraPorts:
       # MASQUERADEs to the node IP, which the monitoring netpol would then have to
       # allowlist instead of the actual NAS addresses. Safe here: promtail is a
       # DaemonSet, so every node has a local endpoint to serve the connection.
+      externalTrafficPolicy: Local
+  docker-push:
+    name: docker-push
+    containerPort: 3500
+    protocol: TCP
+    service:
+      type: LoadBalancer
+      port: 3500
       externalTrafficPolicy: Local
 
 # Request = 14d p95 178Mi, 2026-10-18 (CLSTR-15). Sized, not fixed: still EOL (CLSTR-30).
