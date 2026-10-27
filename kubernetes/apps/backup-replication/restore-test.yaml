@@ -1,0 +1,91 @@
+# Monthly restore test (ADR-048 RTO). Until 2026-10-27 no dump had ever been restored: the
+# watchdog proves a backup exists and is not empty, not that it restores. This pulls the newest
+# dump of each Postgres app from MinIO, restores it into a throwaway Postgres in the pod, and
+# fails unless a table that must hold rows does. Vaultwarden: archive extracts and the SQLite
+# file is real (header + size). A failed run = CronJobLastRunFailed.
+# ponytail: Postgres 17 restores the 15/16 dumps; a PG18 app needs a newer image here.
+# ponytail: Vaultwarden is a file check, not a query; postgres:alpine has no sqlite3.
+# Not covered yet: blanca/namosocks/myinvoice MariaDB, neo4j, n8n, dental/gompha (other buckets).
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: restore-test
+  namespace: backup
+spec:
+  schedule: "30 5 3 * *"
+  timeZone: Europe/Prague
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 1
+  jobTemplate:
+    spec:
+      backoffLimit: 0
+      activeDeadlineSeconds: 3600
+      ttlSecondsAfterFinished: 604800
+      template:
+        spec:
+          restartPolicy: Never
+          initContainers:
+            - name: fetch
+              image: nixery.dev/shell/minio-client/curl/jq@sha256:06f2e7ad141e31f4f29809da337f6430b852db47f8786c1e24de2cf1e88be5f6
+              imagePullPolicy: IfNotPresent
+              envFrom:
+                - secretRef: { name: minio-replication-secret }   # SRC_ = Prague MinIO, read on app-backups
+              env:
+                - { name: HOME, value: /tmp }
+              command:
+                - sh
+                - -c
+                - |
+                  set -eu
+                  # new pods are refused for ~30-45s until kube-router learns their IP
+                  i=0; until mc alias set s http://192.168.1.100:9100 "$SRC_ACCESS_KEY" "$SRC_SECRET_KEY" >/dev/null 2>&1; do
+                    i=$((i+1)); [ $i -ge 20 ] && { echo "MinIO unreachable"; exit 1; }; sleep 5
+                  done
+                  for p in cal-postgres nextcloud-postgres paperless-postgres plane-postgres vaultwarden; do
+                    k=$(mc ls --json "s/app-backups/$p/" | jq -rs 'sort_by(.lastModified) | last | .key')
+                    mc cp -q "s/app-backups/$p/$k" "/work/$p.${k#*.}"
+                    echo "$p <- $k"
+                  done
+              volumeMounts:
+                - { name: work, mountPath: /work }
+          containers:
+            - name: restore
+              image: postgres:17-alpine@sha256:eee6c6e1b0894fa4fe0075eb054af9fd1cf39a35321c2d4110626cfe506411fb
+              securityContext: { runAsUser: 70, runAsGroup: 70 }
+              command:
+                - sh
+                - -c
+                - |
+                  set -eu
+                  export PGHOST=/tmp PGUSER=postgres
+                  initdb -D /tmp/pg -U postgres >/dev/null
+                  pg_ctl -D /tmp/pg -o "-c listen_addresses='' -k /tmp" -w start >/dev/null
+                  fail=0
+                  check() { # $1=dump prefix, $2=table that must have rows
+                    createdb "$1"
+                    if ! pg_restore --no-owner --no-acl -d "$1" /work/$1.dump 2>/tmp/err; then
+                      echo "WARN $1: pg_restore reported errors:"; tail -5 /tmp/err
+                    fi
+                    n=$(psql -d "$1" -tAc "select count(*) from $2" 2>/dev/null || echo 0)
+                    if [ "${n:-0}" -gt 0 ]; then echo "ok   $1: $2 = $n rows"; else echo "FAIL $1: $2 empty or missing"; fail=1; fi
+                  }
+                  check cal-postgres users
+                  check nextcloud-postgres oc_filecache
+                  check paperless-postgres documents_document
+                  check plane-postgres issues
+                  mkdir /tmp/vw && tar xzf /work/vaultwarden.tar.gz -C /tmp/vw
+                  db=$(find /tmp/vw -name 'db.sqlite3' | head -1)
+                  if [ -n "$db" ] && [ "$(head -c 15 "$db")" = "SQLite format 3" ] && [ "$(wc -c < "$db")" -gt 100000 ]; then
+                    echo "ok   vaultwarden: $db $(wc -c < "$db") bytes"
+                  else echo "FAIL vaultwarden: no valid db.sqlite3 in archive"; fail=1; fi
+                  exit $fail
+              resources:
+                requests: { memory: 256Mi, cpu: 100m }
+                limits: { memory: 1Gi }
+              volumeMounts:
+                - { name: work, mountPath: /work }
+                - { name: tmp, mountPath: /tmp }
+          volumes:
+            - { name: work, emptyDir: {} }
+            - { name: tmp, emptyDir: {} }
