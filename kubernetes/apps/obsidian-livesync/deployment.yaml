@@ -19,7 +19,7 @@ spec:
         fsGroup: 5984   # CouchDB's GID — makes Kubernetes chown Longhorn volumes on mount
       containers:
         - name: couchdb
-          image: couchdb:3.5@sha256:4e8e0a366208a87d5059b0f4fcbefff13c32401a655d4629c19be6288ea77675
+          image: couchdb:3.5@sha256:bed314d10cdf58c0fff63352db4c3f168df58a185a773c0e2295105375c5ef10
           ports:
             - containerPort: 5984
           env:
