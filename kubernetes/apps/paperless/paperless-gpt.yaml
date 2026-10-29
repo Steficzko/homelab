@@ -1,0 +1,84 @@
+# LLM OCR for screenshots (2026-10-29). Tesseract reads phone screenshots badly; gemma4:12b
+# (vision) on the 6700 XT (LXC 110) reads them well. The "Tag: screenshot" Paperless workflow
+# also adds paperless-gpt-ocr-auto; this polls for that tag, OCRs the page with the vision
+# model, writes the text back as the document content, and removes the tag.
+# Same model as chat, so no extra VRAM. Tesseract still runs first on consume (search works
+# at once); this replaces its text a few minutes later.
+# API token: Paperless user "paperless-gpt" (superuser: screenshots are owned by stefanos AND
+# marianna, and object permissions offer no "all documents" grant short of that; unusable
+# password, token only). No ingress: the UI has no auth, use port-forward.
+# ponytail: one model shared with chat; a busy chat queue slows OCR, never blocks it.
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata: { name: paperless-gpt, namespace: paperless }
+spec:
+  accessModes: [ReadWriteOnce]
+  storageClassName: longhorn
+  resources: { requests: { storage: 1Gi } }
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata: { name: paperless-gpt, namespace: paperless }
+spec:
+  replicas: 1
+  strategy: { type: Recreate }
+  selector: { matchLabels: { app: paperless-gpt } }
+  template:
+    metadata: { labels: { app: paperless-gpt } }
+    spec:
+      enableServiceLinks: false
+      securityContext: { runAsUser: 10001, runAsGroup: 10001, fsGroup: 10001, runAsNonRoot: true }
+      containers:
+        - name: paperless-gpt
+          image: ghcr.io/icereed/paperless-gpt:v0.31.0@sha256:d668941a829552cc0eddbc7c22506b3480dfbf61bd0d6eae881ad9fcfe2de70c
+          envFrom:
+            - secretRef: { name: paperless-gpt }   # PAPERLESS_API_TOKEN
+          env:
+            - { name: PAPERLESS_BASE_URL, value: "http://paperless.paperless.svc:8000" }
+            - { name: PAPERLESS_PUBLIC_URL, value: "https://xartura.kostikidis.net" }
+            - { name: LLM_PROVIDER, value: ollama }
+            - { name: LLM_MODEL, value: "gemma4:12b" }
+            - { name: OLLAMA_HOST, value: "http://ollama-gpu.ai.svc.cluster.local:11434" }
+            - { name: OLLAMA_THINK, value: "false" }
+            - { name: OLLAMA_TIMEOUT_SECONDS, value: "300" }
+            - { name: OCR_PROVIDER, value: llm }
+            - { name: VISION_LLM_PROVIDER, value: ollama }
+            - { name: VISION_LLM_MODEL, value: "gemma4:12b" }
+            - { name: VISION_LLM_REQUESTS_PER_MINUTE, value: "10" }   # leaves the GPU to chat between pages
+            - { name: OCR_PROCESS_MODE, value: image }
+            - { name: OCR_LIMIT_PAGES, value: "3" }
+            - { name: OCR_MAX_RETRIES, value: "3" }
+            - { name: AUTO_OCR_TAG, value: paperless-gpt-ocr-auto }
+            - { name: FAIL_TAG, value: paperless-gpt-failed }
+            - { name: PDF_OCR_TAGGING, value: "true" }
+            - { name: PDF_OCR_COMPLETE_TAG, value: paperless-gpt-ocr-complete }
+            - { name: SUGGESTION_WORKERS, value: "1" }
+            - { name: LOG_LEVEL, value: info }
+          ports:
+            - { name: http, containerPort: 8080 }
+          readinessProbe:
+            tcpSocket: { port: http }
+            periodSeconds: 30
+          resources: { requests: { memory: 64Mi, cpu: "20m" }, limits: { memory: 512Mi, cpu: "1" } }
+          securityContext: { allowPrivilegeEscalation: false, capabilities: { drop: [ALL] } }
+          volumeMounts:
+            - { name: data, mountPath: /app/config, subPath: config }
+            - { name: data, mountPath: /app/db, subPath: db }
+            - { name: data, mountPath: /app/prompts, subPath: prompts }
+      volumes:
+        - name: data
+          persistentVolumeClaim: { claimName: paperless-gpt }
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata: { name: paperless-gpt, namespace: paperless }
+spec:
+  podSelector: { matchLabels: { app: paperless-gpt } }
+  policyTypes: [Ingress, Egress]
+  ingress: []
+  egress:
+    - to: [ { podSelector: { matchLabels: { app: paperless } } } ]
+      ports: [ { port: 8000, protocol: TCP } ]
+    - to: [ { ipBlock: { cidr: 192.168.1.224/32 } } ]   # ollama-gpu = LXC 110 (manual Endpoints)
+      ports: [ { port: 11434, protocol: TCP } ]
+    - ports: [ { port: 53, protocol: UDP }, { port: 53, protocol: TCP } ]

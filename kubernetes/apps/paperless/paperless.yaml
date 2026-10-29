@@ -157,6 +157,8 @@ spec:
         - namespaceSelector: { matchLabels: { kubernetes.io/metadata.name: ingress-nginx } }
         - namespaceSelector: { matchLabels: { kubernetes.io/metadata.name: traefik } }   # Traefik (CLSTR-29)
       ports: [{ port: 8000 }]
+    - from: [{ podSelector: { matchLabels: { app: paperless-gpt } } }]   # LLM OCR (paperless-gpt.yaml)
+      ports: [{ port: 8000 }]
   egress:
     - to: [{ podSelector: { matchLabels: { app: postgres } } }]
       ports: [{ port: 5432 }]
