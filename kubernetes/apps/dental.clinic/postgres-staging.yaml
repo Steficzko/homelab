@@ -48,7 +48,7 @@ spec:
         - name: postgres
           # same pinned digest as production — staging must rehearse on the
           # exact server version it is vouching for
-          image: postgres:16-alpine@sha256:f4610795587492cd4fb887c2dc3de301b813278bb6f616992061141b5f15ac36
+          image: postgres:16-alpine@sha256:0cefaabd882e42bcb2a2f3dc56d3ce4770560ba62fd7f197f1a2e008fd5731ab
           ports: [{containerPort: 5432}]
           env:
             - {name: POSTGRES_DB, value: clinic}
