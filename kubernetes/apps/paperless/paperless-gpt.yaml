@@ -59,7 +59,7 @@ spec:
           readinessProbe:
             tcpSocket: { port: http }
             periodSeconds: 30
-          resources: { requests: { memory: 64Mi, cpu: "20m" }, limits: { memory: 512Mi, cpu: "1" } }
+          resources: { requests: { memory: 256Mi, cpu: "20m" }, limits: { memory: 2Gi, cpu: "1" } }   # 512Mi OOM-killed in the PDF renderer on the first page
           securityContext: { allowPrivilegeEscalation: false, capabilities: { drop: [ALL] } }
           volumeMounts:
             - { name: data, mountPath: /app/config, subPath: config }
