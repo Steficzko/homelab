@@ -30,7 +30,7 @@ spec:
       helm:
         releaseName: plane
         valuesObject:
-          planeVersion: v1.4.1
+          planeVersion: v1.4.3   # Node 22.23.4 (Black October) + access-control fixes, 2026-10-29
 
           # Every secret group comes from a SOPS-encrypted Secret in this repo.
           # NOTE: owning app_env means the chart no longer templates DATABASE_URL /
