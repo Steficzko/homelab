@@ -29,7 +29,8 @@ data:
           proxy_connect_timeout 5s;
           proxy_read_timeout 300s;
           proxy_send_timeout 300s;
-          proxy_next_upstream error timeout;
+          # 5xx too: daedalus shares a 6 GB card with whisper + the desktop, a CUDA OOM comes back as 500
+          proxy_next_upstream error timeout http_500 http_502 http_503;
         }
       }
     }

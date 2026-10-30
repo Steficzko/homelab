@@ -54,7 +54,7 @@ spec:
             summary: "brain-capture cannot reach Whisper/LiteLLM/Gotenberg"
             description: >-
               Captures are retried, nothing is lost, but nothing is being transcribed. Check LiteLLM
-              and the ryzen-ml Whisper container.
+              and whisper on daedalus (VM 100, .48:8000; fallback whisper-cpu on LXC 111).
         - alert: BrainMetricsAbsent
           expr: absent(brain_last_cycle_timestamp_seconds)
           for: 10m

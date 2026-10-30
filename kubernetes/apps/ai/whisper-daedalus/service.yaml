@@ -1,6 +1,6 @@
 # whisper on daedalus (VM 100 on pve, GTX 1660, Docker ~/ml/compose.yaml), 192.168.1.48 (router
-# DHCP reservation). Replaces whisper-rtx (LXC 114, retired 2026-10-30). Endpoints are applied
-# out-of-band: ArgoCD excludes them.
+# DHCP reservation). Replaced whisper-rtx (LXC 114, deleted 2026-10-30). EndpointSlice like
+# immich-ml-daedalus, so the address lives in git.
 apiVersion: v1
 kind: Service
 metadata:
@@ -11,13 +11,17 @@ spec:
     - port: 8000
       targetPort: 8000
 ---
-apiVersion: v1
-kind: Endpoints
+apiVersion: discovery.k8s.io/v1
+kind: EndpointSlice
 metadata:
   name: whisper-daedalus
   namespace: ai
-subsets:
+  labels:
+    kubernetes.io/service-name: whisper-daedalus
+addressType: IPv4
+ports:
+  - port: 8000
+    protocol: TCP
+endpoints:
   - addresses:
-      - ip: 192.168.1.48
-    ports:
-      - port: 8000
+      - 192.168.1.48

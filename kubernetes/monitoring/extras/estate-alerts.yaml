@@ -676,6 +676,21 @@ spec:
         # SEC-10/SEC-12 (2026-10-25): nfs-tailnet-probe (extras/nfs-tailnet-probe.yaml) runs hourly
         # and fails if Unraid answers NFS/rpcbind on its tailnet address, or cannot judge.
         # Last success older than 2h = two missed or failed runs. Absent series = never ran.
+        # ml-daedalus-probe (extras/ml-daedalus-probe.yaml) every 10 min: daedalus VM is the primary
+        # for Immich ML and whisper, and both fall back silently. 30 min without a success = 3 runs.
+        - alert: MlDaedalusDown
+          expr: >-
+            (time() - kube_cronjob_status_last_successful_time{namespace="monitoring",cronjob="ml-daedalus-probe"} > 1800)
+            or absent(kube_cronjob_status_last_successful_time{namespace="monitoring",cronjob="ml-daedalus-probe"})
+          for: 10m
+          labels:
+            severity: warning
+          annotations:
+            summary: "daedalus (VM 100) ML primary down: Immich ML on Unraid, whisper on LXC 111 CPU"
+            description: >-
+              `kubectl -n monitoring logs job/<latest ml-daedalus-probe>`. VM off: `qm status 100` on pve;
+              after an AC loss the BIOS lost SVM (Del, F4, profile pve-svm). VM up: `docker compose ps`
+              in ~/ml on daedalus.
         - alert: NfsTailnetProbeFailing
           expr: >-
             (time() - kube_cronjob_status_last_successful_time{namespace="monitoring",cronjob="nfs-tailnet-probe"} > 7200)
