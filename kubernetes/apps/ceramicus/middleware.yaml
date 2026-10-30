@@ -1,0 +1,11 @@
+# Preview only (final site moves to GoDaddy): keep this host out of search
+# engines so the real domain isn't indexed as a duplicate.
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: noindex
+  namespace: ceramicus
+spec:
+  headers:
+    customResponseHeaders:
+      X-Robots-Tag: "noindex, nofollow"
