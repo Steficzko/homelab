@@ -28,7 +28,7 @@ spec:
           securityContext: { runAsUser: 33, runAsGroup: 33, runAsNonRoot: true }
           containers:
             - name: cron
-              image: nextcloud:35.0.2-apache@sha256:89af7ee7a96ff5e9668280566209268ae6b2d02327f6ef6d56f6d68228cf9431
+              image: nextcloud:35.0.2-apache@sha256:e0b1a2af52c82c07b7a0e8e59878bd8769e704447734d5d238a836982f51b9c8
               command: ["php", "-f", "/var/www/html/cron.php"]
               securityContext:
                 runAsUser: 33
