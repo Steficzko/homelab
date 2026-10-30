@@ -1,0 +1,26 @@
+# Public static site (Ceramicus 24 exhibition). DNS + tunnel come from the
+# *.kostikidis.net wildcards; Cloudflare Access has a bypass app for this host.
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ceramicus
+  namespace: ceramicus
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+spec:
+  ingressClassName: traefik
+  tls:
+    - hosts:
+        - ceramicus.kostikidis.net
+      secretName: ceramicus-tls
+  rules:
+    - host: ceramicus.kostikidis.net
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: ceramicus
+                port:
+                  number: 80
