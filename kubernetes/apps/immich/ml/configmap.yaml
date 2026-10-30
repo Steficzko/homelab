@@ -18,7 +18,8 @@ data:
       client_max_body_size 50m;
 
       upstream immich_ml_backends {
-        server immich-ml-ryzen.immich.svc.cluster.local:3003 max_fails=2 fail_timeout=30s;
+        # daedalus = VM 100 on pve, GTX 1660; Unraid takes over whenever the VM is off.
+        server immich-ml-daedalus.immich.svc.cluster.local:3003 max_fails=2 fail_timeout=30s;
         server immich-ml-unraid.immich.svc.cluster.local:3003 backup;
       }
       server {

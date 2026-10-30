@@ -1,7 +1,10 @@
+# whisper on daedalus (VM 100 on pve, GTX 1660, Docker ~/ml/compose.yaml), 192.168.1.48 (router
+# DHCP reservation). Replaces whisper-rtx (LXC 114, retired 2026-10-30). Endpoints are applied
+# out-of-band: ArgoCD excludes them.
 apiVersion: v1
 kind: Service
 metadata:
-  name: whisper-rtx
+  name: whisper-daedalus
   namespace: ai
 spec:
   ports:
@@ -11,10 +14,10 @@ spec:
 apiVersion: v1
 kind: Endpoints
 metadata:
-  name: whisper-rtx
+  name: whisper-daedalus
   namespace: ai
 subsets:
   - addresses:
-      - ip: 192.168.1.228
+      - ip: 192.168.1.48
     ports:
       - port: 8000
