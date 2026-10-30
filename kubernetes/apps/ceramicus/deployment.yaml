@@ -20,6 +20,8 @@ spec:
           labelSelector:
             matchLabels:
               app: ceramicus
+      imagePullSecrets:
+        - name: ghcr-pull
       containers:
         - name: ceramicus
           image: ghcr.io/steficzko/ceramicus-site:6d4c469670d608dd8c9308c797dca26db0c9bc95
