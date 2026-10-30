@@ -24,7 +24,7 @@ spec:
         - name: ghcr-pull
       containers:
         - name: ceramicus
-          image: ghcr.io/steficzko/ceramicus-site:c4f93445bfc00bfe08cb0c7e4b9727dcebc564f6
+          image: ghcr.io/steficzko/ceramicus-site:8d1513e050ac4d80913455c95e1a0c585beacb62
           ports:
             - containerPort: 80
           resources:
