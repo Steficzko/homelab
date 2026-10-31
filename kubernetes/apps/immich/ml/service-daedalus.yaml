@@ -1,4 +1,4 @@
-# Immich ML on daedalus (VM 100, GTX 1660, Docker ~/ml/compose.yaml), 192.168.1.48. Replaces LXC 111 (2026-10-30).
+# Immich ML on daedalus (VM 100, GTX 1660, Docker ~/ml/compose.yaml), 192.168.10.48 (VLAN 10 since 2026-10-30). Replaces LXC 111 (2026-10-30).
 apiVersion: v1
 kind: Service
 metadata:
@@ -22,4 +22,4 @@ ports:
     protocol: TCP
 endpoints:
   - addresses:
-      - 192.168.1.48
+      - 192.168.10.48
