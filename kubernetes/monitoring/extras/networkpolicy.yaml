@@ -63,6 +63,16 @@ spec:
         - port: 1514
         - port: 3500   # Unraid container logs (Alloy -> promtail loki_push_api)
 
+    # Hermes VM (lenovobig VM 100, agents VLAN 30) -> promtail-syslog:1514 only.
+    # Its own rule, not the list above, which would also open :3500. Source IP is
+    # preserved (promtail-syslog is externalTrafficPolicy: Local). Router side:
+    # wrt-edge rule hermes-vm-to-promtail-syslog. Hermes work item H1.
+    - from:
+        - ipBlock:
+            cidr: 192.168.30.136/32  # hermes VM
+      ports:
+        - port: 1514
+
     # Grafana from the k3s nodes themselves, port 3000.
     #
     # `tailscale serve` runs in a node's HOST namespace and proxies to Grafana's
