@@ -24,7 +24,7 @@ spec:
         - name: myinvoice
           # Digest-pinned. Upstream's own compose says to pin a version in
           # production; :latest would silently roll an invoicing app.
-          image: ghcr.io/radekhulan/myinvoice:4.59.3@sha256:224cd8b6ca6b600483437214013b193f6484992ca2da03ff44fe6e8f83b6cd66
+          image: ghcr.io/radekhulan/myinvoice:4.59.4@sha256:b633aee9e1c820af28587f9dd7f81321f617d3fc39f282e2ca9e34ec2424c9d8
           # The PDF page footer is hardcoded to the vendor credit (MIT, removal
           # allowed). Swap it for the supplier's "Zápis v rejstříku" text and drop
           # that field's second copy under the body. ponytail: sed on the image's
