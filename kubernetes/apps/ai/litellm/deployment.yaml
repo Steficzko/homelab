@@ -26,7 +26,7 @@ spec:
           # v1.106.3: post-incident rebuild (2026-10-21 supply-chain attack), new signing key, eMudhra root removed.
           # Digest verified 2026-10-24: cosign verify --key <litellm commit e82a3c6>/cosign.pub
           # (pub sha256 e3fe3e08...). Verify the next bump the same way before pinning.
-          image: ghcr.io/berriai/litellm:v1.106.3@sha256:74d0696a9f0afcc993c7659d246f0c542f003368298633e852228250779f1032
+          image: ghcr.io/berriai/litellm:v1.106.6@sha256:37e2dafb088a7723beb998590682957386dfc83ffea1848486f8e0e5cfac0b06
           args:
             - --config
             - /app/config.yaml
