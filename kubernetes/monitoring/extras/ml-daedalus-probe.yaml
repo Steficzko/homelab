@@ -1,4 +1,4 @@
-# daedalus (VM 100 on pve, 192.168.10.48, VLAN 10) is the PRIMARY for Immich ML (:3003) and LiteLLM whisper
+# daedalus (VM 100 on pve, 192.168.10.10, VLAN 10) is the PRIMARY for Immich ML (:3003) and LiteLLM whisper
 # (:8000), and both fall back silently (Unraid, LXC 111), so without this nobody would learn it is
 # down: after an AC loss pve's BIOS forgets SVM and the VM cannot start at all. Probed from a pod:
 # pods leave through the node IPs, which are the only LAN sources daedalus's ufw admits.
@@ -28,7 +28,7 @@ spec:
                 - sh
                 - -c
                 - |
-                  H=192.168.10.48
+                  H=192.168.10.10
                   # fresh pods are refused for ~30-45s until kube-router learns their IP
                   i=0; until wget -q -T 5 -O /dev/null http://$H:3003/ping; do
                     i=$((i+1)); [ $i -ge 12 ] && { echo "DOWN: immich-ml $H:3003/ping"; exit 1; }; sleep 5
