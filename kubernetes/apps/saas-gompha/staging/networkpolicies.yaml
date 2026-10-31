@@ -42,6 +42,15 @@ spec:
         - namespaceSelector:   # Traefik (CLSTR-29); nginx kept until it is removed
             matchLabels: { kubernetes.io/metadata.name: traefik }
       ports: [{port: 8000}]
+    # Prometheus scrapes /internal/metrics (token-gated). The Prometheus pod only,
+    # not all of `monitoring`. It sends no X-Forwarded-For, so the
+    # FORWARDED_ALLOW_IPS="*" reasoning in api.yaml still holds.
+    - from:
+        - namespaceSelector:
+            matchLabels: {kubernetes.io/metadata.name: monitoring}
+          podSelector:
+            matchLabels: {app.kubernetes.io/name: prometheus}
+      ports: [{port: 8000}]
   egress:
     - to:
         - podSelector: {matchLabels: {app: clinic-postgres}}

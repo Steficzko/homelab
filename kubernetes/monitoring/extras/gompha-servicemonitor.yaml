@@ -1,0 +1,28 @@
+# Scrapes the Gompha clinic API's /internal/metrics (app/src/gompha/metrics.py in
+# saas.gompha). Lives in `monitoring` with `release: kube-prometheus-stack` or the
+# Prometheus CR ignores it (see brain-servicemonitor.yaml).
+#
+# In-cluster only: the public ingress splits /v1 + /healthz and nothing else, so
+# /internal/* is unreachable from outside. The route still fails closed on the
+# bearer token (gompha-scrape-token, hand-applied sops in kubernetes/monitoring/).
+# Needs clinic image >= the one that ships metrics.py; on older images the route
+# 404s and GomphaApiNotScraped fires — which is the honest reading.
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: gompha-clinic-api
+  namespace: monitoring
+  labels:
+    release: kube-prometheus-stack
+spec:
+  namespaceSelector:
+    matchNames: [saas-gompha-staging]
+  selector:
+    matchLabels: { app: clinic-api }
+  endpoints:
+    - port: http
+      path: /internal/metrics
+      interval: 60s
+      authorization:
+        type: Bearer
+        credentials: { name: gompha-scrape-token, key: staging }

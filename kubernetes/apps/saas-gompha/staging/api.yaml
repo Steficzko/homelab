@@ -101,8 +101,12 @@ spec:
             # (ADR-024) — token rides the URL fragment (P5/P8). Same host as the
             # PWA so the redeem page loads same-origin.
             - {name: GOMPHA_APP_BASE_URL, value: "https://app-staging.gompha.com"}
-            # "*" governs uvicorn's proxy-headers only; safe because the
-            # NetworkPolicy admits nobody but the ingress controller (Traefik; ingress-nginx until removed) (they move together).
+            # "*" governs uvicorn's proxy-headers only. The NetworkPolicy admits two
+            # peers: the ingress controller (Traefik; ingress-nginx until removed),
+            # trusted to set the headers; and the Prometheus pod (port-level, so it
+            # COULD reach /v1 and forge them — it sends none; ServiceMonitors cannot
+            # add headers). ponytail: shared port; upgrade = serve /internal/* on its
+            # own port and admit Prometheus only there (licence-auto-sync §6.2 ceiling).
             # Per-caller rate identity comes from CF-Connecting-IP in the app
             # (_client_key), not from this.
             - {name: FORWARDED_ALLOW_IPS, value: "*"}
@@ -114,6 +118,13 @@ spec:
             # (permissions.md §12.8). A missing/wrong key fails at provisioning,
             # which is exactly where it should fail.
             - {name: GOMPHA_LICENCE_PUBKEYS_DIR, value: /etc/gompha/licence-keys}
+            # Bearer token for /internal/metrics + /internal/licence-health. Unset =
+            # both 403 for everyone (fail closed). Same value as monitoring's
+            # gompha-scrape-token secret — rotate the two together. optional: a
+            # missed hand-apply of the sops secret must not take the pod down
+            # (Recreate strategy); unset just means the routes 403.
+            - name: GOMPHA_HEALTH_SCRAPE_TOKEN
+              valueFrom: {secretKeyRef: {name: clinic-api-secret, key: GOMPHA_HEALTH_SCRAPE_TOKEN, optional: true}}
             # --- redeem-invite seam (spec §4.1) — GATED, see networkpolicies.yaml ---
             # The clinic→licensing network path is BLOCKED pending the ADR-024
             # keyless "onboard" surface ruling. Staging seeds root DIRECTLY
@@ -142,6 +153,8 @@ kind: Service
 metadata:
   name: clinic-api
   namespace: saas-gompha-staging
+  # the ServiceMonitor (monitoring/extras/gompha-servicemonitor.yaml) selects on this
+  labels: {app: clinic-api}
 spec:
   selector: {app: clinic-api}
   ports: [{name: http, port: 8000, targetPort: 8000}]

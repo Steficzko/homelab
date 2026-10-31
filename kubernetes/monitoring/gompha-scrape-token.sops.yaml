@@ -1,0 +1,47 @@
+# Bearer token Prometheus presents to the Gompha clinic API's /internal/metrics.
+# The SAME value sits in saas-gompha-staging/clinic-api-secret as
+# GOMPHA_HEALTH_SCRAPE_TOKEN — rotate both together (the route fails closed, so a
+# half-rotation shows up as GomphaApiNotScraped, not as silence).
+# NOT under extras/ — Argo would apply the ciphertext. Apply by hand:
+#   sops -d kubernetes/monitoring/gompha-scrape-token.sops.yaml | kubectl apply -f -
+apiVersion: v1
+kind: Secret
+metadata:
+    name: gompha-scrape-token
+    namespace: monitoring
+type: Opaque
+stringData:
+    staging: ENC[AES256_GCM,data:3n3LWiXTuPMkDTiLfDUwF3O1ietMGFRQrtgxhkO17PIiuRwLAKp8657bfw==,iv:jPkTkINKWTKLwRU3wBQOape6rvgYmDcDnGu1liuvNqM=,tag:VNYvWHXlY5uTCPE5+K91qA==,type:str]
+sops:
+    age:
+        - enc: |
+            -----BEGIN AGE ENCRYPTED FILE-----
+            YWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IFgyNTUxOSBZOEkvTEtjTDNldlduLzFu
+            b3BwRlN3WVJVbDV4dG85YTNmbVA1amJwQjEwCldFUjRuNGJLWlJKejV3Wm9GOGY3
+            TndVcTVDb0ZGM1k2WWdUNnhHUHExTmsKLS0tIFdkalczbWlKQTRnc0Q2RWIwdjc1
+            SmttN29yY3pzQmN0YjVnME5tN0xWd2sKFjWgMCHN/RkVr8wq9lM+MI0TYazfhHm8
+            PSogcNX4jLry+rHSWu/X4wW8b5dSEAsTQ+l7HWTdu66xQK15BxdXQA==
+            -----END AGE ENCRYPTED FILE-----
+          recipient: age18sv9srthxjgaxqufmnf8dwdwg3pugdxkxye8mmndstvjh45zqg9qcsk8c5
+        - enc: |
+            -----BEGIN AGE ENCRYPTED FILE-----
+            YWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IFgyNTUxOSBTMEdTZ1E1UTNjamRNakxl
+            WEZML2pnSkFKcE1seHVtdml5YklpWGU1amdvCnprVHg5R1JrZFVSUjB3WW5Cbkxs
+            TlUrQ2J6OWw0dkg5ZVBkb3BEN3hBRGMKLS0tIGxEcUhtVWkxMlNhenNkWVZmdzBo
+            ZHd4Z2MwdE8vUEJqenVCUmdPdmV1T1kKUIJdyXhxm/YtexyZgjmlM9gViztTEioA
+            ElINA5+ubLkdwwrdJ4XcRsWtK08OFml52cH68fTPCjxbluf7uA7y+w==
+            -----END AGE ENCRYPTED FILE-----
+          recipient: age16nu9pu2s9cy3gf9gdgfm6pwqyrm9t2jnkvvrrcqe07tfcemfxafq4v4sv6
+        - enc: |
+            -----BEGIN AGE ENCRYPTED FILE-----
+            YWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IFgyNTUxOSBRU2xzeElZbnJLaFFmTFYz
+            bHJJUVFsdUdHVXhZRCt3bmNBM2ljaHVBMmxZCkhoeDE4dVVGOXpRdGZ6MEpVRUsr
+            RHpveU5NN0JHc1RuZ1JSV1RIT28xOW8KLS0tIEFWSVVoakxtUHVnSlZMOG1xUWFM
+            ejhiWkEwanlxWHRMTnBFVnhJdmN6T1kK7Ok6hjKCI+w2bqbvFCSUWVm2S56UnqdH
+            RmiEZ+A/pNupTp58x4AbNZcVen2D76zWIuI7t2trGxONG7Ed/d7XkQ==
+            -----END AGE ENCRYPTED FILE-----
+          recipient: age15el6f6wzcdzge9fvpcawuqfdjgld8tlpawyunktmm2lyxtdwlv8sa88y7s
+    encrypted_regex: ^(data|stringData)$
+    lastmodified: "2026-10-25T18:22:54Z"
+    mac: ENC[AES256_GCM,data:Skc+Sy0+cchE2ROnHU2x6Il9J4nA9MxFlD+Ghy4Cp63aS0THQ697VNaeetexeR+i+IPEiGeq0xr/YdHKrcWKanBafopNJktLw7GFGCTgbsigZu0PntXUnXzOu6sDhaRtRF/GzpeWPuY2FX6aOy4v8AKaQeBIi6t6JUyp8Uptk0U=,iv:wM/E00ZeYmdDZ348pXwMpZjsT2kEdEHA/IRO0KrmhMM=,tag:28TwfX97441GYLJjCb+cIg==,type:str]
+    version: 3.13.1

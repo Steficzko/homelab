@@ -1,0 +1,177 @@
+# Gompha clinic — operating.md's "alert on the clinic, not the pods".
+# Backup age, CronJob failures and container restarts are already covered
+# estate-wide (estate-alerts.yaml, restart-alerts.yaml); only what is Gompha's
+# own lives here. `release: kube-prometheus-stack` is mandatory (ruleSelector).
+#
+# Metric names come from saas.gompha app/src/gompha/metrics.py. Labels are the
+# route TEMPLATE, method and status CLASS only — never a tenant, staff or
+# patient id (cardinality and privacy are the same rule here).
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: gompha-alerts
+  namespace: monitoring
+  labels:
+    release: kube-prometheus-stack
+spec:
+  groups:
+    - name: gompha-platform
+      rules:
+        # From kube-state-metrics — works on any image, before the scrape exists.
+        - alert: GomphaApiUnavailable
+          expr: kube_deployment_status_replicas_available{namespace=~"saas-gompha-(staging|prod)",deployment="clinic-api"} < 1
+          for: 3m
+          labels:
+            severity: critical
+          annotations:
+            summary: "{{ $labels.namespace }}: clinic-api has no ready pod"
+            description: >-
+              Nobody can book or take a payment. Readiness is DB-backed (/healthz runs
+              SELECT 1), so check clinic-postgres first:
+              `kubectl -n {{ $labels.namespace }} get pods` and the api logs.
+        # The estate rule allows 26h; this backup runs hourly, so 26h would be a
+        # day of appointments and payments lost before anyone heard (operating.md: know the RPO).
+        - alert: GomphaClinicBackupStale
+          expr: (time() - kube_cronjob_status_last_successful_time{namespace=~"saas-gompha-(staging|prod)",cronjob="clinic-postgres-backup"}) / 3600 > 3
+          for: 15m
+          labels:
+            severity: critical
+          annotations:
+            summary: "{{ $labels.namespace }}: clinic backup last succeeded {{ $value | printf \"%.1f\" }}h ago (hourly job)"
+            description: >-
+              `kubectl -n {{ $labels.namespace }} get jobs --sort-by=.status.startTime | tail`
+              and the failed pod's logs.
+
+    - name: gompha-api
+      rules:
+        # Scrape failing (wrong token after a half rotation, image without
+        # /internal/metrics, NetworkPolicy). Without this, every rule below goes
+        # silent and silence looks like health.
+        - alert: GomphaApiNotScraped
+          # absent(): a rejected ServiceMonitor or a selector miss leaves NO `up`
+          # series at all, and `== 0` never fires on nothing. Add a prod line once
+          # prod is scraped.
+          expr: |
+            up{job="clinic-api",namespace=~"saas-gompha-(staging|prod)"} == 0
+            or absent(up{job="clinic-api",namespace="saas-gompha-staging"})
+          for: 10m
+          labels:
+            severity: warning
+          annotations:
+            summary: "{{ $labels.namespace }}: Prometheus cannot scrape clinic-api /internal/metrics"
+            description: >-
+              Every Gompha API alert is blind until this clears. 403 = token mismatch
+              (gompha-scrape-token vs clinic-api-secret GOMPHA_HEALTH_SCRAPE_TOKEN);
+              404 = image older than metrics.py; timeout = NetworkPolicy.
+        # The reel's example, verbatim: errors above 5% for 5 minutes. Probe and
+        # scrape traffic excluded — the readiness probe alone is ~0.1 req/s and
+        # would both dilute the ratio and double-page with GomphaApiUnavailable
+        # when /healthz 503s. Floor of 0.05 real req/s so two failures at 3am on
+        # an idle staging do not page.
+        - alert: GomphaApiErrorRate
+          expr: |
+            (
+              sum by (namespace) (rate(gompha_http_requests_total{status="5xx",route!~"/healthz|/internal/.*|unmatched"}[5m]))
+              / sum by (namespace) (rate(gompha_http_requests_total{route!~"/healthz|/internal/.*|unmatched"}[5m]))
+            ) > 0.05
+            and sum by (namespace) (rate(gompha_http_requests_total{route!~"/healthz|/internal/.*|unmatched"}[5m])) > 0.05
+          for: 5m
+          labels:
+            severity: critical
+          annotations:
+            summary: "{{ $labels.namespace }}: {{ $value | humanizePercentage }} of API requests are failing"
+            description: >-
+              Search Loki for the correlation ids:
+              {namespace="{{ $labels.namespace }}"} | json | status >= 500
+        - alert: GomphaApiSlow
+          expr: |
+            histogram_quantile(0.95,
+              sum by (namespace, le) (rate(gompha_http_request_duration_seconds_bucket{route!~"/healthz|/internal/.*"}[10m]))
+            ) > 1
+          for: 15m
+          labels:
+            severity: warning
+          annotations:
+            summary: "{{ $labels.namespace }}: API p95 latency {{ $value | printf \"%.2f\" }}s"
+            description: >-
+              The clinic feels this before it reports it (ux.md). Which route:
+              topk(5, histogram_quantile(0.95, sum by (route, le) (rate(gompha_http_request_duration_seconds_bucket[10m]))))
+
+    - name: gompha-licence
+      rules:
+        # licence-auto-sync spec §6.2, the predicate as written: lapsing soon AND
+        # no recent successful renewal. Counts down from the cached expiry, so it
+        # fires even if the sync daemon is dead (or, on staging, never enabled).
+        - alert: GomphaLicenceLapsing
+          expr: |
+            gompha_licence_seconds_until_readonly < 48 * 3600
+            and gompha_licence_seconds_since_last_success > 24 * 3600
+          for: 10m
+          labels:
+            severity: critical
+          annotations:
+            summary: "{{ $labels.namespace }}: clinic goes read-only in {{ $value | humanizeDuration }}"
+            description: >-
+              No successful licence renewal in 24h. Writes will 403 at expiry + grace.
+              Renew per ops/runbooks/clinic-release.md §9.
+        # metrics.py OMITS the gauge when no licence is cached (the clinic is then
+        # read-only, fail closed). Without this rule that state is silence.
+        - alert: GomphaLicenceMissing
+          expr: |
+            up{job="clinic-api",namespace=~"saas-gompha-(staging|prod)"} == 1
+            unless on(namespace) gompha_licence_seconds_until_readonly
+          for: 10m
+          labels:
+            severity: critical
+          annotations:
+            summary: "{{ $labels.namespace }}: no cached licence — clinic is read-only"
+            description: Re-seed per ops/runbooks/clinic-release.md §9.
+        - alert: GomphaLicenceReadOnly
+          expr: gompha_licence_seconds_until_readonly <= 0
+          for: 0m
+          labels:
+            severity: critical
+          annotations:
+            summary: "{{ $labels.namespace }}: clinic is READ-ONLY — licence expired"
+            description: Nobody can book or take a payment until a licence is re-seeded.
+
+    - name: gompha-clinic
+      rules:
+        # operating.md: "zero of any of those on a Tuesday afternoon is an incident
+        # even if every pod is healthy." Booked = POST /v1/appointments answered 2xx.
+        # PROD ONLY, and self-gated on prod being scraped, so it is inert until
+        # pms.gompha.com exists. Erbil is UTC+3, no DST; Friday off. The window
+        # STARTS once the lookback lies wholly inside clinic hours (opens 10:00
+        # Erbil = 07 UTC): bookings 4h lookback → from 11 UTC; payments 6h → 13 UTC
+        # is too late, so payments use 3h from 10 UTC. Both end 13 UTC (16:00).
+        # ponytail: AGGREGATE across every tenant in the namespace, and the working
+        # week is hard-coded rather than read from working_hours. Tenants are DB
+        # rows, not namespaces, so a per-clinic signal needs a tenant-scoped gauge
+        # or working_hours exposed as a metric — a cardinality/privacy decision,
+        # not a copied rule. Fine while prod holds one clinic.
+        - alert: GomphaNoBookingsDuringClinicHours
+          expr: |
+            (sum(increase(gompha_http_requests_total{namespace="saas-gompha-prod",route="/v1/appointments",method="POST",status="2xx"}[4h])) or vector(0)) == 0
+            and on() count(up{job="clinic-api",namespace="saas-gompha-prod"} == 1) > 0
+            and on() hour() >= 11 and on() hour() < 13
+            and on() day_of_week() != 5
+          for: 30m
+          labels:
+            severity: warning
+          annotations:
+            summary: "No appointment booked in prod for 4h during clinic hours"
+            description: >-
+              Every pod can be green while reception cannot book. Try a booking on
+              pms.gompha.com, then ring the clinic before they ring you.
+        - alert: GomphaNoPaymentsDuringClinicHours
+          expr: |
+            (sum(increase(gompha_http_requests_total{namespace="saas-gompha-prod",route="/v1/payments",method="POST",status="2xx"}[3h])) or vector(0)) == 0
+            and on() count(up{job="clinic-api",namespace="saas-gompha-prod"} == 1) > 0
+            and on() hour() >= 10 and on() hour() < 13
+            and on() day_of_week() != 5
+          for: 30m
+          labels:
+            severity: warning
+          annotations:
+            summary: "No payment recorded in prod for 3h during clinic hours"
+            description: The cash desk may be failing silently. Check the money screens on pms.gompha.com.
