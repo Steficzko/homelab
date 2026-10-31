@@ -24,6 +24,9 @@ spec:
         - namespaceSelector:                       # ADR-038 second brain (whisper, json-extract, chat)
             matchLabels:
               kubernetes.io/metadata.name: brain
+        - namespaceSelector:                       # llm.kostikidis.net (tunnel + LAN/agents entry points) — H2
+            matchLabels:
+              kubernetes.io/metadata.name: traefik
       ports:
         - port: 4000
   egress:

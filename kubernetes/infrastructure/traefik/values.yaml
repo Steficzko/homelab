@@ -132,6 +132,20 @@ ports:
         enabled: true
       middlewares:
         - traefik-hsts@kubernetescrd
+  # The Hermes VM (agents VLAN 30) at home. wrt-edge DNATs its 192.168.1.210:443 to
+  # :8445, so it uses the same https://llm.kostikidis.net as off-site, but only routers
+  # that list `agents` (LiteLLM alone, H2) answer here — not the `lan` apps' logins.
+  agents:
+    port: 8445
+    exposedPort: 8445
+    expose:
+      default: false
+      lan: true
+    http:
+      tls:
+        enabled: true
+      middlewares:
+        - traefik-hsts@kubernetescrd
 
 # Not ported on purpose: ssl-redirect (all 49 annotations say "false"), body-size 0 and
 # proxy-buffering off (Traefik's defaults already). Per-app body LIMITS (1m, 25m, 64k…)

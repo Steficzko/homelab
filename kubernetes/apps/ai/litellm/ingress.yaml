@@ -1,0 +1,30 @@
+# One URL for Hermes wherever it runs (H2, destination.md §35):
+# - off-site: Cloudflare tunnel -> websecure, gated by a CF Access service token
+#   (Access app "LiteLLM (Hermes service token)") + a LiteLLM virtual key.
+# - at home: split-horizon DNS -> 192.168.1.210. LAN clients land on `lan`; the Hermes
+#   VM is DNAT'd by wrt-edge to `agents`, the entry point only this Ingress joins.
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: litellm
+  namespace: ai
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    traefik.ingress.kubernetes.io/router.entrypoints: web,websecure,lan,agents
+spec:
+  ingressClassName: traefik
+  tls:
+    - hosts:
+        - llm.kostikidis.net
+      secretName: llm-kostikidis-net-tls
+  rules:
+    - host: llm.kostikidis.net
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: litellm
+                port:
+                  number: 4000
