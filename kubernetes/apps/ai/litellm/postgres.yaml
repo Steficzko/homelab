@@ -1,0 +1,88 @@
+# LiteLLM's database: virtual keys (one per Hermes agent), spend logs, key->model
+# permissions. Without it LiteLLM only has the master key. Hermes item H2.
+# Password + DATABASE_URL live in litellm-secret (secret.sops.yaml, applied by hand —
+# the ai app excludes *.sops.yaml).
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: litellm-postgres
+  namespace: ai
+spec:
+  serviceName: litellm-postgres
+  replicas: 1
+  selector:
+    matchLabels: { app: litellm-postgres }
+  template:
+    metadata:
+      labels: { app: litellm-postgres }
+    spec:
+      affinity:                              # ADR-030 tier-B: prefer workers, soft fallback
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              preference:
+                matchExpressions:
+                  - key: node-role.kubernetes.io/control-plane
+                    operator: DoesNotExist
+      containers:
+        - name: postgres
+          image: postgres:16-alpine@sha256:0cefaabd882e42bcb2a2f3dc56d3ce4770560ba62fd7f197f1a2e008fd5731ab
+          env:
+            - { name: POSTGRES_DB,   value: litellm }
+            - { name: POSTGRES_USER, value: litellm }
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef: { name: litellm-secret, key: POSTGRES_PASSWORD }
+            - { name: PGDATA, value: /var/lib/postgresql/data/pgdata }
+          ports: [{ containerPort: 5432 }]
+          resources:
+            requests: { memory: 128Mi, cpu: 25m }
+            limits:   { memory: 512Mi, cpu: 500m }
+          readinessProbe:
+            exec: { command: ["pg_isready","-U","litellm","-d","litellm"] }
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          livenessProbe:
+            exec: { command: ["pg_isready","-U","litellm","-d","litellm"] }
+            initialDelaySeconds: 45
+            periodSeconds: 20
+            failureThreshold: 5
+          volumeMounts:
+            - { name: data, mountPath: /var/lib/postgresql/data }
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+        labels:
+          recurring-job.longhorn.io/source: enabled
+          recurring-job.longhorn.io/daily-backup: enabled
+      spec:
+        accessModes: [ReadWriteOnce]
+        storageClassName: longhorn
+        resources: { requests: { storage: 2Gi } }
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: litellm-postgres
+  namespace: ai
+spec:
+  selector: { app: litellm-postgres }
+  ports: [{ port: 5432, targetPort: 5432 }]
+---
+# Only LiteLLM talks to its database; no egress needed.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: litellm-postgres
+  namespace: ai
+spec:
+  podSelector:
+    matchLabels: { app: litellm-postgres }
+  policyTypes: [Ingress, Egress]
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels: { app: litellm }
+      ports:
+        - port: 5432
+  egress: []

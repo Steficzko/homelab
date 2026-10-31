@@ -27,6 +27,13 @@ spec:
       ports:
         - port: 4000
   egress:
+    # Its own database (virtual keys, spend logs) — H2.
+    - ports:
+        - port: 5432
+      to:
+        - podSelector:
+            matchLabels:
+              app: litellm-postgres
     - ports:
         - port: 11434
       to:

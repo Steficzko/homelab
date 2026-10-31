@@ -38,6 +38,13 @@ spec:
                 secretKeyRef:
                   name: litellm-secret
                   key: LITELLM_MASTER_KEY
+            # Postgres for virtual keys + spend tracking (H2). LiteLLM runs its
+            # prisma migrations against it at startup.
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: litellm-secret
+                  key: DATABASE_URL
           ports:
             - containerPort: 4000
           volumeMounts:
