@@ -5,6 +5,12 @@ metadata:
   namespace: searxng
   annotations:
     cert-manager.io/cluster-issuer: letsencrypt-prod
+    # `agents` = the Hermes VM at home only (H3). It finds this via an AdGuard per-client
+    # upstream for 192.168.30.136 + wrt-edge DNAT; everyone else still goes through
+    # Cloudflare Access. NOT `lan`: SearXNG has no login of its own (ADR-044 rule).
+    # WHEN LENOVOBIG LEAVES HOME this path stops: it then needs a CF Access service-token
+    # app for search.kostikidis.net and the headers on the VM (Plane EDGE-12).
+    traefik.ingress.kubernetes.io/router.entrypoints: web,websecure,agents
 spec:
   ingressClassName: traefik
   tls:

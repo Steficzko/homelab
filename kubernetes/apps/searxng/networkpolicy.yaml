@@ -26,8 +26,16 @@ spec:
         - port: 443
         - port: 80
       to:
+        # Internet only (H3): an agent asking SearXNG to fetch must not reach the router,
+        # the LAN VIP, other VLANs, the tailnet or anything in the cluster.
         - ipBlock:
             cidr: 0.0.0.0/0
+            except:
+              - 10.0.0.0/8         # includes pod 10.42/16 + service 10.43/16 CIDRs
+              - 172.16.0.0/12
+              - 192.168.0.0/16
+              - 100.64.0.0/10
+              - 169.254.0.0/16
     - ports:
         - port: 53
           protocol: UDP

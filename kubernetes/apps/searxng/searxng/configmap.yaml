@@ -14,6 +14,7 @@ data:
     search:
       formats:
         - html
+        - json   # Hermes hermes-main (H3)
     ui:
       default_theme: simple
       theme_args:
