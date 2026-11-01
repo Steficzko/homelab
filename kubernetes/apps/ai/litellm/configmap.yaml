@@ -173,6 +173,17 @@ data:
       # No fallback to the cluster whisper pod: it is CPU too and timed out on the
       # same chunks, burning w2 (2026-10-04). Dental calls ai/whisper directly.
 
+      # Anthropic, for the Hermes agents (H2). The key lives only in litellm-secret;
+      # agents hold per-agent virtual keys scoped to these two names.
+      - model_name: sonnet
+        litellm_params:
+          model: anthropic/claude-sonnet-5-5
+          api_key: os.environ/ANTHROPIC_API_KEY
+      - model_name: haiku
+        litellm_params:
+          model: anthropic/claude-haiku-5-5
+          api_key: os.environ/ANTHROPIC_API_KEY
+
     router_settings:
       num_retries: 1
       timeout: 90
