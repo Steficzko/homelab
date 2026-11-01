@@ -22,7 +22,7 @@ spec:
               app: blog
       containers:
         - name: blog
-          image: ghcr.io/steficzko/kostikidis-blog:8e24c252734763b6e66aef9220e483a58d2b1fdf
+          image: ghcr.io/steficzko/kostikidis-blog:8e24c252734763b6e66aef9220e483a58d2b1fdf@sha256:87fbf2012f70ab58f3dc06c67c411848b031d30aee10bf7083551134b12f05ad
           ports:
             - containerPort: 80
           resources:
