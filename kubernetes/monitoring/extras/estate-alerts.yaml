@@ -691,6 +691,18 @@ spec:
               `kubectl -n monitoring logs job/<latest ml-daedalus-probe>`. VM off: `qm status 100` on pve;
               after an AC loss the BIOS lost SVM (Del, F4, profile pve-svm). VM up: `docker compose ps`
               in ~/ml on daedalus.
+        # The host itself (prometheus job daedalus-node-exporter). Critical = immediate, not the
+        # 12h warning digest: owner call 2026-11-01 ("immediate after 10 mins").
+        - alert: DaedalusHostDown
+          expr: up{job="daedalus-node-exporter"} == 0 or absent(up{job="daedalus-node-exporter"})
+          for: 10m
+          labels:
+            severity: critical
+          annotations:
+            summary: "daedalus (pve VM 100, 192.168.10.10) unreachable for 10 min"
+            description: >-
+              node_exporter :9100 not answering. `qm status 100` on pve (192.168.1.122); after an AC
+              loss the BIOS lost SVM. VM up: check ufw on daedalus and wrt-edge rule cluster_to_daedalus.
         - alert: NfsTailnetProbeFailing
           expr: >-
             (time() - kube_cronjob_status_last_successful_time{namespace="monitoring",cronjob="nfs-tailnet-probe"} > 7200)

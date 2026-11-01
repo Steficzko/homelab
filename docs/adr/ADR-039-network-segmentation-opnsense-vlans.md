@@ -11,6 +11,11 @@
   ADR-041 will carry the new plan; this draft stays as the record of what was considered.
 - **2026-10-22:** superseded in practice by ADR-045 (amendment 2026-10-22) and ADR-046 — VLANs are live on an
   OpenWrt router (Beelink interim, Flint 2 later). Kept as the record of what was considered.
+- **2026-11-01:** the subnet map below is the CONSIDERED plan, not the live one. Live on wrt-edge:
+  untagged `lan` 192.168.1.0/24 (cluster, NAS, Proxmox) · VLAN 5 iot 192.168.5.0/24 ·
+  VLAN 10 trusted 192.168.10.0/24 · VLAN 20 family 192.168.20.0/24 · **VLAN 30 agents
+  192.168.30.0/24** (Hermes VM; internet only plus exact pinholes; design
+  record pending as Plane CLSTR-50) · VLAN 90 mgmt 192.168.90.0/24. VLAN 30 is NOT IoT.
 - **Deciders:** Stefanos
 - **Tracked in:** Plane project `NET` (Networking), NET-1 … NET-13
 - **Supersedes:** the flat `192.168.1.0/24` addressing in [[project_network_convention]]
