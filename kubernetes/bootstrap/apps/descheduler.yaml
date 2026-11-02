@@ -51,13 +51,16 @@ spec:
                       cpu: 95
                       memory: 85
                       pods: 90
-                - name: RemovePodsViolatingNodeTaints
+                - name: RemovePodsViolatingNodeAffinity
                   args:
-                    # Pulls app pods back OFF the control planes once a worker
-                    # has room (after a drain/failover they land on r1/g2/b3
-                    # and nothing else ever moves them back). nodeFit=true in
-                    # DefaultEvictor = only evicts if the pod fits elsewhere.
-                    includePreferNoSchedule: true
+                    # Pulls worker-preferring pods (ADR-030 preferred affinity)
+                    # back OFF the control planes once a worker can actually fit
+                    # them — after a drain/failover nothing else moves them back.
+                    # NOT RemovePodsViolatingNodeTaints: with workers near full on
+                    # CPU requests that one evicted pods that merely fit on ANOTHER
+                    # CP, so the same pods bounced between CPs every 6 h.
+                    nodeAffinityType:
+                      - preferredDuringSchedulingIgnoredDuringExecution
                     namespaces:
                       exclude:
                         - kube-system
@@ -71,7 +74,7 @@ spec:
                     - RemoveDuplicates
                 deschedule:
                   enabled:
-                    - RemovePodsViolatingNodeTaints
+                    - RemovePodsViolatingNodeAffinity
   destination:
     server: https://kubernetes.default.svc
     namespace: kube-system
