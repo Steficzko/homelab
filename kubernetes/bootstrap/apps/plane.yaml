@@ -76,10 +76,26 @@ spec:
           # longhorn), so any PVC omitting it is ambiguous. Chart defaults here are
           # 1Gi/1Gi/100Mi/100Mi, which is unusable.
           postgres:
+            affinity:   # ADR-030: prefer workers (CPs carry PreferNoSchedule, 2026-11-02)
+              nodeAffinity:
+                preferredDuringSchedulingIgnoredDuringExecution:
+                  - weight: 100
+                    preference:
+                      matchExpressions:
+                        - key: node-role.kubernetes.io/control-plane
+                          operator: DoesNotExist
             local_setup: true
             storageClass: longhorn
             volumeSize: 10Gi
           minio:
+            affinity:   # ADR-030: prefer workers (CPs carry PreferNoSchedule, 2026-11-02)
+              nodeAffinity:
+                preferredDuringSchedulingIgnoredDuringExecution:
+                  - weight: 100
+                    preference:
+                      matchExpressions:
+                        - key: node-role.kubernetes.io/control-plane
+                          operator: DoesNotExist
             local_setup: true
             # MinIO gated their Docker Hub repos on/before 2026-09-11: anonymous
             # pulls of minio/minio and minio/mc now return 401 insufficient_scope,
@@ -132,10 +148,26 @@ spec:
               # means trusting client-supplied X-Forwarded-* headers.
               minio_endpoint_ssl: true
           rabbitmq:
+            affinity:   # ADR-030: prefer workers (CPs carry PreferNoSchedule, 2026-11-02)
+              nodeAffinity:
+                preferredDuringSchedulingIgnoredDuringExecution:
+                  - weight: 100
+                    preference:
+                      matchExpressions:
+                        - key: node-role.kubernetes.io/control-plane
+                          operator: DoesNotExist
             local_setup: true
             storageClass: longhorn
             volumeSize: 1Gi
           redis:
+            affinity:   # ADR-030: prefer workers (CPs carry PreferNoSchedule, 2026-11-02)
+              nodeAffinity:
+                preferredDuringSchedulingIgnoredDuringExecution:
+                  - weight: 100
+                    preference:
+                      matchExpressions:
+                        - key: node-role.kubernetes.io/control-plane
+                          operator: DoesNotExist
             local_setup: true
             storageClass: longhorn
             volumeSize: 1Gi
@@ -152,6 +184,14 @@ spec:
           # The four stateful pods and the migrator Job expose no resource knobs at
           # all — they are covered by the LimitRange in kubernetes/apps/plane.
           api:
+            affinity:   # ADR-030: prefer workers (CPs carry PreferNoSchedule, 2026-11-02)
+              nodeAffinity:
+                preferredDuringSchedulingIgnoredDuringExecution:
+                  - weight: 100
+                    preference:
+                      matchExpressions:
+                        - key: node-role.kubernetes.io/control-plane
+                          operator: DoesNotExist
             memoryRequest: 512Mi
             memoryLimit: 1536Mi
             cpuRequest: 200m
@@ -160,31 +200,79 @@ spec:
           # this originally requested, which is the under-counting this whole block
           # exists to avoid. Raised 2026-08-22 from measurement, not guesswork.
           worker:
+            affinity:   # ADR-030: prefer workers (CPs carry PreferNoSchedule, 2026-11-02)
+              nodeAffinity:
+                preferredDuringSchedulingIgnoredDuringExecution:
+                  - weight: 100
+                    preference:
+                      matchExpressions:
+                        - key: node-role.kubernetes.io/control-plane
+                          operator: DoesNotExist
             memoryRequest: 640Mi
             memoryLimit: 1536Mi
             cpuRequest: 150m
             cpuLimit: 500m
           beatworker:
+            affinity:   # ADR-030: prefer workers (CPs carry PreferNoSchedule, 2026-11-02)
+              nodeAffinity:
+                preferredDuringSchedulingIgnoredDuringExecution:
+                  - weight: 100
+                    preference:
+                      matchExpressions:
+                        - key: node-role.kubernetes.io/control-plane
+                          operator: DoesNotExist
             memoryRequest: 192Mi   # measured 147Mi idle
             memoryLimit: 512Mi
             cpuRequest: 50m
             cpuLimit: 500m
           web:
+            affinity:   # ADR-030: prefer workers (CPs carry PreferNoSchedule, 2026-11-02)
+              nodeAffinity:
+                preferredDuringSchedulingIgnoredDuringExecution:
+                  - weight: 100
+                    preference:
+                      matchExpressions:
+                        - key: node-role.kubernetes.io/control-plane
+                          operator: DoesNotExist
             memoryRequest: 256Mi
             memoryLimit: 768Mi
             cpuRequest: 100m
             cpuLimit: 500m
           space:
+            affinity:   # ADR-030: prefer workers (CPs carry PreferNoSchedule, 2026-11-02)
+              nodeAffinity:
+                preferredDuringSchedulingIgnoredDuringExecution:
+                  - weight: 100
+                    preference:
+                      matchExpressions:
+                        - key: node-role.kubernetes.io/control-plane
+                          operator: DoesNotExist
             memoryRequest: 192Mi   # measured 142Mi idle
             memoryLimit: 512Mi
             cpuRequest: 50m
             cpuLimit: 500m
           admin:
+            affinity:   # ADR-030: prefer workers (CPs carry PreferNoSchedule, 2026-11-02)
+              nodeAffinity:
+                preferredDuringSchedulingIgnoredDuringExecution:
+                  - weight: 100
+                    preference:
+                      matchExpressions:
+                        - key: node-role.kubernetes.io/control-plane
+                          operator: DoesNotExist
             memoryRequest: 128Mi
             memoryLimit: 512Mi
             cpuRequest: 50m
             cpuLimit: 500m
           live:
+            affinity:   # ADR-030: prefer workers (CPs carry PreferNoSchedule, 2026-11-02)
+              nodeAffinity:
+                preferredDuringSchedulingIgnoredDuringExecution:
+                  - weight: 100
+                    preference:
+                      matchExpressions:
+                        - key: node-role.kubernetes.io/control-plane
+                          operator: DoesNotExist
             memoryRequest: 192Mi
             memoryLimit: 512Mi
             cpuRequest: 100m
