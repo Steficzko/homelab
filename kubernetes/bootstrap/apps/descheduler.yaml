@@ -40,10 +40,28 @@ spec:
                       cpu: 55
                       memory: 55
                       pods: 45
+                    # 2026-11-02: CPs carry PreferNoSchedule (owner: apps on w1/w2,
+                    # r1/g2/b3 < 50 % mem). Workers now run ~80 % of requests BY
+                    # DESIGN, so the old 80/65/50 targets made them permanent
+                    # "sources" -> evict -> scheduler puts the pod back on a
+                    # worker -> churn every 6 h. Targets raised so this plugin
+                    # only acts on a REAL imbalance (e.g. an empty worker after
+                    # a reboot is a receiver; the full one is a source).
                     targetThresholds:
-                      cpu: 80
-                      memory: 65
-                      pods: 50
+                      cpu: 95
+                      memory: 85
+                      pods: 90
+                - name: RemovePodsViolatingNodeTaints
+                  args:
+                    # Pulls app pods back OFF the control planes once a worker
+                    # has room (after a drain/failover they land on r1/g2/b3
+                    # and nothing else ever moves them back). nodeFit=true in
+                    # DefaultEvictor = only evicts if the pod fits elsewhere.
+                    includePreferNoSchedule: true
+                    namespaces:
+                      exclude:
+                        - kube-system
+                        - longhorn-system
                 - name: RemoveDuplicates
                   args: {}
               plugins:
@@ -51,6 +69,9 @@ spec:
                   enabled:
                     - LowNodeUtilization
                     - RemoveDuplicates
+                deschedule:
+                  enabled:
+                    - RemovePodsViolatingNodeTaints
   destination:
     server: https://kubernetes.default.svc
     namespace: kube-system
