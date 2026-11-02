@@ -24,6 +24,10 @@ patches:
       metadata:
         name: argocd-cm
       data:
+        # Read-only API account for the argocd-mcp server Claude Code runs on
+        # dev-seat (2026-11-02). Token kept off-repo in ~/secrets; role in
+        # argocd-rbac-cm below. apiKey only, no UI login.
+        accounts.claude-mcp: apiKey
         resource.customizations.health.Service: |
           hs = {status = "Healthy"}
           if obj.spec ~= nil and obj.spec.type == "LoadBalancer" then
@@ -36,6 +40,14 @@ patches:
             end
           end
           return hs
+  - patch: |-
+      apiVersion: v1
+      kind: ConfigMap
+      metadata:
+        name: argocd-rbac-cm
+      data:
+        policy.csv: |
+          g, claude-mcp, role:readonly
   # Traefik reaches argocd-server over HTTPS (CLSTR-29; see traefik-serverstransport.yaml).
   - target:
       kind: Service
