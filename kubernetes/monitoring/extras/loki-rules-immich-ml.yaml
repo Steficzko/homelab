@@ -1,0 +1,60 @@
+# Immich ML goes through the immich-ml nginx proxy: daedalus (GPU) first, Unraid as backup.
+# Nothing alerted when inference itself failed: immich-server just logs "failed for all URLs"
+# and retries, Kuma stays green, and the jobs silently stop producing faces/search/OCR.
+# The proxy's access log (Loki: container="nginx", app="immich-ml") is the one place that
+# sees every /predict result, so these are Loki ruler rules (pattern: loki-rules-ollama.yaml).
+#
+# Baseline 2026-11-03 (7 days): 5xx share per 30 min peaks at 41% while OCR runs, because
+# OCR fails on CUDA (APPS-32); 502s only came in two real outages (both backends gone):
+# 2026-11-02 09:46Z daedalus restart (47) and 14:08Z (292 "no live upstreams").
+#
+# ponytail: daedalus -> Unraid fallback on its own is not alerted; its cause (daedalus down)
+# already pages via DaedalusHostDown. Add $upstream_addr to the proxy log_format if a
+# "serving from backup" warning is ever wanted.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: loki-rules-immich-ml
+  namespace: monitoring
+  labels:
+    loki_rule: ""                            # picked up by the loki-sc-rules sidecar
+  annotations:
+    k8s-sidecar-target-directory: "fake"     # relative to /rules => /rules/fake (single tenant)
+data:
+  immich-ml.yaml: |
+    groups:
+      - name: immich-ml
+        rules:
+          - alert: ImmichMLUnavailable
+            # 502 = nginx found no live upstream: daedalus AND Unraid both failed.
+            expr: |
+              sum(count_over_time({namespace="immich", app="immich-ml", container="nginx"} |= "POST /predict" |~ "\" 502 " [10m])) > 20
+            for: 5m
+            labels:
+              severity: critical
+            annotations:
+              summary: "Immich ML: both backends down (proxy returns 502)"
+              description: >-
+                The immich-ml proxy answered 502 to more than 20 /predict calls in 10 min, so
+                neither daedalus (192.168.10.10:3003) nor Unraid (192.168.1.100:3003) is serving.
+                Faces, smart search and OCR stop. Check `kubectl -n immich logs deploy/immich-ml -c nginx`,
+                the ml-immich-ml-1 container on daedalus, and the immich-ml container on Unraid.
+          - alert: ImmichMLHighErrorRate
+            # Above the OCR-only baseline (peak 41%): most inference is failing, not just OCR.
+            expr: |
+              (
+                sum(count_over_time({namespace="immich", app="immich-ml", container="nginx"} |= "POST /predict" |~ "\" 5[0-9][0-9] " [30m]))
+                /
+                sum(count_over_time({namespace="immich", app="immich-ml", container="nginx"} |= "POST /predict" [30m]))
+              ) > 0.6
+              and
+              sum(count_over_time({namespace="immich", app="immich-ml", container="nginx"} |= "POST /predict" [30m])) > 30
+            for: 15m
+            labels:
+              severity: warning
+            annotations:
+              summary: "Immich ML: over 60% of /predict calls fail"
+              description: >-
+                More than 60% of inference calls through the immich-ml proxy returned 5xx over
+                30 min (OCR alone peaks ~41%, APPS-32). Usually a CUDA OOM on daedalus's shared
+                6 GB GPU (COMP-38) or a broken model. Check `docker logs ml-immich-ml-1` on daedalus.
