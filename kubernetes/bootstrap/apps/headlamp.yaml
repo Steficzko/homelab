@@ -33,6 +33,8 @@ spec:
             ingressClassName: traefik
             annotations:
               cert-manager.io/cluster-issuer: letsencrypt-prod
+              # No own login (SA auth, Access is the gate): home path from the trusted VLAN only.
+              traefik.ingress.kubernetes.io/router.entrypoints: web,websecure,trusted
             hosts:
               - host: k8s.kostikidis.net
                 paths:

@@ -101,6 +101,7 @@ metadata:
   name: warehouse-ui
   namespace: namo-apps
   annotations:
+    traefik.ingress.kubernetes.io/router.entrypoints: web,websecure,lan,trusted
     cert-manager.io/issuer: letsencrypt-http01   # NOT the ClusterIssuer — see issuer.yaml
 spec:
   ingressClassName: traefik

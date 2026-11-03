@@ -4,6 +4,7 @@ metadata:
   name: blog
   namespace: blog
   annotations:
+    traefik.ingress.kubernetes.io/router.entrypoints: web,websecure,lan,trusted
     cert-manager.io/cluster-issuer: letsencrypt-prod
 spec:
   ingressClassName: traefik
@@ -29,6 +30,7 @@ metadata:
   name: blog-apex-redirect
   namespace: blog
   annotations:
+    traefik.ingress.kubernetes.io/router.entrypoints: web,websecure,lan,trusted
     cert-manager.io/cluster-issuer: letsencrypt-prod
     # Same as the old nginx permanent-redirect: 301 to the www root, path dropped.
     traefik.ingress.kubernetes.io/router.middlewares: blog-apex-to-www@kubernetescrd

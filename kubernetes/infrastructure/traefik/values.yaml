@@ -132,6 +132,25 @@ ports:
         enabled: true
       middlewares:
         - traefik-hsts@kubernetescrd
+  # The trusted VLAN (10) at home. wrt-edge DNATs trusted clients' 192.168.1.210:443 to
+  # :8446, so they reach EVERY app without Cloudflare Access. `lan` (:443) stays for the
+  # family VLAN and the lan zone: it lists only apps with their own login. Apps whose
+  # only gate is Access (headlamp, homepage, excalidraw, erin, importer, searxng, ...)
+  # list `trusted` but not `lan`. Owner decision 2026-11-03.
+  trusted:
+    port: 8446
+    exposedPort: 8446
+    expose:
+      default: false
+      lan: true
+    transport:
+      respondingTimeouts:
+        readTimeout: 0
+    http:
+      tls:
+        enabled: true
+      middlewares:
+        - traefik-hsts@kubernetescrd
   # The Hermes VM (agents VLAN 30) at home. wrt-edge DNATs its 192.168.1.210:443 to
   # :8445, so it uses the same https://llm.kostikidis.net as off-site, but only routers
   # that list `agents` (LiteLLM alone, H2) answer here — not the `lan` apps' logins.

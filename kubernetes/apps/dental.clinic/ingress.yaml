@@ -13,6 +13,7 @@ metadata:
   name: dental-clinic
   namespace: dental-clinic
   annotations:
+    traefik.ingress.kubernetes.io/router.entrypoints: web,websecure,lan,trusted
     # NO cert-manager.io/cluster-issuer HERE — deliberate. The blanka-wildcard
     # Certificate below already manages secret blanka-wildcard-tls. With this
     # annotation present, cert-manager's ingress-shim ALSO auto-creates a

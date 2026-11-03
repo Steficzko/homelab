@@ -6,6 +6,7 @@ metadata:
   name: ceramicus
   namespace: ceramicus
   annotations:
+    traefik.ingress.kubernetes.io/router.entrypoints: web,websecure,lan,trusted
     cert-manager.io/cluster-issuer: letsencrypt-prod
     traefik.ingress.kubernetes.io/router.middlewares: ceramicus-noindex@kubernetescrd
 spec:

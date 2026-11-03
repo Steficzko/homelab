@@ -10,7 +10,7 @@ metadata:
     # Cloudflare Access. NOT `lan`: SearXNG has no login of its own (ADR-044 rule).
     # WHEN LENOVOBIG LEAVES HOME this path stops: it then needs a CF Access service-token
     # app for search.kostikidis.net and the headers on the VM (Plane EDGE-12).
-    traefik.ingress.kubernetes.io/router.entrypoints: web,websecure,agents
+    traefik.ingress.kubernetes.io/router.entrypoints: web,websecure,trusted,agents
 spec:
   ingressClassName: traefik
   tls:

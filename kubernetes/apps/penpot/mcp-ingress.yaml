@@ -13,6 +13,7 @@ metadata:
   name: penpot-mcp
   namespace: penpot
   annotations:
+    traefik.ingress.kubernetes.io/router.entrypoints: web,websecure,trusted
     cert-manager.io/cluster-issuer: letsencrypt-prod
     # Traefik (CLSTR-29): no http->https redirect on the tunnel hop, no response
     # buffering and no upstream read timeout (entrypoint readTimeout 0), so the MCP

@@ -4,6 +4,7 @@ metadata:
   name: open-webui
   namespace: ai
   annotations:
+    traefik.ingress.kubernetes.io/router.entrypoints: web,websecure,lan,trusted
     cert-manager.io/cluster-issuer: letsencrypt-prod
 spec:
   ingressClassName: traefik

@@ -7,6 +7,7 @@ metadata:
   name: travel
   namespace: travel
   annotations:
+    traefik.ingress.kubernetes.io/router.entrypoints: web,websecure,trusted
     # NO cert-manager.io/cluster-issuer HERE — deliberate. The travel-wildcard
     # Certificate below already manages secret travel-wildcard-tls. With this
     # annotation present, cert-manager's ingress-shim ALSO auto-creates a

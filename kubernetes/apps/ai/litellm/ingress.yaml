@@ -10,7 +10,7 @@ metadata:
   namespace: ai
   annotations:
     cert-manager.io/cluster-issuer: letsencrypt-prod
-    traefik.ingress.kubernetes.io/router.entrypoints: web,websecure,lan,agents
+    traefik.ingress.kubernetes.io/router.entrypoints: web,websecure,lan,trusted,agents
 spec:
   ingressClassName: traefik
   tls:

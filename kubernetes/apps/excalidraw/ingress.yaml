@@ -4,6 +4,7 @@ metadata:
   name: excalidraw
   namespace: excalidraw
   annotations:
+    traefik.ingress.kubernetes.io/router.entrypoints: web,websecure,trusted
     cert-manager.io/cluster-issuer: letsencrypt-prod
 spec:
   ingressClassName: traefik

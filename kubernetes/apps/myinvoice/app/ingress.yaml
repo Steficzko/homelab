@@ -9,6 +9,7 @@ metadata:
   name: myinvoice
   namespace: myinvoice
   annotations:
+    traefik.ingress.kubernetes.io/router.entrypoints: web,websecure,lan,trusted
     cert-manager.io/cluster-issuer: letsencrypt-prod
     # Traefik (CLSTR-29). cloudflared reaches this host over HTTPS on Traefik's
     # websecure entrypoint (tunnel rule: originServerName faktury.kostikidis.net),

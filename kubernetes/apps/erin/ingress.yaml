@@ -7,6 +7,7 @@ metadata:
   name: erin
   namespace: erin
   annotations:
+    traefik.ingress.kubernetes.io/router.entrypoints: web,websecure,trusted
     cert-manager.io/cluster-issuer: letsencrypt-prod
     # Traefik (CLSTR-29): no http->https redirect on the tunnel hop and no response
     # buffering by default, so streamed video seeks straight off NFS.

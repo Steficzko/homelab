@@ -7,6 +7,7 @@ metadata:
   name: nocodb
   namespace: nocodb
   annotations:
+    traefik.ingress.kubernetes.io/router.entrypoints: web,websecure,lan,trusted
     cert-manager.io/cluster-issuer: letsencrypt-prod
     # Traefik (CLSTR-29): no http->https redirect on the tunnel hop. Attachments
     # (Drive copies, Zoom transcripts) have no proxy body limit; Cloudflare caps 100 MB.
