@@ -114,10 +114,11 @@ ports:
       # the same behaviour (faktury via the tunnel's https origin, and LAN https).
       middlewares:
         - traefik-hsts@kubernetescrd
-  # Split horizon at home (ADR-044 amendment 2026-10-22): the router's DNS answers the
-  # Immich hosts with 192.168.1.210, so uploads skip Cloudflare's 100 MB request cap.
-  # Opt-in only (not asDefault): an Ingress joins via router.entrypoints, so a LAN
-  # client cannot reach Access-gated apps by sending their Host/SNI here.
+  # Split horizon at home (ADR-044 amendments 2026-10-22 and 2026-11-03): the router's DNS
+  # answers app hosts with 192.168.1.210, so home traffic skips Cloudflare. Opt-in only (not
+  # asDefault): an Ingress joins via router.entrypoints. `lan` lists only apps with their
+  # own login, so family-VLAN and lan-zone clients cannot open Access-only apps here; the
+  # trusted VLAN reaches those through `trusted` (:8446) below.
   lan:
     port: 8444
     exposedPort: 443

@@ -4,7 +4,7 @@ metadata:
   name: readeck
   namespace: readeck
   annotations:
-    traefik.ingress.kubernetes.io/router.entrypoints: web,websecure,trusted
+    traefik.ingress.kubernetes.io/router.entrypoints: web,websecure,lan,trusted
     cert-manager.io/cluster-issuer: letsencrypt-prod
 spec:
   ingressClassName: traefik
