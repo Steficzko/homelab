@@ -17,5 +17,11 @@ spec:
         - namespaceSelector:   # Traefik (CLSTR-29); nginx kept until it is removed
             matchLabels:
               kubernetes.io/metadata.name: traefik
+        - namespaceSelector:   # Homepage immich widget (server stats, admin API key)
+            matchLabels:
+              kubernetes.io/metadata.name: homepage
+          podSelector:
+            matchLabels:
+              app: homepage
       ports:
         - port: 2283

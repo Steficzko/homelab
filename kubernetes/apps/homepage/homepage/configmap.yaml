@@ -18,7 +18,13 @@ data:
       Infrastructure:
         style: row
         columns: 4
+      Home:
+        style: row
+        columns: 3
       Family Photos:
+        style: row
+        columns: 4
+      Media:
         style: row
         columns: 4
       Apps:
@@ -33,9 +39,6 @@ data:
       External:
         style: row
         columns: 2
-    providers:
-      longhorn:
-        url: http://longhorn-backend.longhorn-system.svc.cluster.local:9500
 
   widgets.yaml: |
     # Cluster totals + one bar per node. Needs kubernetes.yaml mode:cluster, the homepage
@@ -53,11 +56,6 @@ data:
           cpu: true
           memory: true
           showLabel: true
-    - longhorn:
-        expanded: true
-        total: false
-        labels: true
-        nodes: true
     - glances:
         url: http://192.168.1.100:61208
         version: 4
@@ -157,19 +155,41 @@ data:
       - ArgoCD:
           icon: sh-argocd
           href: https://argocd.kostikidis.net
-          description: GitOps · 25 apps
+          description: GitOps
       - Grafana:
           icon: sh-grafana
           href: https://grafana.kostikidis.net
           description: Metrics & alerts
+      - Plane:
+          icon: sh-plane
+          href: https://plane.kostikidis.net
+          description: Issue tracker · homelab backlog
       - Proxmox:
           icon: sh-proxmox
           href: https://100.70.109.10:8006
           description: Hypervisor · LXC + VM
+      # Longhorn's own API (9500) is unauthenticated and can delete volumes, so its netpol
+      # admits only Longhorn pods (bootstrap/longhorn/kustomization.yaml). Read it from
+      # Prometheus instead.
       - Longhorn:
           icon: sh-longhorn
           href: https://grafana.kostikidis.net
           description: Distributed block storage
+          widget:
+            type: prometheusmetric
+            url: http://kube-prometheus-stack-prometheus.monitoring.svc.cluster.local:9090
+            refreshInterval: 60000
+            metrics:
+              - label: Used
+                query: sum(longhorn_node_storage_usage_bytes) / sum(longhorn_node_storage_capacity_bytes) * 100
+                format:
+                  type: percent
+                  options:
+                    maximumFractionDigits: 0
+              - label: Volumes
+                query: count(longhorn_volume_robustness)
+              - label: Degraded
+                query: count(longhorn_volume_robustness == 2) or vector(0)
       - Headlamp:
           icon: sh-headlamp
           href: https://k8s.kostikidis.net
@@ -221,24 +241,147 @@ data:
             url: http://100.85.129.88
             key: "{{HOMEPAGE_VAR_UNRAID_GREECE_KEY}}"
             fields: ["arrayUsedPercent","arrayFree","cpu","memoryPercent"]
+      - Syncthing:
+          icon: sh-syncthing
+          href: http://100.82.66.30:8384
+          description: devdata → laptop + Greece DR
+          widget:
+            type: syncthing
+            url: http://192.168.1.100:8384
+            key: "{{HOMEPAGE_VAR_SYNCTHING_KEY}}"
+      - MinIO:
+          icon: sh-minio
+          href: http://100.82.66.30:9101
+          description: S3 · backups + registry cache
+          siteMonitor: http://192.168.1.100:9100/minio/health/live
+      - Uptime Kuma:
+          icon: sh-uptime-kuma
+          href: http://100.82.66.30:3001
+          description: Service monitoring
+      - Portainer:
+          icon: sh-portainer
+          href: http://100.82.66.30:9000
+          description: Container management
 
+    - Home:
+      # HA is reached over the tailnet; it is being rebuilt as an HA OS VM (HA-21).
+      - Home Assistant:
+          icon: sh-home-assistant
+          href: http://100.82.66.30:8123
+          description: Lights, sensors, presence
+          siteMonitor: http://192.168.1.100:8123
+      - Grocy:
+          icon: sh-grocy
+          href: https://grocy.kostikidis.net
+          description: Household management
+      - Mealie:
+          icon: sh-mealie
+          href: https://mealie.kostikidis.net
+          description: Recipes & meal planning
+
+    # Immich widgets: in-cluster service, admin API key with only server.statistics.
+    # The immich netpols admit the homepage pod on 2283.
     - Family Photos:
       - Immich Stefanos:
           icon: sh-immich
           href: https://stefanosmobiles.kostikidis.net
           description: Stefanos
+          widget:
+            type: immich
+            url: http://immich-stefanos.immich.svc.cluster.local:2283
+            key: "{{HOMEPAGE_VAR_IMMICH_STEFANOS_KEY}}"
+            version: 2
       - Immich Marianna:
           icon: sh-immich
           href: https://mariannamobiles.kostikidis.net
           description: Marianna
+          widget:
+            type: immich
+            url: http://immich-marianna.immich.svc.cluster.local:2283
+            key: "{{HOMEPAGE_VAR_IMMICH_MARIANNA_KEY}}"
+            version: 2
       - Immich Lightroom:
           icon: sh-immich
           href: https://lightroom.kostikidis.net
           description: Lightroom catalog
+          widget:
+            type: immich
+            url: http://immich-lightroom.immich.svc.cluster.local:2283
+            key: "{{HOMEPAGE_VAR_IMMICH_LIGHTROOM_KEY}}"
+            version: 2
       - Immich Elwany:
           icon: sh-immich
           href: https://gallery.teamelwany.com
           description: Team Elwany
+          widget:
+            type: immich
+            url: http://immich-elwany.immich.svc.cluster.local:2283
+            key: "{{HOMEPAGE_VAR_IMMICH_ELWANY_KEY}}"
+            version: 2
+
+    # Media stack on Prague Unraid (Portainer stack media-center). Hrefs over the tailnet,
+    # widgets server-side over the LAN (covered by the 192.168.1.0/24 egress rule).
+    - Media:
+      - Jellyfin:
+          icon: sh-jellyfin
+          href: http://100.82.66.30:8096
+          description: Movies & shows
+          widget:
+            type: jellyfin
+            url: http://192.168.1.100:8096
+            key: "{{HOMEPAGE_VAR_JELLYFIN_KEY}}"
+            version: 2
+            enableBlocks: true
+            enableNowPlaying: true
+      - Jellyseerr:
+          icon: sh-jellyseerr
+          href: http://100.82.66.30:5055
+          description: Requests
+          widget:
+            type: seerr
+            url: http://192.168.1.100:5055
+            key: "{{HOMEPAGE_VAR_SEERR_KEY}}"
+      - Sonarr:
+          icon: sh-sonarr
+          href: http://100.82.66.30:8989
+          description: TV
+          widget:
+            type: sonarr
+            url: http://192.168.1.100:8989
+            key: "{{HOMEPAGE_VAR_SONARR_KEY}}"
+      - Radarr:
+          icon: sh-radarr
+          href: http://100.82.66.30:7878
+          description: Movies
+          widget:
+            type: radarr
+            url: http://192.168.1.100:7878
+            key: "{{HOMEPAGE_VAR_RADARR_KEY}}"
+      - Prowlarr:
+          icon: sh-prowlarr
+          href: http://100.82.66.30:9696
+          description: Indexers
+          widget:
+            type: prowlarr
+            url: http://192.168.1.100:9696
+            key: "{{HOMEPAGE_VAR_PROWLARR_KEY}}"
+      - Bazarr:
+          icon: sh-bazarr
+          href: http://100.82.66.30:6767
+          description: Subtitles cs/en/el
+          widget:
+            type: bazarr
+            url: http://192.168.1.100:6767
+            key: "{{HOMEPAGE_VAR_BAZARR_KEY}}"
+      - qBittorrent:
+          icon: sh-qbittorrent
+          href: http://100.82.66.30:8080
+          description: Downloads
+          widget:
+            type: qbittorrent
+            url: http://192.168.1.100:8080
+            username: admin
+            password: "{{HOMEPAGE_VAR_QBIT_PASSWORD}}"
 
     - Apps:
       - Nextcloud:
@@ -249,54 +392,90 @@ data:
           icon: sh-vaultwarden
           href: https://vault.kostikidis.net
           description: Password manager
+      - Paperless:
+          icon: sh-paperless-ngx
+          href: https://xartura.kostikidis.net
+          description: Documents + paperless-gpt
+      - Firefly III:
+          icon: sh-firefly-iii
+          href: https://money.kostikidis.net
+          description: Personal finance
+      - MyInvoice:
+          icon: mdi-receipt-text
+          href: https://faktury.kostikidis.net
+          description: Invoices (faktury)
+      - Documenso:
+          icon: sh-documenso
+          href: https://sign.kostikidis.net
+          description: Document signing
+      - Cal.com:
+          icon: sh-cal-com
+          href: https://cal.kostikidis.net
+          description: Booking
       - n8n:
           icon: sh-n8n
           href: https://auto.kostikidis.net
           description: Automation workflows
-      - Grocy:
-          icon: sh-grocy
-          href: https://grocy.kostikidis.net
-          description: Household management
       - Vikunja:
           icon: sh-vikunja
           href: https://todo.kostikidis.net
-          description: To-do &amp; tasks
+          description: To-do & tasks
+      - NocoDB:
+          icon: sh-nocodb
+          href: https://topmountain.kostikidis.net
+          description: TopMountain tracker
 
     - More Apps:
-      - Mealie:
-          icon: sh-mealie
-          href: https://mealie.kostikidis.net
-          description: Recipes & meal planning
       - FreshRSS:
           icon: sh-freshrss
           href: https://rss.kostikidis.net
           description: RSS reader
-      - Obsidian LiveSync:
-          icon: sh-obsidian
-          href: https://obsidian.kostikidis.net
-          description: Note sync
-      - Linkding:
-          icon: sh-linkding
-          href: https://links.kostikidis.net
-          description: Bookmark manager
       - Readeck:
           icon: sh-readeck
           href: https://read.kostikidis.net
           description: Read-later
+      - Linkding:
+          icon: sh-linkding
+          href: https://links.kostikidis.net
+          description: Bookmark manager
+      - Obsidian LiveSync:
+          icon: sh-obsidian
+          href: https://obsidian.kostikidis.net
+          description: Note sync
+      - Penpot:
+          icon: sh-penpot
+          href: https://design.kostikidis.net
+          description: Design
+      - Excalidraw:
+          icon: sh-excalidraw
+          href: https://whiteboard.kostikidis.net
+          description: Whiteboard
+      - Erin:
+          icon: mdi-play-box-multiple
+          href: https://feed.kostikidis.net
+          description: Video feed
+      - Travel:
+          icon: mdi-airplane
+          href: https://travel.kostikidis.net
+          description: Travel
+      - Padle:
+          icon: mdi-tennis
+          href: https://padle.kostikidis.net
+          description: Padel
 
     - AI & Monitoring:
       - Open WebUI:
           icon: sh-open-webui
           href: https://chat.kostikidis.net
           description: LLM interface
-      - Uptime Kuma:
-          icon: sh-uptime-kuma
-          href: http://100.82.66.30:3001
-          description: Service monitoring
-      - Portainer:
-          icon: sh-portainer
-          href: http://100.82.66.30:9000
-          description: Container management
+      - LiteLLM:
+          icon: sh-litellm
+          href: https://llm.kostikidis.net
+          description: Model gateway
+      - SearXNG:
+          icon: sh-searxng
+          href: https://search.kostikidis.net
+          description: Private search
       - Neo4j:
           icon: sh-neo4j
           description: Code knowledge graph (in-cluster only)
@@ -318,6 +497,10 @@ data:
           href: https://blancadentalcare.com
           description: Dr. Ali clinic website
           siteMonitor: https://blancadentalcare.com
+      - Ceramicus:
+          icon: mdi-pot-mix
+          href: https://ceramicus.kostikidis.net
+          description: Ceramics site · preview
 
   bookmarks.yaml: |
     []
