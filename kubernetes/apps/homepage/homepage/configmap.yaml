@@ -187,9 +187,9 @@ data:
                   options:
                     maximumFractionDigits: 0
               - label: Volumes
-                query: count(longhorn_volume_robustness)
+                query: count(count by (volume) (longhorn_volume_robustness))
               - label: Degraded
-                query: count(longhorn_volume_robustness == 2) or vector(0)
+                query: count(count by (volume) (longhorn_volume_robustness == 2)) or vector(0)
       - Headlamp:
           icon: sh-headlamp
           href: https://k8s.kostikidis.net
