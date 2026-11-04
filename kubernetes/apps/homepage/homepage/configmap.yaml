@@ -326,13 +326,23 @@ data:
           icon: sh-jellyfin
           href: http://100.82.66.30:8096
           description: Movies & shows
+          # ponytail: customapi, because homepage v2.7.0's jellyfin widget still calls
+          # /emby/... which this Jellyfin answers 404. Swap back to type: jellyfin once fixed.
           widget:
-            type: jellyfin
-            url: http://192.168.1.100:8096
-            key: "{{HOMEPAGE_VAR_JELLYFIN_KEY}}"
-            version: 2
-            enableBlocks: true
-            enableNowPlaying: true
+            type: customapi
+            url: http://192.168.1.100:8096/Items/Counts
+            headers:
+              Authorization: 'MediaBrowser Token="{{HOMEPAGE_VAR_JELLYFIN_KEY}}", Client="Homepage", Device="Homepage", DeviceId="homepage", Version="1.0.0"'
+            mappings:
+              - field: MovieCount
+                label: Movies
+                format: number
+              - field: SeriesCount
+                label: Series
+                format: number
+              - field: EpisodeCount
+                label: Episodes
+                format: number
       - Jellyseerr:
           icon: sh-jellyseerr
           href: http://100.82.66.30:5055
