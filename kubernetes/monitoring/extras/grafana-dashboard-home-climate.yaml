@@ -63,7 +63,7 @@ data:
           },
           "targets": [
             {
-              "expr": "last_over_time({__name__=~\"sensor__(temperature|humidity|carbon_dioxide)_value\",entity_id!~\"elegoo_.*\",entity_id=~\"$filter\"}[2h])",
+              "expr": "max by (entity_id) (last_over_time({__name__=~\"sensor__(temperature|humidity|carbon_dioxide)_value\",entity_id!~\"elegoo_.*\",entity_id=~\"$filter\"}[2h]))",
               "legendFormat": "{{entity_id}}",
               "refId": "A",
               "datasource": {
@@ -99,7 +99,7 @@ data:
           },
           "targets": [
             {
-              "expr": "sensor__temperature_value{entity_id!~\"elegoo_.*\",entity_id=~\"$filter\"}",
+              "expr": "max by (entity_id) (sensor__temperature_value{entity_id!~\"elegoo_.*\",entity_id=~\"$filter\"})",
               "legendFormat": "{{entity_id}}",
               "refId": "A",
               "datasource": {
@@ -153,7 +153,7 @@ data:
           },
           "targets": [
             {
-              "expr": "sensor__humidity_value{entity_id=~\"$filter\"}",
+              "expr": "max by (entity_id) (sensor__humidity_value{entity_id=~\"$filter\"})",
               "legendFormat": "{{entity_id}}",
               "refId": "A",
               "datasource": {
@@ -207,7 +207,7 @@ data:
           },
           "targets": [
             {
-              "expr": "sensor__carbon_dioxide_value{entity_id=~\"$filter\"}",
+              "expr": "max by (entity_id) (sensor__carbon_dioxide_value{entity_id=~\"$filter\"})",
               "legendFormat": "{{entity_id}}",
               "refId": "A",
               "datasource": {
@@ -261,7 +261,7 @@ data:
           },
           "targets": [
             {
-              "expr": "{__name__=~\"sensor__(pm1|pm25|pm10|volatile_organic_compounds.*|aqi)_value\",entity_id=~\"$filter\"}",
+              "expr": "max by (entity_id) ({__name__=~\"sensor__(pm1|pm25|pm10|volatile_organic_compounds.*|aqi)_value\",entity_id=~\"$filter\"})",
               "legendFormat": "{{entity_id}}",
               "refId": "A",
               "datasource": {
@@ -315,7 +315,7 @@ data:
           },
           "targets": [
             {
-              "expr": "weather_temperature",
+              "expr": "max by (entity_id) (weather_temperature)",
               "legendFormat": "forecast {{entity_id}}",
               "refId": "A",
               "datasource": {

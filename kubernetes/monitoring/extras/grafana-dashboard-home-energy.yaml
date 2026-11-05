@@ -58,7 +58,7 @@ data:
           },
           "targets": [
             {
-              "expr": "sensor__power_value{entity_id=~\"$filter\"}",
+              "expr": "max by (entity_id) (sensor__power_value{entity_id=~\"$filter\"})",
               "legendFormat": "{{entity_id}}",
               "refId": "A",
               "datasource": {
@@ -112,7 +112,7 @@ data:
           },
           "targets": [
             {
-              "expr": "increase(sensor__energy_value{entity_id!~\".*(today|month).*\",entity_id=~\"$filter\"}[1d])",
+              "expr": "sum by (entity_id) (increase(sensor__energy_value{entity_id!~\".*(today|month).*\",entity_id=~\"$filter\"}[1d]))",
               "legendFormat": "{{entity_id}}",
               "refId": "A",
               "datasource": {
@@ -170,7 +170,7 @@ data:
           },
           "targets": [
             {
-              "expr": "sensor__monetary_value{entity_id=~\"$filter\"}",
+              "expr": "max by (entity_id) (sensor__monetary_value{entity_id=~\"$filter\"})",
               "legendFormat": "{{entity_id}}",
               "refId": "A",
               "datasource": {
@@ -224,7 +224,7 @@ data:
           },
           "targets": [
             {
-              "expr": "increase(sensor__monetary_value{entity_id=~\"$filter\"}[1d])",
+              "expr": "sum by (entity_id) (increase(sensor__monetary_value{entity_id=~\"$filter\"}[1d]))",
               "legendFormat": "{{entity_id}}",
               "refId": "A",
               "datasource": {

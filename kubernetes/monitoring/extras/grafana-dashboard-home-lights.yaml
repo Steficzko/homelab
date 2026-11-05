@@ -1,0 +1,313 @@
+# Home dashboard - Lights (on/off timeline, hours on per day, brightness).
+# Generated (~/bin/ha11-dashboards-gen.py on dev-seat), not hand-edited. Data: Home Assistant -> influxdb
+# integration (include-all) -> VictoriaMetrics on Prague Unraid, datasource uid
+# victoriametrics-home (HA-11). ZERO-EDIT RULE: panels select by device class
+# (metric name), never by entity, so a new HA sensor appears on its own. Legends
+# use entity_id: friendly_name is NOT a label in VM (HA pushes it as a field).
+# $filter (textbox regex on entity_id, default .*) narrows every panel.
+# HA pushes on change only; VM -search.maxStalenessInterval=2h, panels span gaps <=1h.
+# Selects metric light_* = HA domain light. Includes group lights (e.g. corridor_lights)
+# and the printer chamber light; filter them with $filter if unwanted.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-dashboard-home-lights
+  namespace: monitoring
+  labels:
+    grafana_dashboard: "1"
+  annotations:
+    grafana_folder: "Home"
+data:
+  home-lights.json: |
+    {
+      "uid": "home-lights",
+      "title": "Home - Lights",
+      "timezone": "Europe/Prague",
+      "schemaVersion": 39,
+      "editable": false,
+      "time": {
+        "from": "now-7d",
+        "to": "now"
+      },
+      "refresh": "5m",
+      "tags": [
+        "home",
+        "ha-11"
+      ],
+      "templating": {
+        "list": [
+          {
+            "name": "filter",
+            "label": "entity_id regex",
+            "type": "textbox",
+            "query": ".*",
+            "current": {
+              "text": ".*",
+              "value": ".*"
+            }
+          }
+        ]
+      },
+      "panels": [
+        {
+          "type": "stat",
+          "title": "Lights on now",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "victoriametrics-home"
+          },
+          "gridPos": {
+            "x": 0,
+            "y": 0,
+            "w": 6,
+            "h": 4
+          },
+          "targets": [
+            {
+              "expr": "sum(last_over_time(light_value{entity_id=~\"$filter\"}[7d]))",
+              "legendFormat": "on",
+              "refId": "A",
+              "datasource": {
+                "type": "prometheus",
+                "uid": "victoriametrics-home"
+              },
+              "instant": true
+            }
+          ],
+          "fieldConfig": {
+            "defaults": {
+              "unit": "none",
+              "decimals": 1
+            },
+            "overrides": []
+          },
+          "options": {
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ]
+            },
+            "textMode": "value_and_name",
+            "colorMode": "none"
+          }
+        },
+        {
+          "type": "stat",
+          "title": "Brightness now (on lights)",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "victoriametrics-home"
+          },
+          "gridPos": {
+            "x": 6,
+            "y": 0,
+            "w": 18,
+            "h": 4
+          },
+          "targets": [
+            {
+              "expr": "max by (entity_id) (last_over_time(light_brightness{entity_id=~\"$filter\"}[7d]) / 255 * 100 * on(entity_id) group_left last_over_time(light_value{entity_id=~\"$filter\"}[7d]))",
+              "legendFormat": "{{entity_id}}",
+              "refId": "A",
+              "datasource": {
+                "type": "prometheus",
+                "uid": "victoriametrics-home"
+              },
+              "instant": true
+            }
+          ],
+          "fieldConfig": {
+            "defaults": {
+              "unit": "percent",
+              "decimals": 1
+            },
+            "overrides": []
+          },
+          "options": {
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ]
+            },
+            "textMode": "value_and_name",
+            "colorMode": "none"
+          }
+        },
+        {
+          "type": "state-timeline",
+          "title": "On / off",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "victoriametrics-home"
+          },
+          "gridPos": {
+            "x": 0,
+            "y": 4,
+            "w": 24,
+            "h": 10
+          },
+          "targets": [
+            {
+              "expr": "max by (entity_id) (last_over_time(light_value{entity_id=~\"$filter\"}[7d]))",
+              "legendFormat": "{{entity_id}}",
+              "refId": "A",
+              "datasource": {
+                "type": "prometheus",
+                "uid": "victoriametrics-home"
+              }
+            }
+          ],
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "#303030",
+                    "value": null
+                  },
+                  {
+                    "color": "#f2cc0c",
+                    "value": 1
+                  }
+                ]
+              },
+              "mappings": [
+                {
+                  "type": "value",
+                  "options": {
+                    "0": {
+                      "text": "off"
+                    },
+                    "1": {
+                      "text": "on"
+                    }
+                  }
+                }
+              ]
+            },
+            "overrides": []
+          },
+          "options": {
+            "showValue": "never",
+            "mergeValues": true,
+            "rowHeight": 0.8,
+            "legend": {
+              "showLegend": false
+            }
+          }
+        },
+        {
+          "type": "timeseries",
+          "title": "Hours on per day",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "victoriametrics-home"
+          },
+          "targets": [
+            {
+              "expr": "max by (entity_id) (avg_over_time(last_over_time(light_value{entity_id=~\"$filter\"}[7d])[1d:5m]) * 24)",
+              "legendFormat": "{{entity_id}}",
+              "refId": "A",
+              "datasource": {
+                "type": "prometheus",
+                "uid": "victoriametrics-home"
+              },
+              "interval": "1d"
+            }
+          ],
+          "gridPos": {
+            "x": 0,
+            "y": 14,
+            "w": 12,
+            "h": 8
+          },
+          "fieldConfig": {
+            "defaults": {
+              "unit": "h",
+              "custom": {
+                "drawStyle": "bars",
+                "fillOpacity": 70,
+                "lineWidth": 2,
+                "spanNulls": 3600000,
+                "showPoints": "never"
+              }
+            },
+            "overrides": []
+          },
+          "options": {
+            "legend": {
+              "displayMode": "table",
+              "placement": "right",
+              "calcs": [
+                "lastNotNull",
+                "min",
+                "max",
+                "mean"
+              ]
+            },
+            "tooltip": {
+              "mode": "multi",
+              "sort": "desc"
+            }
+          }
+        },
+        {
+          "type": "timeseries",
+          "title": "Brightness % (0 when off)",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "victoriametrics-home"
+          },
+          "targets": [
+            {
+              "expr": "max by (entity_id) (last_over_time(light_brightness{entity_id=~\"$filter\"}[7d]) / 255 * 100 * on(entity_id) group_left last_over_time(light_value{entity_id=~\"$filter\"}[7d]))",
+              "legendFormat": "{{entity_id}}",
+              "refId": "A",
+              "datasource": {
+                "type": "prometheus",
+                "uid": "victoriametrics-home"
+              }
+            }
+          ],
+          "gridPos": {
+            "x": 12,
+            "y": 14,
+            "w": 12,
+            "h": 8
+          },
+          "fieldConfig": {
+            "defaults": {
+              "unit": "percent",
+              "custom": {
+                "drawStyle": "line",
+                "fillOpacity": 10,
+                "lineWidth": 2,
+                "spanNulls": 3600000,
+                "showPoints": "never"
+              }
+            },
+            "overrides": []
+          },
+          "options": {
+            "legend": {
+              "displayMode": "table",
+              "placement": "right",
+              "calcs": [
+                "lastNotNull",
+                "min",
+                "max",
+                "mean"
+              ]
+            },
+            "tooltip": {
+              "mode": "multi",
+              "sort": "desc"
+            }
+          }
+        }
+      ]
+    }
