@@ -68,6 +68,15 @@ data:
         format:
           timeStyle: short
           dateStyle: short
+    # Fixed to Řepy, Praha 163 00 (owner, 11-05): never browser geolocation. Open-Meteo needs
+    # no key; homepage fetches it server-side (netpol allows 443 egress).
+    - openmeteo:
+        label: Řepy
+        latitude: 50.0697
+        longitude: 14.3044
+        timezone: Europe/Prague
+        units: metric
+        cache: 15
     - search:
         provider: custom
         url: https://search.kostikidis.net/search?q=
@@ -270,6 +279,22 @@ data:
           href: http://100.82.66.30:8123
           description: Lights, sensors, presence
           siteMonitor: http://192.168.1.100:8123
+          # Token = long-lived token of a NON-admin HA user (HOMEPAGE_VAR_HA_TOKEN, SOPS secret).
+          # Non-admin means /api/template is 401, so only plain state reads work here; a
+          # lights-on count needs a template sensor on the HA side first.
+          widget:
+            type: homeassistant
+            url: http://192.168.1.100:8123
+            key: "{{HOMEPAGE_VAR_HA_TOKEN}}"
+            custom:
+              - state: sensor.balcony_temperature
+                label: Balcony
+              - state: sensor.stefanos_domatio_air_quality_temperature
+                label: Stefanos
+              - state: sensor.marianna_domatio_temperature
+                label: Marianna
+              - state: sensor.stefanos_domatio_air_quality_carbon_dioxide
+                label: CO2
       - Grocy:
           icon: sh-grocy
           href: https://grocy.kostikidis.net
