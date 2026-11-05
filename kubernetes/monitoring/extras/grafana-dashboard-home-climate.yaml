@@ -1,0 +1,364 @@
+# Home dashboard - Climate (temperature, humidity, CO2, particulates/VOC).
+# Generated (~/bin/ha11-dashboards-gen.py on dev-seat), not hand-edited. Data: Home Assistant -> influxdb
+# integration (include-all) -> VictoriaMetrics on Prague Unraid, datasource uid
+# victoriametrics-home (HA-11). ZERO-EDIT RULE: panels select by device class
+# (metric name), never by entity, so a new HA sensor appears on its own. Legends
+# use entity_id: friendly_name is NOT a label in VM (HA pushes it as a field).
+# $filter (textbox regex on entity_id, default .*) narrows every panel.
+# HA pushes on change only; VM -search.maxStalenessInterval=2h, panels span gaps <=1h.
+# Printer (elegoo_*) temperatures are excluded: device, not room climate.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-dashboard-home-climate
+  namespace: monitoring
+  labels:
+    grafana_dashboard: "1"
+  annotations:
+    grafana_folder: "Home"
+data:
+  home-climate.json: |
+    {
+      "uid": "home-climate",
+      "title": "Home - Climate",
+      "timezone": "Europe/Prague",
+      "schemaVersion": 39,
+      "editable": false,
+      "time": {
+        "from": "now-7d",
+        "to": "now"
+      },
+      "refresh": "5m",
+      "tags": [
+        "home",
+        "ha-11"
+      ],
+      "templating": {
+        "list": [
+          {
+            "name": "filter",
+            "label": "entity_id regex",
+            "type": "textbox",
+            "query": ".*",
+            "current": {
+              "text": ".*",
+              "value": ".*"
+            }
+          }
+        ]
+      },
+      "panels": [
+        {
+          "type": "stat",
+          "title": "Now",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "victoriametrics-home"
+          },
+          "gridPos": {
+            "x": 0,
+            "y": 0,
+            "w": 24,
+            "h": 4
+          },
+          "targets": [
+            {
+              "expr": "last_over_time({__name__=~\"sensor__(temperature|humidity|carbon_dioxide)_value\",entity_id!~\"elegoo_.*\",entity_id=~\"$filter\"}[2h])",
+              "legendFormat": "{{entity_id}}",
+              "refId": "A",
+              "datasource": {
+                "type": "prometheus",
+                "uid": "victoriametrics-home"
+              },
+              "instant": true
+            }
+          ],
+          "fieldConfig": {
+            "defaults": {
+              "unit": "none",
+              "decimals": 1
+            },
+            "overrides": []
+          },
+          "options": {
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ]
+            },
+            "textMode": "value_and_name",
+            "colorMode": "none"
+          }
+        },
+        {
+          "type": "timeseries",
+          "title": "Temperature",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "victoriametrics-home"
+          },
+          "targets": [
+            {
+              "expr": "sensor__temperature_value{entity_id!~\"elegoo_.*\",entity_id=~\"$filter\"}",
+              "legendFormat": "{{entity_id}}",
+              "refId": "A",
+              "datasource": {
+                "type": "prometheus",
+                "uid": "victoriametrics-home"
+              }
+            }
+          ],
+          "gridPos": {
+            "x": 0,
+            "y": 4,
+            "w": 12,
+            "h": 8
+          },
+          "fieldConfig": {
+            "defaults": {
+              "unit": "celsius",
+              "custom": {
+                "drawStyle": "line",
+                "fillOpacity": 10,
+                "lineWidth": 2,
+                "spanNulls": 3600000,
+                "showPoints": "never"
+              }
+            },
+            "overrides": []
+          },
+          "options": {
+            "legend": {
+              "displayMode": "table",
+              "placement": "right",
+              "calcs": [
+                "lastNotNull",
+                "min",
+                "max",
+                "mean"
+              ]
+            },
+            "tooltip": {
+              "mode": "multi",
+              "sort": "desc"
+            }
+          }
+        },
+        {
+          "type": "timeseries",
+          "title": "Humidity",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "victoriametrics-home"
+          },
+          "targets": [
+            {
+              "expr": "sensor__humidity_value{entity_id=~\"$filter\"}",
+              "legendFormat": "{{entity_id}}",
+              "refId": "A",
+              "datasource": {
+                "type": "prometheus",
+                "uid": "victoriametrics-home"
+              }
+            }
+          ],
+          "gridPos": {
+            "x": 12,
+            "y": 4,
+            "w": 12,
+            "h": 8
+          },
+          "fieldConfig": {
+            "defaults": {
+              "unit": "humidity",
+              "custom": {
+                "drawStyle": "line",
+                "fillOpacity": 10,
+                "lineWidth": 2,
+                "spanNulls": 3600000,
+                "showPoints": "never"
+              }
+            },
+            "overrides": []
+          },
+          "options": {
+            "legend": {
+              "displayMode": "table",
+              "placement": "right",
+              "calcs": [
+                "lastNotNull",
+                "min",
+                "max",
+                "mean"
+              ]
+            },
+            "tooltip": {
+              "mode": "multi",
+              "sort": "desc"
+            }
+          }
+        },
+        {
+          "type": "timeseries",
+          "title": "CO2",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "victoriametrics-home"
+          },
+          "targets": [
+            {
+              "expr": "sensor__carbon_dioxide_value{entity_id=~\"$filter\"}",
+              "legendFormat": "{{entity_id}}",
+              "refId": "A",
+              "datasource": {
+                "type": "prometheus",
+                "uid": "victoriametrics-home"
+              }
+            }
+          ],
+          "gridPos": {
+            "x": 0,
+            "y": 12,
+            "w": 12,
+            "h": 8
+          },
+          "fieldConfig": {
+            "defaults": {
+              "unit": "ppm",
+              "custom": {
+                "drawStyle": "line",
+                "fillOpacity": 10,
+                "lineWidth": 2,
+                "spanNulls": 3600000,
+                "showPoints": "never"
+              }
+            },
+            "overrides": []
+          },
+          "options": {
+            "legend": {
+              "displayMode": "table",
+              "placement": "right",
+              "calcs": [
+                "lastNotNull",
+                "min",
+                "max",
+                "mean"
+              ]
+            },
+            "tooltip": {
+              "mode": "multi",
+              "sort": "desc"
+            }
+          }
+        },
+        {
+          "type": "timeseries",
+          "title": "Particulates / VOC",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "victoriametrics-home"
+          },
+          "targets": [
+            {
+              "expr": "{__name__=~\"sensor__(pm1|pm25|pm10|volatile_organic_compounds.*|aqi)_value\",entity_id=~\"$filter\"}",
+              "legendFormat": "{{entity_id}}",
+              "refId": "A",
+              "datasource": {
+                "type": "prometheus",
+                "uid": "victoriametrics-home"
+              }
+            }
+          ],
+          "gridPos": {
+            "x": 12,
+            "y": 12,
+            "w": 12,
+            "h": 8
+          },
+          "fieldConfig": {
+            "defaults": {
+              "unit": "none",
+              "custom": {
+                "drawStyle": "line",
+                "fillOpacity": 10,
+                "lineWidth": 2,
+                "spanNulls": 3600000,
+                "showPoints": "never"
+              }
+            },
+            "overrides": []
+          },
+          "options": {
+            "legend": {
+              "displayMode": "table",
+              "placement": "right",
+              "calcs": [
+                "lastNotNull",
+                "min",
+                "max",
+                "mean"
+              ]
+            },
+            "tooltip": {
+              "mode": "multi",
+              "sort": "desc"
+            }
+          }
+        },
+        {
+          "type": "timeseries",
+          "title": "Outdoor (forecast)",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "victoriametrics-home"
+          },
+          "targets": [
+            {
+              "expr": "weather_temperature",
+              "legendFormat": "forecast {{entity_id}}",
+              "refId": "A",
+              "datasource": {
+                "type": "prometheus",
+                "uid": "victoriametrics-home"
+              }
+            }
+          ],
+          "gridPos": {
+            "x": 0,
+            "y": 20,
+            "w": 24,
+            "h": 6
+          },
+          "fieldConfig": {
+            "defaults": {
+              "unit": "celsius",
+              "custom": {
+                "drawStyle": "line",
+                "fillOpacity": 10,
+                "lineWidth": 2,
+                "spanNulls": 3600000,
+                "showPoints": "never"
+              }
+            },
+            "overrides": []
+          },
+          "options": {
+            "legend": {
+              "displayMode": "table",
+              "placement": "right",
+              "calcs": [
+                "lastNotNull",
+                "min",
+                "max",
+                "mean"
+              ]
+            },
+            "tooltip": {
+              "mode": "multi",
+              "sort": "desc"
+            }
+          }
+        }
+      ]
+    }

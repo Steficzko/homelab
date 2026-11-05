@@ -1,0 +1,277 @@
+# Home dashboard - Energy (power, kWh per day, electricity cost).
+# Generated (~/bin/ha11-dashboards-gen.py on dev-seat), not hand-edited. Data: Home Assistant -> influxdb
+# integration (include-all) -> VictoriaMetrics on Prague Unraid, datasource uid
+# victoriametrics-home (HA-11). ZERO-EDIT RULE: panels select by device class
+# (metric name), never by entity, so a new HA sensor appears on its own. Legends
+# use entity_id: friendly_name is NOT a label in VM (HA pushes it as a field).
+# $filter (textbox regex on entity_id, default .*) narrows every panel.
+# HA pushes on change only; VM -search.maxStalenessInterval=2h, panels span gaps <=1h.
+# Energy per day skips *today*/*month* sensors: they duplicate a plug's total.
+# increase() over 1d treats a daily reset as a counter reset, so totals stay right.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-dashboard-home-energy
+  namespace: monitoring
+  labels:
+    grafana_dashboard: "1"
+  annotations:
+    grafana_folder: "Home"
+data:
+  home-energy.json: |
+    {
+      "uid": "home-energy",
+      "title": "Home - Energy",
+      "timezone": "Europe/Prague",
+      "schemaVersion": 39,
+      "editable": false,
+      "time": {
+        "from": "now-7d",
+        "to": "now"
+      },
+      "refresh": "5m",
+      "tags": [
+        "home",
+        "ha-11"
+      ],
+      "templating": {
+        "list": [
+          {
+            "name": "filter",
+            "label": "entity_id regex",
+            "type": "textbox",
+            "query": ".*",
+            "current": {
+              "text": ".*",
+              "value": ".*"
+            }
+          }
+        ]
+      },
+      "panels": [
+        {
+          "type": "timeseries",
+          "title": "Power now",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "victoriametrics-home"
+          },
+          "targets": [
+            {
+              "expr": "sensor__power_value{entity_id=~\"$filter\"}",
+              "legendFormat": "{{entity_id}}",
+              "refId": "A",
+              "datasource": {
+                "type": "prometheus",
+                "uid": "victoriametrics-home"
+              }
+            }
+          ],
+          "gridPos": {
+            "x": 0,
+            "y": 0,
+            "w": 24,
+            "h": 8
+          },
+          "fieldConfig": {
+            "defaults": {
+              "unit": "watt",
+              "custom": {
+                "drawStyle": "line",
+                "fillOpacity": 10,
+                "lineWidth": 2,
+                "spanNulls": 3600000,
+                "showPoints": "never"
+              }
+            },
+            "overrides": []
+          },
+          "options": {
+            "legend": {
+              "displayMode": "table",
+              "placement": "right",
+              "calcs": [
+                "lastNotNull",
+                "min",
+                "max",
+                "mean"
+              ]
+            },
+            "tooltip": {
+              "mode": "multi",
+              "sort": "desc"
+            }
+          }
+        },
+        {
+          "type": "timeseries",
+          "title": "Energy per day",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "victoriametrics-home"
+          },
+          "targets": [
+            {
+              "expr": "increase(sensor__energy_value{entity_id!~\".*(today|month).*\",entity_id=~\"$filter\"}[1d])",
+              "legendFormat": "{{entity_id}}",
+              "refId": "A",
+              "datasource": {
+                "type": "prometheus",
+                "uid": "victoriametrics-home"
+              },
+              "interval": "1d"
+            }
+          ],
+          "gridPos": {
+            "x": 0,
+            "y": 8,
+            "w": 12,
+            "h": 8
+          },
+          "fieldConfig": {
+            "defaults": {
+              "unit": "kwatth",
+              "custom": {
+                "drawStyle": "bars",
+                "fillOpacity": 70,
+                "lineWidth": 2,
+                "spanNulls": 3600000,
+                "showPoints": "never",
+                "stacking": {
+                  "mode": "normal"
+                }
+              }
+            },
+            "overrides": []
+          },
+          "options": {
+            "legend": {
+              "displayMode": "table",
+              "placement": "right",
+              "calcs": [
+                "lastNotNull",
+                "min",
+                "max",
+                "mean"
+              ]
+            },
+            "tooltip": {
+              "mode": "multi",
+              "sort": "desc"
+            }
+          }
+        },
+        {
+          "type": "timeseries",
+          "title": "Cost (running total per sensor)",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "victoriametrics-home"
+          },
+          "targets": [
+            {
+              "expr": "sensor__monetary_value{entity_id=~\"$filter\"}",
+              "legendFormat": "{{entity_id}}",
+              "refId": "A",
+              "datasource": {
+                "type": "prometheus",
+                "uid": "victoriametrics-home"
+              }
+            }
+          ],
+          "gridPos": {
+            "x": 0,
+            "y": 16,
+            "w": 12,
+            "h": 8
+          },
+          "fieldConfig": {
+            "defaults": {
+              "unit": "none",
+              "custom": {
+                "drawStyle": "line",
+                "fillOpacity": 10,
+                "lineWidth": 2,
+                "spanNulls": 3600000,
+                "showPoints": "never"
+              }
+            },
+            "overrides": []
+          },
+          "options": {
+            "legend": {
+              "displayMode": "table",
+              "placement": "right",
+              "calcs": [
+                "lastNotNull",
+                "min",
+                "max",
+                "mean"
+              ]
+            },
+            "tooltip": {
+              "mode": "multi",
+              "sort": "desc"
+            }
+          }
+        },
+        {
+          "type": "timeseries",
+          "title": "Cost per day",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "victoriametrics-home"
+          },
+          "targets": [
+            {
+              "expr": "increase(sensor__monetary_value{entity_id=~\"$filter\"}[1d])",
+              "legendFormat": "{{entity_id}}",
+              "refId": "A",
+              "datasource": {
+                "type": "prometheus",
+                "uid": "victoriametrics-home"
+              },
+              "interval": "1d"
+            }
+          ],
+          "gridPos": {
+            "x": 12,
+            "y": 16,
+            "w": 12,
+            "h": 8
+          },
+          "fieldConfig": {
+            "defaults": {
+              "unit": "none",
+              "custom": {
+                "drawStyle": "bars",
+                "fillOpacity": 70,
+                "lineWidth": 2,
+                "spanNulls": 3600000,
+                "showPoints": "never",
+                "stacking": {
+                  "mode": "normal"
+                }
+              }
+            },
+            "overrides": []
+          },
+          "options": {
+            "legend": {
+              "displayMode": "table",
+              "placement": "right",
+              "calcs": [
+                "lastNotNull",
+                "min",
+                "max",
+                "mean"
+              ]
+            },
+            "tooltip": {
+              "mode": "multi",
+              "sort": "desc"
+            }
+          }
+        }
+      ]
+    }

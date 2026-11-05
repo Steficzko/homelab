@@ -93,12 +93,31 @@ grafana:
       memory: 256Mi
     limits:
       memory: 1Gi
+  # HA-11: VM_URL / VM_USER / VM_PASSWORD for the Home VictoriaMetrics datasource.
+  # Secret is grafana-victoriametrics.sops.yaml, applied by hand (Argo excludes
+  # *.sops.yaml) with --server-side. It must exist BEFORE this syncs, or the
+  # Grafana pod fails with CreateContainerConfigError.
+  envFromSecret: grafana-victoriametrics
   additionalDataSources:
     - name: Loki
       type: loki
       url: http://loki.monitoring.svc.cluster.local:3100
       access: proxy
       isDefault: false
+    # HA-11: Home Assistant long-term history. VictoriaMetrics on Prague Unraid,
+    # fed by HA's influxdb integration (include-all). Owner-only: family views
+    # HA stats in Home Assistant itself. Grafana OSS cannot restrict datasources,
+    # so any future Grafana user could query this.
+    - name: VictoriaMetrics (Home)
+      uid: victoriametrics-home
+      type: prometheus
+      url: ${VM_URL}
+      access: proxy
+      isDefault: false
+      basicAuth: true
+      basicAuthUser: ${VM_USER}
+      secureJsonData:
+        basicAuthPassword: ${VM_PASSWORD}
   # Three exporters were being scraped and displayed NOWHERE: longhorn-backend
   # (5 targets, 63 metrics), node-exporter (5 targets, 321 metrics) and
   # pve-exporter (28 metrics). The stock chart ships 25 dashboards, but every one
