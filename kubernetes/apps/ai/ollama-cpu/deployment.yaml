@@ -60,7 +60,7 @@ spec:
               # 2026-08-29: was cpu "2" — see the note in whisper-cpu. This pod idles
               # at ~1m CPU while reserving two cores. The limit below still allows
               # four cores when a fallback inference actually runs.
-              cpu: 250m
+              cpu: 50m          # 2026-11-05 right-sized from 7d p95 (was 250m; p95 ~0m, peak 2m)
             limits:
               # 2026-10-18: 14d max 3.85Gi with the fallback model loaded (p95 280Mi
               # idle). 12Gi was 3x the largest thing it has ever held and the single

@@ -88,7 +88,7 @@ spec:
           resources:
             requests:
               memory: 512Mi
-              cpu: "250m"
+              cpu: "50m"       # 2026-11-05 right-sized from 7d p95 (was 250m; p95 18m, peak 48m)
             limits:
               memory: 4Gi
           volumeMounts:

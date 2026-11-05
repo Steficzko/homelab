@@ -61,7 +61,7 @@ spec:
               # destinations ("no node is underutilized") and pushed new pods onto
               # the control planes until r1 hit 85% memory. CPU is compressible:
               # a low request still bursts freely up to the limit.
-              cpu: 250m
+              cpu: 50m          # 2026-11-05 right-sized from 7d p95 (was 250m; p95 7m, peak 32m)
             limits:
               memory: 6Gi
           volumeMounts:

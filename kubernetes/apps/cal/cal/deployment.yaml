@@ -61,5 +61,5 @@ spec:
             periodSeconds: 30
             failureThreshold: 5
           resources:
-            requests: { memory: 1Gi, cpu: "200m" }
+            requests: { memory: 1Gi, cpu: "50m" }   # 2026-11-05 right-sized from 7d p95 (was 200m; p95 13m, peak 108m)
             limits: { memory: 2Gi }

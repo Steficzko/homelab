@@ -31,13 +31,15 @@ spec:
                                       # can reach Unraid MinIO; allowed into pgdb explicitly.
         spec:
           restartPolicy: Never
-          affinity:                       # co-locate with postgres (cross-node net is unreliable)
-            podAffinity:
-              requiredDuringSchedulingIgnoredDuringExecution:
-                - labelSelector:
-                    matchLabels:
-                      app.name: plane-plane-pgdb
-                  topologyKey: kubernetes.io/hostname
+          affinity:                       # PREFER postgres's node, never require it: a hard rule left
+            podAffinity:                  # every run Pending when that node's CPU requests hit 99%
+              preferredDuringSchedulingIgnoredDuringExecution:   # (11-04, 3 runs DeadlineExceeded).
+                - weight: 100             # Cross-node startup lag is covered by the pg_isready loop below.
+                  podAffinityTerm:
+                    labelSelector:
+                      matchLabels:
+                        app.name: plane-plane-pgdb
+                    topologyKey: kubernetes.io/hostname
           securityContext:
             runAsUser: 1000
             runAsGroup: 1000

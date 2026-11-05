@@ -62,7 +62,7 @@ spec:
           resources:
             requests:
               memory: 256Mi
-              cpu: 500m            # client site: a real CPU share when the node is busy
+              cpu: 150m            # client site: a real CPU share when the node is busy. 2026-11-05: was 500m; 7d p95 14m, peak 24m (no CPU limit, bursts freely)
             limits:
               memory: 1Gi          # idle 455Mi of 768Mi left no room for WooCommerce bursts (2026-10-17)
               # No CPU limit: at 1 core PHP was CFS-throttled 90% while using 0.3 core (2026-10-17).

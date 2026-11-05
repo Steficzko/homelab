@@ -40,7 +40,7 @@ spec:
             resources:
               requests:
                 memory: 1Gi
-                cpu: 200m
+                cpu: 100m       # 2026-11-05 right-sized from 7d p95 (was 200m; p95 10m, peak 204m)
               limits:
                 memory: 3Gi
           frontend:

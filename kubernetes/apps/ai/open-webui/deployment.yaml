@@ -65,7 +65,7 @@ spec:
           resources:
             requests:
               memory: 1Gi        # 2026-10-18: 14d p95 = max 1016Mi (CLSTR-28); limit unchanged
-              cpu: "250m"
+              cpu: "100m"      # 2026-11-05 right-sized from 7d p95 (was 250m; p95 68m, peak 87m)
             limits:
               memory: 3Gi
           volumeMounts:

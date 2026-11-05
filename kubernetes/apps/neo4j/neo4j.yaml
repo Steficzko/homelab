@@ -92,7 +92,7 @@ spec:
             periodSeconds: 30
             failureThreshold: 5
           resources:
-            requests: { memory: 2Gi, cpu: "250m" }
+            requests: { memory: 2Gi, cpu: "50m" }   # 2026-11-05 right-sized from 7d p95 (was 250m; p95 12m, peak 112m)
             limits:   { memory: 3Gi }               # > heap+pagecache+overhead; JVM must not be OOMKilled
           volumeMounts:
             - { name: data, mountPath: /data }

@@ -121,7 +121,7 @@ spec:
             httpGet: { path: /accounts/login/, port: http }
             periodSeconds: 30
             failureThreshold: 5
-          resources: { requests: { memory: 768Mi, cpu: "300m" }, limits: { memory: 4Gi, cpu: "2" } }   # OCR is CPU-only Tesseract; the cap keeps a batch from starving w2
+          resources: { requests: { memory: 768Mi, cpu: "100m" }, limits: { memory: 4Gi, cpu: "2" } }   # OCR is CPU-only Tesseract; the cap keeps a batch from starving w2   # 2026-11-05 right-sized from 7d p95 (was 300m; p95 25m, peak 331m)
           volumeMounts:
             - { name: data,    mountPath: /usr/src/paperless/data }
             - { name: media,   mountPath: /usr/src/paperless/media }
