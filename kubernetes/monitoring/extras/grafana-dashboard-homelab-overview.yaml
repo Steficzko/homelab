@@ -1104,6 +1104,432 @@ data:
           ]
         },
         {
+          "id": 83,
+          "type": "stat",
+          "title": "Prague download",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "gridPos": {
+            "h": 4,
+            "w": 4,
+            "x": 0,
+            "y": 9
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "red",
+                    "value": null
+                  },
+                  {
+                    "color": "orange",
+                    "value": 210000000.0
+                  },
+                  {
+                    "color": "green",
+                    "value": 315000000.0
+                  }
+                ]
+              },
+              "unit": "bps"
+            },
+            "overrides": []
+          },
+          "options": {
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "orientation": "auto",
+            "textMode": "auto",
+            "colorMode": "value",
+            "graphMode": "none",
+            "justifyMode": "auto",
+            "text": {}
+          },
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "expr": "max(speedtest_tracker_download_bits{nas=\"repy\"})",
+              "legendFormat": "",
+              "refId": "H",
+              "instant": true,
+              "range": false
+            }
+          ],
+          "description": "Last Speedtest Tracker result on repy. Red below 50%, orange below 75% of the 7-day normal (420 Mbit/s, measured 2026-11-06)."
+        },
+        {
+          "id": 84,
+          "type": "stat",
+          "title": "Prague upload",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "gridPos": {
+            "h": 4,
+            "w": 4,
+            "x": 4,
+            "y": 9
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "red",
+                    "value": null
+                  },
+                  {
+                    "color": "orange",
+                    "value": 69000000.0
+                  },
+                  {
+                    "color": "green",
+                    "value": 103500000.0
+                  }
+                ]
+              },
+              "unit": "bps"
+            },
+            "overrides": []
+          },
+          "options": {
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "orientation": "auto",
+            "textMode": "auto",
+            "colorMode": "value",
+            "graphMode": "none",
+            "justifyMode": "auto",
+            "text": {}
+          },
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "expr": "max(speedtest_tracker_upload_bits{nas=\"repy\"})",
+              "legendFormat": "",
+              "refId": "H",
+              "instant": true,
+              "range": false
+            }
+          ],
+          "description": "Last Speedtest Tracker result on repy. Red below 50%, orange below 75% of the 7-day normal (138 Mbit/s, measured 2026-11-06)."
+        },
+        {
+          "id": 85,
+          "type": "stat",
+          "title": "Prague ping",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "gridPos": {
+            "h": 4,
+            "w": 4,
+            "x": 8,
+            "y": 9
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "orange",
+                    "value": 30
+                  },
+                  {
+                    "color": "red",
+                    "value": 60
+                  }
+                ]
+              },
+              "unit": "ms"
+            },
+            "overrides": []
+          },
+          "options": {
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "orientation": "auto",
+            "textMode": "auto",
+            "colorMode": "value",
+            "graphMode": "none",
+            "justifyMode": "auto",
+            "text": {}
+          },
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "expr": "max(speedtest_tracker_ping_ms{nas=\"repy\"})",
+              "legendFormat": "",
+              "refId": "H",
+              "instant": true,
+              "range": false
+            }
+          ],
+          "description": "Last Speedtest Tracker ping on repy. Orange above 30 ms, red above 60 ms."
+        },
+        {
+          "id": 86,
+          "type": "stat",
+          "title": "Greece download",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "gridPos": {
+            "h": 4,
+            "w": 4,
+            "x": 12,
+            "y": 9
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "red",
+                    "value": null
+                  },
+                  {
+                    "color": "orange",
+                    "value": 49500000.0
+                  },
+                  {
+                    "color": "green",
+                    "value": 74250000.0
+                  }
+                ]
+              },
+              "unit": "bps"
+            },
+            "overrides": []
+          },
+          "options": {
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "orientation": "auto",
+            "textMode": "auto",
+            "colorMode": "value",
+            "graphMode": "none",
+            "justifyMode": "auto",
+            "text": {}
+          },
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "expr": "max(speedtest_tracker_download_bits{nas=\"ptolemaida\"})",
+              "legendFormat": "",
+              "refId": "H",
+              "instant": true,
+              "range": false
+            }
+          ],
+          "description": "Last Speedtest Tracker result on ptolemaida. Red below 50%, orange below 75% of the 7-day normal (99 Mbit/s, measured 2026-11-06)."
+        },
+        {
+          "id": 87,
+          "type": "stat",
+          "title": "Greece upload",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "gridPos": {
+            "h": 4,
+            "w": 4,
+            "x": 16,
+            "y": 9
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "red",
+                    "value": null
+                  },
+                  {
+                    "color": "orange",
+                    "value": 5000000.0
+                  },
+                  {
+                    "color": "green",
+                    "value": 7500000.0
+                  }
+                ]
+              },
+              "unit": "bps"
+            },
+            "overrides": []
+          },
+          "options": {
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "orientation": "auto",
+            "textMode": "auto",
+            "colorMode": "value",
+            "graphMode": "none",
+            "justifyMode": "auto",
+            "text": {}
+          },
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "expr": "max(speedtest_tracker_upload_bits{nas=\"ptolemaida\"})",
+              "legendFormat": "",
+              "refId": "H",
+              "instant": true,
+              "range": false
+            }
+          ],
+          "description": "Last Speedtest Tracker result on ptolemaida. Red below 50%, orange below 75% of the 7-day normal (10 Mbit/s, measured 2026-11-06)."
+        },
+        {
+          "id": 88,
+          "type": "stat",
+          "title": "Greece ping",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "gridPos": {
+            "h": 4,
+            "w": 4,
+            "x": 20,
+            "y": 9
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "orange",
+                    "value": 30
+                  },
+                  {
+                    "color": "red",
+                    "value": 60
+                  }
+                ]
+              },
+              "unit": "ms"
+            },
+            "overrides": []
+          },
+          "options": {
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "orientation": "auto",
+            "textMode": "auto",
+            "colorMode": "value",
+            "graphMode": "none",
+            "justifyMode": "auto",
+            "text": {}
+          },
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "expr": "max(speedtest_tracker_ping_ms{nas=\"ptolemaida\"})",
+              "legendFormat": "",
+              "refId": "H",
+              "instant": true,
+              "range": false
+            }
+          ],
+          "description": "Last Speedtest Tracker ping on ptolemaida. Orange above 30 ms, red above 60 ms."
+        },
+        {
           "id": 34,
           "type": "row",
           "title": "Every machine, side by side",
@@ -1112,7 +1538,7 @@ data:
             "h": 1,
             "w": 24,
             "x": 0,
-            "y": 9
+            "y": 13
           },
           "panels": []
         },
@@ -1128,7 +1554,7 @@ data:
             "h": 9,
             "w": 12,
             "x": 0,
-            "y": 10
+            "y": 14
           },
           "fieldConfig": {
             "defaults": {
@@ -1218,7 +1644,7 @@ data:
             "h": 9,
             "w": 12,
             "x": 12,
-            "y": 10
+            "y": 14
           },
           "fieldConfig": {
             "defaults": {
@@ -1307,7 +1733,7 @@ data:
             "h": 8,
             "w": 8,
             "x": 0,
-            "y": 19
+            "y": 23
           },
           "fieldConfig": {
             "defaults": {
@@ -1381,7 +1807,7 @@ data:
             "h": 8,
             "w": 8,
             "x": 8,
-            "y": 19
+            "y": 23
           },
           "fieldConfig": {
             "defaults": {
@@ -1464,7 +1890,7 @@ data:
             "h": 8,
             "w": 8,
             "x": 16,
-            "y": 19
+            "y": 23
           },
           "fieldConfig": {
             "defaults": {
@@ -1539,7 +1965,7 @@ data:
             "h": 9,
             "w": 24,
             "x": 0,
-            "y": 27
+            "y": 31
           },
           "fieldConfig": {
             "defaults": {
@@ -1871,7 +2297,7 @@ data:
             "h": 1,
             "w": 24,
             "x": 0,
-            "y": 36
+            "y": 40
           },
           "panels": []
         },
@@ -1887,7 +2313,7 @@ data:
             "h": 8,
             "w": 8,
             "x": 0,
-            "y": 37
+            "y": 41
           },
           "fieldConfig": {
             "defaults": {
@@ -1963,7 +2389,7 @@ data:
             "h": 8,
             "w": 8,
             "x": 8,
-            "y": 37
+            "y": 41
           },
           "fieldConfig": {
             "defaults": {
@@ -2039,7 +2465,7 @@ data:
             "h": 8,
             "w": 8,
             "x": 16,
-            "y": 37
+            "y": 41
           },
           "fieldConfig": {
             "defaults": {
@@ -2109,7 +2535,7 @@ data:
             "h": 1,
             "w": 24,
             "x": 0,
-            "y": 45
+            "y": 49
           },
           "panels": []
         },
@@ -2125,7 +2551,7 @@ data:
             "h": 8,
             "w": 8,
             "x": 0,
-            "y": 46
+            "y": 50
           },
           "fieldConfig": {
             "defaults": {
@@ -2202,7 +2628,7 @@ data:
             "h": 8,
             "w": 8,
             "x": 8,
-            "y": 46
+            "y": 50
           },
           "fieldConfig": {
             "defaults": {
@@ -2279,7 +2705,7 @@ data:
             "h": 8,
             "w": 8,
             "x": 16,
-            "y": 46
+            "y": 50
           },
           "fieldConfig": {
             "defaults": {
@@ -2351,7 +2777,7 @@ data:
             "h": 8,
             "w": 8,
             "x": 0,
-            "y": 54
+            "y": 58
           },
           "fieldConfig": {
             "defaults": {
@@ -2427,7 +2853,7 @@ data:
             "h": 8,
             "w": 8,
             "x": 8,
-            "y": 54
+            "y": 58
           },
           "fieldConfig": {
             "defaults": {
@@ -2500,7 +2926,7 @@ data:
             "h": 8,
             "w": 8,
             "x": 16,
-            "y": 54
+            "y": 58
           },
           "fieldConfig": {
             "defaults": {
@@ -2569,7 +2995,7 @@ data:
             "h": 1,
             "w": 24,
             "x": 0,
-            "y": 62
+            "y": 66
           },
           "panels": []
         },
@@ -2585,7 +3011,7 @@ data:
             "h": 8,
             "w": 8,
             "x": 0,
-            "y": 63
+            "y": 67
           },
           "fieldConfig": {
             "defaults": {
@@ -2661,7 +3087,7 @@ data:
             "h": 8,
             "w": 8,
             "x": 8,
-            "y": 63
+            "y": 67
           },
           "fieldConfig": {
             "defaults": {
@@ -2737,7 +3163,7 @@ data:
             "h": 8,
             "w": 8,
             "x": 16,
-            "y": 63
+            "y": 67
           },
           "fieldConfig": {
             "defaults": {
