@@ -1,0 +1,699 @@
+# House Wi-Fi & Edge dashboard (2026-11-06). Datasource = VictoriaMetrics (Home) on Prague Unraid, fed by
+# Unraid Alloy scraping the Flint (wrt-edge) and the TP-Link (tplink-ap) every 30s; history 10y.
+# Per-station Wi-Fi, channel airtime (custom wifi_survey collector), DNS probe, WAN + per-VLAN traffic.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-dashboard-house-wifi
+  namespace: monitoring
+  labels:
+    grafana_dashboard: "1"
+  annotations:
+    grafana_folder: "Home"
+data:
+  house-wifi.json: |
+    {
+      "uid": "house-wifi",
+      "title": "House Wi-Fi & Edge",
+      "tags": [
+        "home",
+        "wifi",
+        "router"
+      ],
+      "timezone": "browser",
+      "schemaVersion": 39,
+      "refresh": "1m",
+      "time": {
+        "from": "now-6h",
+        "to": "now"
+      },
+      "panels": [
+        {
+          "id": 1,
+          "type": "row",
+          "title": "Now",
+          "collapsed": false,
+          "gridPos": {
+            "x": 0,
+            "y": 0,
+            "w": 24,
+            "h": 1
+          },
+          "panels": []
+        },
+        {
+          "id": 2,
+          "type": "stat",
+          "title": "Wi-Fi clients per AP",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "victoriametrics-home"
+          },
+          "gridPos": {
+            "x": 0,
+            "y": 1,
+            "w": 6,
+            "h": 4
+          },
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "victoriametrics-home"
+              },
+              "refId": "A",
+              "expr": "sum by (instance) (wifi_stations)",
+              "legendFormat": "{{instance}}",
+              "instant": false,
+              "range": true
+            }
+          ],
+          "fieldConfig": {
+            "defaults": {},
+            "overrides": []
+          },
+          "options": {}
+        },
+        {
+          "id": 3,
+          "type": "stat",
+          "title": "Channel airtime busy",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "victoriametrics-home"
+          },
+          "gridPos": {
+            "x": 6,
+            "y": 1,
+            "w": 6,
+            "h": 4
+          },
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "victoriametrics-home"
+              },
+              "refId": "A",
+              "expr": "100 * sum by (instance) (rate(wifi_survey_busy_ms_total[5m])) / sum by (instance) (rate(wifi_survey_active_ms_total[5m]))",
+              "legendFormat": "{{instance}}",
+              "instant": false,
+              "range": true
+            }
+          ],
+          "fieldConfig": {
+            "defaults": {
+              "unit": "percent"
+            },
+            "overrides": []
+          },
+          "options": {}
+        },
+        {
+          "id": 4,
+          "type": "stat",
+          "title": "Noise floor",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "victoriametrics-home"
+          },
+          "gridPos": {
+            "x": 12,
+            "y": 1,
+            "w": 6,
+            "h": 4
+          },
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "victoriametrics-home"
+              },
+              "refId": "A",
+              "expr": "max by (instance) (wifi_survey_noise_dbm)",
+              "legendFormat": "{{instance}}",
+              "instant": false,
+              "range": true
+            }
+          ],
+          "fieldConfig": {
+            "defaults": {
+              "unit": "dBm"
+            },
+            "overrides": []
+          },
+          "options": {}
+        },
+        {
+          "id": 5,
+          "type": "stat",
+          "title": "AdGuard DNS answering",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "victoriametrics-home"
+          },
+          "gridPos": {
+            "x": 18,
+            "y": 1,
+            "w": 3,
+            "h": 4
+          },
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "victoriametrics-home"
+              },
+              "refId": "A",
+              "expr": "router_dns_up{instance=\"wrt-edge\"}",
+              "legendFormat": "",
+              "instant": false,
+              "range": true
+            }
+          ],
+          "fieldConfig": {
+            "defaults": {
+              "mappings": [
+                {
+                  "type": "value",
+                  "options": {
+                    "0": {
+                      "text": "DOWN",
+                      "color": "red"
+                    },
+                    "1": {
+                      "text": "UP",
+                      "color": "green"
+                    }
+                  }
+                }
+              ]
+            },
+            "overrides": []
+          },
+          "options": {}
+        },
+        {
+          "id": 6,
+          "type": "stat",
+          "title": "DNS latency",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "victoriametrics-home"
+          },
+          "gridPos": {
+            "x": 21,
+            "y": 1,
+            "w": 3,
+            "h": 4
+          },
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "victoriametrics-home"
+              },
+              "refId": "A",
+              "expr": "router_dns_latency_seconds{instance=\"wrt-edge\"}",
+              "legendFormat": "",
+              "instant": false,
+              "range": true
+            }
+          ],
+          "fieldConfig": {
+            "defaults": {
+              "unit": "s"
+            },
+            "overrides": []
+          },
+          "options": {}
+        },
+        {
+          "id": 7,
+          "type": "row",
+          "title": "Devices",
+          "collapsed": false,
+          "gridPos": {
+            "x": 0,
+            "y": 5,
+            "w": 24,
+            "h": 1
+          },
+          "panels": []
+        },
+        {
+          "id": 8,
+          "type": "table",
+          "title": "Who is connected (signal, network, AP)",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "victoriametrics-home"
+          },
+          "gridPos": {
+            "x": 0,
+            "y": 6,
+            "w": 12,
+            "h": 9
+          },
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "victoriametrics-home"
+              },
+              "refId": "A",
+              "expr": "wifi_station_signal_dbm * on (instance, ifname) group_left (ssid) (max by (instance, ifname, ssid) (wifi_network_quality) * 0 + 1)",
+              "legendFormat": "",
+              "instant": true,
+              "range": false
+            }
+          ],
+          "fieldConfig": {
+            "defaults": {},
+            "overrides": []
+          },
+          "options": {},
+          "transformations": [
+            {
+              "id": "labelsToFields",
+              "options": {}
+            },
+            {
+              "id": "organize",
+              "options": {
+                "excludeByName": {
+                  "Time": true,
+                  "__name__": true,
+                  "job": true,
+                  "site": true,
+                  "role": true
+                },
+                "renameByName": {
+                  "Value": "signal dBm",
+                  "instance": "AP",
+                  "ssid": "network",
+                  "mac": "device MAC"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": 9,
+          "type": "timeseries",
+          "title": "Signal per device",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "victoriametrics-home"
+          },
+          "gridPos": {
+            "x": 12,
+            "y": 6,
+            "w": 12,
+            "h": 9
+          },
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "victoriametrics-home"
+              },
+              "refId": "A",
+              "expr": "wifi_station_signal_dbm * on (instance, ifname) group_left (ssid) (max by (instance, ifname, ssid) (wifi_network_quality) * 0 + 1)",
+              "legendFormat": "{{ssid}} {{mac}} @{{instance}}",
+              "instant": false,
+              "range": true
+            }
+          ],
+          "fieldConfig": {
+            "defaults": {
+              "unit": "dBm"
+            },
+            "overrides": []
+          },
+          "options": {}
+        },
+        {
+          "id": 10,
+          "type": "timeseries",
+          "title": "Device link speed (kbit/s rx)",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "victoriametrics-home"
+          },
+          "gridPos": {
+            "x": 0,
+            "y": 15,
+            "w": 12,
+            "h": 8
+          },
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "victoriametrics-home"
+              },
+              "refId": "A",
+              "expr": "wifi_station_receive_kilobits_per_second * on (instance, ifname) group_left (ssid) (max by (instance, ifname, ssid) (wifi_network_quality) * 0 + 1)",
+              "legendFormat": "{{ssid}} {{mac}}",
+              "instant": false,
+              "range": true
+            }
+          ],
+          "fieldConfig": {
+            "defaults": {
+              "unit": "Kbits"
+            },
+            "overrides": []
+          },
+          "options": {}
+        },
+        {
+          "id": 11,
+          "type": "timeseries",
+          "title": "Clients per network",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "victoriametrics-home"
+          },
+          "gridPos": {
+            "x": 12,
+            "y": 15,
+            "w": 12,
+            "h": 8
+          },
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "victoriametrics-home"
+              },
+              "refId": "A",
+              "expr": "count by (ssid) (wifi_station_signal_dbm * on (instance, ifname) group_left (ssid) (max by (instance, ifname, ssid) (wifi_network_quality) * 0 + 1))",
+              "legendFormat": "{{ssid}}",
+              "instant": false,
+              "range": true
+            }
+          ],
+          "fieldConfig": {
+            "defaults": {},
+            "overrides": []
+          },
+          "options": {}
+        },
+        {
+          "id": 12,
+          "type": "row",
+          "title": "Air",
+          "collapsed": false,
+          "gridPos": {
+            "x": 0,
+            "y": 23,
+            "w": 24,
+            "h": 1
+          },
+          "panels": []
+        },
+        {
+          "id": 13,
+          "type": "timeseries",
+          "title": "Airtime busy % (ours + neighbours)",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "victoriametrics-home"
+          },
+          "gridPos": {
+            "x": 0,
+            "y": 24,
+            "w": 12,
+            "h": 8
+          },
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "victoriametrics-home"
+              },
+              "refId": "A",
+              "expr": "100 * sum by (instance) (rate(wifi_survey_busy_ms_total[5m])) / sum by (instance) (rate(wifi_survey_active_ms_total[5m]))",
+              "legendFormat": "busy {{instance}}",
+              "instant": false,
+              "range": true
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "victoriametrics-home"
+              },
+              "refId": "B",
+              "expr": "100 * sum by (instance) (rate(wifi_survey_transmit_ms_total[5m])) / sum by (instance) (rate(wifi_survey_active_ms_total[5m]))",
+              "legendFormat": "our transmit {{instance}}",
+              "instant": false,
+              "range": true
+            }
+          ],
+          "fieldConfig": {
+            "defaults": {
+              "unit": "percent"
+            },
+            "overrides": []
+          },
+          "options": {}
+        },
+        {
+          "id": 14,
+          "type": "timeseries",
+          "title": "Noise floor",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "victoriametrics-home"
+          },
+          "gridPos": {
+            "x": 12,
+            "y": 24,
+            "w": 12,
+            "h": 8
+          },
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "victoriametrics-home"
+              },
+              "refId": "A",
+              "expr": "wifi_survey_noise_dbm",
+              "legendFormat": "{{instance}}",
+              "instant": false,
+              "range": true
+            }
+          ],
+          "fieldConfig": {
+            "defaults": {
+              "unit": "dBm"
+            },
+            "overrides": []
+          },
+          "options": {}
+        },
+        {
+          "id": 15,
+          "type": "row",
+          "title": "Router",
+          "collapsed": false,
+          "gridPos": {
+            "x": 0,
+            "y": 32,
+            "w": 24,
+            "h": 1
+          },
+          "panels": []
+        },
+        {
+          "id": 16,
+          "type": "timeseries",
+          "title": "Internet throughput (WAN = lan5)",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "victoriametrics-home"
+          },
+          "gridPos": {
+            "x": 0,
+            "y": 33,
+            "w": 12,
+            "h": 8
+          },
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "victoriametrics-home"
+              },
+              "refId": "A",
+              "expr": "8 * rate(node_network_receive_bytes_total{instance=\"wrt-edge\",device=\"lan5\"}[5m])",
+              "legendFormat": "down",
+              "instant": false,
+              "range": true
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "victoriametrics-home"
+              },
+              "refId": "B",
+              "expr": "8 * rate(node_network_transmit_bytes_total{instance=\"wrt-edge\",device=\"lan5\"}[5m])",
+              "legendFormat": "up",
+              "instant": false,
+              "range": true
+            }
+          ],
+          "fieldConfig": {
+            "defaults": {
+              "unit": "bps"
+            },
+            "overrides": []
+          },
+          "options": {}
+        },
+        {
+          "id": 17,
+          "type": "timeseries",
+          "title": "Traffic per network (VLAN)",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "victoriametrics-home"
+          },
+          "gridPos": {
+            "x": 12,
+            "y": 33,
+            "w": 12,
+            "h": 8
+          },
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "victoriametrics-home"
+              },
+              "refId": "A",
+              "expr": "8 * rate(node_network_receive_bytes_total{instance=\"wrt-edge\",device=~\"br-lan\\\\..*\"}[5m])",
+              "legendFormat": "{{device}}",
+              "instant": false,
+              "range": true
+            }
+          ],
+          "fieldConfig": {
+            "defaults": {
+              "unit": "bps"
+            },
+            "overrides": []
+          },
+          "options": {}
+        },
+        {
+          "id": 18,
+          "type": "timeseries",
+          "title": "CPU busy",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "victoriametrics-home"
+          },
+          "gridPos": {
+            "x": 0,
+            "y": 41,
+            "w": 8,
+            "h": 7
+          },
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "victoriametrics-home"
+              },
+              "refId": "A",
+              "expr": "100 * (1 - avg by (instance) (rate(node_cpu_seconds_total{mode=\"idle\",instance=~\"wrt-edge|tplink-ap\"}[5m])))",
+              "legendFormat": "{{instance}}",
+              "instant": false,
+              "range": true
+            }
+          ],
+          "fieldConfig": {
+            "defaults": {
+              "unit": "percent"
+            },
+            "overrides": []
+          },
+          "options": {}
+        },
+        {
+          "id": 19,
+          "type": "timeseries",
+          "title": "Memory used",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "victoriametrics-home"
+          },
+          "gridPos": {
+            "x": 8,
+            "y": 41,
+            "w": 8,
+            "h": 7
+          },
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "victoriametrics-home"
+              },
+              "refId": "A",
+              "expr": "100 * (1 - node_memory_MemAvailable_bytes{instance=~\"wrt-edge|tplink-ap\"} / node_memory_MemTotal_bytes{instance=~\"wrt-edge|tplink-ap\"})",
+              "legendFormat": "{{instance}}",
+              "instant": false,
+              "range": true
+            }
+          ],
+          "fieldConfig": {
+            "defaults": {
+              "unit": "percent"
+            },
+            "overrides": []
+          },
+          "options": {}
+        },
+        {
+          "id": 20,
+          "type": "bargauge",
+          "title": "Top talkers (bytes in active connections)",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "victoriametrics-home"
+          },
+          "gridPos": {
+            "x": 16,
+            "y": 41,
+            "w": 8,
+            "h": 7
+          },
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "victoriametrics-home"
+              },
+              "refId": "A",
+              "expr": "topk(10, sum by (src) (node_nat_traffic{instance=\"wrt-edge\"}))",
+              "legendFormat": "{{src}}",
+              "instant": true,
+              "range": false
+            }
+          ],
+          "fieldConfig": {
+            "defaults": {
+              "unit": "bytes"
+            },
+            "overrides": []
+          },
+          "options": {}
+        }
+      ],
+      "description": "Flint (knossos/wrt-edge, ch1) + TP-Link (aeolus/tplink-ap, ch11). Data: Unraid Alloy -> VictoriaMetrics (10y). Locked: zephyr/pasiphae/melissa/xenios."
+    }

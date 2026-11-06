@@ -1,0 +1,51 @@
+# Edge router + access point alerts (2026-11-06, after the Flint 2 cutover).
+#
+# AdGuard on the router is the DNS for EVERY VLAN (port 53 is force-redirected to it on all
+# zones), so if it stops answering the whole house is "offline" while the router itself looks
+# healthy (2026-11-06: a duplicate client uid kept AdGuard down ~18 s). router_dns_up comes from
+# a custom lua collector on the Flint (/usr/lib/lua/prometheus-collectors/dns_probe.lua) that
+# does one lookup against 127.0.0.1:53 per scrape.
+#
+# Router death itself is covered by the healthchecks.io `wrt-edge` dead-man (Prometheus
+# would lose its internet too), so these rules only fire while the router is reachable.
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: router-alerts
+  namespace: monitoring
+  labels:
+    release: kube-prometheus-stack   # required by the Prometheus ruleSelector
+spec:
+  groups:
+    - name: router
+      rules:
+        - alert: AdGuardDNSDown
+          expr: router_dns_up{job="router-node-exporter", instance="wrt-edge"} == 0
+          for: 1m
+          labels:
+            severity: critical
+          annotations:
+            summary: "AdGuard on the router is not answering DNS — every VLAN is effectively offline"
+            description: >-
+              router_dns_up has been 0 for 1m on wrt-edge. Check: ssh root@192.168.1.1
+              'logread -e AdGuardHome | tail; /etc/init.d/adguardhome status'. Last-known-good
+              configs: /etc/adguardhome/adguardhome.yaml.pre-*. Restore one, then
+              '/etc/init.d/adguardhome restart'.
+        - alert: AdGuardDNSProbeMissing
+          expr: up{job="router-node-exporter", instance="wrt-edge"} == 1 unless on (instance) router_dns_up{job="router-node-exporter"}
+          for: 15m
+          labels:
+            severity: warning
+          annotations:
+            summary: "The router exports metrics but no router_dns_up — the DNS probe collector is gone"
+            description: "Re-create /usr/lib/lua/prometheus-collectors/dns_probe.lua on the Flint (lost on a sysupgrade without keep)."
+        - alert: AccessPointDown
+          expr: up{job="router-node-exporter", instance="tplink-ap"} == 0
+          for: 5m
+          labels:
+            severity: warning
+          annotations:
+            summary: "The TP-Link AP (aeolus, 192.168.1.3) is not answering"
+            description: >-
+              Balcony-end Wi-Fi (zephyr/pasiphae/melissa/xenios on ch 11) and the switch for
+              lenovobig + hermes are on this box. The Flint keeps Wi-Fi up in the middle of the house.
