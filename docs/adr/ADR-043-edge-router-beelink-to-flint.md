@@ -1,6 +1,6 @@
 # ADR-043 — The edge router: Beelink interim, Flint 2 as the planned permanent edge
 
-- **Status:** Draft, 2026-10-22
+- **Status:** Draft 2026-10-22; **amended as-built 2026-11-06** (the Flint 2 is the live edge, see the amendment at the end)
 - **Deciders:** Stefanos
 - **Tracked in:** Plane `NET` — NET-22 (this decision), NET-24 (config export, done here),
   NET-46 (Flint cutover), NET-47 (retire Xiaomi R3 + repeater)
@@ -89,3 +89,56 @@ eMMC** and is still unbought. Two things follow:
 - Whether `family` (VLAN 20) splits into a separate guest VLAN 50 (NET-30) — open; the config
   ports either way.
 - The managed switch / 2.5G trunking (ADR-045) and the portable two-leg cage (ADR-046) — separate.
+
+## Amendment 2026-11-06 — the Flint 2 is the edge (as built)
+
+Owner decisions taken during the cutover; this supersedes the parts of the decision above that differ: WAN is LAN5 (not the `wan` port), the 2.5G WAN-marked port (`eth1`) is the KeepLink trunk, the TP-Link stays as a second AP behind LAN1, and AdGuard/Tailscale came across in a restore bundle rather than by hand. Tracked in Plane NET-55.
+
+### What was built
+
+**Hardware / ports** (port names verified on the device's `board.json`; the WAN-marked port is `eth1`, not `wan`):
+
+| Flint port | Speed | Role |
+|---|---|---|
+| WAN-marked (`eth1`) | 2.5G | trunk to KeepLink port 1 (VLAN 1 untagged + 5/10/20/30/40/90 tagged) |
+| LAN1 | 2.5G | trunk to the TP-Link (wall cable; TP-Link switch port 5) |
+| LAN2–LAN3 | 1G | trunks, spare |
+| LAN4 | 1G | VLAN 5 access (Samsung printer 192.168.5.100) |
+| LAN5 | 1G | **internet** (Vodafone bridge). Owner rule: the 2.5G ports are never used for internet |
+
+- Both Beelink MACs are cloned: WAN `78:55:36:02:93:c6` (the Vodafone lease is MAC-bound), LAN `78:55:36:02:93:c7`
+  (no ARP churn; Matter's RA route via `fe80::7a55:36ff:fe02:93c7` kept working). Same SSH host key as the Beelink.
+- VLANs on `br-lan` with DSA `bridge-vlan` (`vlan_filtering=1`); untagged LAN = `br-lan.1`.
+
+**Method (replaces the hand rebuild):** `~/flint2-cutover/make-flint-bundle.sh` converts a live `sysupgrade -b` into
+a files-only restore bundle; flash = custom ASU image (25.12.6 + adguardhome, tailscale, openthread-br, cp210x, sqm,
+exporters) through U-Boot web recovery, then `sysupgrade -r`. Bench = an Unraid netns on a macvlan of eth1, plus a
+dnsmasq fake ISP to prove WAN-on-LAN5 before the swap. Every later change goes through `/root/safe-apply.sh`
+(snapshot, apply, auto-rollback unless confirmed; proven by an unconfirmed dummy change that reverted).
+
+**Wi-Fi** (owner-locked names): zephyr (VLAN 10, Flint only, FT + 802.11w optional), pasiphae (20, FT), melissa
+(5, isolate, no internet), xenios (40 guest, isolate). Flint 2.4 GHz ch 1 at 20 dBm; TP-Link ch 11 at 14 dBm; 5 GHz
+off (later zephyr-only, laptop + Lineage phone). Wi-Fi ch 4–7 are forbidden because Thread runs on ch 17
+(2435 MHz) next to the Flint. Old SSIDs clsd/iot-setup deleted.
+
+**Segmentation:** guest VLAN 40 (192.168.40.0/24; internet only, no private ranges; public DNS upstreams, so guests
+reach the owner's sites through Cloudflare). IoT = HA-only control (`ha_to_iot` from 192.168.10.100 and
+`ha_lan_to_iot` from 192.168.1.100; trusted may only print to .5.100 and slice to .5.200), IoT pool .20–.99, no WAN
+except the matter-server (.5.11 :443). Every zone forces :53 to AdGuard and rejects DoT; full filtering on every
+network except VLAN 1 (cluster safety, ADR-046) and the matter-server (own unfiltered client).
+
+**Thread:** OTBR on the Flint with the MG24 stick; state persisted on eMMC (`/etc/init.d/thread-state`, S19) so a
+reboot keeps the OMR prefix; the rc.local `ifup thread` retry works around the netifd-vs-mdnsd boot race; the
+dataset CR from the Beelink is stripped.
+
+**Observability:** both APs export `wifi_station_*`, `wifi_survey_*` (custom airtime collector) and `router_dns_up`
+(custom DNS probe). Unraid Alloy scrapes them into VictoriaMetrics (10y) and receives RFC3164 syslog on :1516 →
+Loki. Grafana "House Wi-Fi & Edge"; alerts AdGuardDNSDown / AdGuardDNSProbeMissing / AccessPointDown (ba933da).
+Monthly read-only Wi-Fi + Thread spectrum report → Telegram (NET-56).
+
+## Known limits
+
+- The TP-Link (19.07, EOL) forces `ap_isolate=1` on every BSS; it carries only pasiphae/melissa/xenios (zephyr
+  removed). Replace it (NET-27).
+- Client isolation is per AP only (no cross-AP isolation on the shared bridge).
+- The KeepLink has no MAC-table page; ports are identified via a Port Statistics burst (P7 = Marianna's desktop, now VLAN 20).

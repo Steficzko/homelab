@@ -39,6 +39,24 @@ spec:
           annotations:
             summary: "The router exports metrics but no router_dns_up — the DNS probe collector is gone"
             description: "Re-create /usr/lib/lua/prometheus-collectors/dns_probe.lua on the Flint (lost on a sysupgrade without keep)."
+        # Flash: custom collector /usr/lib/lua/prometheus-collectors/overlay.lua (both routers, in sysupgrade.conf).
+        # The Flint has 8 GB eMMC, the TP-Link 11 MB; AdGuard query logs or opkg leftovers are what fill them.
+        - alert: RouterFlashFilling
+          expr: router_overlay_used_bytes{job="router-node-exporter"} / router_overlay_size_bytes{job="router-node-exporter"} > 0.8
+          for: 30m
+          labels:
+            severity: warning
+          annotations:
+            summary: "{{ $labels.instance }} flash (overlay) is {{ $value | humanizePercentage }} full"
+            description: "Check: ssh root@<router> 'du -sh /overlay/upper/* | sort -h | tail'. Usual suspects: AdGuard querylog, /root/snap-* backups, opkg."
+        - alert: RouterMemoryLow
+          expr: node_memory_MemAvailable_bytes{job="router-node-exporter"} / node_memory_MemTotal_bytes{job="router-node-exporter"} < 0.15
+          for: 15m
+          labels:
+            severity: warning
+          annotations:
+            summary: "{{ $labels.instance }} has under 15% RAM available"
+            description: "The Flint has 1 GB (AdGuard ~105 MB, tailscaled ~45 MB normal). Check: ssh root@<router> 'top -bn1 | head -20'."
         - alert: AccessPointDown
           expr: up{job="router-node-exporter", instance="tplink-ap"} == 0
           for: 5m
