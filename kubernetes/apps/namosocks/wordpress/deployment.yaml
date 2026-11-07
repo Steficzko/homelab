@@ -85,7 +85,14 @@ spec:
           volumeMounts:
             - name: wp-content
               mountPath: /var/www/html/wp-content
+            - name: apache-mpm          # worker cap, see apache-mpm-configmap.yaml
+              mountPath: /etc/apache2/conf-enabled/zz-mpm.conf
+              subPath: zz-mpm.conf
+              readOnly: true
       volumes:
         - name: wp-content
           persistentVolumeClaim:
             claimName: wp-content-pvc
+        - name: apache-mpm
+          configMap:
+            name: apache-mpm

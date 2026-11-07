@@ -1,0 +1,15 @@
+# Cap Apache prefork workers to fit the 2Gi memory limit (stock MaxRequestWorkers = 150).
+# 2026-11-05: a secret-file scanner burst OOM-killed 42 workers on the sibling
+# studioconcreteluka site (same image). Measured ~35 MB per idle worker, 145 MB peak.
+# Mounted into conf-enabled, which loads after mods-enabled, so it overrides mpm_prefork.conf.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: apache-mpm
+  namespace: blanca-dental-care
+data:
+  zz-mpm.conf: |
+    <IfModule mpm_prefork_module>
+        ServerLimit          24
+        MaxRequestWorkers    24
+    </IfModule>

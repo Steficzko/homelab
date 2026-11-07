@@ -82,3 +82,13 @@ data:
     <FilesMatch "^(readme\.html|license\.txt|wp-config-sample\.php|wp-trackback\.php)$">
         Require all denied
     </FilesMatch>
+
+    # Cap prefork workers to fit the 1Gi limit. Stock MaxRequestWorkers is 150; on
+    # 2026-11-05 a secret-file scanner burst spawned enough PHP workers to hit the
+    # limit in 6 s and the kernel OOM-killed 42 of them. Measured ~35 MB per idle
+    # worker, ~120 MB peak; 12 x ~70 MB fits with headroom. Excess requests queue.
+    # conf-enabled loads after mods-enabled, so these override mpm_prefork.conf.
+    <IfModule mpm_prefork_module>
+        ServerLimit          12
+        MaxRequestWorkers    12
+    </IfModule>
