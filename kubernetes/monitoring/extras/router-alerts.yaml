@@ -57,6 +57,17 @@ spec:
           annotations:
             summary: "{{ $labels.instance }} has under 15% RAM available"
             description: "The Flint has 1 GB (AdGuard ~105 MB, tailscaled ~45 MB normal). Check: ssh root@<router> 'top -bn1 | head -20'."
+        # HA's per-network AdGuard switch (NET-58, /usr/bin/net-toggle on the Flint) is meant for short
+        # troubleshooting; a network left unfiltered for half a day is a forgotten switch, not a choice.
+        # Series exists only while that network is off; value = when it went off (custom collector net_toggle.lua).
+        - alert: AdGuardFilteringLeftOff
+          expr: time() - router_adguard_filtering_off_since_timestamp_seconds{job="router-node-exporter"} > 12 * 3600
+          for: 5m
+          labels:
+            severity: warning
+          annotations:
+            summary: "AdGuard filtering on {{ $labels.network }} has been OFF for {{ $value | humanizeDuration }}"
+            description: "Switched off from HA (Network card) or 'net-toggle adguard {{ $labels.network }} off'. Turn it back on in HA, or: ssh root@192.168.1.1 'net-toggle adguard {{ $labels.network }} on'."
         - alert: AccessPointDown
           expr: up{job="router-node-exporter", instance="tplink-ap"} == 0
           for: 5m

@@ -118,7 +118,7 @@ dnsmasq fake ISP to prove WAN-on-LAN5 before the swap. Every later change goes t
 
 **Wi-Fi** (owner-locked names): zephyr (VLAN 10, Flint only, FT + 802.11w optional), pasiphae (20, FT), melissa
 (5, isolate, no internet), xenios (40 guest, isolate). Flint 2.4 GHz ch 1 at 20 dBm; TP-Link ch 11 at 14 dBm; 5 GHz
-off (later zephyr-only, laptop + Lineage phone). Wi-Fi ch 4–7 are forbidden because Thread runs on ch 17
+off by default, switchable from HA (zephyr-only, laptop + Lineage phone; see HA control). Wi-Fi ch 4–7 are forbidden because Thread runs on ch 17
 (2435 MHz) next to the Flint. Old SSIDs clsd/iot-setup deleted.
 
 **Segmentation:** guest VLAN 40 (192.168.40.0/24; internet only, no private ranges; public DNS upstreams, so guests
@@ -133,12 +133,37 @@ dataset CR from the Beelink is stripped.
 
 **Observability:** both APs export `wifi_station_*`, `wifi_survey_*` (custom airtime collector) and `router_dns_up`
 (custom DNS probe). Unraid Alloy scrapes them into VictoriaMetrics (10y) and receives RFC3164 syslog on :1516 →
-Loki. Grafana "House Wi-Fi & Edge"; alerts AdGuardDNSDown / AdGuardDNSProbeMissing / AccessPointDown (ba933da).
+Loki. Grafana "House Wi-Fi & Edge"; alerts AdGuardDNSDown / AdGuardDNSProbeMissing / AccessPointDown (ba933da),
+RouterFlashFilling / RouterMemoryLow (10c52fb), AdGuardFilteringLeftOff (below).
 Monthly read-only Wi-Fi + Thread spectrum report → Telegram (NET-56).
+
+**HA control (NET-58, 2026-11-07):** one script, `/usr/bin/net-toggle`, identical on both APs, is the only thing
+Home Assistant can run on them:
+- **Commands:** `wifi <ssid> show|hide|status`, `radio5 on|off|status` (Flint only), `adguard <net> on|off|status`
+  (Flint only) and `stations` (connected MACs per SSID, for presence).
+- **5 GHz** is `wifi_zephyr5` on radio1, ch 36: zephyr only, MAC allowlist (Lineage phone; the laptop is added once
+  joined), radio off by default.
+- **AdGuard switches** cover zephyr, pasiphae, melissa, xenios and agents; VLAN 1 has no switch (ADR-046). `off`
+  records the affected clients first, then switches them, and `on` restores exactly those, so the always-unfiltered
+  matter-server (.5.11) is never touched. A switch covers every client in that subnet, so zephyr's also covers
+  daedalus and dev-seat. The script talks to AdGuard's API as its own user `net-toggle` (secret in
+  `~/secrets/ha-net-toggle.sops.yaml`). Every network has an AdGuard client entry (family-vlan20 and agents-vlan30
+  were added for this).
+- **Access:** HA's own RSA key is accepted only as a forced command (no pty or forwarding). Dropbear (2019.78 and
+  2025.89) rejects the OpenSSH `from=""` option, so the script itself refuses that key unless the caller is HA's
+  host, 192.168.1.100.
+- **Alert:** custom collector `net_toggle.lua` exports `router_adguard_filtering_off_since_timestamp_seconds{network}`
+  while a network is unfiltered; `AdGuardFilteringLeftOff` fires after 12 h.
+- **Kept on upgrades:** the script, `/etc/net-toggle/` and the collector are in `sysupgrade.conf`.
+- **HA side:** switches, presence and the dashboard's Network section are owned by the HA project.
 
 ## Known limits
 
 - The TP-Link (19.07, EOL) forces `ap_isolate=1` on every BSS; it carries only pasiphae/melissa/xenios (zephyr
   removed). Replace it (NET-27).
 - Client isolation is per AP only (no cross-AP isolation on the shared bridge).
+- The AdGuard API login for net-toggle (`/etc/net-toggle/adguard.auth`, base64, root-only) rides along in every
+  `sysupgrade -b` backup (Unraid → MinIO → Greece), so those backups count as secret material.
+- Router syslog reaches Loki through Unraid Alloy :1516 (RFC3164); the Unraid boxes still use the cluster's
+  promtail-syslog :1514 (ADR-034). Two receivers, not yet merged.
 - The KeepLink has no MAC-table page; ports are identified via a Port Statistics burst (P7 = Marianna's desktop, now VLAN 20).
