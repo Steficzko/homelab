@@ -64,8 +64,7 @@ spec:
                     if mc mirror --overwrite "$@" "src/${b}" "dst/${b}"; then return 0; fi
                     echo "   streamed mirror of ${b} failed -> staged fallback for the objects still pending"
                     mc mirror --overwrite "$@" --dry-run --json "src/${b}" "dst/${b}" \
-                      | jq -r 'select(.source != null) | .source' \
-                      | sed -E "s#^.*/${b}/##" \
+                      | jq -r --arg b "$b" 'select(.source != null) | .source | sub("^.*/" + $b + "/"; "")' \
                       | while IFS= read -r key; do
                           [ -n "$key" ] || continue
                           f="/stage/$(basename "$key")"

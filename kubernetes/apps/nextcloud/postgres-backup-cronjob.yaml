@@ -36,11 +36,11 @@ spec:
             fsGroup: 1000
           initContainers:
             - name: copy-mc
-              image: nixery.dev/shell/minio-client/curl/jq@sha256:06f2e7ad141e31f4f29809da337f6430b852db47f8786c1e24de2cf1e88be5f6   # was quay.io/minio/mc — Quay gated anonymous pulls 2026-09-24
+              image: ghcr.io/steficzko/mc:RELEASE.2025-08-13T08-35-41Z@sha256:fc471559bd4d9a058985680ce49771626405886eebabaee6b7d5d1265c8ef823   # Steficzko/mc-image; was a GitHub download per run — github.com 504ed the nixery curl 2026-11-08
               imagePullPolicy: IfNotPresent   # digest-only refs default to Always; nixery outage 2026-10-14 (STOR-51)
               securityContext:
                 runAsUser: 0                  # mc is 0711 root-owned; need root to read+copy it
-              command: ["/bin/sh", "-c", "set -e; curl -fsSL --retry 3 --max-time 120 https://github.com/minio/mc/releases/download/RELEASE.2025-08-13T08-35-41Z/mc.linux-amd64.RELEASE.2025-08-13T08-35-41Z -o /tools/mc && echo 01f866e9c5f9b87c2b09116fa5d7c06695b106242d829a8bb32990c00312e891\ \ /tools/mc | sha256sum -c - && chmod 0755 /tools/mc"]
+              command: ["/bin/sh", "-c", "set -e; cp /mc /tools/mc && echo 01f866e9c5f9b87c2b09116fa5d7c06695b106242d829a8bb32990c00312e891\ \ /tools/mc | sha256sum -c -"]
               volumeMounts:
                 - { name: tools, mountPath: /tools }
           containers:
