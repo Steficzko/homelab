@@ -123,7 +123,10 @@ spec:
             # docker.io/minio/*, so the quay name made r1 HEAD quay.io -> 401 and
             # plane-minio sat in ImagePullBackOff for 5h. KNOWN GAP: w1's record for
             # minio is quay-only, so plane-minio cannot start on w1 under either name.
-            image: docker.io/minio/minio@sha256:14cea493d9a34af32f524e538b8346cf79f3321eff8e708c1e2960462bd8936e
+            # 2026-11-10: server moved to pgsty/silo, the maintained MinIO fork (ADR-050 draft;
+            # same on-disk format, MINIO_* env honoured). Public on Docker Hub, so it pulls
+            # normally — the node-local tar/pin above only matters for image_mc now.
+            image: docker.io/pgsty/silo:RELEASE.2026-11-09T00-00-00Z@sha256:08ce1505b5eacefbad1ca07159b242b9ce045a11c2817e3bc257b25f77bbc02d
             image_mc: docker.io/minio/mc@sha256:a7fe349ef4bd8521fb8497f55c6042871b2ae640607cf99d9bede5e9bdf11727
             storageClass: longhorn
             # Was 20Gi, holding 4.9 MB. A StatefulSet volumeClaimTemplate is
