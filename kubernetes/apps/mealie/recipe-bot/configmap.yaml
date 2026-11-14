@@ -13,7 +13,7 @@ data:
     import json, os, re, time, urllib.error, urllib.request
 
     TG = f"https://api.telegram.org/bot{os.environ['TELEGRAM_TOKEN']}"
-    OWNER = int(os.environ["OWNER_ID"])
+    ALLOWED = {int(x) for x in os.environ["ALLOWED_IDS"].split(",") if x.strip()}   # Stefanos, Marta
     MEALIE = os.environ.get("MEALIE_URL", "http://mealie.mealie.svc.cluster.local:9000")
     PUBLIC = os.environ.get("MEALIE_PUBLIC", "https://mealie.kostikidis.net/g/home/r/")
     URL_RE = re.compile(r"https?://\S+")
@@ -55,8 +55,11 @@ data:
             for u in ups:
                 offset = u["update_id"] + 1
                 m = u.get("message") or {}
-                if (m.get("from") or {}).get("id") != OWNER:
-                    continue   # only the owner; everyone else is ignored silently
+                who = m.get("from") or {}
+                if who.get("id") not in ALLOWED:
+                    # logged so a new person's id can be read and added to ALLOWED_IDS; no reply
+                    print("refused", who.get("id"), who.get("first_name"), who.get("username"), flush=True)
+                    continue
                 chat = m["chat"]["id"]
                 links = URL_RE.findall((m.get("text") or "") + " " + (m.get("caption") or ""))
                 if not links:

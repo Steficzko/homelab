@@ -21,7 +21,7 @@ spec:
           env:
             - { name: PYTHONDONTWRITEBYTECODE, value: "1" }
           envFrom:
-            - secretRef: { name: recipe-bot }   # TELEGRAM_TOKEN, MEALIE_TOKEN, OWNER_ID — secret.sops.yaml, applied server-side
+            - secretRef: { name: recipe-bot }   # TELEGRAM_TOKEN, MEALIE_TOKEN, ALLOWED_IDS (comma list) — secret.sops.yaml, applied server-side
           securityContext:
             runAsUser: 99
             runAsGroup: 100
