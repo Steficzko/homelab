@@ -29,7 +29,7 @@ spec:
       # BUMPING THIS? kubernetes/apps/plane/lan-ingressroute.yaml copies this chart's
       # IngressRoute paths for the home path. Diff them after the upgrade:
       #   kubectl -n plane get ingressroute plane-ingress -o jsonpath='{.spec.routes[*].match}'
-      targetRevision: 1.8.6
+      targetRevision: 1.9.0
       helm:
         releaseName: plane
         valuesObject:
