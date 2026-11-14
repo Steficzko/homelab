@@ -161,6 +161,21 @@
       ],
       "groupName": "longhorn (docs pin — upgrade is manual)",
       "automerge": false
+    },
+    {
+      "description": "SearXNG always runs the newest build (owner, 2026-11-14): its engines break whenever Google/Brave/DDG change their pages, and the fixes ship in near-daily builds. Tags are YYYY.M.D-<commit>; default docker versioning read the commit suffix as a compatibility marker, matched no newer tag, and left us on 2026.6.24 for 5 months. Regex versioning drops the suffix; every bump type (a new year = major) auto-merges nightly.",
+      "matchPackageNames": [
+        "searxng/searxng"
+      ],
+      "versioning": "regex:^(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)-[0-9a-f]+$",
+      "enabled": true,
+      "groupName": "searxng (always latest)",
+      "automerge": true,
+      "automergeType": "pr",
+      "platformAutomerge": true,
+      "schedule": [
+        "* 0-6 * * *"
+      ]
     }
   ]
 }

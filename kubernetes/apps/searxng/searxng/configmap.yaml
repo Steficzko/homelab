@@ -15,6 +15,12 @@ data:
       formats:
         - html
         - json   # Hermes hermes-main (H3)
+    engines:
+      # Off by default upstream. On 2026-11-14 brave (rate limit), duckduckgo +
+      # startpage (CAPTCHA) were suspended for our IP and bing was the only
+      # engine returning results.
+      - name: bing
+        disabled: false
     ui:
       default_theme: simple
       theme_args:
