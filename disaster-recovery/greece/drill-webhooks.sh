@@ -9,7 +9,7 @@ S=${S:-$(mktemp -d)}   # working dir; needs wh_ids.json (ids of active webhook-o
 GH=root@100.85.129.88
 ACCT=90e7dc337477819281ed982a7f6afe32; TUN=0fb9fd16-cf43-4235-b9d5-9dca0166bc3f
 HOLD=${HOLD:-300}
-IMG='n8nio/n8n:2.44.6@sha256:d02752c6ab446ae9db8deec2f9cc887c378f77cdcad31650814df936b7386dfb'
+IMG='n8nio/n8n:2.47.7@sha256:b4b90747b81fcda7e76550c0d3aa7f0f64917a1e9573cff40d6834eaf2e0f8ea'
 PROBE='https://auto.kostikidis.net/webhook/kimono-offer-state'
 WF_PROBE=wMRGuMRK09FOfUQh
 gsh(){ ssh -o BatchMode=yes -o ConnectTimeout=15 $GH "$@"; }

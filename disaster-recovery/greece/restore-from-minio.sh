@@ -39,7 +39,7 @@ restore_n8n() {
   $MC cat "dr/app-backups/n8n/$f" | tar xzf - -C /tmp/n8nrestore
   install -d -o 1000 -g 1000 "$BASE/n8n"
   # n8n image entrypoint IS the n8n CLI, so pass subcommands as args (no shell)
-  local run="docker run --rm --user 1000:1000 -e N8N_ENCRYPTION_KEY=$N8N_ENCRYPTION_KEY -v $BASE/n8n:/home/node/.n8n -v /tmp/n8nrestore:/restore:ro n8nio/n8n:2.44.6@sha256:d02752c6ab446ae9db8deec2f9cc887c378f77cdcad31650814df936b7386dfb"
+  local run="docker run --rm --user 1000:1000 -e N8N_ENCRYPTION_KEY=$N8N_ENCRYPTION_KEY -v $BASE/n8n:/home/node/.n8n -v /tmp/n8nrestore:/restore:ro n8nio/n8n:2.47.7@sha256:b4b90747b81fcda7e76550c0d3aa7f0f64917a1e9573cff40d6834eaf2e0f8ea"
   $run import:workflow --separate --input=/restore/workflows
   $run import:credentials --input=/restore/credentials.json
   # import only adds/updates and leaves everything unpublished. Make Greece an exact,
@@ -48,7 +48,7 @@ restore_n8n() {
   # active + activeVersionId, guarded on the version existing; one statement instead of
   # ~9 min of CLI cold starts), then VACUUM (6h re-imports otherwise grow ~100 MB/day).
   # Failover then only has to start n8n.
-  docker run --rm --user 1000:1000 -v $BASE/n8n:/home/node/.n8n -v /tmp/n8nrestore:/restore:ro --entrypoint node n8nio/n8n:2.44.6@sha256:d02752c6ab446ae9db8deec2f9cc887c378f77cdcad31650814df936b7386dfb -e "
+  docker run --rm --user 1000:1000 -v $BASE/n8n:/home/node/.n8n -v /tmp/n8nrestore:/restore:ro --entrypoint node n8nio/n8n:2.47.7@sha256:b4b90747b81fcda7e76550c0d3aa7f0f64917a1e9573cff40d6834eaf2e0f8ea -e "
 const fs=require('fs'),dir='/restore/workflows';
 const wfs=fs.readdirSync(dir).filter(f=>f.endsWith('.json')).map(f=>JSON.parse(fs.readFileSync(dir+'/'+f)));
 if(wfs.length<10){console.log('    export has',wfs.length,'workflows - refusing to prune/publish');process.exit(1)}
