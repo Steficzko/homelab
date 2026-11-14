@@ -1,0 +1,71 @@
+# Telegram @Recepcies_bot -> Mealie. Every link the owner sends goes to Mealie's own
+# importer (POST /api/recipes/create/url). Mealie does the work: schema.org scraping for
+# recipe sites, yt-dlp + subtitles/whisper + LiteLLM `haiku` for TikTok/Instagram/YouTube
+# (group AI providers, LiteLLM key alias `mealie`). Stdlib only, long-poll, no ingress.
+# ponytail: one link at a time, sequential; a video import blocks the next for ~1-2 min.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: recipe-bot
+  namespace: mealie
+data:
+  bot.py: |
+    import json, os, re, time, urllib.error, urllib.request
+
+    TG = f"https://api.telegram.org/bot{os.environ['TELEGRAM_TOKEN']}"
+    OWNER = int(os.environ["OWNER_ID"])
+    MEALIE = os.environ.get("MEALIE_URL", "http://mealie.mealie.svc.cluster.local:9000")
+    PUBLIC = os.environ.get("MEALIE_PUBLIC", "https://mealie.kostikidis.net/g/home/r/")
+    URL_RE = re.compile(r"https?://\S+")
+
+    def call(url, body=None, headers=None, timeout=60):
+        req = urllib.request.Request(url, data=json.dumps(body).encode() if body is not None else None,
+                                     headers={"Content-Type": "application/json", **(headers or {})})
+        with urllib.request.urlopen(req, timeout=timeout) as r:
+            return json.loads(r.read() or "null")
+
+    def say(chat, text):
+        try:
+            call(f"{TG}/sendMessage", {"chat_id": chat, "text": text, "disable_web_page_preview": True})
+        except Exception as e:
+            print("sendMessage failed:", e, flush=True)
+
+    def import_url(link):
+        try:
+            slug = call(f"{MEALIE}/api/recipes/create/url", {"url": link, "includeTags": True},
+                        {"Authorization": f"Bearer {os.environ['MEALIE_TOKEN']}"}, timeout=900)
+            return f"✅ Saved: {PUBLIC}{slug}"
+        except urllib.error.HTTPError as e:
+            detail = e.read().decode(errors="replace")[:300]
+            return f"❌ Mealie {e.code}: {detail}"
+        except Exception as e:
+            return f"❌ {type(e).__name__}: {e}"
+
+    def main():
+        offset = None
+        print("recipe-bot up", flush=True)
+        while True:
+            try:
+                ups = call(f"{TG}/getUpdates", {"timeout": 50, "offset": offset,
+                                                "allowed_updates": ["message"]}, timeout=70)["result"]
+            except Exception as e:
+                print("getUpdates failed:", e, flush=True)   # also covers the netpol admission lag at start
+                time.sleep(5)
+                continue
+            for u in ups:
+                offset = u["update_id"] + 1
+                m = u.get("message") or {}
+                if (m.get("from") or {}).get("id") != OWNER:
+                    continue   # only the owner; everyone else is ignored silently
+                chat = m["chat"]["id"]
+                links = URL_RE.findall((m.get("text") or "") + " " + (m.get("caption") or ""))
+                if not links:
+                    say(chat, "Send me a recipe link (website, TikTok, Instagram, YouTube).")
+                    continue
+                for link in links:
+                    say(chat, f"⏳ Importing {link}")
+                    res = import_url(link)
+                    print(link, "->", res[:120], flush=True)
+                    say(chat, res)
+
+    main()

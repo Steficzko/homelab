@@ -18,6 +18,9 @@ spec:
         - namespaceSelector:   # Traefik (CLSTR-29); nginx kept until it is removed
             matchLabels:
               kubernetes.io/metadata.name: traefik
+        - podSelector:         # recipe-bot (Telegram -> Mealie import)
+            matchLabels:
+              app: recipe-bot
       ports:
         - port: 9000
   egress:

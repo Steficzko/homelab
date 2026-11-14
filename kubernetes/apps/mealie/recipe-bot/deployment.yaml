@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: recipe-bot
+  namespace: mealie
+spec:
+  replicas: 1
+  strategy: { type: Recreate }   # two pollers on one token = Telegram 409 Conflict
+  selector:
+    matchLabels: { app: recipe-bot }
+  template:
+    metadata:
+      labels: { app: recipe-bot }
+    spec:
+      securityContext:
+        runAsNonRoot: true
+      containers:
+        - name: bot
+          image: ghcr.io/jauderho/yt-dlp:latest@sha256:b87a50ebf13c60972eb912bf82ea803bf309022667704915bd9af5c18d30ae61   # same image as brain-capture: python3.14 stdlib is all it needs
+          command: ["python3", "-u", "/app/bot.py"]
+          env:
+            - { name: PYTHONDONTWRITEBYTECODE, value: "1" }
+          envFrom:
+            - secretRef: { name: recipe-bot }   # TELEGRAM_TOKEN, MEALIE_TOKEN, OWNER_ID — secret.sops.yaml, applied server-side
+          securityContext:
+            runAsUser: 99
+            runAsGroup: 100
+            readOnlyRootFilesystem: true
+            allowPrivilegeEscalation: false
+            capabilities: { drop: [ALL] }
+          resources:
+            requests: { cpu: 10m, memory: 32Mi }
+            limits: { memory: 96Mi }
+          volumeMounts:
+            - { name: code, mountPath: /app }
+      volumes:
+        - name: code
+          configMap: { name: recipe-bot }

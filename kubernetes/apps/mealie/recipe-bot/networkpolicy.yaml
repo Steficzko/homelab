@@ -1,0 +1,17 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: recipe-bot
+  namespace: mealie
+spec:
+  podSelector:
+    matchLabels: { app: recipe-bot }
+  policyTypes: [Ingress, Egress]
+  ingress: []
+  egress:
+    - ports: [{ port: 443 }]          # api.telegram.org
+      to: [{ ipBlock: { cidr: 0.0.0.0/0 } }]
+    - ports: [{ port: 9000 }]
+      to: [{ podSelector: { matchLabels: { app: mealie } } }]
+    - ports: [{ port: 53, protocol: UDP }, { port: 53, protocol: TCP }]
+      to: [{ namespaceSelector: { matchLabels: { kubernetes.io/metadata.name: kube-system } } }]
