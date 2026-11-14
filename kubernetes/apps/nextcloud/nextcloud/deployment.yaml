@@ -26,14 +26,14 @@ spec:
       securityContext: { runAsUser: 33, runAsGroup: 33, runAsNonRoot: true }
       initContainers:
         - name: php-conf
-          image: nextcloud:35.0.2-apache@sha256:786c102155d2717ba0f53a62b3fdd7a1354edc48e800b94dbe32294d9a5752a2
+          image: nextcloud:35.0.3-apache@sha256:eb37f58646a901dc7727cf448cae36daaefaba79de33b5058dab79aa4c04aefb
           command: ["sh", "-c", "cp -r /usr/local/etc/php/conf.d/. /conf.d/"]
           volumeMounts:
             - name: php-conf
               mountPath: /conf.d
       containers:
         - name: nextcloud
-          image: nextcloud:35.0.2-apache@sha256:786c102155d2717ba0f53a62b3fdd7a1354edc48e800b94dbe32294d9a5752a2
+          image: nextcloud:35.0.3-apache@sha256:eb37f58646a901dc7727cf448cae36daaefaba79de33b5058dab79aa4c04aefb
           ports:
             - containerPort: 80
           env:
