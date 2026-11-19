@@ -1,0 +1,42 @@
+# Router syslog (Flint wrt-edge + TP-Link tplink-ap, OpenWrt logd RFC3164 -> Alloy :1516,
+# ADR-034 amendment 2026-11-07). logd sends over TCP with no queue: if the connection or the
+# receiver breaks, the lines are simply gone and nothing else notices. Both routers log
+# hundreds of lines an hour (DHCP, hostapd, dropbear), so 30 min of silence means the path is down.
+#
+# ponytail: one rule per router, absent_over_time cannot fan out over a label. A third router
+# gets a third rule.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: loki-rules-router-syslog
+  namespace: monitoring
+  labels:
+    loki_rule: ""                            # picked up by the loki-sc-rules sidecar
+  annotations:
+    k8s-sidecar-target-directory: "fake"     # relative to /rules => /rules/fake (single tenant)
+data:
+  router-syslog.yaml: |
+    groups:
+      - name: router-syslog
+        rules:
+          - alert: RouterSyslogMissing
+            expr: absent_over_time({job="syslog", source="router", host="wrt-edge"}[30m])
+            for: 5m
+            labels:
+              severity: warning
+              host: wrt-edge
+            annotations: &ann
+              summary: "No syslog from router {{ $labels.host }} for 30 min"
+              description: >-
+                Loki has no {job="syslog", source="router"} lines from {{ $labels.host }}.
+                Check on the router: `uci show system | grep log_` (log_ip 192.168.1.201,
+                log_port 1516, log_proto tcp) and `netstat -tn | grep 1516`; restart logd with
+                `/etc/init.d/log restart`. Cluster side: Service monitoring/alloy-syslog and the
+                monitoring netpol rule for :1516.
+          - alert: RouterSyslogMissing
+            expr: absent_over_time({job="syslog", source="router", host="tplink-ap"}[30m])
+            for: 5m
+            labels:
+              severity: warning
+              host: tplink-ap
+            annotations: *ann
