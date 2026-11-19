@@ -353,6 +353,16 @@ prometheus:
             labels:
               site: greece
               nas: ptolemaida
+      # pve host hardware (Debian prometheus-node-exporter, :9100): board voltages, fans
+      # and temps (it8688/it8792 hwmon), CPU k10temp, GPU power, NVMe temps, EDAC.
+      # pve died 2026-11-11 15:50 with nothing in its journal, so the readings have to
+      # leave the box. 15s, not 60s: the last scrape before a crash is the evidence.
+      - job_name: pve-node-exporter
+        metrics_path: /metrics
+        scrape_interval: 15s
+        static_configs:
+          - targets: ["192.168.1.122:9100"]
+            labels: { instance: pve }
       # Per-container metrics (cAdvisor, :9111) and disk health (smartctl-exporter, :9633)
       # on both NAS boxes, added 2026-10-27 in Portainer stack 27 next to node-exporter.
       # SMART was a blind spot: Unraid's own disk warnings reached nobody until the same day.
