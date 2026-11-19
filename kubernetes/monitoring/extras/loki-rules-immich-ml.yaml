@@ -36,7 +36,7 @@ data:
               summary: "Immich ML: both backends down (proxy returns 502)"
               description: >-
                 The immich-ml proxy answered 502 to more than 20 /predict calls in 10 min, so
-                neither daedalus (192.168.10.10:3003) nor Unraid (192.168.1.100:3003) is serving.
+                neither daedalus (192.168.1.47:3003) nor Unraid (192.168.1.100:3003) is serving.
                 Faces, smart search and OCR stop. Check `kubectl -n immich logs deploy/immich-ml -c nginx`,
                 the ml-immich-ml-1 container on daedalus, and the immich-ml container on Unraid.
           - alert: ImmichMLHighErrorRate

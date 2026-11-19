@@ -699,7 +699,7 @@ spec:
           labels:
             severity: critical
           annotations:
-            summary: "daedalus (pve VM 100, 192.168.10.10) unreachable for 10 min"
+            summary: "daedalus (pve VM 100, 192.168.1.47) unreachable for 10 min"
             description: >-
               node_exporter :9100 not answering. `qm status 100` on pve (192.168.1.122); after an AC
               loss the BIOS lost SVM. VM up: check ufw on daedalus and wrt-edge rule cluster_to_daedalus.

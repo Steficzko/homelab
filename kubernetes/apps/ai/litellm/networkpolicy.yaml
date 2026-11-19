@@ -59,7 +59,7 @@ spec:
         - ipBlock:
             cidr: 192.168.1.225/32
         - ipBlock:
-            cidr: 192.168.10.10/32   # daedalus VM 100 (GTX 1660) whisper, VLAN 10 trusted since 2026-10-30
+            cidr: 192.168.1.47/32   # daedalus VM 100 (GTX 1660) whisper. TEMP 2026-11-19: VLAN 1 via pve nic0 while the 10G NIC is out (COMP-40); was 192.168.10.10
     # The TUF laptop's RTX 4080 in Iraq, over tailscale. This rule is the whole
     # reason TM-TUF/cluster/README.md concluded "pods can't route to tailnet IPs"
     # and designed a hostNetwork socat bridge: an UNRESTRICTED pod reaches
