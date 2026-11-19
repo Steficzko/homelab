@@ -76,3 +76,37 @@ worth the complexity yet.
 
 The actual cause of the unclean shutdowns. **Neither box has a UPS** — that remains the real
 fix, and this ADR only ensures the next occurrence is diagnosable.
+
+## Amendment 2026-11-07 — one receiver: Grafana Alloy replaces promtail (CLSTR-30)
+
+**Why:** promtail is end-of-life, and its syslog receiver only speaks RFC5424. The edge router and AP (OpenWrt
+`logd`, ADR-043) can only send RFC3164, so from 2026-11-06 they went to a second receiver, a standalone Alloy on
+Prague Unraid (:1516). That meant two receivers, and router logs depended on Unraid, a box with no UPS, which this
+ADR set out to avoid.
+
+**Decision:** one Alloy DaemonSet in the cluster (`kubernetes/monitoring/alloy/values.yaml`, Argo app `alloy`)
+does everything promtail did, plus RFC3164:
+
+| Port | Format | Senders | Labels |
+|---|---|---|---|
+| 1514 | RFC5424, octet-counted | both Unraids, dev-seat, hermes, ML LXCs (unchanged) | job=syslog, host, severity, app |
+| 1516 | RFC3164 | Flint (wrt-edge) and TP-Link (tplink-ap) | same + source=router |
+| 3500 | Loki push API | Alloy on each Unraid (container logs) | sender's (job=docker, nas, container) |
+| — | pod logs from /var/log/pods | — | identical to promtail (config made with `alloy convert` from the live promtail config) |
+
+The Services are `alloy-syslog` and `alloy-docker-push` (`kubernetes/monitoring/extras/alloy-receivers.yaml`). They
+stay LoadBalancers on the node IPs with `externalTrafficPolicy: Local`, so trap 2 above still applies and the
+senders' addresses (192.168.1.100, the routers, etc.) are unchanged.
+
+**Switch-over traps:**
+- **Same ports, so the switch is ordered.** k3s ServiceLB binds hostPorts, so promtail's Services must be gone
+  before Alloy's can take 1514/3500. The `promtail` Application had no `resources-finalizer`, so pruning it from git
+  would have left its DaemonSet and LoadBalancers running. The finalizer is added to the live app (and confirmed with `kubectl get`) BEFORE the push; the `alloy`
+  app carries one from the start.
+- **No duplicate or missing pod logs.** Alloy imports promtail's read positions once (`legacy_positions_file =
+  /run/promtail/positions.yaml`, hostPath) and keeps its own in `/var/lib/alloy` on each node.
+- **Dashboards and alerts unchanged.** Pod-log labels are byte-for-byte the same rules, and the syslog labels
+  gained nothing except `source=router`.
+
+The Unraid Alloy keeps only its other jobs (container logs → :3500, router metrics → VictoriaMetrics); its :1516
+syslog receiver is removed.

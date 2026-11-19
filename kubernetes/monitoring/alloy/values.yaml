@@ -1,0 +1,181 @@
+# Grafana Alloy: the one log shipper/receiver in the cluster (2026-11-07, CLSTR-30; replaces promtail, which is EOL).
+# One DaemonSet, three jobs — the same jobs promtail had, plus the routers' RFC3164 syslog:
+#   1. pod logs from /var/log/pods  -> Loki, labels identical to promtail's (converted with `alloy convert` from the
+#      live promtail config): app, instance, component, node_name, namespace, job=<namespace>/<app>, pod, container.
+#   2. syslog receivers -> Loki job=syslog {host, severity, app}:
+#        :1514 RFC5424 octet-counted (Unraids, dev-seat, hermes, ML LXCs; ADR-034)
+#        :1516 RFC3164 (OpenWrt logd on the Flint + TP-Link cannot send 5424), extra label source=router
+#   3. :3500 Loki push API for the Unraid container logs (Alloy on each NAS; job=docker, nas, container).
+# The LoadBalancer Services for 1514/1516/3500 are in kubernetes/monitoring/extras/alloy-receivers.yaml.
+# ADR-034 (amendment 2026-11-07).
+controller:
+  type: daemonset
+  # same as promtail: also on the control-plane nodes (their pod logs + every node takes LB traffic)
+  tolerations:
+    - {key: node-role.kubernetes.io/master, operator: Exists, effect: NoSchedule}
+    - {key: node-role.kubernetes.io/control-plane, operator: Exists, effect: NoSchedule}
+  volumes:
+    extra:
+      # positions survive pod restarts (promtail kept them in /run/promtail the same way)
+      - name: alloy-data
+        hostPath: {path: /var/lib/alloy, type: DirectoryOrCreate}
+      # promtail's last read positions, imported once so the switch neither re-reads nor skips pod logs
+      - name: promtail-positions
+        hostPath: {path: /run/promtail, type: DirectoryOrCreate}
+
+alloy:
+  storagePath: /var/lib/alloy/data
+  mounts:
+    varlog: true
+    extra:
+      - {name: alloy-data, mountPath: /var/lib/alloy}
+      - {name: promtail-positions, mountPath: /run/promtail, readOnly: true}
+  # root (to read the 0640 pod log files), nothing else — same as promtail ran
+  securityContext:
+    runAsUser: 0
+    runAsGroup: 0
+    allowPrivilegeEscalation: false
+    readOnlyRootFilesystem: true
+    capabilities: {drop: [ALL]}
+  extraPorts:
+    - {name: syslog-5424, port: 1514, targetPort: 1514, protocol: TCP}
+    - {name: syslog-3164, port: 1516, targetPort: 1516, protocol: TCP}
+    - {name: docker-push, port: 3500, targetPort: 3500, protocol: TCP}
+  enableReporting: false
+  # promtail's measured need (CLSTR-15: 14d p95 178Mi); re-measure after a week on Alloy
+  resources:
+    requests: {memory: 256Mi, cpu: 20m}
+  configMap:
+    content: |
+      // ---- 1. pod logs (converted from the promtail config; labels unchanged) ----
+      discovery.kubernetes "pods" {
+        role = "pod"
+        selectors {
+          role  = "pod"
+          field = "spec.nodeName=" + coalesce(sys.env("HOSTNAME"), constants.hostname)
+        }
+      }
+      discovery.relabel "pods" {
+        targets = discovery.kubernetes.pods.targets
+        rule {
+          source_labels = ["__meta_kubernetes_pod_controller_name"]
+          regex         = "([0-9a-z-.]+?)(-[0-9a-f]{8,10})?"
+          target_label  = "__tmp_controller_name"
+        }
+        rule {
+          source_labels = ["__meta_kubernetes_pod_label_app_kubernetes_io_name", "__meta_kubernetes_pod_label_app", "__tmp_controller_name", "__meta_kubernetes_pod_name"]
+          regex         = "^;*([^;]+)(;.*)?$"
+          target_label  = "app"
+        }
+        rule {
+          source_labels = ["__meta_kubernetes_pod_label_app_kubernetes_io_instance", "__meta_kubernetes_pod_label_instance"]
+          regex         = "^;*([^;]+)(;.*)?$"
+          target_label  = "instance"
+        }
+        rule {
+          source_labels = ["__meta_kubernetes_pod_label_app_kubernetes_io_component", "__meta_kubernetes_pod_label_component"]
+          regex         = "^;*([^;]+)(;.*)?$"
+          target_label  = "component"
+        }
+        rule {
+          source_labels = ["__meta_kubernetes_pod_node_name"]
+          target_label  = "node_name"
+        }
+        rule {
+          source_labels = ["__meta_kubernetes_namespace"]
+          target_label  = "namespace"
+        }
+        rule {
+          source_labels = ["namespace", "app"]
+          separator     = "/"
+          target_label  = "job"
+        }
+        rule {
+          source_labels = ["__meta_kubernetes_pod_name"]
+          target_label  = "pod"
+        }
+        rule {
+          source_labels = ["__meta_kubernetes_pod_container_name"]
+          target_label  = "container"
+        }
+        rule {
+          source_labels = ["__meta_kubernetes_pod_uid", "__meta_kubernetes_pod_container_name"]
+          separator     = "/"
+          target_label  = "__path__"
+          replacement   = "/var/log/pods/*$1/*.log"
+        }
+        rule {
+          source_labels = ["__meta_kubernetes_pod_annotationpresent_kubernetes_io_config_hash", "__meta_kubernetes_pod_annotation_kubernetes_io_config_hash", "__meta_kubernetes_pod_container_name"]
+          separator     = "/"
+          regex         = "true/(.*)"
+          target_label  = "__path__"
+          replacement   = "/var/log/pods/*$1/*.log"
+        }
+      }
+      loki.source.file "pods" {
+        targets    = discovery.relabel.pods.output
+        forward_to = [loki.process.pods.receiver]
+        file_match {
+          enabled = true
+        }
+        legacy_positions_file = "/run/promtail/positions.yaml"
+      }
+      loki.process "pods" {
+        forward_to = [loki.write.default.receiver]
+        stage.cri { }
+      }
+
+      // ---- 2. syslog ----
+      discovery.relabel "syslog" {
+        targets = []
+        rule {
+          source_labels = ["__syslog_message_hostname"]
+          target_label  = "host"
+        }
+        rule {
+          source_labels = ["__syslog_message_severity"]
+          target_label  = "severity"
+        }
+        rule {
+          source_labels = ["__syslog_message_app_name"]
+          target_label  = "app"
+        }
+      }
+      loki.source.syslog "rfc5424" {
+        listener {
+          address      = "0.0.0.0:1514"
+          protocol     = "tcp"
+          idle_timeout = "60s"
+          labels       = {job = "syslog"}
+        }
+        relabel_rules = discovery.relabel.syslog.rules
+        forward_to    = [loki.write.default.receiver]
+      }
+      // OpenWrt logd speaks RFC3164 only (this used to be a separate Alloy on Unraid :1516)
+      loki.source.syslog "rfc3164" {
+        listener {
+          address       = "0.0.0.0:1516"
+          protocol      = "tcp"
+          syslog_format = "rfc3164"
+          idle_timeout  = "60s"
+          labels        = {job = "syslog", source = "router"}
+        }
+        relabel_rules = discovery.relabel.syslog.rules
+        forward_to    = [loki.write.default.receiver]
+      }
+
+      // ---- 3. Unraid container logs (push API; labels come from the sender) ----
+      loki.source.api "unraid_docker" {
+        http {
+          listen_address = "0.0.0.0"
+          listen_port    = 3500
+        }
+        use_incoming_timestamp = true
+        forward_to             = [loki.write.default.receiver]
+      }
+
+      loki.write "default" {
+        endpoint {
+          url = "http://loki.monitoring.svc.cluster.local:3100/loki/api/v1/push"
+        }
+      }

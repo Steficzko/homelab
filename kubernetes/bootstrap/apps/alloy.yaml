@@ -1,0 +1,32 @@
+# Grafana Alloy (CLSTR-30): the cluster's log shipper + syslog/push receivers. Replaces promtail (EOL).
+# Values: kubernetes/monitoring/alloy/values.yaml. Receiver Services: kubernetes/monitoring/extras/alloy-receivers.yaml.
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: alloy
+  namespace: argocd
+  # deleting this Application deletes its resources too (promtail lacked this, so pruning it orphaned the DaemonSet)
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  sources:
+    - repoURL: https://grafana.github.io/helm-charts
+      chart: alloy
+      targetRevision: 1.14.3
+      helm:
+        releaseName: alloy
+        valueFiles:
+          - $values/kubernetes/monitoring/alloy/values.yaml
+    - repoURL: https://github.com/Steficzko/homelab.git
+      targetRevision: HEAD
+      ref: values
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: monitoring
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true

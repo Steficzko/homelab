@@ -132,8 +132,8 @@ reboot keeps the OMR prefix; the rc.local `ifup thread` retry works around the n
 dataset CR from the Beelink is stripped.
 
 **Observability:** both APs export `wifi_station_*`, `wifi_survey_*` (custom airtime collector) and `router_dns_up`
-(custom DNS probe). Unraid Alloy scrapes them into VictoriaMetrics (10y) and receives RFC3164 syslog on :1516 →
-Loki. Grafana "House Wi-Fi & Edge"; alerts AdGuardDNSDown / AdGuardDNSProbeMissing / AccessPointDown (ba933da),
+(custom DNS probe). Unraid Alloy scrapes them into VictoriaMetrics (10y). Syslog (RFC3164) goes to the cluster's
+Alloy on 192.168.1.201:1516 → Loki (ADR-034 amendment 2026-11-07; until then a separate Alloy on Unraid). Grafana "House Wi-Fi & Edge"; alerts AdGuardDNSDown / AdGuardDNSProbeMissing / AccessPointDown (ba933da),
 RouterFlashFilling / RouterMemoryLow (10c52fb), AdGuardFilteringLeftOff (below).
 Monthly read-only Wi-Fi + Thread spectrum report → Telegram (NET-56).
 
@@ -164,6 +164,4 @@ Home Assistant can run on them:
 - Client isolation is per AP only (no cross-AP isolation on the shared bridge).
 - The AdGuard API login for net-toggle (`/etc/net-toggle/adguard.auth`, base64, root-only) rides along in every
   `sysupgrade -b` backup (Unraid → MinIO → Greece), so those backups count as secret material.
-- Router syslog reaches Loki through Unraid Alloy :1516 (RFC3164); the Unraid boxes still use the cluster's
-  promtail-syslog :1514 (ADR-034). Two receivers, not yet merged.
 - The KeepLink has no MAC-table page; ports are identified via a Port Statistics burst (P7 = Marianna's desktop, now VLAN 20).

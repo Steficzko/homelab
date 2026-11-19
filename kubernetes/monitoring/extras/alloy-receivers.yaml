@@ -1,0 +1,32 @@
+# LAN entry points into Alloy (kubernetes/monitoring/alloy/values.yaml), on every node IP 192.168.1.201-205 via k3s
+# ServiceLB (Greece reaches a node over the tailnet). Kept out of the chart so the Alloy UI (:12345) stays ClusterIP.
+# externalTrafficPolicy Local: the real sender IP reaches the pod, so the monitoring netpol can allowlist senders
+# (with Cluster, kube-proxy MASQUERADEs to the node IP). Safe because Alloy is a DaemonSet: every node has a local pod.
+apiVersion: v1
+kind: Service
+metadata:
+  name: alloy-syslog
+  namespace: monitoring
+spec:
+  type: LoadBalancer
+  externalTrafficPolicy: Local
+  selector:
+    app.kubernetes.io/name: alloy
+    app.kubernetes.io/instance: alloy
+  ports:
+    - {name: syslog-5424, port: 1514, targetPort: 1514, protocol: TCP}   # Unraids, dev-seat, hermes, ML LXCs (ADR-034)
+    - {name: syslog-3164, port: 1516, targetPort: 1516, protocol: TCP}   # edge router + AP (OpenWrt logd, ADR-043)
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: alloy-docker-push
+  namespace: monitoring
+spec:
+  type: LoadBalancer
+  externalTrafficPolicy: Local
+  selector:
+    app.kubernetes.io/name: alloy
+    app.kubernetes.io/instance: alloy
+  ports:
+    - {name: docker-push, port: 3500, targetPort: 3500, protocol: TCP}   # Unraid container logs (Alloy on each NAS)

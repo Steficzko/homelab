@@ -27,12 +27,11 @@ spec:
               kubernetes.io/metadata.name: homepage
       ports:
         - port: 9090
-    # Unraid syslog -> promtail:1514, and container logs -> :3500.
-    # kube-proxy's KUBE-EXT chain MASQUERADEs external traffic, so promtail sees the
-    # NODE ip as the source, never the NAS ip — allowlisting 192.168.1.100 /
-    # 100.85.129.88 alone silently rejects every packet (RST, not a timeout).
-    # Hence the node IPs below; the NAS blocks are kept in case externalTrafficPolicy
-    # is ever set to Local, which would preserve the real client address.
+    # Syslog (RFC5424) -> Alloy:1514, and Unraid container logs -> Alloy:3500
+    # (kubernetes/monitoring/extras/alloy-receivers.yaml). Those Services are
+    # externalTrafficPolicy: Local, so Alloy sees the real sender address and the
+    # sender blocks below are what match. The node IPs stay for hairpin/in-node
+    # paths (a node reaching its own LB address).
     - from:
         - namespaceSelector:
             matchLabels:
@@ -61,11 +60,21 @@ spec:
             cidr: 192.168.1.191/32   # dev-seat (Debian dev VM)
       ports:
         - port: 1514
-        - port: 3500   # Unraid container logs (Alloy -> promtail loki_push_api)
+        - port: 3500   # Unraid container logs (NAS Alloy -> cluster Alloy loki.source.api)
 
-    # Hermes VM (lenovobig VM 100, agents VLAN 30) -> promtail-syslog:1514 only.
+    # Edge router + AP syslog (OpenWrt logd, RFC3164) -> Alloy:1516. Own rule so the
+    # routers get only this port. ADR-043 / ADR-034 amendment 2026-11-07.
+    - from:
+        - ipBlock:
+            cidr: 192.168.1.1/32     # edge router (Flint, hostname wrt-edge)
+        - ipBlock:
+            cidr: 192.168.1.3/32     # access point (TP-Link, tplink-ap)
+      ports:
+        - port: 1516
+
+    # Hermes VM (lenovobig VM 100, agents VLAN 30) -> alloy-syslog:1514 only.
     # Its own rule, not the list above, which would also open :3500. Source IP is
-    # preserved (promtail-syslog is externalTrafficPolicy: Local). Router side:
+    # preserved (alloy-syslog is externalTrafficPolicy: Local). Router side:
     # wrt-edge rule hermes-vm-to-promtail-syslog. Hermes work item H1.
     - from:
         - ipBlock:
