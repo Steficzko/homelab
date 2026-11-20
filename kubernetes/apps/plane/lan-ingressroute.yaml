@@ -1,5 +1,5 @@
 # Home path for Plane (owner decision 2026-11-03: every app reachable at home without
-# Cloudflare). wrt-edge answers plane.kostikidis.net with 192.168.1.210; Traefik's `lan`
+# Cloudflare). knossos answers plane.kostikidis.net with 192.168.1.210; Traefik's `lan`
 # (family VLAN, lan zone) and `trusted` (VLAN 10, DNAT to :8446) entrypoints terminate TLS.
 #
 # The chart's own IngressRoute (plane-ingress) cannot do this: it binds to `web` only and

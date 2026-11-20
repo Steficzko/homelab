@@ -1,5 +1,5 @@
 # House Wi-Fi & Edge dashboard (2026-11-06). Datasource = VictoriaMetrics (Home) on Prague Unraid, fed by
-# Unraid Alloy scraping the Flint (wrt-edge) and the TP-Link (tplink-ap) every 30s; history 10y.
+# Unraid Alloy scraping the Flint (knossos) and the TP-Link (aeolus) every 30s; history 10y.
 # Per-station Wi-Fi, channel airtime (custom wifi_survey collector), DNS probe, WAN + per-VLAN traffic.
 apiVersion: v1
 kind: ConfigMap
@@ -165,7 +165,7 @@ data:
                 "uid": "victoriametrics-home"
               },
               "refId": "A",
-              "expr": "router_dns_up{instance=\"wrt-edge\"}",
+              "expr": "router_dns_up{instance=\"knossos\"}",
               "legendFormat": "",
               "instant": false,
               "range": true
@@ -214,7 +214,7 @@ data:
                 "uid": "victoriametrics-home"
               },
               "refId": "A",
-              "expr": "router_dns_latency_seconds{instance=\"wrt-edge\"}",
+              "expr": "router_dns_latency_seconds{instance=\"knossos\"}",
               "legendFormat": "",
               "instant": false,
               "range": true
@@ -529,7 +529,7 @@ data:
                 "uid": "victoriametrics-home"
               },
               "refId": "A",
-              "expr": "8 * rate(node_network_receive_bytes_total{instance=\"wrt-edge\",device=\"lan5\"}[5m])",
+              "expr": "8 * rate(node_network_receive_bytes_total{instance=\"knossos\",device=\"lan5\"}[5m])",
               "legendFormat": "down",
               "instant": false,
               "range": true
@@ -540,7 +540,7 @@ data:
                 "uid": "victoriametrics-home"
               },
               "refId": "B",
-              "expr": "8 * rate(node_network_transmit_bytes_total{instance=\"wrt-edge\",device=\"lan5\"}[5m])",
+              "expr": "8 * rate(node_network_transmit_bytes_total{instance=\"knossos\",device=\"lan5\"}[5m])",
               "legendFormat": "up",
               "instant": false,
               "range": true
@@ -575,7 +575,7 @@ data:
                 "uid": "victoriametrics-home"
               },
               "refId": "A",
-              "expr": "8 * rate(node_network_receive_bytes_total{instance=\"wrt-edge\",device=~\"br-lan\\\\..*\"}[5m])",
+              "expr": "8 * rate(node_network_receive_bytes_total{instance=\"knossos\",device=~\"br-lan\\\\..*\"}[5m])",
               "legendFormat": "{{device}}",
               "instant": false,
               "range": true
@@ -610,7 +610,7 @@ data:
                 "uid": "victoriametrics-home"
               },
               "refId": "A",
-              "expr": "100 * (1 - avg by (instance) (rate(node_cpu_seconds_total{mode=\"idle\",instance=~\"wrt-edge|tplink-ap\"}[5m])))",
+              "expr": "100 * (1 - avg by (instance) (rate(node_cpu_seconds_total{mode=\"idle\",instance=~\"knossos|aeolus\"}[5m])))",
               "legendFormat": "{{instance}}",
               "instant": false,
               "range": true
@@ -645,7 +645,7 @@ data:
                 "uid": "victoriametrics-home"
               },
               "refId": "A",
-              "expr": "100 * (1 - node_memory_MemAvailable_bytes{instance=~\"wrt-edge|tplink-ap\"} / node_memory_MemTotal_bytes{instance=~\"wrt-edge|tplink-ap\"})",
+              "expr": "100 * (1 - node_memory_MemAvailable_bytes{instance=~\"knossos|aeolus\"} / node_memory_MemTotal_bytes{instance=~\"knossos|aeolus\"})",
               "legendFormat": "{{instance}}",
               "instant": false,
               "range": true
@@ -680,7 +680,7 @@ data:
                 "uid": "victoriametrics-home"
               },
               "refId": "A",
-              "expr": "topk(10, sum by (src) (node_nat_traffic{instance=\"wrt-edge\"}))",
+              "expr": "topk(10, sum by (src) (node_nat_traffic{instance=\"knossos\"}))",
               "legendFormat": "{{src}}",
               "instant": true,
               "range": false
@@ -695,5 +695,5 @@ data:
           "options": {}
         }
       ],
-      "description": "Flint (knossos/wrt-edge, ch1) + TP-Link (aeolus/tplink-ap, ch11). Data: Unraid Alloy -> VictoriaMetrics (10y). Locked: zephyr/pasiphae/melissa/xenios."
+      "description": "Flint (knossos, ch1) + TP-Link (aeolus, ch11). Data: Unraid Alloy -> VictoriaMetrics (10y). Locked: zephyr/pasiphae/melissa/xenios."
     }

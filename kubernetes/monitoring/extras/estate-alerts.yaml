@@ -702,7 +702,7 @@ spec:
             summary: "daedalus (pve VM 100, 192.168.1.47) unreachable for 10 min"
             description: >-
               node_exporter :9100 not answering. `qm status 100` on pve (192.168.1.122); after an AC
-              loss the BIOS lost SVM. VM up: check ufw on daedalus and wrt-edge rule cluster_to_daedalus.
+              loss the BIOS lost SVM. VM up: check ufw on daedalus and knossos rule cluster_to_daedalus.
         - alert: NfsTailnetProbeFailing
           expr: >-
             (time() - kube_cronjob_status_last_successful_time{namespace="monitoring",cronjob="nfs-tailnet-probe"} > 7200)

@@ -6,7 +6,7 @@
 # a custom lua collector on the Flint (/usr/lib/lua/prometheus-collectors/dns_probe.lua) that
 # does one lookup against 127.0.0.1:53 per scrape.
 #
-# Router death itself is covered by the healthchecks.io `wrt-edge` dead-man (Prometheus
+# Router death itself is covered by the healthchecks.io `knossos` dead-man (Prometheus
 # would lose its internet too), so these rules only fire while the router is reachable.
 apiVersion: monitoring.coreos.com/v1
 kind: PrometheusRule
@@ -20,19 +20,19 @@ spec:
     - name: router
       rules:
         - alert: AdGuardDNSDown
-          expr: router_dns_up{job="router-node-exporter", instance="wrt-edge"} == 0
+          expr: router_dns_up{job="router-node-exporter", instance="knossos"} == 0
           for: 1m
           labels:
             severity: critical
           annotations:
             summary: "AdGuard on the router is not answering DNS — every VLAN is effectively offline"
             description: >-
-              router_dns_up has been 0 for 1m on wrt-edge. Check: ssh root@192.168.1.1
+              router_dns_up has been 0 for 1m on knossos. Check: ssh root@192.168.1.1
               'logread -e AdGuardHome | tail; /etc/init.d/adguardhome status'. Last-known-good
               configs: /etc/adguardhome/adguardhome.yaml.pre-*. Restore one, then
               '/etc/init.d/adguardhome restart'.
         - alert: AdGuardDNSProbeMissing
-          expr: up{job="router-node-exporter", instance="wrt-edge"} == 1 unless on (instance) router_dns_up{job="router-node-exporter"}
+          expr: up{job="router-node-exporter", instance="knossos"} == 1 unless on (instance) router_dns_up{job="router-node-exporter"}
           for: 15m
           labels:
             severity: warning
@@ -69,7 +69,7 @@ spec:
             summary: "AdGuard filtering on {{ $labels.network }} has been OFF for {{ $value | humanizeDuration }}"
             description: "Switched off from HA (Network card) or 'net-toggle adguard {{ $labels.network }} off'. Turn it back on in HA, or: ssh root@192.168.1.1 'net-toggle adguard {{ $labels.network }} on'."
         - alert: AccessPointDown
-          expr: up{job="router-node-exporter", instance="tplink-ap"} == 0
+          expr: up{job="router-node-exporter", instance="aeolus"} == 0
           for: 5m
           labels:
             severity: warning

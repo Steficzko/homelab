@@ -66,16 +66,16 @@ spec:
     # routers get only this port. ADR-043 / ADR-034 amendment 2026-11-07.
     - from:
         - ipBlock:
-            cidr: 192.168.1.1/32     # edge router (Flint, hostname wrt-edge)
+            cidr: 192.168.1.1/32     # edge router (Flint, hostname knossos)
         - ipBlock:
-            cidr: 192.168.1.3/32     # access point (TP-Link, tplink-ap)
+            cidr: 192.168.1.3/32     # access point (TP-Link, aeolus)
       ports:
         - port: 1516
 
     # Hermes VM (lenovobig VM 100, agents VLAN 30) -> alloy-syslog:1514 only.
     # Its own rule, not the list above, which would also open :3500. Source IP is
     # preserved (alloy-syslog is externalTrafficPolicy: Local). Router side:
-    # wrt-edge rule hermes-vm-to-promtail-syslog. Hermes work item H1.
+    # knossos rule hermes-vm-to-promtail-syslog. Hermes work item H1.
     - from:
         - ipBlock:
             cidr: 192.168.30.136/32  # hermes VM

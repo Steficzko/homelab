@@ -1,4 +1,4 @@
-# Router syslog (Flint wrt-edge + TP-Link tplink-ap, OpenWrt logd RFC3164 -> Alloy :1516,
+# Router syslog (Flint knossos + TP-Link aeolus, OpenWrt logd RFC3164 -> Alloy :1516,
 # ADR-034 amendment 2026-11-07). logd sends over TCP with no queue: if the connection or the
 # receiver breaks, the lines are simply gone and nothing else notices. Both routers log
 # hundreds of lines an hour (DHCP, hostapd, dropbear), so 30 min of silence means the path is down.
@@ -20,11 +20,11 @@ data:
       - name: router-syslog
         rules:
           - alert: RouterSyslogMissing
-            expr: absent_over_time({job="syslog", source="router", host="wrt-edge"}[30m])
+            expr: absent_over_time({job="syslog", source="router", host="knossos"}[30m])
             for: 5m
             labels:
               severity: warning
-              host: wrt-edge
+              host: knossos
             annotations: &ann
               summary: "No syslog from router {{ $labels.host }} for 30 min"
               description: >-
@@ -34,9 +34,9 @@ data:
                 `/etc/init.d/log restart`. Cluster side: Service monitoring/alloy-syslog and the
                 monitoring netpol rule for :1516.
           - alert: RouterSyslogMissing
-            expr: absent_over_time({job="syslog", source="router", host="tplink-ap"}[30m])
+            expr: absent_over_time({job="syslog", source="router", host="aeolus"}[30m])
             for: 5m
             labels:
               severity: warning
-              host: tplink-ap
+              host: aeolus
             annotations: *ann

@@ -2,7 +2,7 @@
 # - off-site: Cloudflare tunnel -> websecure, gated by a CF Access service token
 #   (Access app "LiteLLM (Hermes service token)") + a LiteLLM virtual key.
 # - at home: split-horizon DNS -> 192.168.1.210. LAN clients land on `lan`; the Hermes
-#   VM is DNAT'd by wrt-edge to `agents`, the entry point only this Ingress joins.
+#   VM is DNAT'd by knossos to `agents`, the entry point only this Ingress joins.
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
