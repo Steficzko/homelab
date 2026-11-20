@@ -424,7 +424,7 @@ prometheus:
       - job_name: daedalus-node-exporter
         scrape_interval: 60s
         static_configs:
-          - targets: ["192.168.1.47:9100"]   # TEMP 2026-11-19: VLAN 1 while the 10G NIC is out (COMP-40); was 192.168.10.10
+          - targets: ["192.168.10.10:9100"]
             labels:
               site: prague
               instance: daedalus

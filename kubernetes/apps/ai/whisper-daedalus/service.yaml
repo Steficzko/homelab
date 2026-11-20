@@ -1,4 +1,4 @@
-# whisper on daedalus (VM 100 on pve, GTX 1660, Docker ~/ml/compose.yaml), 192.168.1.47 (TEMP VLAN 1 while the 10G NIC is out, COMP-40; normally 192.168.10.10 VLAN 10, router
+# whisper on daedalus (VM 100 on pve, GTX 1660, Docker ~/ml/compose.yaml), 192.168.10.10 (VLAN 10, router
 # DHCP reservation). Replaced whisper-rtx (LXC 114, deleted 2026-10-30). EndpointSlice like
 # immich-ml-daedalus, so the address lives in git.
 apiVersion: v1
@@ -24,4 +24,4 @@ ports:
     protocol: TCP
 endpoints:
   - addresses:
-      - 192.168.1.47   # TEMP 2026-11-19: VLAN 1 while the 10G NIC is out (COMP-40); was 192.168.10.10
+      - 192.168.10.10
