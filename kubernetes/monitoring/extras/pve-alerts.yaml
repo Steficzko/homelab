@@ -55,3 +55,25 @@ spec:
               Check pve itself first (ping 192.168.1.122, LXCs .224-.228), then the
               exporter pod. Without it nothing watches the thin pool either; that blind
               spot is how it reached 92.6% unnoticed.
+
+    - name: pve-hardware
+      rules:
+        # 2026-11-20: a new NIC registered its own hwmon device, every hwmonN shifted by
+        # one, and fancontrol refused to start for 2 h 13 min with nobody told (fans fall
+        # back to the BIOS curve). fancontrol now re-maps hwmon numbers itself
+        # (/usr/local/sbin/fancontrol-fixhwmon, ExecStartPre); this catches whatever that
+        # misses. The exporter collects systemd state for fancontrol.service only.
+        - alert: PVEFanControlDown
+          expr: >-
+            node_systemd_unit_state{job="pve-node-exporter", name="fancontrol.service", state="active"} != 1
+            or absent(node_systemd_unit_state{job="pve-node-exporter", name="fancontrol.service"})
+          for: 10m
+          labels:
+            severity: warning
+          annotations:
+            summary: "fancontrol on pve is not running — fans are on the BIOS curve"
+            description: >-
+              `journalctl -u fancontrol -b` on pve. "Configuration appears to be outdated"
+              = hwmon numbers moved and fancontrol-fixhwmon could not map a chip name
+              (journalctl -t fancontrol-fixhwmon). Re-run pwmconfig or fix DEVNAME in
+              /etc/fancontrol, then `systemctl restart fancontrol`.
