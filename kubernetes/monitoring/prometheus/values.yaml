@@ -70,6 +70,9 @@ kubelet:
     resourceRelabelings: *kubeletRelabel
 
 grafana:
+  # CVE fix 2026-11-20: 13.3.0 has six CVEs fixed in 13.3.1; chart 92.16.1 still defaults to 13.3.0.
+  image:
+    tag: 13.3.1-distroless@sha256:54e297ac67e2b72572f926892f4e06074dc4f79f2a56ed9a9ca9a88a46f28733
   # ADR-030 pattern: prefer workers (non-control-plane), soft fallback.
   # 2026-08-29: b3 was at 77% memory with only one volume-free pod to move, so
   # grafana comes too. It holds a 5Gi RWO Longhorn volume, meaning the move is a

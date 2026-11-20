@@ -7,6 +7,11 @@
 # disabled in bootstrap/k3s-server-config.yaml, so it is versioned and upgraded like
 # every other app, and k3s cannot re-apply or remove it on a server restart.
 
+# CVE fix 2026-11-20 (GHSA-cp28-5662-543f path auth bypass, GHSA-rr42-h8r2-f28g BasicAuth CPU):
+# chart 42.2.0 defaults to v3.7.16; pin the patched image until the chart catches up.
+image:
+  tag: v3.7.19@sha256:a6c0194dda77bcb804824580f36fa7edc56e315b1acfe933366c8b52844a78a4
+
 deployment:
   # Same reasoning as ingress-nginx: one pod is a cluster-wide SPOF for every public
   # host, and a drain needs somewhere to move it. Two replicas + PDB minAvailable 1.
