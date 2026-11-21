@@ -6,141 +6,53 @@ metadata:
 data:
   config.yaml: |
     model_list:
-      # `chat` is the wired local GPU, falling back to the in-cluster CPU.
-      # Wired in router_settings.fallbacks below, not here.
-      #
-      # It used to be a three-tier chain with the TUF laptop's RTX 4080 in front.
-      # That is reverted as of 2026-09-15 and the TUF is now `chat-tuf`, an
-      # opt-in name nothing falls through to. Two measurements killed it:
-      #
-      #   warm, 2026-09-13:  TUF 1.11s  vs  .224 0.55s
-      #   asleep, 2026-09-15: `chat` 39.6s end to end, answered by .224 anyway
-      #
-      # It is SLOWER than the tier behind it when healthy, because the request
-      # crosses a continent to reach it, and it is a laptop in Iraq that was
-      # `offline, last seen 8h ago` when this was written. An offline tailnet
-      # peer BLACKHOLES rather than refusing (`tx 312 rx 0`), so every call paid
-      # timeout x attempts before falling through. Dropping the timeout 180 -> 15
-      # cut that from 542s to 40s, which is a fix for the symptom: a first tier
-      # that is never the fastest and is usually absent has no business being
-      # first. ADR-014 again — do not turn degraded performance into an outage.
-      #
-      # ollama_chat/ + think:false, NOT ollama/. See the note on gemma4 below.
+      # 2026-11-21: only abliterated models are kept on .224. gemma4:12b and the
+      # other stock models were deleted from .224; every GPU route now serves
+      # qwen3-14b-abliterated:q4 (mlabonne abliteration, bartowski Q4_K_M) or
+      # qwen3.5-abliterated:9b. ollama_chat/ + think:false everywhere — the bare
+      # ollama/ route burns tokens on hidden thinking and returns empty content.
       - model_name: chat
         litellm_params:
-          model: ollama_chat/gemma4:12b
+          model: ollama_chat/qwen3-14b-abliterated:q4
           api_base: http://ollama-gpu.ai.svc.cluster.local:11434
           timeout: 180
           think: false
 
-      # The TUF laptop's RTX 4080 over tailscale, reached at its tailnet IP and
-      # NOT via a Service: TM-TUF/cluster/README.md designed a hostNetwork socat
-      # bridge on the premise that pods cannot route to 100.64/10. That premise
-      # is false — verified 2026-09-13 from pods on w2, g2 and b3, all 200 — so
-      # the bridge is unnecessary and is deliberately not deployed.
-      #
-      # timeout 15 because of the blackhole above: ask for this one by name and
-      # you get a fast answer or a fast failure into chat, never a 9-minute hang.
+      # The TUF laptop's RTX 4080 over tailscale. opt-in only, nothing falls
+      # through to it; timeout 15 because an offline tailnet peer blackholes.
       - model_name: chat-tuf
         litellm_params:
-          model: ollama_chat/gemma4:12b
+          model: ollama_chat/qwen3-14b-abliterated:q4
           api_base: http://100.69.56.89:11434
           timeout: 15
           think: false
 
-      # Tier 2 — the wired local GPU. These are the exact params `chat` used
-      # before the TUF went in front of it.
-      # ollama_chat/ + think:false here too. These were the exact params `chat`
-      # carried before the TUF went in front of it, and they were already wrong —
-      # this is an inherited bug, not one the chain introduced. Measured
-      # 2026-09-14, prompt "Say the word pong":
-      #   ollama/ (no think:false)      max_tokens=8   -> EMPTY, 8 tokens burned
-      #                                 max_tokens=64  -> "pong", 49 tokens
-      #   ollama_chat/ + think:false    any budget     -> "pong", 2 tokens
-      # So it wasted ~25x the tokens on hidden thinking and returned nothing at
-      # all on a small budget. That matters more now than it used to: this is the
-      # tier that serves every request while the TUF laptop is asleep.
+      # alias of chat so existing callers do not break
       - model_name: chat-gpu
         litellm_params:
-          model: ollama_chat/gemma4:12b
-          api_base: http://ollama-gpu.ai.svc.cluster.local:11434
-          timeout: 180
-          think: false
-      # All four carry ollama_chat/ + think:false for the same reason chat and
-      # chat-json do. They were left on the bare ollama/ route when those two
-      # were fixed, and two of them were silently broken by it. Measured
-      # 2026-09-15, prompt "Say the word pong":
-      #
-      #   gemma4     max_tokens=32  -> ''     32 completion tokens burned
-      #              max_tokens=256 -> 'Pong' 29 tokens
-      #   DrGemmaQ4  max_tokens=32  -> ''     32 tokens burned
-      #              max_tokens=256 -> 'pong' 215 tokens
-      #   gemma4-26b / DrGemmaQ8    -> 'pong'  2 tokens, unaffected
-      #
-      # An empty string and a full bill is the worst failure shape available: the
-      # call returns 200 and the caller cannot tell it got nothing. The two that
-      # were fine are converted too — a route that is only correct because of
-      # which model happens to sit behind it is a trap waiting for the next pull.
-      - model_name: gemma4
-        litellm_params:
-          model: ollama_chat/gemma4:12b
-          api_base: http://ollama-gpu.ai.svc.cluster.local:11434
-          timeout: 180
-          think: false
-      - model_name: gemma4-26b
-        litellm_params:
-          model: ollama_chat/gemma4:latest
+          model: ollama_chat/qwen3-14b-abliterated:q4
           api_base: http://ollama-gpu.ai.svc.cluster.local:11434
           timeout: 180
           think: false
 
-      - model_name: DrGemmaQ4
+      # Qwen3 14B abliterated (mlabonne) Q4_K_M, imported 2026-11-21 from
+      # /mnt/devdata/models/Qwen3-14B-abliterated-mlabonne. Verified on .224:
+      # answers with done_reason=stop, no runaway think loop (the huihui variant
+      # of this model never terminates its <think> block — do not re-import it).
+      # 9.4 GB on the 12 GB card — evicts/reloads against qwen9b, ~8-12s each way.
+      - model_name: qwen14b
         litellm_params:
-          model: ollama_chat/DrGemmaQ4:latest
-          api_base: http://ollama-gpu.ai.svc.cluster.local:11434
-          timeout: 180
-          think: false
-      - model_name: DrGemmaQ8
-        litellm_params:
-          model: ollama_chat/gemma4-q8:latest
-          api_base: http://ollama-gpu.ai.svc.cluster.local:11434
-          timeout: 180
-          think: false
-
-      # qwen3.5-abliterated 9.7B Q4_K_M, pulled 2026-09-15. Additive on purpose:
-      # `chat` stays on gemma4:12b until this has more than one afternoon of
-      # evidence behind it. Measured head to head on .224 the same day:
-      #
-      #   throughput   47.8 vs 33.4 tok/s   (+43%, consistent over 5 prompts)
-      #   prose        tie
-      #   shell/k8s    qwen clearly better - gemma emitted invalid jsonpath
-      #   python spec  gemma clearly better - qwen retried 4xx it was told not to
-      #
-      # So: faster and lighter, quality a wash with different failure modes.
-      #
-      # temperature pinned. This model ships a DEFAULT OF 1 (gemma and the qwen3
-      # 14b both default to 0.6), which is too hot for anything factual, and an
-      # inherited default that differs per model is how you get results you
-      # cannot reproduce.
-      #
-      # It cannot share the card with gemma4:12b - 6.59 + 7.56 = 14.15 GB against
-      # 12 GB of VRAM - so switching between this and `chat` evicts and reloads,
-      # ~8-12s each way. That is the cost of keeping both; it is not a fault.
-      - model_name: qwen9b
-        litellm_params:
-          model: ollama_chat/huihui_ai/qwen3.5-abliterated:9b
+          model: ollama_chat/qwen3-14b-abliterated:q4
           api_base: http://ollama-gpu.ai.svc.cluster.local:11434
           timeout: 180
           think: false
           temperature: 0.6
 
-      # Qwen3 14B Q4_K_M, imported 2026-11-21 from /mnt/devdata/models/Qwen3-14B
-      # (bartowski GGUF, ollama create on .224 as qwen3-14b:q4). Same VRAM class
-      # as gemma4:12b — 8.4 GB — so it fits the card alone and evicts/reloads
-      # against every other model on it. temperature pinned, same reason as qwen9b.
-      - model_name: qwen14b
+      # qwen3.5-abliterated 9.7B Q4_K_M, pulled 2026-09-15. 47.8 tok/s vs 33.4 on
+      # gemma4:12b; lighter on VRAM. temperature pinned for reproducibility.
+      - model_name: qwen9b
         litellm_params:
-          model: ollama_chat/qwen3-14b:q4
+          model: ollama_chat/huihui_ai/qwen3.5-abliterated:9b
           api_base: http://ollama-gpu.ai.svc.cluster.local:11434
           timeout: 180
           think: false
@@ -161,10 +73,10 @@ data:
 
       - model_name: chat-json
         litellm_params:
-          model: ollama_chat/gemma4:12b   # ollama_chat route — respects response_format (constrained JSON decode) + think
+          model: ollama_chat/qwen3-14b-abliterated:q4
           api_base: http://ollama-gpu.ai.svc.cluster.local:11434
           timeout: 180
-          think: false                    # gemma4 thinking eats the whole context on long transcripts → empty content
+          think: false
 
       # whisper = GTX 1660 in daedalus (VM 100, large-v3 int8_float16); falls back to
       # RYZEN CPU via whisper-cpu when the VM is off. Same faster-whisper-server image on
@@ -182,8 +94,6 @@ data:
           api_base: http://whisper-ryzen.ai.svc.cluster.local:8000/v1
           api_key: dummy
           timeout: 600
-      # No fallback to the cluster whisper pod: it is CPU too and timed out on the
-      # same chunks, burning w2 (2026-10-04). Dental calls ai/whisper directly.
 
       # Anthropic, for the Hermes agents (H2). The key lives only in litellm-secret;
       # agents hold per-agent virtual keys scoped to these two names.
@@ -201,10 +111,8 @@ data:
       timeout: 90
       cooldown_time: 60
       # chat falls through local GPU -> in-cluster CPU. chat-gpu is kept as an
-      # alias of chat so existing callers do not break; nothing falls through to
-      # chat-tuf, which is opt-in only, but asking for it by name still degrades
-      # into the cluster rather than failing outright.
-      fallbacks: [{"chat": ["chat-fallback"]}, {"qwen9b": ["chat-fallback"]}, {"qwen14b": ["chat-fallback"]}, {"chat-gpu": ["chat-fallback"]}, {"chat-tuf": ["chat", "chat-fallback"]}, {"gemma4": ["chat-fallback"]}, {"whisper": ["whisper-cpu"]}]
+      # alias of chat; nothing falls through to chat-tuf, which is opt-in only.
+      fallbacks: [{"chat": ["chat-fallback"]}, {"qwen9b": ["chat-fallback"]}, {"qwen14b": ["chat-fallback"]}, {"chat-gpu": ["chat-fallback"]}, {"chat-tuf": ["chat", "chat-fallback"]}, {"whisper": ["whisper-cpu"]}]
 
     general_settings:
       master_key: os.environ/LITELLM_MASTER_KEY
