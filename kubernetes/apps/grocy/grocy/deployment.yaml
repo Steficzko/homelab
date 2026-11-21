@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - name: grocy
-          image: lscr.io/linuxserver/grocy:4.7.1@sha256:2529cef1cb8b8634ab0e4e90fa46d317671ebdb9e38ac43a3ae82e92a2e04b3e
+          image: lscr.io/linuxserver/grocy:4.7.1@sha256:ef5ea5094aa2ed32df74528c4bdd94713679038c97add02045d881550c2a59a8
           env:
             - name: PUID
               value: "1000"
