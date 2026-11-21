@@ -134,6 +134,18 @@ data:
           think: false
           temperature: 0.6
 
+      # Qwen3 14B Q4_K_M, imported 2026-11-21 from /mnt/devdata/models/Qwen3-14B
+      # (bartowski GGUF, ollama create on .224 as qwen3-14b:q4). Same VRAM class
+      # as gemma4:12b — 8.4 GB — so it fits the card alone and evicts/reloads
+      # against every other model on it. temperature pinned, same reason as qwen9b.
+      - model_name: qwen14b
+        litellm_params:
+          model: ollama_chat/qwen3-14b:q4
+          api_base: http://ollama-gpu.ai.svc.cluster.local:11434
+          timeout: 180
+          think: false
+          temperature: 0.6
+
       - model_name: chat-fallback
         litellm_params:
           model: ollama/gemma3:4b
@@ -192,7 +204,7 @@ data:
       # alias of chat so existing callers do not break; nothing falls through to
       # chat-tuf, which is opt-in only, but asking for it by name still degrades
       # into the cluster rather than failing outright.
-      fallbacks: [{"chat": ["chat-fallback"]}, {"qwen9b": ["chat-fallback"]}, {"chat-gpu": ["chat-fallback"]}, {"chat-tuf": ["chat", "chat-fallback"]}, {"gemma4": ["chat-fallback"]}, {"whisper": ["whisper-cpu"]}]
+      fallbacks: [{"chat": ["chat-fallback"]}, {"qwen9b": ["chat-fallback"]}, {"qwen14b": ["chat-fallback"]}, {"chat-gpu": ["chat-fallback"]}, {"chat-tuf": ["chat", "chat-fallback"]}, {"gemma4": ["chat-fallback"]}, {"whisper": ["whisper-cpu"]}]
 
     general_settings:
       master_key: os.environ/LITELLM_MASTER_KEY
