@@ -1,0 +1,17 @@
+# Deployed via ArgoCD (bootstrap: elwanycomp-staging.yaml).
+# ElwanyComp (Team Elwany competition app), STAGING. Separate namespace, hostname, pull secret
+# and data from the later prod folder (Gompha staging/prod split).
+# The pod meets the "restricted" Pod Security profile, so the namespace enforces it.
+# Prune=false,Delete=false: deleting the Namespace would delete the data PVC with it, so Argo must
+# never prune or cascade-delete it (same annotation as storage.yaml).
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: elwanycomp-staging
+  labels:
+    app.kubernetes.io/part-of: elwanycomp
+    elwanycomp.io/env: staging
+    pod-security.kubernetes.io/enforce: restricted
+    pod-security.kubernetes.io/enforce-version: latest
+  annotations:
+    argocd.argoproj.io/sync-options: Prune=false,Delete=false
