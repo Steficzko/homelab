@@ -37,7 +37,7 @@ spec:
               volumeMounts: [{ name: tools, mountPath: /tools }]
           containers:
             - name: dump
-              image: neo4j:5-community@sha256:577eb43120e8688e62e753e962c47d30044ecaa95147ee5386c29f226b878008
+              image: neo4j:5-community@sha256:51d0314ef86074f519003da8dd4daaa9fff72b8479672b742d7cab7f3064e3ed
               envFrom:
                 - secretRef: { name: neo4j-auth }        # NEO4J_AUTH=neo4j/<password>
                 - secretRef: { name: backup-s3-secret }
