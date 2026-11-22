@@ -1,0 +1,23 @@
+# Final public site: art.vaclavspanos.com (Václav Spanos). Arrives via its own tunnel
+# (cloudflared-vaclavspanos, separate CF account) as plain http; TLS ends at Cloudflare.
+# Indexed on purpose: no noindex middleware, unlike the ceramicus.kostikidis.net preview.
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ceramicus-art
+  namespace: ceramicus
+  annotations:
+    traefik.ingress.kubernetes.io/router.entrypoints: web
+spec:
+  ingressClassName: traefik
+  rules:
+    - host: art.vaclavspanos.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: ceramicus
+                port:
+                  number: 80

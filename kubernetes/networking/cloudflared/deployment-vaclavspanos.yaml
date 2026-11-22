@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cloudflared-vaclavspanos
+  namespace: cloudflare-tunnel
+spec:
+  replicas: 2   # HA — both connect the vaclavspanos tunnel; Cloudflare load-balances
+  selector:
+    matchLabels:
+      app: cloudflared-vaclavspanos
+  template:
+    metadata:
+      labels:
+        app: cloudflared-vaclavspanos
+    spec:
+      topologySpreadConstraints:
+        - maxSkew: 1
+          topologyKey: kubernetes.io/hostname
+          whenUnsatisfiable: DoNotSchedule
+          labelSelector:
+            matchLabels:
+              app: cloudflared-vaclavspanos
+      containers:
+        - name: cloudflared
+          image: cloudflare/cloudflared:2026.10.7@sha256:4955524aeaa379e154023d5a027c250f7b35041a2e7e950cf13f144bc9b9c5ba
+          args:
+            - tunnel
+            - --no-autoupdate
+            # QUIC restored 2026-10-01 as the line-health probe; history and re-pin
+            # instructions in kubernetes/networking/cloudflared/deployment.yaml.
+            # No IPv6 default route on any node; without this, AAAA dials burn connection
+            # slots failing "network is unreachable".
+            - --edge-ip-version
+            - "4"
+            - run
+            - --token
+            - $(TUNNEL_TOKEN)
+          env:
+            - name: TUNNEL_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: cloudflare-tunnel-token-vaclavspanos   # vaclavspanos.com tunnel 78634652; CF account 90e7dc33; see secret-vaclavspanos.example.yaml
+                  key: token
+          resources:
+            requests:
+              memory: 64Mi
+              cpu: 10m
+            limits:
+              memory: 128Mi
+              cpu: 200m
