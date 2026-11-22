@@ -75,7 +75,7 @@ and 2 are done, which is expected.
    The last line must print `"status":"ok"`. If the pod is not Ready, stop. The commit stays local
    until the owner says to push: pushing to homelab `main` is the owner's word.
 
-3. **Tunnel public hostname** on the team-elwany tunnel (id `9bb353e8-09a8-4b4d-9eca-5fa360aa6270`,
+3. **Tunnel public hostname** on the team-elwany tunnel (id `98ea5620-3e6b-42cb-ad1f-e18c0c9c96dd`,
    connector `kubernetes/networking/cloudflared/deployment-elwany.yaml`, token-based, so the route
    lives on the Cloudflare side). The existing teamelwany.com hosts (`link.teamelwany.com`,
    `link-admin.teamelwany.com`, `gallery.teamelwany.com`) go to
@@ -89,7 +89,7 @@ and 2 are done, which is expected.
    The token goes to curl as a header file, never in its argv.
    ```bash
    W=~/.local/share/elwanycomp-staging-cf; install -d -m 700 "$W"
-   ACC=90e7dc337477819281ed982a7f6afe32; TUN=9bb353e8-09a8-4b4d-9eca-5fa360aa6270
+   ACC=90e7dc337477819281ed982a7f6afe32; TUN=98ea5620-3e6b-42cb-ad1f-e18c0c9c96dd
    URL=https://api.cloudflare.com/client/v4/accounts/$ACC/cfd_tunnel/$TUN/configurations
    ZT() { printf 'Authorization: Bearer %s\n' "$(cat ~/.cloudflare_token_zt)"; }
    ```
@@ -133,7 +133,7 @@ and 2 are done, which is expected.
    changed the tunnel since 3b):
    ```bash
    W=~/.local/share/elwanycomp-staging-cf
-   ACC=90e7dc337477819281ed982a7f6afe32; TUN=9bb353e8-09a8-4b4d-9eca-5fa360aa6270
+   ACC=90e7dc337477819281ed982a7f6afe32; TUN=98ea5620-3e6b-42cb-ad1f-e18c0c9c96dd
    URL=https://api.cloudflare.com/client/v4/accounts/$ACC/cfd_tunnel/$TUN/configurations
    ZT() { printf 'Authorization: Bearer %s\n' "$(cat ~/.cloudflare_token_zt)"; }
    ( set -euo pipefail
@@ -185,7 +185,7 @@ and 2 are done, which is expected.
    ```
    5b. Run only when 5a's last line printed `0` **and** `link.teamelwany.com`,
    `link-admin.teamelwany.com` and `gallery.teamelwany.com` point at
-   `9bb353e8-09a8-4b4d-9eca-5fa360aa6270.cfargotunnel.com`. Otherwise stop.
+   `98ea5620-3e6b-42cb-ad1f-e18c0c9c96dd.cfargotunnel.com`. Otherwise stop.
    ```bash
    ( set -euo pipefail
      [ ! -e "$W/dns.json" ] || { echo "STOP: $W/dns.json exists; the record was already created."; exit 1; }
@@ -194,7 +194,7 @@ and 2 are done, which is expected.
      trap 'rm -f "$W/dns.json.tmp"' EXIT
      curl -sf -X POST -H @<(DT) -H "Content-Type: application/json" \
          "https://api.cloudflare.com/client/v4/zones/$Z/dns_records" \
-         --data '{"type":"CNAME","name":"comp-test.teamelwany.com","content":"9bb353e8-09a8-4b4d-9eca-5fa360aa6270.cfargotunnel.com","proxied":true,"comment":"ElwanyComp staging, homelab kubernetes/apps/elwanycomp/staging"}' \
+         --data '{"type":"CNAME","name":"comp-test.teamelwany.com","content":"98ea5620-3e6b-42cb-ad1f-e18c0c9c96dd.cfargotunnel.com","proxied":true,"comment":"ElwanyComp staging, homelab kubernetes/apps/elwanycomp/staging"}' \
        > "$W/dns.json.tmp"
      jq -e '.success' "$W/dns.json.tmp" >/dev/null && mv "$W/dns.json.tmp" "$W/dns.json" \
        && jq -r '.result.id' "$W/dns.json"
