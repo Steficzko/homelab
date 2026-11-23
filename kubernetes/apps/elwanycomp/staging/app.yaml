@@ -8,8 +8,9 @@
 #                             MinIO as the DB backups. Missing Secret = the pod does not start.
 #   ghcr-pull (SOPS)          the image package is private.
 #
-# The app refuses to start in prod (ERR-REF-003) if ORIGIN, CLIENT_IP_HEADER or the pepper is
-# empty. Migrations run in-process at start-up, before it serves; the startup probe covers that.
+# The app refuses to start in prod (ERR-REF-003) if PUBLIC_ORIGIN, STAFF_ORIGIN, CLIENT_IP_HEADER or
+# the pepper is empty, or while the replaced ORIGIN is still set. Migrations run in-process at
+# start-up, before it serves; the startup probe covers that.
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -39,13 +40,16 @@ spec:
       containers:
         - name: app
           # Tag AND digest, bumped together by a homelab PR (rollback = git revert of that PR).
-          image: ghcr.io/steficzko/elwanycomp:sha-dff1e6b8d392-20261123@sha256:2cd8fe6e185a66a9d7c0505c4d18dd47e91a8d03b7c98d567af36b0412f8d514
+          image: ghcr.io/steficzko/elwanycomp:sha-e562a9400058-20261123@sha256:8bb11077d55437d5caed560ce408b03882508364833002ea55679ffc7df5f250
           imagePullPolicy: IfNotPresent
           ports: [{containerPort: 8000, name: http}]
           env:
             - {name: ELWANYCOMP_ENV, value: "prod"}
-            # The one allowed Origin; must equal the ingress host below (keep in lockstep).
-            - {name: ELWANYCOMP_ORIGIN, value: "https://comp-test.teamelwany.com"}
+            # Two hostnames, one pod (app repo docs/specs/hosts.md). Each must equal its Ingress host
+            # in ingress.yaml (keep in lockstep). ELWANYCOMP_ORIGIN is replaced by these two: the app
+            # refuses to start (ERR-REF-003) while it is still set.
+            - {name: ELWANYCOMP_PUBLIC_ORIGIN, value: "https://comp-test.teamelwany.com"}
+            - {name: ELWANYCOMP_STAFF_ORIGIN, value: "https://comp-test-staff.teamelwany.com"}
             # Set by Cloudflare at the edge. uvicorn runs with --no-proxy-headers, and the
             # NetworkPolicy admits only Traefik, and the router is on the `web` entrypoint only,
             # which only the tunnel reaches (ingress.yaml).
