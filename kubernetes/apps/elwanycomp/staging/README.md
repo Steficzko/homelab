@@ -376,6 +376,75 @@ S4. **Only then** the pull request with the new image, both Ingress hosts and th
    (`/login` now lives on the staff host), and a sign-in there. From now on `/healthz` through the
    tunnel is checked on the staff host only (it answers 404 on the public host by design).
 
+## Photos stage 1: upload routes and pod memory (upload-routes.yaml, app.yaml)
+
+App repo `docs/specs/teams.md` 5.4 and `docs/DEPLOY-NOTES.md` D18 and D19 are the source. This change
+carries no image bump: the image that sends photos is a separate, later commit. With today's image the
+app still caps every body at 64 KiB itself, so the routes below only move where the 413 comes from.
+
+**Precondition (D18), checked before merging:** Traefik's `comp` entrypoint is live (port 8447,
+Service port 8081, 120 s read timeout), both test hostnames' tunnel rules point at
+`http://traefik.traefik.svc.cluster.local:8081` (tunnel config version 8), and the Ingress names `comp`
+only. All three were true when this was written; if any is not, do not merge.
+
+**The two routes** (IngressRoutes on the `comp` entrypoint only, explicit `priority: 1000`, above the
+Ingress rules, which get their rule length, about 50 to 60):
+
+| Host | Method and path | Chain, in order |
+|---|---|---|
+| `comp-test.teamelwany.com` | `POST /api/public/events/<number>/entries` (the public sign-up) | InFlightReq 4 per `CF-Connecting-IP`; InFlightReq 40 per hostname per Traefik pod; Buffering max 2,162,688 bytes, 524,288 in memory (the rest in Traefik's /tmp) |
+| `comp-test-staff.teamelwany.com` | `PUT` on `/api/team/entries/<n>/photo`, `/api/team/logo`, `/api/org/entries/<n>/photo`, `/api/org/clubs/<n>/logo`, `/api/admin/events/<n>/entries/<n>/photo`, `/api/admin/events/<n>/clubs/<n>/logo` | InFlightReq 4 per `CF-Connecting-IP`; InFlightReq 10 per hostname per Traefik pod; Buffering max 352,256 bytes, all in memory |
+| both | everything else (`/api/login`, the live and form GETs, the picture DELETEs, these paths with another method or on the other host) | the Ingress, `body-64k` (65,536 bytes), unchanged |
+
+Over an InFlightReq Traefik answers 429 before buffering a byte; over a Buffering limit Traefik answers
+its own plain-text 413. The app's caps sit 64 KiB lower (2 MiB and 280 KiB; 64 KiB everywhere with
+today's image), so a body between the two gets the app's JSON 413 with `ERR-REF-006`. A middleware added
+to the Ingress later must be added to both routes in the same change.
+
+The pod's memory goes from request 128Mi / limit 256Mi to request 256Mi / limit 768Mi (D19).
+
+**Check from outside, after Argo syncs.** No session or key is needed: only the size decides who
+answers. `traefik` means Traefik's own 413 (the body never reached the app), `app` means the body
+passed Traefik and the app answered (with today's image every one of those is the app's 413
+`ERR-REF-006`; with the photos image the bodies under the app cap get another app error, which is
+fine). The sign-up probes count against the Cloudflare rate rule (10 per 10 s), hence the pauses.
+```bash
+( set -euo pipefail
+  T=$(mktemp -d); trap 'rm -rf "$T"' EXIT
+  probe() {  # host method path bytes
+    head -c "$4" /dev/zero | tr '\0' 'a' > "$T/body"
+    code=$(curl -s -o "$T/out" -w '%{http_code}' -X "$2" -H 'Content-Type: application/json' \
+      --data-binary @"$T/body" "https://$1$3")
+    if grep -q 'ERR-REF' "$T/out"; then who=app; else who=traefik; fi
+    printf '%-32s %-4s %-44s %8s -> %s %s\n' "$1" "$2" "$3" "$4" "$code" "$who"; sleep 2; }
+  P=comp-test.teamelwany.com; S=comp-test-staff.teamelwany.com
+  probe $S POST /api/login                      66560    # 65 KiB, not an upload path
+  probe $P PUT  /api/public/events/1/entries    66560    # upload path, wrong method
+  probe $S POST /api/public/events/1/entries    66560    # upload path, wrong host
+  probe $P PUT  /api/team/entries/1/photo       66560    # picture path, wrong host
+  probe $P POST /api/public/events/1/entries    2162000  # just under the sign-up limit
+  probe $P POST /api/public/events/1/entries    2163000  # just over
+  probe $S PUT  /api/org/clubs/1/logo           352000   # just under the picture limit
+  probe $S PUT  /api/org/clubs/1/logo           353000   # just over
+  probe $S PUT  /api/team/logo                  352000
+  probe $S PUT  /api/team/logo                  353000
+)
+```
+Expected: the first four `413 traefik`; then `app`, `413 traefik`, `app`, `413 traefik`, `app`,
+`413 traefik`. Any other pattern: roll back. The parallel and trickle checks (D18 release check, D19:
+40 cap-sized bodies, a 2 MiB `{},` body, 20 trickling connections) are CHECKS.md Pre-release items and
+run with the photos image.
+
+**Rollback:** `git revert` of this commit. Argo removes nothing by itself here (`prune: false`), so after
+the revert delete the two IngressRoutes and six Middlewares by hand:
+```bash
+kubectl -n elwanycomp-staging delete ingressroute elwanycomp-signup-upload elwanycomp-picture-upload
+kubectl -n elwanycomp-staging delete middleware signup-inflight-addr signup-inflight-host signup-body \
+  picture-inflight-addr picture-inflight-host picture-body
+```
+Without the routes every path is back on the Ingress at 64 KiB (uploads fail cleanly with Traefik's 413,
+nothing is exposed). The memory change reverts with the same commit and restarts the pod.
+
 ## Cloudflare Access: the owner's decision, not part of these steps yet
 
 Pick one later; none is configured by the steps above.

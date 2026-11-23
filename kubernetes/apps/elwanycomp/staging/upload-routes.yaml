@@ -1,0 +1,136 @@
+# Deployed via ArgoCD (bootstrap: elwanycomp-staging.yaml).
+# Photos stage 1: the larger body limits for the seven upload routes ONLY (app repo
+# docs/specs/teams.md 5.4, docs/DEPLOY-NOTES.md D18). Everything else on both hosts keeps the
+# Ingress in ingress.yaml and its 64 KiB `body-64k`, `/api/login` and the live and form GETs included.
+#
+# Matched by host, method and exact path, on Traefik's dedicated `comp` entrypoint ONLY (120 s read
+# timeout, 180 s idle timeout, ClusterIP only, reached from outside the cluster only through the
+# team-elwany tunnel). Never `web`, `websecure`, `lan` or `trusted`: from the LAN a client could send
+# its own CF-Connecting-IP and void the per-address limit below (D6).
+#
+# Priority: the Ingress routers carry no priority annotation, so Traefik gives them the length of
+# their rule (Host(`...`) && PathPrefix(`/`), about 50 to 60 characters). These routes set an
+# explicit 1000, so they win on their exact method and path whatever the rule lengths are. An
+# Ingress rule only overrides them with a router.priority annotation of 1000 or more: never add one.
+#
+# Middleware chain, in order (teams.md 5.4): InFlightReq per source address (4), InFlightReq per
+# hostname (40 public / 10 staff, per Traefik pod), then the larger Buffering. Over either
+# InFlightReq Traefik answers 429 before buffering a byte; over the Buffering limit it answers 413.
+# Apart from those three, each route carries the same middlewares as the Ingress, which today is
+# only `body-64k` (the Buffering these routes replace with a larger one). Any middleware added to
+# the Ingress later (headers, anything) must be added to BOTH routes below in the same change, or
+# the upload paths skip it (manifest-reviewer checks this).
+#
+# Source address: `CF-Connecting-IP`, set by Cloudflare's edge on every request through the tunnel
+# (the same header the app trusts, ELWANYCOMP_CLIENT_IP_HEADER in app.yaml). Not RemoteAddr (that
+# is a cloudflared pod: one bucket for everyone) and not X-Forwarded-For. A request without the
+# header can only come from inside the cluster; all such requests share the empty-string bucket.
+#
+# Separate Middleware objects per route on purpose, so the two routes never share a counter.
+#
+# Bounds per Traefik pod (D18): at most 40 x 512 KiB + 10 x 344 KiB, about 24 MiB of memory, and
+# 40 x (2,162,688 - 524,288) bytes, about 63 MiB of Traefik's /tmp, each held for at most 120 s.
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: elwanycomp-signup-upload
+  namespace: elwanycomp-staging
+spec:
+  entryPoints: [comp]
+  routes:
+    # Public host: the public sign-up POST, photos inside (app cap 2 MiB = 2,097,152).
+    - match: Host(`comp-test.teamelwany.com`) && Method(`POST`) && PathRegexp(`^/api/public/events/[0-9]+/entries$`)
+      kind: Rule
+      priority: 1000
+      middlewares:
+        - name: signup-inflight-addr
+        - name: signup-inflight-host
+        - name: signup-body
+      services:
+        - name: elwanycomp
+          port: 8000
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: elwanycomp-picture-upload
+  namespace: elwanycomp-staging
+spec:
+  entryPoints: [comp]
+  routes:
+    # Staff host: the six picture PUTs (app cap 280 KiB = 286,720 each). The DELETEs have no body
+    # and stay on the Ingress (64 KiB).
+    - match: Host(`comp-test-staff.teamelwany.com`) && Method(`PUT`) && (PathRegexp(`^/api/team/entries/[0-9]+/photo$`) || Path(`/api/team/logo`) || PathRegexp(`^/api/org/entries/[0-9]+/photo$`) || PathRegexp(`^/api/org/clubs/[0-9]+/logo$`) || PathRegexp(`^/api/admin/events/[0-9]+/entries/[0-9]+/photo$`) || PathRegexp(`^/api/admin/events/[0-9]+/clubs/[0-9]+/logo$`))
+      kind: Rule
+      priority: 1000
+      middlewares:
+        - name: picture-inflight-addr
+        - name: picture-inflight-host
+        - name: picture-body
+      services:
+        - name: elwanycomp
+          port: 8000
+---
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: signup-inflight-addr
+  namespace: elwanycomp-staging
+spec:
+  inFlightReq:
+    amount: 4
+    sourceCriterion:
+      requestHeaderName: CF-Connecting-IP
+---
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: signup-inflight-host
+  namespace: elwanycomp-staging
+spec:
+  inFlightReq:
+    amount: 40              # per Traefik pod; the app's send bucket admits at most 30 sendings a minute
+    sourceCriterion:
+      requestHost: true
+---
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: signup-body
+  namespace: elwanycomp-staging
+spec:
+  buffering:
+    maxRequestBodyBytes: 2162688   # 2 MiB + 64 KiB: the app's 2 MiB cap answers first (413 ERR-REF-006)
+    memRequestBodyBytes: 524288    # 512 KiB in memory, the rest spills to Traefik's /tmp
+---
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: picture-inflight-addr
+  namespace: elwanycomp-staging
+spec:
+  inFlightReq:
+    amount: 4
+    sourceCriterion:
+      requestHeaderName: CF-Connecting-IP
+---
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: picture-inflight-host
+  namespace: elwanycomp-staging
+spec:
+  inFlightReq:
+    amount: 10              # per Traefik pod
+    sourceCriterion:
+      requestHost: true
+---
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: picture-body
+  namespace: elwanycomp-staging
+spec:
+  buffering:
+    maxRequestBodyBytes: 352256    # 344 KiB = 280 KiB + 64 KiB: the app's 280 KiB cap answers first
+    memRequestBodyBytes: 352256    # all in memory, nothing to /tmp

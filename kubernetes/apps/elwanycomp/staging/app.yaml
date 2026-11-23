@@ -64,8 +64,11 @@ spec:
             capabilities: {drop: [ALL]}
             seccompProfile: {type: RuntimeDefault}
           resources:
-            requests: {cpu: 50m, memory: 128Mi}
-            limits: {memory: 256Mi}         # house style: no CPU limit
+            # Photos stage 1 (app repo DEPLOY-NOTES D19, teams.md 5.3): a 2 MiB public sign-up is held
+            # about 3 times over while parsed and the send bucket admits 30 at once, so under 200 MiB
+            # on top of the app's own use; 256Mi was not enough. D19: request 256Mi, limit 768Mi.
+            requests: {cpu: 50m, memory: 256Mi}
+            limits: {memory: 768Mi}         # house style: no CPU limit
           # Start-up: settings, migrations, housekeeping, then serve. Up to 60 s.
           startupProbe:
             httpGet: {path: /livez, port: http}
