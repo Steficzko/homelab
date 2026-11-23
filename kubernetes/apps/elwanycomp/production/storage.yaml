@@ -1,0 +1,29 @@
+# Deployed via ArgoCD (bootstrap: elwanycomp.yaml).
+# The SQLite file (plus its -wal and -shm) lives here, mounted at /data.
+#
+# The three recurring-job labels are the set that actually reaches the Longhorn Volume CR
+# (homelab verified 2026-09-10, template kubernetes/apps/brain/storage.yaml): `daily-backup`
+# alone is ignored; `source` makes Longhorn copy PVC labels to the volume and that copy REPLACES
+# the volume's labels, so the default group must be restated or trim and snapshot clean-up stop.
+# Without these labels the data is NOT backed up (Velero backs up Kubernetes objects only).
+#
+# Prune=false,Delete=false: belt and braces with the Application's `prune: false`. Removing the
+# file from git or deleting the Application leaves the data in place. The Namespace carries the
+# same annotation (deleting it would take this claim with it). The longhorn StorageClass is
+# reclaimPolicy Retain as well.
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: elwanycomp-data
+  namespace: elwanycomp
+  labels:
+    recurring-job.longhorn.io/daily-backup: "enabled"
+    recurring-job.longhorn.io/source: "enabled"
+    recurring-job-group.longhorn.io/default: "enabled"
+  annotations:
+    argocd.argoproj.io/sync-options: Prune=false,Delete=false
+spec:
+  accessModes: [ReadWriteOnce]
+  storageClassName: longhorn
+  resources:
+    requests: {storage: 5Gi}   # DEPLOY-NOTES production sizing; Longhorn thin-provisions and expands online

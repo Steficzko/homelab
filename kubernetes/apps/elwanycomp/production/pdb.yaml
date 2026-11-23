@@ -1,0 +1,20 @@
+# Deployed via ArgoCD (bootstrap: elwanycomp.yaml).
+# The descheduler runs every 6 hours (00, 06, 12, 18 Prague) and evicts through the Eviction API,
+# which honours PDBs (it may read them: infrastructure/descheduler/rbac-pdb.yaml). With one replica
+# and minAvailable 1 no voluntary eviction is ever allowed (house value, as Traefik and
+# ingress-nginx in their values.yaml; app repo DEPLOY-NOTES "Production sizing").
+#
+# What this does NOT block: a release (Recreate deletes the pod directly), Longhorn's node-down
+# pod deletion (delete-both-statefulset-and-deployment-pod), an OOM kill, or `kubectl delete pod`.
+# What it DOES block: `kubectl drain` of the node the pod runs on. To drain that node outside an
+# event, delete the pod by hand first (a short outage) and the drain then goes through.
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: elwanycomp
+  namespace: elwanycomp
+  labels: {app: elwanycomp}
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels: {app: elwanycomp}

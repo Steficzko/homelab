@@ -1,0 +1,108 @@
+# Deployed via ArgoCD (bootstrap: elwanycomp.yaml).
+# ElwanyComp: one FastAPI/uvicorn process serving the pages and the JSON API, SQLite (WAL) on the
+# Longhorn claim at /data. Runtime contract: the app repo's Dockerfile header.
+#
+# Secrets (created and applied by hand by the owner, README.md step P1; never in git as plaintext;
+# production has its OWN pepper, never staging's):
+#   elwanycomp-pepper (SOPS)  key `pepper`: ELWANYCOMP_PIN_PEPPER, >= 32 random bytes, base64.
+#                             Labelled velero.io/exclude-from-backup so it never sits in the same
+#                             MinIO as the DB backups. Missing Secret = the pod does not start.
+#   ghcr-pull (SOPS)          the image package is private.
+#
+# The app refuses to start in prod (ERR-REF-003) if PUBLIC_ORIGIN, STAFF_ORIGIN, CLIENT_IP_HEADER or
+# the pepper is empty, or while the replaced ORIGIN is still set. Migrations run in-process at
+# start-up, before it serves; the startup probe covers that.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: elwanycomp
+  namespace: elwanycomp
+  labels: {app: elwanycomp}
+spec:
+  replicas: 1                  # SQLite on an RWO volume, in-process rate limiting: exactly one pod
+  strategy: {type: Recreate}   # RollingUpdate would need two pods on one RWO volume
+  revisionHistoryLimit: 3
+  selector:
+    matchLabels: {app: elwanycomp}
+  template:
+    metadata:
+      labels: {app: elwanycomp}
+    spec:
+      automountServiceAccountToken: false   # the app never calls the Kubernetes API
+      enableServiceLinks: false
+      imagePullSecrets: [{name: ghcr-pull}]
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 10001
+        runAsGroup: 10001
+        fsGroup: 10001                      # makes /data writable for uid/gid 10001
+        fsGroupChangePolicy: OnRootMismatch
+        seccompProfile: {type: RuntimeDefault}
+      containers:
+        - name: app
+          # Tag AND digest, bumped together by a homelab PR (rollback = git revert of that PR).
+          image: ghcr.io/steficzko/elwanycomp:sha-e562a9400058-20261123@sha256:8bb11077d55437d5caed560ce408b03882508364833002ea55679ffc7df5f250
+          imagePullPolicy: IfNotPresent
+          ports: [{containerPort: 8000, name: http}]
+          env:
+            - {name: ELWANYCOMP_ENV, value: "prod"}
+            # Two hostnames, one pod (app repo docs/specs/hosts.md). Each must equal its Ingress host
+            # in ingress.yaml (keep in lockstep). ELWANYCOMP_ORIGIN is replaced by these two: the app
+            # refuses to start (ERR-REF-003) while it is still set.
+            - {name: ELWANYCOMP_PUBLIC_ORIGIN, value: "https://competitions.teamelwany.com"}
+            - {name: ELWANYCOMP_STAFF_ORIGIN, value: "https://comp-staff.teamelwany.com"}
+            # Set by Cloudflare at the edge. uvicorn runs with --no-proxy-headers, and the
+            # NetworkPolicy admits only Traefik, and the router is on the `web` entrypoint only,
+            # which only the tunnel reaches (ingress.yaml).
+            - {name: ELWANYCOMP_CLIENT_IP_HEADER, value: "CF-Connecting-IP"}
+            - {name: ELWANYCOMP_DB, value: "/data/elwanycomp.db"}
+            - name: ELWANYCOMP_PIN_PEPPER
+              valueFrom: {secretKeyRef: {name: elwanycomp-pepper, key: pepper}}
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+            capabilities: {drop: [ALL]}
+            seccompProfile: {type: RuntimeDefault}
+          # Production sizing (app repo DEPLOY-NOTES "Production sizing", D19): memory request =
+          # limit, so under node memory pressure this pod is never among the first evicted; the
+          # limit covers photo uploads. No CPU limit (house style).
+          resources:
+            requests: {cpu: 500m, memory: 768Mi}
+            limits: {memory: 768Mi}
+          # Start-up: settings, migrations, housekeeping, then serve. Up to 60 s.
+          startupProbe:
+            httpGet: {path: /livez, port: http}
+            periodSeconds: 2
+            failureThreshold: 30
+            timeoutSeconds: 2
+          # Liveness on /livez (process only), never on /healthz: a DB hiccup must not kill-loop.
+          livenessProbe:
+            httpGet: {path: /livez, port: http}
+            periodSeconds: 10
+            failureThreshold: 3
+            timeoutSeconds: 2
+          # Readiness on /healthz (opens the DB, checks the schema version).
+          readinessProbe:
+            httpGet: {path: /healthz, port: http}
+            periodSeconds: 10
+            failureThreshold: 3
+            timeoutSeconds: 3
+          volumeMounts:
+            - {name: data, mountPath: /data}
+            - {name: tmp, mountPath: /tmp}
+      volumes:
+        - name: data
+          persistentVolumeClaim: {claimName: elwanycomp-data}
+        - name: tmp
+          emptyDir: {medium: Memory, sizeLimit: 64Mi}   # TMPDIR, SQLite temp files; counts against the memory limit
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: elwanycomp
+  namespace: elwanycomp
+  labels: {app: elwanycomp}
+spec:
+  selector: {app: elwanycomp}
+  ports: [{name: http, port: 8000, targetPort: http}]
