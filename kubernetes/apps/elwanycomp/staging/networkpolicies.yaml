@@ -4,8 +4,8 @@
 # elwanycomp: in from Traefik only, on the container port. No egress beyond the default-deny
 # DNS grant: the app makes no outbound calls (no mail, no webhooks, no external APIs).
 # Traefik-only ingress is half of what makes CF-Connecting-IP trustworthy; the other half is
-# the Ingress router sitting on Traefik's `web` entrypoint only (ingress.yaml), which only the
-# tunnel reaches (the LAN LoadBalancer exposes `lan`/`trusted`, not `web`). Cloudflare sets
+# the Ingress router sitting on Traefik's `comp` entrypoint only (ingress.yaml), which from outside
+# the cluster only the tunnel reaches (the LAN LoadBalancer exposes `lan`/`trusted`, not `comp`). Cloudflare sets
 # that header.
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
