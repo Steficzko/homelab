@@ -6,9 +6,9 @@ ArgoCD Application `kubernetes/bootstrap/apps/elwanycomp.yaml` (excludes `*.sops
 never applies secrets; `prune: false`; Namespace and PVC also carry `Prune=false,Delete=false`).
 Image: the one the test site runs (app commit 4cf0072, schema 5). Routes on Traefik's dedicated
 `comp` entrypoint, as staging. This folder is the staging folder with only these changes:
-namespace, the two hostnames (Ingress and the two `ORIGIN` variables), CPU 500m and memory 768Mi request = limit, a 5Gi volume, plus a
-PodDisruptionBudget (`pdb.yaml`), critical alerts (`alerts.yaml`) and a Renovate rule in the repo's
-`renovate.json` that leaves this folder alone. Background: the app repo's `docs/DEPLOY-NOTES.md`.
+namespace, the two hostnames (Ingress and the two `ORIGIN` variables), CPU 500m and memory 768Mi
+request = limit, a 5Gi volume, plus a PodDisruptionBudget (`pdb.yaml`), critical alerts
+(`alerts.yaml`) and a Renovate rule in the repo's `renovate.json` that leaves this folder alone. Background: the app repo's `docs/DEPLOY-NOTES.md`.
 
 **Who runs what.**
 
@@ -136,14 +136,17 @@ P2a. Read, check, build, diff (nothing is written to Cloudflare here):
   [ ! -e "$W/before.json" ] || { echo "STOP: $W/before.json exists from an earlier run. Keep it, it is the rollback."; exit 1; }
   trap 'rm -f "$W/before.json.tmp"' EXIT
   curl -sf -H @<(ZT) "$URL" > "$W/before.json.tmp"
-  jq -e --arg hs "$HS" --arg hp "$HP" --arg s "$SVC" --arg o "$OTHER" '.success and (.result.version == 8)
-      and (.result.config.ingress[-1].hostname == null)
-      and ([.result.config.ingress[] | select((.hostname=="comp-test.teamelwany.com" or .hostname=="comp-test-staff.teamelwany.com") and .service==$s)] | length == 2)
-      and ([.result.config.ingress[] | select(.hostname != null and .hostname != "comp-test.teamelwany.com" and .hostname != "comp-test-staff.teamelwany.com")]
-           | (length == 4) and all(.service == $o)
-             and ([.[].hostname] | contains(["link.teamelwany.com", "link-admin.teamelwany.com", "gallery.teamelwany.com"])))
-      and ([.result.config.ingress[].hostname] | (index($hs) == null and index($hp) == null))' "$W/before.json.tmp" >/dev/null \
-    || { echo "STOP: the tunnel config is not as expected (not version 8, test hosts not on :8081, other hosts not all on :80, or a production host already there). Nothing was changed."; exit 1; }
+  # Exact: version 8, 7 rules, the catch-all last, exactly these six hostnames, the two test hosts
+  # on :8081 and the four others on :80.
+  jq -e --arg s "$SVC" --arg o "$OTHER" '.success and (.result.version == 8)
+      and (.result.config.ingress | length == 7)
+      and (.result.config.ingress[6].hostname == null)
+      and ([.result.config.ingress[0:6][].hostname] | sort == ["app.teamelwany.com","comp-test-staff.teamelwany.com","comp-test.teamelwany.com","gallery.teamelwany.com","link-admin.teamelwany.com","link.teamelwany.com"])
+      and ([.result.config.ingress[0:6][] | select(.hostname == "comp-test.teamelwany.com" or .hostname == "comp-test-staff.teamelwany.com") | .service] == [$s, $s])
+      and ([.result.config.ingress[0:6][] | select(.hostname != "comp-test.teamelwany.com" and .hostname != "comp-test-staff.teamelwany.com") | .service] | length == 4 and all(. == $o))' "$W/before.json.tmp" >/dev/null \
+    || { echo "STOP: the tunnel config is not the expected version 8 (found below). Nothing was changed.";
+         jq -r '"version \(.result.version)", (.result.config.ingress[]? | "\(.hostname // "(no hostname)") -> \(.service)")' "$W/before.json.tmp" || true
+         exit 1; }
   mv "$W/before.json.tmp" "$W/before.json"
   jq -r '"version \(.result.version)", (.result.config.ingress[] | "\(.hostname // "(catch-all)") -> \(.service)")' "$W/before.json"
   jq --arg hs "$HS" --arg hp "$HP" --arg s "$SVC" '{config: (.result.config | .ingress |= ([{hostname: $hs, service: $s}, {hostname: $hp, service: $s}] + .))}' "$W/before.json" > "$W/after.json"
@@ -164,12 +167,19 @@ P2b. Only after reading P2a, write and confirm:
   curl -sf -X PUT -H @<(ZT) -H "Content-Type: application/json" --data @"$W/after.json" "$URL" | jq -e '.success' >/dev/null
   trap 'rm -f "$W/put.json.tmp"' EXIT
   curl -sf -H @<(ZT) "$URL" > "$W/put.json.tmp"
-  jq -e --arg hs "$HS" --arg hp "$HP" '.result.config.ingress[0].hostname == $hs and .result.config.ingress[1].hostname == $hp' "$W/put.json.tmp" >/dev/null \
-    && mv "$W/put.json.tmp" "$W/put.json" && jq -r '"version \(.result.version)"' "$W/put.json"
+  mv "$W/put.json.tmp" "$W/put.json"
+  # The whole config read back must equal after.json. `originRequest: {}` (an empty default
+  # Cloudflare may add to a rule) is ignored on both sides; nothing else is.
+  jq -e --slurpfile a "$W/after.json" 'def norm: .ingress |= map(if .originRequest == {} then del(.originRequest) else . end);
+      .success and ((.result.config | norm) == ($a[0].config | norm))' "$W/put.json" >/dev/null \
+    || { echo "STOP: the config Cloudflare holds now is not after.json (difference below). Run the P2 rollback.";
+         diff <(jq .config "$W/after.json") <(jq .result.config "$W/put.json") || true
+         exit 1; }
+  jq -r '"version \(.result.version)"' "$W/put.json"
 )
 ```
-Check: it prints `version 9`. `put.json` is the live config after the write; the rollback compares
-against it.
+Check: it prints `version 9` and no STOP. `put.json` is the live config after the write (kept even
+on a STOP, so the rollback can compare against it).
 
 P2 rollback (puts the saved config back exactly; works from a fresh terminal; stops if anyone has
 changed the tunnel since P2b):
@@ -190,7 +200,7 @@ ZT() { printf 'Authorization: Bearer %s\n' "$(cat ~/.cloudflare_token_zt)"; }
 
 ## P3. Cloudflare zone rules: a look only [owner]
 
-Done on 2026-11-23: all three rules already list the four hostnames. **Change nothing here**; only
+Done on 2026-11-23: the three zone rules and the one redirect rule already list the four hostnames. **Change nothing here**; only
 confirm, in the dashboard of zone teamelwany.com:
 - Rules > Configuration Rules: `elwanycomp no injection`, expression lists
   `comp-test.teamelwany.com`, `competitions.teamelwany.com`, `comp-test-staff.teamelwany.com` and
@@ -321,7 +331,7 @@ Expected, in order:
 4. A `content-security-policy` line.
 5. Exactly three tags on `/login`: `/static/v/<version>/js/login.js`, `.../js/i18n.js`,
    `.../js/api.js`; exactly three on `/`: `.../js/i18n.js`, `.../js/api.js`, `.../js/index.js`. The
-   `<version>` is the one the test site shows (the `test site:` line below, read from
+   `<version>` is the one the test site shows (the `test site:` line printed by the block above, read from
    https://comp-test.teamelwany.com/ while it runs the same image). Any other script means D1 is
    not done: stop.
 6. `0` for `/cdn-cgi/` (a `/cdn-cgi/challenge-platform/` script is Bot Fight Mode; report before
