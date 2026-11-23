@@ -13,8 +13,9 @@
 # explicit 1000, so they win on their exact method and path whatever the rule lengths are. An
 # Ingress rule only overrides them with a router.priority annotation of 1000 or more: never add one.
 #
-# Middleware chain, in order (teams.md 5.4): InFlightReq per source address (4), InFlightReq per
-# hostname (40 public / 10 staff, per Traefik pod), then the larger Buffering. Over either
+# Middleware chain, in order (teams.md 5.4): InFlightReq per source address (4), InFlightReq total
+# per route (20 public / 5 staff per cloudflared pod, so 40 / 10 per Traefik pod), then the larger
+# Buffering. Over either
 # InFlightReq Traefik answers 429 before buffering a byte; over the Buffering limit it answers 413.
 # Apart from those three, each route carries the same middlewares as the Ingress, which today is
 # only `body-64k` (the Buffering these routes replace with a larger one). Any middleware added to
@@ -25,6 +26,18 @@
 # (the same header the app trusts, ELWANYCOMP_CLIENT_IP_HEADER in app.yaml). Not RemoteAddr (that
 # is a cloudflared pod: one bucket for everyone) and not X-Forwarded-For. A request without the
 # header can only come from inside the cluster; all such requests share the empty-string bucket.
+# Against IPv6 this cap does little: CF-Connecting-IP carries the full /128, so one attacker has
+# many addresses. The total cap below is the real bound (pentester M1, accepted).
+#
+# Total cap: keyed on the TCP peer (`ipStrategy.depth: 0`, which in Traefik v3.7 is the
+# RemoteAddr strategy: the port is dropped, no header is read), i.e. the cloudflared pod that
+# forwarded the request. NOT `requestHost`: that keys on the raw Host header, while the Host()
+# matcher ignores case, port and a trailing dot, so `COMP-test...`, `comp-test...:1` and
+# `comp-test....` each got their own bucket (pentester H1). The team-elwany tunnel runs 2 cloudflared
+# replicas (kubernetes/networking/cloudflared/deployment-elwany.yaml:7, `replicas: 2`), so 20 and 5
+# per peer keep each Traefik pod at 40 and 10 or below. If that replica count goes up, divide
+# 40 and 10 by the new count here in the same change. If kube-proxy ever SNATs both peers to one
+# address the cap only gets stricter (20 / 5 in all).
 #
 # Separate Middleware objects per route on purpose, so the two routes never share a counter.
 #
@@ -44,7 +57,7 @@ spec:
       priority: 1000
       middlewares:
         - name: signup-inflight-addr
-        - name: signup-inflight-host
+        - name: signup-inflight-total
         - name: signup-body
       services:
         - name: elwanycomp
@@ -65,7 +78,7 @@ spec:
       priority: 1000
       middlewares:
         - name: picture-inflight-addr
-        - name: picture-inflight-host
+        - name: picture-inflight-total
         - name: picture-body
       services:
         - name: elwanycomp
@@ -85,13 +98,13 @@ spec:
 apiVersion: traefik.io/v1alpha1
 kind: Middleware
 metadata:
-  name: signup-inflight-host
+  name: signup-inflight-total
   namespace: elwanycomp-staging
 spec:
   inFlightReq:
-    amount: 40              # per Traefik pod; the app's send bucket admits at most 30 sendings a minute
+    amount: 20              # per cloudflared pod (2 replicas: 40 per Traefik pod); the app's send bucket admits at most 30 sendings a minute
     sourceCriterion:
-      requestHost: true
+      ipStrategy: {depth: 0}   # RemoteAddr = the cloudflared pod; more tunnel replicas: divide the per-Traefik-pod total by their count
 ---
 apiVersion: traefik.io/v1alpha1
 kind: Middleware
@@ -117,13 +130,13 @@ spec:
 apiVersion: traefik.io/v1alpha1
 kind: Middleware
 metadata:
-  name: picture-inflight-host
+  name: picture-inflight-total
   namespace: elwanycomp-staging
 spec:
   inFlightReq:
-    amount: 10              # per Traefik pod
+    amount: 5               # per cloudflared pod (2 replicas: 10 per Traefik pod)
     sourceCriterion:
-      requestHost: true
+      ipStrategy: {depth: 0}   # RemoteAddr = the cloudflared pod; more tunnel replicas: divide the per-Traefik-pod total by their count
 ---
 apiVersion: traefik.io/v1alpha1
 kind: Middleware

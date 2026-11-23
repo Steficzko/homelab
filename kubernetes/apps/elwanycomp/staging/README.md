@@ -392,8 +392,8 @@ Ingress rules, which get their rule length, about 50 to 60):
 
 | Host | Method and path | Chain, in order |
 |---|---|---|
-| `comp-test.teamelwany.com` | `POST /api/public/events/<number>/entries` (the public sign-up) | InFlightReq 4 per `CF-Connecting-IP`; InFlightReq 40 per hostname per Traefik pod; Buffering max 2,162,688 bytes, 524,288 in memory (the rest in Traefik's /tmp) |
-| `comp-test-staff.teamelwany.com` | `PUT` on `/api/team/entries/<n>/photo`, `/api/team/logo`, `/api/org/entries/<n>/photo`, `/api/org/clubs/<n>/logo`, `/api/admin/events/<n>/entries/<n>/photo`, `/api/admin/events/<n>/clubs/<n>/logo` | InFlightReq 4 per `CF-Connecting-IP`; InFlightReq 10 per hostname per Traefik pod; Buffering max 352,256 bytes, all in memory |
+| `comp-test.teamelwany.com` | `POST /api/public/events/<number>/entries` (the public sign-up) | InFlightReq 4 per `CF-Connecting-IP`; InFlightReq 20 per cloudflared pod (TCP peer; 2 tunnel replicas, so 40 per Traefik pod); Buffering max 2,162,688 bytes, 524,288 in memory (the rest in Traefik's /tmp) |
+| `comp-test-staff.teamelwany.com` | `PUT` on `/api/team/entries/<n>/photo`, `/api/team/logo`, `/api/org/entries/<n>/photo`, `/api/org/clubs/<n>/logo`, `/api/admin/events/<n>/entries/<n>/photo`, `/api/admin/events/<n>/clubs/<n>/logo` | InFlightReq 4 per `CF-Connecting-IP`; InFlightReq 5 per cloudflared pod (TCP peer; 2 tunnel replicas, so 10 per Traefik pod); Buffering max 352,256 bytes, all in memory |
 | both | everything else (`/api/login`, the live and form GETs, the picture DELETEs, these paths with another method or on the other host) | the Ingress, `body-64k` (65,536 bytes), unchanged |
 
 Over an InFlightReq Traefik answers 429 before buffering a byte; over a Buffering limit Traefik answers
@@ -411,13 +411,16 @@ fine). The sign-up probes count against the Cloudflare rate rule (10 per 10 s), 
 ```bash
 ( set -euo pipefail
   T=$(mktemp -d); trap 'rm -rf "$T"' EXIT
-  probe() {  # host method path bytes
-    head -c "$4" /dev/zero | tr '\0' 'a' > "$T/body"
-    code=$(curl -s -o "$T/out" -w '%{http_code}' -X "$2" -H 'Content-Type: application/json' \
-      --data-binary @"$T/body" "https://$1$3")
+  probe() {  # host method path bytes [extra curl arguments]
+    local h=$1 m=$2 u=$3 n=$4; shift 4
+    head -c "$n" /dev/zero | tr '\0' 'a' > "$T/body"
+    : > "$T/out"
+    code=$(curl -s --max-time 60 -o "$T/out" -w '%{http_code}' -X "$m" -H 'Content-Type: application/json' \
+      --data-binary @"$T/body" "$@" "https://$h$u" || true)
     if grep -q 'ERR-REF' "$T/out"; then who=app; else who=traefik; fi
-    printf '%-32s %-4s %-44s %8s -> %s %s\n' "$1" "$2" "$3" "$4" "$code" "$who"; sleep 2; }
+    printf '%-34s %-7s %-40s %8s %-34s -> %s %s\n' "$h" "$m" "$u" "$n" "$*" "$code" "$who"; sleep 2; }
   P=comp-test.teamelwany.com; S=comp-test-staff.teamelwany.com
+  # A. Limits on the plain routes
   probe $S POST /api/login                      66560    # 65 KiB, not an upload path
   probe $P PUT  /api/public/events/1/entries    66560    # upload path, wrong method
   probe $S POST /api/public/events/1/entries    66560    # upload path, wrong host
@@ -428,19 +431,42 @@ fine). The sign-up probes count against the Cloudflare rate rule (10 per 10 s), 
   probe $S PUT  /api/org/clubs/1/logo           353000   # just over
   probe $S PUT  /api/team/logo                  352000
   probe $S PUT  /api/team/logo                  353000
+  # B. Path and method variants of the sign-up, 65 KiB each (pentester L2)
+  probe $P POST //api/public/events/1/entries           66560 --path-as-is
+  probe $P POST /api/public/events/1/entries/           66560
+  probe $P POST /api/public/events/1/entries%2F         66560 --path-as-is
+  probe $P POST /api/public/events/1/x/../entries       66560 --path-as-is
+  probe $P HEAD /api/public/events/1/entries            66560
+  probe $P OPTIONS /api/public/events/1/entries         66560
+  probe $P post /api/public/events/1/entries            66560
+  # C. Host variants of the sign-up (pentester H1): the same answers as the plain host in A
+  probe $P POST /api/public/events/1/entries    2162000  -H "Host: COMP-test.teamelwany.com"
+  probe $P POST /api/public/events/1/entries    2163000  -H "Host: COMP-test.teamelwany.com"
+  probe $P. POST /api/public/events/1/entries   2162000
+  probe $P. POST /api/public/events/1/entries   2163000
 )
 ```
-Expected: the first four `413 traefik`; then `app`, `413 traefik`, `app`, `413 traefik`, `app`,
-`413 traefik`. Any other pattern: roll back. The parallel and trickle checks (D18 release check, D19:
-40 cap-sized bodies, a 2 MiB `{},` body, 20 trickling connections) are CHECKS.md Pre-release items and
+Expected:
+- A: the first four `413 traefik`; then `app`, `413 traefik`, `app`, `413 traefik`, `app`, `413 traefik`.
+- B: each line is a Traefik refusal (`413`, or `400` for the encoded slash) or an `app` answer (`413`
+  or `404` with `ERR-REF`; with today's image the app's 413). An `app` line here means Traefik cleaned the
+  path to the real sign-up path and the app treated it as one, which is fine. Anything else (a `2xx`, a
+  `5xx`, a timeout other than on HEAD): stop and report.
+- C: exactly as the plain host in A, `app` then `413 traefik` for each pair: a Host variant changes
+  nothing. If Cloudflare refuses a variant itself (a 4xx that is not 413, no `ERR-REF`), note it; that
+  is not a failure.
+Any other pattern in A: roll back. The parallel and trickle checks (D18 release check, D19: 40
+cap-sized bodies, a 2 MiB `{},` body, 20 trickling connections) are CHECKS.md Pre-release items and
 run with the photos image.
 
-**Rollback:** `git revert` of this commit. Argo removes nothing by itself here (`prune: false`), so after
-the revert delete the two IngressRoutes and six Middlewares by hand:
+**Rollback:** `git revert` of the commits that added this section (or of their merge). Argo removes
+nothing by itself here (`prune: false`), so after the revert delete the two IngressRoutes and six
+Middlewares by hand (an early draft named the total caps `*-inflight-host`; if those exist, delete
+them too):
 ```bash
 kubectl -n elwanycomp-staging delete ingressroute elwanycomp-signup-upload elwanycomp-picture-upload
-kubectl -n elwanycomp-staging delete middleware signup-inflight-addr signup-inflight-host signup-body \
-  picture-inflight-addr picture-inflight-host picture-body
+kubectl -n elwanycomp-staging delete middleware signup-inflight-addr signup-inflight-total signup-body \
+  picture-inflight-addr picture-inflight-total picture-body
 ```
 Without the routes every path is back on the Ingress at 64 KiB (uploads fail cleanly with Traefik's 413,
 nothing is exposed). The memory change reverts with the same commit and restarts the pod.
