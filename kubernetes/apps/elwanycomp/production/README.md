@@ -4,7 +4,7 @@ Hosts (owner, 2026-11-23): public `competitions.teamelwany.com` (live page, resu
 staff `comp-staff.teamelwany.com` (sign-in and every signed-in screen). Namespace `elwanycomp`.
 ArgoCD Application `kubernetes/bootstrap/apps/elwanycomp.yaml` (excludes `*.sops.yaml`, so Argo
 never applies secrets; `prune: false`; Namespace and PVC also carry `Prune=false,Delete=false`).
-Image: the one the test site runs (app commit 4cf0072, schema 5). Routes on Traefik's dedicated
+Image: the one the test site runs (app commit dac2d1f, schema 5). Routes on Traefik's dedicated
 `comp` entrypoint, as staging. This folder is the staging folder with only these changes:
 namespace, the two hostnames (Ingress and the two `ORIGIN` variables), CPU 500m and memory 768Mi
 request = limit, a 5Gi volume, plus a PodDisruptionBudget (`pdb.yaml`), critical alerts
