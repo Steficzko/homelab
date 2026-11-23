@@ -16,7 +16,7 @@ spec:
         runAsNonRoot: true
       containers:
         - name: bot
-          image: ghcr.io/jauderho/yt-dlp:latest@sha256:240b80802b99469aac71f1b43ca3dc4893ba2366ed989a71c54f98cc25402de6   # same image as brain-capture: python3.14 stdlib is all it needs
+          image: ghcr.io/jauderho/yt-dlp:latest@sha256:d00ecde550bf01627be203d3ab7cf66380ec1da83384b3872540c817df9e2bfd   # same image as brain-capture: python3.14 stdlib is all it needs
           command: ["python3", "-u", "/app/bot.py"]
           env:
             - { name: PYTHONDONTWRITEBYTECODE, value: "1" }
