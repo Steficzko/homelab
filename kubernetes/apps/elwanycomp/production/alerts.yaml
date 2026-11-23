@@ -24,14 +24,16 @@ spec:
   groups:
     - name: elwanycomp
       rules:
-        # 2 minutes covers a normal release (Recreate: up to 60 s start-up plus pull) without a page.
+        # 3 minutes covers a normal Recreate release without a page: Longhorn detach and attach, the
+        # image pull, then up to 60 s of start-up can come close to 2 minutes.
+        # A data restore (scale to 0, RUNBOOK section 3) fires this alert; that is expected.
         - alert: ElwanyCompNotReady
           expr: kube_deployment_status_replicas_available{namespace="elwanycomp", deployment="elwanycomp"} < 1
-          for: 2m
+          for: 3m
           labels:
             severity: critical
           annotations:
-            summary: "ElwanyComp has no ready pod for 2 minutes (both hostnames are down)"
+            summary: "ElwanyComp has no ready pod for 3 minutes (both hostnames are down)"
             description: >-
               /healthz (readiness) has been failing or the pod is not running. Check
               `kubectl -n elwanycomp get pods`, `kubectl -n elwanycomp describe pod -l app=elwanycomp`

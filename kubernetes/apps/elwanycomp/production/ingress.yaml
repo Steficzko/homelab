@@ -57,6 +57,8 @@ spec:
 # Same cap the app enforces itself (app/main.py MAX_BODY = 64 KiB, 413 ERR-REF-006), applied
 # at the edge of the cluster too (ADR-044: public APIs get a buffering.maxRequestBodyBytes
 # Middleware). Buffering holds the response until complete; fine here, the app does not stream.
+# Do NOT raise this one for photos: the photos release adds a second, larger Middleware on the
+# upload routes only (app repo docs/specs/teams.md 5.3).
 apiVersion: traefik.io/v1alpha1
 kind: Middleware
 metadata:

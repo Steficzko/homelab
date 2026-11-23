@@ -65,8 +65,9 @@ spec:
             capabilities: {drop: [ALL]}
             seccompProfile: {type: RuntimeDefault}
           # Production sizing (app repo DEPLOY-NOTES "Production sizing", D19): memory request =
-          # limit, so under node memory pressure this pod is never among the first evicted; the
-          # limit covers photo uploads. No CPU limit (house style).
+          # limit, so under node memory pressure this pod is never among the first evicted. Sized
+          # for the event load and for photo uploads, which arrive with a later image. No CPU limit
+          # (house style).
           resources:
             requests: {cpu: 500m, memory: 768Mi}
             limits: {memory: 768Mi}

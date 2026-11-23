@@ -62,9 +62,11 @@ F=kubernetes/apps/elwanycomp/production/pepper-secret.sops.yaml
         --from-file=pepper=/dev/stdin --dry-run=client -o yaml \
     | kubectl label --local -f - velero.io/exclude-from-backup=true -o yaml \
     | sops encrypt --filename-override "$F" > "$F.tmp"
-  grep -q 'ENC\[AES256_GCM' "$F.tmp" && mv "$F.tmp" "$F" \
-    && sops -d "$F" | kubectl apply --server-side -f - \
-    && git add "$F" && git commit -m "elwanycomp production: PIN pepper (SOPS)" -- "$F"
+  grep -q 'ENC\[AES256_GCM' "$F.tmp" \
+    || { rm -f "$F.tmp"; echo "STOP: the file is not encrypted. Nothing was applied or committed."; exit 1; }
+  mv "$F.tmp" "$F"
+  sops -d "$F" | kubectl apply --server-side -f -
+  git add "$F" && git commit -m "elwanycomp production: PIN pepper (SOPS)" -- "$F"
 )
 ```
 
@@ -83,9 +85,11 @@ F=kubernetes/apps/elwanycomp/production/ghcr-pull.sops.yaml
         --dry-run=client -o yaml \
     | sops encrypt --filename-override "$F" > "$F.tmp"
   unset GHCR_PAT
-  grep -q 'ENC\[AES256_GCM' "$F.tmp" && mv "$F.tmp" "$F" \
-    && sops -d "$F" | kubectl apply --server-side -f - \
-    && git add "$F" && git commit -m "elwanycomp production: ghcr-pull (SOPS)" -- "$F"
+  grep -q 'ENC\[AES256_GCM' "$F.tmp" \
+    || { rm -f "$F.tmp"; echo "STOP: the file is not encrypted. Nothing was applied or committed."; exit 1; }
+  mv "$F.tmp" "$F"
+  sops -d "$F" | kubectl apply --server-side -f -
+  git add "$F" && git commit -m "elwanycomp production: ghcr-pull (SOPS)" -- "$F"
 )
 ```
 
