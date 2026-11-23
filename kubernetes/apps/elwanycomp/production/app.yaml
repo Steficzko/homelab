@@ -41,7 +41,7 @@ spec:
       containers:
         - name: app
           # Tag AND digest, bumped together by a homelab PR (rollback = git revert of that PR).
-          image: ghcr.io/steficzko/elwanycomp:sha-dac2d1ff3f10-20261123@sha256:628bc3cdef747d480abd447e7860ad92a66aff98c8c404432eb7457b651e096b
+          image: ghcr.io/steficzko/elwanycomp:sha-68d3a1650bd0-20261123@sha256:1cfee4d7c8454138ae194e00f6c07f26242553ae8cd5852d8c78a61d49892188
           imagePullPolicy: IfNotPresent
           ports: [{containerPort: 8000, name: http}]
           env:
@@ -66,8 +66,8 @@ spec:
             seccompProfile: {type: RuntimeDefault}
           # Production sizing (app repo DEPLOY-NOTES "Production sizing", D19): memory request =
           # limit, so under node memory pressure this pod is never among the first evicted. Sized
-          # for the event load and for photo uploads, which arrive with a later image. No CPU limit
-          # (house style).
+          # for the event load and for photo uploads (photos stage 1, app commit 68d3a16; D19 asks
+          # at least 768Mi). No CPU limit (house style).
           resources:
             requests: {cpu: 500m, memory: 768Mi}
             limits: {memory: 768Mi}

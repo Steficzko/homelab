@@ -452,8 +452,8 @@ Expected:
   or `404` with `ERR-REF`; with today's image the app's 413). An `app` line here means Traefik cleaned the
   path to the real sign-up path and the app treated it as one, which is fine. Anything else (a `2xx`, a
   `5xx`, a timeout other than on HEAD): stop and report.
-- C: exactly as the plain host in A, `app` then `413 traefik` for each pair: a Host variant changes
-  nothing. If Cloudflare refuses a variant itself (a 4xx that is not 413, no `ERR-REF`), note it; that
+- C: the upper-case Host exactly as the plain host in A, `app` then `413 traefik`; the trailing-dot
+  host gets Traefik's own `404` (no route matches it), which is fine. If Cloudflare refuses a variant itself (a 4xx that is not 413, no `ERR-REF`), note it; that
   is not a failure.
 Any other pattern in A: roll back. The parallel and trickle checks (D18 release check, D19: 40
 cap-sized bodies, a 2 MiB `{},` body, 20 trickling connections) are CHECKS.md Pre-release items and

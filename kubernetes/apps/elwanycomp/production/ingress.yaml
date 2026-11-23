@@ -57,11 +57,14 @@ spec:
                 port:
                   number: 8000
 ---
+# The 64 KiB default for every path except the seven upload routes, which upload-routes.yaml
+# matches by host, method and exact path at priority 1000 (above these rules) with larger limits.
+# A middleware added to this Ingress must be added to both routes there too. Never give this
+# Ingress a router.priority annotation of 1000 or more: it would take the upload paths back.
 # Same cap the app enforces itself (app/main.py MAX_BODY = 64 KiB, 413 ERR-REF-006), applied
 # at the edge of the cluster too (ADR-044: public APIs get a buffering.maxRequestBodyBytes
 # Middleware). Buffering holds the response until complete; fine here, the app does not stream.
-# Do NOT raise this one for photos: the photos release adds a second, larger Middleware on the
-# upload routes only (app repo docs/specs/teams.md 5.3).
+# Do NOT raise this one for photos (app repo docs/specs/teams.md 5.4).
 apiVersion: traefik.io/v1alpha1
 kind: Middleware
 metadata:

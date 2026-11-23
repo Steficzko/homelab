@@ -4,9 +4,10 @@ Hosts (owner, 2026-11-23): public `competitions.teamelwany.com` (live page, resu
 staff `comp-staff.teamelwany.com` (sign-in and every signed-in screen). Namespace `elwanycomp`.
 ArgoCD Application `kubernetes/bootstrap/apps/elwanycomp.yaml` (excludes `*.sops.yaml`, so Argo
 never applies secrets; `prune: false`; Namespace and PVC also carry `Prune=false,Delete=false`).
-Image: the one the test site runs (app commit dac2d1f, schema 5). Routes on Traefik's dedicated
-`comp` entrypoint, as staging. This folder is the staging folder with only these changes:
-namespace, the two hostnames (Ingress and the two `ORIGIN` variables), CPU 500m and memory 768Mi
+Image: the one the test site runs (app commit 68d3a16, photos stage 1, schema 5). Routes on Traefik's
+dedicated `comp` entrypoint, as staging, including the upload routes (`upload-routes.yaml`, see
+"Photos stage 1" below). This folder is the staging folder with only these changes:
+namespace, the two hostnames (Ingress, upload routes and the two `ORIGIN` variables), CPU 500m and memory 768Mi
 request = limit, a 5Gi volume, plus a PodDisruptionBudget (`pdb.yaml`), critical alerts
 (`alerts.yaml`) and a Renovate rule in the repo's `renovate.json` that leaves this folder alone. Background: the app repo's `docs/DEPLOY-NOTES.md`.
 
@@ -363,6 +364,118 @@ When P7 has passed, `~/.local/share/elwanycomp-production-cf` may be removed.
 Not part of this sitting, still open: the uptime check from outside the cluster on
 `https://comp-staff.teamelwany.com/healthz` plus the public home page (DEPLOY-NOTES), and the
 pre-release list in the app repo's `docs/CHECKS.md`.
+
+## Photos stage 1: upload routes (upload-routes.yaml) and image 68d3a16
+
+App repo `docs/specs/teams.md` 5.4 and `docs/DEPLOY-NOTES.md` D16 to D24 are the source; the manifests
+are the test site's (`../staging/upload-routes.yaml`), which passed the manifest review, the
+pentester's review and the release checks there. Only the namespace and the two hosts differ. Memory
+is already request = limit = 768Mi here (D19), so `app.yaml` changes only the image. No migration:
+the schema stays 5 (D20), so no pre-release snapshot is needed.
+
+**Precondition, before merging:** both production hostnames' tunnel rules point at
+`http://traefik.traefik.svc.cluster.local:8081` (P2) and the Ingress names `comp` only (`ingress.yaml`).
+Read-only check with the P2 helpers:
+`curl -sf -H @<(ZT) "$URL" | jq -r '.result.config.ingress[] | "\(.hostname // "(catch-all)") -> \(.service)"'`
+must show `comp-staff.teamelwany.com` and `competitions.teamelwany.com` on `:8081`. If not, do not merge.
+
+**The two routes** (IngressRoutes on the `comp` entrypoint only, explicit `priority: 1000`, above the
+Ingress rules, which get their rule length, about 50 to 60):
+
+| Host | Method and path | Chain, in order |
+|---|---|---|
+| `competitions.teamelwany.com` | `POST /api/public/events/<number>/entries` (the public sign-up) | InFlightReq 4 per `CF-Connecting-IP`; InFlightReq 20 per cloudflared pod (TCP peer; 2 tunnel replicas, so 40 per Traefik pod); Buffering max 2,162,688 bytes, 524,288 in memory (the rest in Traefik's /tmp) |
+| `comp-staff.teamelwany.com` | `PUT` on `/api/team/entries/<n>/photo`, `/api/team/logo`, `/api/org/entries/<n>/photo`, `/api/org/clubs/<n>/logo`, `/api/admin/events/<n>/entries/<n>/photo`, `/api/admin/events/<n>/clubs/<n>/logo` | InFlightReq 4 per `CF-Connecting-IP`; InFlightReq 5 per cloudflared pod (TCP peer; 2 tunnel replicas, so 10 per Traefik pod); Buffering max 352,256 bytes, all in memory |
+| both | everything else (`/api/login`, the live and form GETs, the picture DELETEs, these paths with another method or on the other host) | the Ingress, `body-64k` (65,536 bytes), unchanged |
+
+Over an InFlightReq Traefik answers 429 before buffering a byte; over a Buffering limit, its own
+plain-text 413. The app's caps sit 64 KiB lower (2 MiB and 280 KiB), so a body between the two gets the
+app's JSON 413 `ERR-REF-006`. A middleware added to the Ingress later must be added to both routes in the
+same change. If the team-elwany tunnel's cloudflared replica count changes, the two total caps change
+with it (comment in `upload-routes.yaml`).
+
+**Check from outside, after Argo syncs.** Only probes that send no valid data and cannot write anything:
+every body is a run of `a` characters (not JSON), there is no session cookie and no `Idempotency-Key`, so
+the app refuses each one before any write; only the size decides who answers. `traefik` means Traefik's
+own answer (the body never reached the app), `app` means the body passed Traefik and the app answered
+with an `ERR-REF` (413 `ERR-REF-006` above its cap; below it some other refusal, 400, 401, 403, 404 or
+429, which is fine). The sign-up probes debit the prober's own address in the app's send bucket (3 a
+minute per address, 30 a minute overall) and count against the Cloudflare rate rule (10 per 10 s),
+hence the pauses; run it when sign-ups are quiet, never on the event day.
+```bash
+( set -euo pipefail
+  T=$(mktemp -d); trap 'rm -rf "$T"' EXIT
+  probe() {  # host method path bytes [extra curl arguments]
+    local h=$1 m=$2 u=$3 n=$4; shift 4
+    head -c "$n" /dev/zero | tr '\0' 'a' > "$T/body"
+    : > "$T/out"
+    code=$(curl -s --max-time 60 -o "$T/out" -w '%{http_code}' -X "$m" -H 'Content-Type: application/json' \
+      --data-binary @"$T/body" "$@" "https://$h$u" || true)
+    if grep -q 'ERR-REF' "$T/out"; then who=app; else who=traefik; fi
+    printf '%-34s %-7s %-40s %8s %-34s -> %s %s\n' "$h" "$m" "$u" "$n" "$*" "$code" "$who"; sleep 2; }
+  P=competitions.teamelwany.com; S=comp-staff.teamelwany.com
+  # A. Limits on the plain routes
+  probe $S POST /api/login                      66560    # 65 KiB, not an upload path
+  probe $P PUT  /api/public/events/1/entries    66560    # upload path, wrong method
+  probe $S POST /api/public/events/1/entries    66560    # upload path, wrong host
+  probe $P PUT  /api/team/entries/1/photo       66560    # picture path, wrong host
+  probe $P POST /api/public/events/1/entries    2162000  # just under the sign-up limit
+  probe $P POST /api/public/events/1/entries    2163000  # just over
+  probe $S PUT  /api/org/clubs/1/logo           352000   # just under the picture limit
+  probe $S PUT  /api/org/clubs/1/logo           353000   # just over
+  probe $S PUT  /api/team/logo                  352000
+  probe $S PUT  /api/team/logo                  353000
+  # B. Path and method variants of the sign-up, 65 KiB each (pentester L2)
+  probe $P POST //api/public/events/1/entries           66560 --path-as-is
+  probe $P POST /api/public/events/1/entries/           66560
+  probe $P POST /api/public/events/1/entries%2F         66560 --path-as-is
+  probe $P POST /api/public/events/1/x/../entries       66560 --path-as-is
+  probe $P HEAD /api/public/events/1/entries            66560
+  probe $P OPTIONS /api/public/events/1/entries         66560
+  probe $P post /api/public/events/1/entries            66560
+  # C. Host variants of the sign-up (pentester H1)
+  probe $P POST /api/public/events/1/entries    2162000  -H "Host: COMPETITIONS.teamelwany.com"
+  probe $P POST /api/public/events/1/entries    2163000  -H "Host: COMPETITIONS.teamelwany.com"
+  probe $P. POST /api/public/events/1/entries   2162000
+  probe $P. POST /api/public/events/1/entries   2163000
+)
+```
+Expected:
+- A: the first four `413 traefik`; then `app`, `413 traefik`, `app`, `413 traefik`, `app`, `413 traefik`.
+- B: each line is a Traefik refusal (`413`, or `400` for the encoded slash) or an `app` answer (a 4xx with
+  `ERR-REF`). An `app` line means Traefik cleaned the path to the real sign-up path and the app refused
+  it, which is fine. Anything else (a `2xx`, a `5xx`, a timeout other than on HEAD): stop and report.
+- C: the upper-case Host exactly as the plain host in A, `app` then `413 traefik`; the trailing-dot host
+  gets Traefik's own `404` (no route matches it), which is fine. If Cloudflare refuses a variant itself (a
+  4xx that is not 413, no `ERR-REF`), note it; that is not a failure.
+Any other pattern in A: roll back (below).
+
+**Not on production:** the release checks (D18 trickle check, D19 parallel cap-sized bodies and the
+`{},` body, D21 picture checks, D24 load test with photos) ran on the test site against this same image
+and these same manifests. They send real or cap-sized data, hold connections and fill the send bucket:
+do not run them against production.
+
+**Rollback.** Revert this pull request (a new pull request, merged by the owner like P5). The
+Application has `prune: false` (`kubernetes/bootstrap/apps/elwanycomp.yaml`), so the revert puts the old
+image back but leaves the two IngressRoutes and six Middlewares in the cluster. After Argo has synced the
+revert (not before: with `selfHeal` it re-creates anything still in git), delete them by hand:
+```bash
+kubectl -n elwanycomp delete ingressroute elwanycomp-signup-upload elwanycomp-picture-upload
+kubectl -n elwanycomp delete middleware signup-inflight-addr signup-inflight-total signup-body \
+  picture-inflight-addr picture-inflight-total picture-body
+```
+Without the routes every path is back on the Ingress at 64 KiB (uploads fail with Traefik's 413, nothing
+is exposed). The image can also be rolled back alone (revert only the `image:` line); the routes are
+harmless in front of the older image, which caps every body at 64 KiB itself.
+
+Rolling the image back while pictures exist is safe. Both images are schema 5 (no migration between
+dac2d1f and 68d3a16), so the older image starts on the same database. Pictures are rows in the `image`
+table (created empty by migration 005); dac2d1f never reads or writes it, so its pages show no pictures
+and it has no picture routes. One difference while it runs: foreign keys are on and `image.entry_id` and
+`image.club_id` are `ON DELETE CASCADE`, so deleting an entry or a club, merging clubs or rejecting a
+pending sending still removes that picture, exactly as 68d3a16 does, but dac2d1f's audit row does not
+record it (68d3a16 writes `had_photo` / `logos_deleted`). Nothing else is lost; rolling forward again
+shows every picture that is still there.
 
 ## Rollback
 
