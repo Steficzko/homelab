@@ -81,9 +81,10 @@ and 2 are done, which is expected.
    connector `kubernetes/networking/cloudflared/deployment-elwany.yaml`, token-based, so the route
    lives on the Cloudflare side). The existing teamelwany.com hosts (`link.teamelwany.com`,
    `link-admin.teamelwany.com`, `gallery.teamelwany.com`) go to
-   `http://traefik.traefik.svc.cluster.local:8081`, Traefik's dedicated `comp` entrypoint, the only one
-   this app's Ingress uses. (History: until 2026-11-23 the rule pointed at `:80`, the shared `web`
-   entrypoint; the homelab session moved both test hostnames to `:8081` in tunnel config version 8.) Use
+   `http://traefik.traefik.svc.cluster.local:80`, the shared `web` entrypoint, and STAY there. Only the
+   ElwanyComp hostnames go to `http://traefik.traefik.svc.cluster.local:8081`, Traefik's dedicated `comp`
+   entrypoint, the only one this app's Ingress uses. (History: until 2026-11-23 the ElwanyComp rules also
+   pointed at `:80`; the homelab session moved both test hostnames to `:8081` in tunnel config version 8.) Use
    the API, not the dashboard's "Add public hostname" form: the form also creates the DNS record at
    once, which would break the DNS-last order.
 
@@ -113,9 +114,10 @@ and 2 are done, which is expected.
      diff <(jq .result.config "$W/before.json") <(jq .config "$W/after.json") || true
    )
    ```
-   Read the output. The listed teamelwany.com hosts must point at
-   `http://traefik.traefik.svc.cluster.local:8081` and the last line must be the catch-all; the diff
-   must add exactly the one `comp-test.teamelwany.com` rule. If not, stop.
+   Read the output. The other teamelwany.com hosts must point at
+   `http://traefik.traefik.svc.cluster.local:80` (do not change them), the last line must be the
+   catch-all, and the diff must add exactly the one `comp-test.teamelwany.com` rule, pointing at
+   `http://traefik.traefik.svc.cluster.local:8081`. If not, stop.
 
    3b. Only after reading 3a, write the new config and confirm it took:
    ```bash
