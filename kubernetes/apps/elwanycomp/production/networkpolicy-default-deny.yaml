@@ -1,0 +1,22 @@
+# Deployed via ArgoCD (bootstrap: elwanycomp.yaml).
+# Default-deny from birth: nothing talks until networkpolicies.yaml allows it, including
+# same-namespace traffic and all egress. DNS to CoreDNS is the one standing exception.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: default-deny
+  namespace: elwanycomp
+spec:
+  podSelector: {}
+  policyTypes: [Ingress, Egress]
+  egress:
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: kube-system
+          podSelector:
+            matchLabels:
+              k8s-app: kube-dns
+      ports:
+        - { port: 53, protocol: UDP }
+        - { port: 53, protocol: TCP }

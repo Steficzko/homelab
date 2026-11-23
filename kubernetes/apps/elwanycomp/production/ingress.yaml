@@ -1,0 +1,72 @@
+# Deployed via ArgoCD (bootstrap: elwanycomp.yaml).
+# Two hostnames on one Service (app repo docs/specs/hosts.md): competitions.teamelwany.com (public:
+# live page, results, sign-up) and comp-staff.teamelwany.com (sign-in and every signed-in
+# screen). The app's own host gate decides which routes answer on which host; these two rules are
+# the second layer. The team-elwany Cloudflare tunnel
+# (networking/cloudflared/deployment-elwany.yaml, token-based) sends both hosts to
+# http://traefik.traefik.svc.cluster.local:8081, Traefik's dedicated `comp` entrypoint (README.md P2
+# adds both production hosts there). The entrypoint and the
+# body Middleware annotations below apply to both rules.
+#
+# TLS terminates at Cloudflare's edge and the tunnel reaches Traefik over HTTP, as in
+# saas-gompha/staging/ingress.yaml: so NO tls block and NO cert-manager annotation. That also
+# means no certificate is issued (and the hostname is not published in CT logs) before DNS exists.
+#
+# Entrypoint `comp` ONLY: the dedicated ElwanyComp entrypoint (ClusterIP Service only, 120 s read
+# timeout; app repo docs/DEPLOY-NOTES.md D18). Never `web`, `websecure`, `lan` or `trusted`.
+# The `lan` and `trusted` entrypoints would put the app on the home LAN
+# beside the tunnel; there a client can send its own CF-Connecting-IP, which the app trusts for
+# the per-IP login limit. Through the tunnel Cloudflare always sets that header.
+#
+# The tunnel public hostname and the DNS record are NOT in this repo: they are the owner's
+# Cloudflare steps (README.md), DNS last. The public host must equal ELWANYCOMP_PUBLIC_ORIGIN and
+# the staff host ELWANYCOMP_STAFF_ORIGIN in app.yaml.
+#
+# /login must never sit behind Cloudflare Access and must never redirect to another origin
+# (DEPLOY-NOTES D2: a redirect carries the QR #pin= fragment to its target). Nothing here
+# redirects.
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: elwanycomp
+  namespace: elwanycomp
+  annotations:
+    traefik.ingress.kubernetes.io/router.entrypoints: comp
+    traefik.ingress.kubernetes.io/router.middlewares: elwanycomp-body-64k@kubernetescrd
+spec:
+  ingressClassName: traefik
+  rules:
+    - host: competitions.teamelwany.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: elwanycomp
+                port:
+                  number: 8000
+    - host: comp-staff.teamelwany.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: elwanycomp
+                port:
+                  number: 8000
+---
+# Same cap the app enforces itself (app/main.py MAX_BODY = 64 KiB, 413 ERR-REF-006), applied
+# at the edge of the cluster too (ADR-044: public APIs get a buffering.maxRequestBodyBytes
+# Middleware). Buffering holds the response until complete; fine here, the app does not stream.
+# Do NOT raise this one for photos: the photos release adds a second, larger Middleware on the
+# upload routes only (app repo docs/specs/teams.md 5.3).
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: body-64k
+  namespace: elwanycomp
+spec:
+  buffering:
+    maxRequestBodyBytes: 65536

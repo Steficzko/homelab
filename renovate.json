@@ -176,6 +176,13 @@
       "schedule": [
         "* 0-6 * * *"
       ]
+    },
+    {
+      "description": "ElwanyComp PRODUCTION is never updated by Renovate (owner's app, event 2026-12-11): any merge touching the image restarts the single pod, mid-competition if it lands on the day. Releases are hand PRs that bump tag and digest together and the owner merges them. Scoped to the production folder only; staging keeps the defaults. Last in the list so no earlier rule overrides it.",
+      "matchFileNames": [
+        "kubernetes/apps/elwanycomp/production/**"
+      ],
+      "enabled": false
     }
   ]
 }

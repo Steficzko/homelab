@@ -1,0 +1,23 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: elwanycomp
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/Steficzko/homelab.git
+    targetRevision: HEAD
+    path: kubernetes/apps/elwanycomp/production
+    directory:
+      recurse: true
+      exclude: '{*.sops.yaml}'     # secrets are applied by hand (README.md), never by Argo
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: elwanycomp
+  syncPolicy:
+    automated:
+      prune: false                 # NEVER auto-delete the DB PVC or its Namespace (Gompha prod pattern); both also carry Prune=false,Delete=false
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true

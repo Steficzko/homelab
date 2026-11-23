@@ -1,0 +1,79 @@
+# Deployed via ArgoCD (bootstrap: elwanycomp.yaml).
+# Event-day alerts, severity CRITICAL on purpose (app repo DEPLOY-NOTES "Production sizing",
+# Monitoring). The estate's pod alerts are severity warning and go to the 12 h digest route in
+# monitoring/prometheus/values.yaml (group_wait 10m): useless during a competition. Critical falls
+# through to the default route (group_wait 30s) and pages Telegram within about a minute.
+#
+# Same house pattern as monitoring/extras/*-alerts.yaml (label `release: kube-prometheus-stack`,
+# required by the Prometheus ruleSelector) but kept in the app's namespace beside the app, as the
+# notes ask: Prometheus' ruleNamespaceSelector is {} (all namespaces, checked live 2026-11-23).
+# All metrics are kube-state-metrics, so nothing in this namespace needs to be scraped and the
+# NetworkPolicies stay as they are.
+#
+# Health: readiness is the app's /healthz (opens the DB, checks the schema), so "not ready" IS
+# "health failing". The check from outside the cluster (staff host /healthz plus the public home
+# page) is not in this repo; see README.md, after P7.
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: elwanycomp-alerts
+  namespace: elwanycomp
+  labels:
+    release: kube-prometheus-stack   # required by the Prometheus ruleSelector
+spec:
+  groups:
+    - name: elwanycomp
+      rules:
+        # 3 minutes covers a normal Recreate release without a page: Longhorn detach and attach, the
+        # image pull, then up to 60 s of start-up can come close to 2 minutes.
+        # A data restore (scale to 0, RUNBOOK section 3) fires this alert; that is expected.
+        - alert: ElwanyCompNotReady
+          expr: kube_deployment_status_replicas_available{namespace="elwanycomp", deployment="elwanycomp"} < 1
+          for: 3m
+          labels:
+            severity: critical
+          annotations:
+            summary: "ElwanyComp has no ready pod for 3 minutes (both hostnames are down)"
+            description: >-
+              /healthz (readiness) has been failing or the pod is not running. Check
+              `kubectl -n elwanycomp get pods`, `kubectl -n elwanycomp describe pod -l app=elwanycomp`
+              and `kubectl -n elwanycomp logs deploy/elwanycomp | grep -E 'startup|ERR-REF'`.
+        # The Deployment object or kube-state-metrics itself gone: the rule above cannot fire then.
+        - alert: ElwanyCompAbsent
+          expr: absent(kube_deployment_status_replicas_available{namespace="elwanycomp", deployment="elwanycomp"})
+          for: 5m
+          labels:
+            severity: critical
+          annotations:
+            summary: "No ElwanyComp deployment metrics for 5 minutes"
+            description: >-
+              The Deployment is missing or kube-state-metrics is not reporting it. Check
+              `kubectl -n elwanycomp get deploy` and the ArgoCD Application `elwanycomp`.
+        # Any single restart pages (the estate rule waits for 3 in 24 h). Fires for 10 minutes, then
+        # resolves on its own unless the container restarts again.
+        - alert: ElwanyCompRestarted
+          expr: increase(kube_pod_container_status_restarts_total{namespace="elwanycomp", container="app"}[10m]) > 0
+          for: 0m
+          labels:
+            severity: critical
+          annotations:
+            summary: "ElwanyComp container restarted"
+            description: >-
+              {{ $value | humanize }} restart(s) in the last 10 minutes. Last State reason:
+              `kubectl -n elwanycomp describe pod {{ $labels.pod }}`. ElwanyCompOOMKilled fires too
+              if it was memory.
+        # D19: alert on OOMKilled. The last-terminated reason stays set until the next termination,
+        # so it is joined with a recent restart to fire only once per kill.
+        - alert: ElwanyCompOOMKilled
+          expr: >-
+            (increase(kube_pod_container_status_restarts_total{namespace="elwanycomp", container="app"}[10m]) > 0)
+            and on (namespace, pod, container)
+            (kube_pod_container_status_last_terminated_reason{namespace="elwanycomp", container="app", reason="OOMKilled"} == 1)
+          for: 0m
+          labels:
+            severity: critical
+          annotations:
+            summary: "ElwanyComp was OOM-killed (limit 768Mi)"
+            description: >-
+              The container hit its memory limit and was restarted. Look for a burst of uploads in
+              `kubectl -n elwanycomp logs deploy/elwanycomp --previous`.
