@@ -1,6 +1,8 @@
 # ElwanyComp staging: the owner's hand steps
 
-Host: `comp-test.teamelwany.com` (production later: `competitions.teamelwany.com`). Namespace:
+Hosts: `comp-test.teamelwany.com` (public) and `comp-test-staff.teamelwany.com` (staff: sign-in and
+every signed-in screen; added by "Second hostname" below). Production later:
+`competitions.teamelwany.com` and `comp-staff.teamelwany.com`. Namespace:
 `elwanycomp-staging`. ArgoCD Application: `kubernetes/bootstrap/apps/elwanycomp-staging.yaml`
 (excludes `*.sops.yaml`, so Argo never applies secrets; `prune: false`). The app repo is
 Steficzko/elwanycomp; its `docs/DEPLOY-NOTES.md` has the background.
@@ -245,6 +247,131 @@ and 2 are done, which is expected.
    must show only `/login` for that visit. Traefik has no access log in this cluster.
 
    When step 7 has passed, `$W` (`~/.local/share/elwanycomp-staging-cf`) may be removed.
+
+## Second hostname: comp-test-staff.teamelwany.com (before the two-hostname image)
+
+From app commit 5179f2f the app answers on two hostnames (app repo `docs/specs/hosts.md`): the
+public one keeps the live page, results and sign-up; sign-in, `/admin`, `/mat/`, `/team`,
+`/healthz` and `/livez` move to the staff one. **S1 to S3 run before the pull request that carries
+this section and the new image is merged** (read them from that PR's branch, or from the app repo's
+`docs/RUNBOOK-test-site.md`, Update B). If the image lands first, sign-in is unreachable until the
+staff hostname works. Same rules as above: owner's steps, stop at the first failure, the homelab
+session may run S1 and S3 on the owner's go, S2 is the owner's by hand.
+
+S1. **Tunnel public hostname** for `comp-test-staff.teamelwany.com`, same tunnel, same service, same
+   read / diff / separate PUT as step 3. Its own work folder, so step 3's rollback files stay
+   untouched. **Keep `$W` until S4 passes.**
+   ```bash
+   W=~/.local/share/elwanycomp-staging-cf-staff; install -d -m 700 "$W"
+   ACC=90e7dc337477819281ed982a7f6afe32; TUN=98ea5620-3e6b-42cb-ad1f-e18c0c9c96dd
+   URL=https://api.cloudflare.com/client/v4/accounts/$ACC/cfd_tunnel/$TUN/configurations
+   ZT() { printf 'Authorization: Bearer %s\n' "$(cat ~/.cloudflare_token_zt)"; }
+   H=comp-test-staff.teamelwany.com; SVC=http://traefik.traefik.svc.cluster.local:80
+   ```
+   S1a. Read, check, build, diff (nothing is written to Cloudflare here):
+   ```bash
+   ( set -euo pipefail
+     [ ! -e "$W/before.json" ] || { echo "STOP: $W/before.json exists from an earlier run. Keep it, it is the rollback."; exit 1; }
+     trap 'rm -f "$W/before.json.tmp"' EXIT
+     curl -sf -H @<(ZT) "$URL" > "$W/before.json.tmp"
+     jq -e --arg h "$H" --arg s "$SVC" '.success and (.result.config.ingress[-1].hostname==null)
+         and ([.result.config.ingress[] | select(.hostname=="comp-test.teamelwany.com" and .service==$s)] | length==1)
+         and ([.result.config.ingress[].hostname] | index($h)==null)' "$W/before.json.tmp" >/dev/null \
+       || { echo "STOP: the tunnel config is not as expected (comp-test missing, or the staff host already there). Nothing was changed."; exit 1; }
+     mv "$W/before.json.tmp" "$W/before.json"
+     jq -r '.result.config.ingress[] | "\(.hostname // "(catch-all)") -> \(.service)"' "$W/before.json"
+     jq --arg h "$H" --arg s "$SVC" '{config: (.result.config | .ingress |= ([{hostname: $h, service: $s}] + .))}' "$W/before.json" > "$W/after.json"
+     jq -e --arg h "$H" --arg s "$SVC" --slurpfile b "$W/before.json" '(.config.ingress[0] == {hostname: $h, service: $s}) and (.config.ingress[1:] == $b[0].result.config.ingress) and ((.config|del(.ingress)) == ($b[0].result.config|del(.ingress)))' "$W/after.json" >/dev/null \
+       || { echo "STOP: after.json is not before.json plus one rule. Nothing was changed."; exit 1; }
+     diff <(jq .result.config "$W/before.json") <(jq .config "$W/after.json") || true
+   )
+   ```
+   The diff must add exactly the one `comp-test-staff.teamelwany.com` rule. If not, stop.
+
+   S1b. Only after reading S1a, write and confirm:
+   ```bash
+   ( set -euo pipefail
+     curl -sf -H @<(ZT) "$URL" | jq -e --slurpfile b "$W/before.json" '.result.config == $b[0].result.config' >/dev/null \
+       || { echo "STOP: the tunnel config changed since S1a. Nothing was changed. Move before.json and after.json aside and redo S1a."; exit 1; }
+     curl -sf -X PUT -H @<(ZT) -H "Content-Type: application/json" --data @"$W/after.json" "$URL" | jq -e '.success' >/dev/null
+     trap 'rm -f "$W/put.json.tmp"' EXIT
+     curl -sf -H @<(ZT) "$URL" > "$W/put.json.tmp"
+     jq -e --arg h "$H" '.result.config.ingress[0].hostname == $h' "$W/put.json.tmp" \
+       && mv "$W/put.json.tmp" "$W/put.json"
+   )
+   ```
+   Rollback: step 3's rollback block with `W=~/.local/share/elwanycomp-staging-cf-staff`.
+
+S2. **Cloudflare rules extended to the staff hostname** (owner, by hand, dashboard, zone
+   teamelwany.com). Edit the existing rules from step 4; do not create second copies. Add both staff
+   hostnames so production is covered too. If the editor refuses a field, stop and report.
+   - `elwanycomp no injection` (Configuration Rule, D1): expression
+     `(http.host in {"comp-test.teamelwany.com" "competitions.teamelwany.com" "comp-test-staff.teamelwany.com" "comp-staff.teamelwany.com"})`,
+     settings unchanged.
+   - `elwanycomp login and public posts` (the one rate-limiting rule): expression
+     `(http.request.method eq "POST" and (http.request.uri.path eq "/api/login" or starts_with(http.request.uri.path, "/api/public/")) and http.host in {"comp-test.teamelwany.com" "competitions.teamelwany.com" "comp-test-staff.teamelwany.com" "comp-staff.teamelwany.com"})`,
+     counting and action unchanged.
+   - `elwanycomp login no tor` (custom rule): expression
+     `(ip.src.country eq "T1" and http.request.uri.path eq "/api/login" and http.host in {"comp-test.teamelwany.com" "competitions.teamelwany.com" "comp-test-staff.teamelwany.com" "comp-staff.teamelwany.com"})`,
+     action Block.
+   - No challenge, "Under Attack" mode, Bot Fight Mode or edge cache rule may match the staff
+     hostnames (D9; hosts.md 5). No Cloudflare Access on the staff host unless the owner decides it
+     (then never on `/login`, `/api/login`, `/team`, `/mat/`, `/api/img/*`).
+
+S3. **DNS, last.** Same helpers as step 5, with the staff name and its own folder:
+   ```bash
+   W=~/.local/share/elwanycomp-staging-cf-staff; install -d -m 700 "$W"
+   Z=bf7cb7f1d5d83b3416647fddee20b82c; H=comp-test-staff.teamelwany.com
+   DT() { printf 'Authorization: Bearer %s\n' "$(cat ~/.cloudflare_token)"; }
+   ```
+   S3a. Check (as 5a): the tunnel CNAMEs, then the count for `$H`.
+   ```bash
+   ( set -euo pipefail
+     curl -sf -H @<(DT) "https://api.cloudflare.com/client/v4/zones/$Z/dns_records?type=CNAME&per_page=100" \
+       | jq -r '.result[] | select(.content | endswith("cfargotunnel.com")) | "\(.name) -> \(.content)"'
+     curl -sf -H @<(DT) "https://api.cloudflare.com/client/v4/zones/$Z/dns_records?name=$H" | jq '.result | length'
+   )
+   ```
+   S3b. Only when S3a's last line printed `0` and `comp-test.teamelwany.com` points at
+   `98ea5620-3e6b-42cb-ad1f-e18c0c9c96dd.cfargotunnel.com`:
+   ```bash
+   ( set -euo pipefail
+     [ ! -e "$W/dns.json" ] || { echo "STOP: $W/dns.json exists; the record was already created."; exit 1; }
+     [ "$(curl -sf -H @<(DT) "https://api.cloudflare.com/client/v4/zones/$Z/dns_records?name=$H" | jq '.result|length')" = 0 ] \
+       || { echo "STOP: name in use (or the check failed). Nothing was changed."; exit 1; }
+     trap 'rm -f "$W/dns.json.tmp"' EXIT
+     jq -n --arg h "$H" '{type:"CNAME", name:$h, content:"98ea5620-3e6b-42cb-ad1f-e18c0c9c96dd.cfargotunnel.com", proxied:true, comment:"ElwanyComp staging staff host, homelab kubernetes/apps/elwanycomp/staging"}' \
+       | curl -sf -X POST -H @<(DT) -H "Content-Type: application/json" \
+           "https://api.cloudflare.com/client/v4/zones/$Z/dns_records" --data @- > "$W/dns.json.tmp"
+     jq -e '.success' "$W/dns.json.tmp" >/dev/null && mv "$W/dns.json.tmp" "$W/dns.json" \
+       && jq -r '.result.id' "$W/dns.json"
+   )
+   ```
+   S3c. Check, read-only, before the image switch. The Ingress rule for the staff host only arrives
+   with the pull request, so the right answer today is **Traefik's own 404**: status `404` and the
+   body `404 page not found`. A Cloudflare error page (530, 1033, 1016) or a tunnel error means the
+   path is broken: stop. Wait 1 to 2 minutes after S3b before deciding.
+   ```bash
+   curl -s -o /dev/null -w '%{http_code}\n' https://comp-test-staff.teamelwany.com/livez
+   curl -s https://comp-test-staff.teamelwany.com/livez
+   curl -s https://comp-test.teamelwany.com/healthz
+   ```
+   The third line (the public host, still the old image) must still print `"status":"ok"`.
+   Rollback: step 5's rollback block with the staff folder.
+
+S4. **Only then** the pull request with the new image, both Ingress hosts and the two variables
+   merges (staging: the orchestrator merges after manifest-reviewer passes). After Argo syncs:
+   ```bash
+   kubectl -n elwanycomp-staging rollout status deploy/elwanycomp --timeout=300s
+   curl -s https://comp-test-staff.teamelwany.com/healthz
+   curl -s -o /dev/null -w '%{http_code}\n' https://comp-test.teamelwany.com/healthz
+   curl -s -o /dev/null -w '%{http_code}\n' https://comp-test.teamelwany.com/login
+   curl -s -o /dev/null -w '%{http_code}\n' https://comp-test.teamelwany.com/
+   ```
+   Expected, in order: `"status":"ok"` with the new schema number; `404`; `404`; `200`. Then step 7's
+   D1 and D3 checks with `comp-test-staff.teamelwany.com` in place of `comp-test.teamelwany.com`
+   (`/login` now lives on the staff host), and a sign-in there. From now on `/healthz` through the
+   tunnel is checked on the staff host only (it answers 404 on the public host by design).
 
 ## Cloudflare Access: the owner's decision, not part of these steps yet
 
