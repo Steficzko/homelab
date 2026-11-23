@@ -51,8 +51,8 @@ spec:
             - {name: ELWANYCOMP_PUBLIC_ORIGIN, value: "https://comp-test.teamelwany.com"}
             - {name: ELWANYCOMP_STAFF_ORIGIN, value: "https://comp-test-staff.teamelwany.com"}
             # Set by Cloudflare at the edge. uvicorn runs with --no-proxy-headers, and the
-            # NetworkPolicy admits only Traefik, and the router is on the `web` entrypoint only,
-            # which only the tunnel reaches (ingress.yaml).
+            # NetworkPolicy admits only Traefik, and the router is on the dedicated `comp` entrypoint only,
+            # which from outside the cluster only the tunnel reaches (ingress.yaml).
             - {name: ELWANYCOMP_CLIENT_IP_HEADER, value: "CF-Connecting-IP"}
             - {name: ELWANYCOMP_DB, value: "/data/elwanycomp.db"}
             - name: ELWANYCOMP_PIN_PEPPER
