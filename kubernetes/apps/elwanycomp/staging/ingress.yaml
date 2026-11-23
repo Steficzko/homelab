@@ -57,6 +57,9 @@ spec:
                 port:
                   number: 8000
 ---
+# The 64 KiB default for every path except the seven upload routes, which upload-routes.yaml
+# matches by host, method and exact path at priority 1000 (above these rules) with larger limits.
+# A middleware added to this Ingress must be added to both routes there too.
 # Same cap the app enforces itself (app/main.py MAX_BODY = 64 KiB, 413 ERR-REF-006), applied
 # at the edge of the cluster too (ADR-044: public APIs get a buffering.maxRequestBodyBytes
 # Middleware). Buffering holds the response until complete; fine here, the app does not stream.
