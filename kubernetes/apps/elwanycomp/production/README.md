@@ -4,9 +4,9 @@ Hosts (owner, 2026-11-23): public `competitions.teamelwany.com` (live page, resu
 staff `comp-staff.teamelwany.com` (sign-in and every signed-in screen). Namespace `elwanycomp`.
 ArgoCD Application `kubernetes/bootstrap/apps/elwanycomp.yaml` (excludes `*.sops.yaml`, so Argo
 never applies secrets; `prune: false`; Namespace and PVC also carry `Prune=false,Delete=false`).
-Image: the one the test site runs since 2026-11-23 (app commit e562a94, schema 5). This folder is
-the staging folder with only these changes: namespace, the two hostnames (Ingress and the two
-`ORIGIN` variables), CPU 500m and memory 768Mi request = limit, a 5Gi volume, plus a
+Image: the one the test site runs (app commit 4cf0072, schema 5). Routes on Traefik's dedicated
+`comp` entrypoint, as staging. This folder is the staging folder with only these changes:
+namespace, the two hostnames (Ingress and the two `ORIGIN` variables), CPU 500m and memory 768Mi request = limit, a 5Gi volume, plus a
 PodDisruptionBudget (`pdb.yaml`), critical alerts (`alerts.yaml`) and a Renovate rule in the repo's
 `renovate.json` that leaves this folder alone. Background: the app repo's `docs/DEPLOY-NOTES.md`.
 
@@ -111,11 +111,14 @@ owner's word.
 
 Team-elwany tunnel `98ea5620-3e6b-42cb-ad1f-e18c0c9c96dd` (connector
 `kubernetes/networking/cloudflared/deployment-elwany.yaml`, token-based, so routes live on the
-Cloudflare side). Both new hosts go to `http://traefik.traefik.svc.cluster.local:80` (Traefik's
-`web` entrypoint, the only one this Ingress uses). API, not the dashboard form: the form also
-creates the DNS record at once and breaks the DNS-last order. Today (2026-11-23) the config is
-**version 7** and holds comp-test-staff, comp-test, gallery, link, link-admin, app, then the
-catch-all. Both production hosts are added in one write.
+Cloudflare side). Both new hosts go to `http://traefik.traefik.svc.cluster.local:8081`, Traefik's
+dedicated `comp` entrypoint, the only one this Ingress uses. Only ElwanyComp hostnames use `:8081`.
+The other teamelwany.com hosts (link, link-admin, gallery, app) stay on
+`http://traefik.traefik.svc.cluster.local:80`, the shared `web` entrypoint: do not change them.
+API, not the dashboard form: the form also creates the DNS record at once and breaks the DNS-last
+order. Today (2026-11-23) the config is **version 8**: comp-test-staff and comp-test on `:8081`,
+gallery, link, link-admin and app on `:80`, then the catch-all. Both production hosts are added
+in one write; nothing else moves.
 
 Work folder and helpers (nothing changes yet). `$W` is the rollback: **keep it until P7 passes.**
 ```bash
@@ -123,7 +126,9 @@ W=~/.local/share/elwanycomp-production-cf; install -d -m 700 "$W"
 ACC=90e7dc337477819281ed982a7f6afe32; TUN=98ea5620-3e6b-42cb-ad1f-e18c0c9c96dd
 URL=https://api.cloudflare.com/client/v4/accounts/$ACC/cfd_tunnel/$TUN/configurations
 ZT() { printf 'Authorization: Bearer %s\n' "$(cat ~/.cloudflare_token_zt)"; }
-HS=comp-staff.teamelwany.com; HP=competitions.teamelwany.com; SVC=http://traefik.traefik.svc.cluster.local:80
+HS=comp-staff.teamelwany.com; HP=competitions.teamelwany.com
+SVC=http://traefik.traefik.svc.cluster.local:8081   # ElwanyComp hosts only
+OTHER=http://traefik.traefik.svc.cluster.local:80   # every other teamelwany.com host stays here
 ```
 P2a. Read, check, build, diff (nothing is written to Cloudflare here):
 ```bash
@@ -131,11 +136,14 @@ P2a. Read, check, build, diff (nothing is written to Cloudflare here):
   [ ! -e "$W/before.json" ] || { echo "STOP: $W/before.json exists from an earlier run. Keep it, it is the rollback."; exit 1; }
   trap 'rm -f "$W/before.json.tmp"' EXIT
   curl -sf -H @<(ZT) "$URL" > "$W/before.json.tmp"
-  jq -e --arg hs "$HS" --arg hp "$HP" --arg s "$SVC" '.success and (.result.version == 7)
+  jq -e --arg hs "$HS" --arg hp "$HP" --arg s "$SVC" --arg o "$OTHER" '.success and (.result.version == 8)
       and (.result.config.ingress[-1].hostname == null)
       and ([.result.config.ingress[] | select((.hostname=="comp-test.teamelwany.com" or .hostname=="comp-test-staff.teamelwany.com") and .service==$s)] | length == 2)
+      and ([.result.config.ingress[] | select(.hostname != null and .hostname != "comp-test.teamelwany.com" and .hostname != "comp-test-staff.teamelwany.com")]
+           | (length == 4) and all(.service == $o)
+             and ([.[].hostname] | contains(["link.teamelwany.com", "link-admin.teamelwany.com", "gallery.teamelwany.com"])))
       and ([.result.config.ingress[].hostname] | (index($hs) == null and index($hp) == null))' "$W/before.json.tmp" >/dev/null \
-    || { echo "STOP: the tunnel config is not as expected (version not 7, test hosts missing, or a production host already there). Nothing was changed."; exit 1; }
+    || { echo "STOP: the tunnel config is not as expected (not version 8, test hosts not on :8081, other hosts not all on :80, or a production host already there). Nothing was changed."; exit 1; }
   mv "$W/before.json.tmp" "$W/before.json"
   jq -r '"version \(.result.version)", (.result.config.ingress[] | "\(.hostname // "(catch-all)") -> \(.service)")' "$W/before.json"
   jq --arg hs "$HS" --arg hp "$HP" --arg s "$SVC" '{config: (.result.config | .ingress |= ([{hostname: $hs, service: $s}, {hostname: $hp, service: $s}] + .))}' "$W/before.json" > "$W/after.json"
@@ -144,8 +152,9 @@ P2a. Read, check, build, diff (nothing is written to Cloudflare here):
   diff <(jq .result.config "$W/before.json") <(jq .config "$W/after.json") || true
 )
 ```
-Check: `version 7`, the seven lines above, and a diff that adds exactly the two production rules.
-If not, stop.
+Check: `version 8`; comp-test-staff and comp-test on `:8081`; gallery, link, link-admin and app
+on `:80` (do not change them); the catch-all last; and a diff that adds exactly the two production
+rules, both on `http://traefik.traefik.svc.cluster.local:8081`. If not, stop.
 
 P2b. Only after reading P2a, write and confirm:
 ```bash
@@ -159,7 +168,7 @@ P2b. Only after reading P2a, write and confirm:
     && mv "$W/put.json.tmp" "$W/put.json" && jq -r '"version \(.result.version)"' "$W/put.json"
 )
 ```
-Check: it prints `version 8`. `put.json` is the live config after the write; the rollback compares
+Check: it prints `version 9`. `put.json` is the live config after the write; the rollback compares
 against it.
 
 P2 rollback (puts the saved config back exactly; works from a fresh terminal; stops if anyone has
@@ -187,12 +196,18 @@ confirm, in the dashboard of zone teamelwany.com:
   `comp-test.teamelwany.com`, `competitions.teamelwany.com`, `comp-test-staff.teamelwany.com` and
   `comp-staff.teamelwany.com`; Rocket Loader Off, Email Obfuscation Off, Zaraz off, RUM off.
 - Security > WAF > Rate limiting rules: `elwanycomp login and public posts`, same four hostnames.
-- Security > WAF > Custom rules: `elwanycomp login no tor`, same four hostnames, action Block.
-- No Page Rule, Redirect Rule, Cloudflare Access app, challenge or "Cache Everything" rule matches
-  either production host.
+- Security > WAF > Custom rules: `elwanycomp login no tor`, same four hostnames, action Block,
+  covering sign-in and public posts: `ip.src.country eq "T1"` and the four hosts and
+  (path eq `/api/login` or (method `POST` and path starts with `/api/public/`)).
+- Rules > Redirect Rules: exactly ONE rule for these hosts, `elwanycomp https`: not ssl and the
+  four hosts, 301 to `https` with the same host and path, query string kept. It never sends to
+  another host (D2: `/login#pin=` stays on its own host).
+- No other Redirect Rule, no Page Rule, Cloudflare Access app, challenge or "Cache Everything" rule
+  matches either production host.
 
-Stop condition: a rule is missing, or lacks `competitions.teamelwany.com` or
-`comp-staff.teamelwany.com`. Then stop the sitting and report; the fix is a separate edit.
+Stop condition: a rule is missing, lacks `competitions.teamelwany.com` or
+`comp-staff.teamelwany.com`, the Tor rule lacks the `/api/public/` part, or a second redirect
+matches. Then stop the sitting and report; the fix is a separate edit.
 
 ## P4. DNS, last (owner, or homelab session on his go)
 
@@ -292,8 +307,12 @@ curl -s $S/login | grep -o '<script[^>]*>'
 curl -s $P/ | grep -o '<script[^>]*>'
 curl -s $S/login $P/ | grep -c '/cdn-cgi/' || true
 V=$(curl -s $P/ | grep -o '/static/v/[0-9a-f]*/js/api.js' | head -1); echo "$V"
+TV=$(curl -s https://comp-test.teamelwany.com/ | grep -o '/static/v/[0-9a-f]*/js/api.js' | head -1); echo "test site: $TV"
 curl -sI "$P$V" | grep -iE 'cache-control|cf-cache-status'
 curl -s -o /dev/null -w 'made-up version %{http_code}\n' $P/static/v/000000000000/js/api.js
+for H in competitions.teamelwany.com comp-staff.teamelwany.com; do
+  curl -s -o /dev/null -w "http $H %{http_code} -> %{redirect_url}\n" "http://$H/live?x=1"
+done
 ```
 Expected, in order:
 1. `{"status":"ok","schema":5}` on the staff host.
@@ -301,11 +320,18 @@ Expected, in order:
 3. `/ 200` (public home page).
 4. A `content-security-policy` line.
 5. Exactly three tags on `/login`: `/static/v/<version>/js/login.js`, `.../js/i18n.js`,
-   `.../js/api.js`; exactly three on `/`: `.../js/i18n.js`, `.../js/api.js`, `.../js/index.js`. With
-   this image the version is `cb903a7939d5`. Any other script means D1 is not done: stop.
+   `.../js/api.js`; exactly three on `/`: `.../js/i18n.js`, `.../js/api.js`, `.../js/index.js`. The
+   `<version>` is the one the test site shows (the `test site:` line below, read from
+   https://comp-test.teamelwany.com/ while it runs the same image). Any other script means D1 is
+   not done: stop.
 6. `0` for `/cdn-cgi/` (a `/cdn-cgi/challenge-platform/` script is Bot Fight Mode; report before
    changing it, it is zone-wide).
-7. A versioned path, `cache-control` with `max-age=31536000`, and `made-up version 404`.
+7. A versioned path equal to the `test site:` line (if the test site has moved to a newer image
+   since, compare by hand with the version that image showed), `cache-control` with
+   `max-age=31536000`, and `made-up version 404`.
+8. `http competitions.teamelwany.com 301 -> https://competitions.teamelwany.com/live?x=1` and the
+   same for `comp-staff.teamelwany.com` (the `elwanycomp https` redirect rule). Any other code or
+   target: stop.
 
 Phone check [owner]: from the admin screen make a QR for a test official, scan it with a phone's
 stock camera, confirm the address bar no longer shows `#pin=`, then:

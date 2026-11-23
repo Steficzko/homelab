@@ -4,14 +4,17 @@
 # screen). The app's own host gate decides which routes answer on which host; these two rules are
 # the second layer. The team-elwany Cloudflare tunnel
 # (networking/cloudflared/deployment-elwany.yaml, token-based) sends both hosts to
-# http://traefik.traefik.svc.cluster.local:80, Traefik's `web` entrypoint. The entrypoint and the
+# http://traefik.traefik.svc.cluster.local:8081, Traefik's dedicated `comp` entrypoint (README.md P2
+# adds both production hosts there). The entrypoint and the
 # body Middleware annotations below apply to both rules.
 #
 # TLS terminates at Cloudflare's edge and the tunnel reaches Traefik over HTTP, as in
 # saas-gompha/staging/ingress.yaml: so NO tls block and NO cert-manager annotation. That also
 # means no certificate is issued (and the hostname is not published in CT logs) before DNS exists.
 #
-# Entrypoint `web` ONLY. The `lan` and `trusted` entrypoints would put the app on the home LAN
+# Entrypoint `comp` ONLY: the dedicated ElwanyComp entrypoint (ClusterIP Service only, 120 s read
+# timeout; app repo docs/DEPLOY-NOTES.md D18). Never `web`, `websecure`, `lan` or `trusted`.
+# The `lan` and `trusted` entrypoints would put the app on the home LAN
 # beside the tunnel; there a client can send its own CF-Connecting-IP, which the app trusts for
 # the per-IP login limit. Through the tunnel Cloudflare always sets that header.
 #
@@ -28,7 +31,7 @@ metadata:
   name: elwanycomp
   namespace: elwanycomp
   annotations:
-    traefik.ingress.kubernetes.io/router.entrypoints: web
+    traefik.ingress.kubernetes.io/router.entrypoints: comp
     traefik.ingress.kubernetes.io/router.middlewares: elwanycomp-body-64k@kubernetescrd
 spec:
   ingressClassName: traefik

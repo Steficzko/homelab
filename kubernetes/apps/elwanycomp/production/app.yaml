@@ -41,7 +41,7 @@ spec:
       containers:
         - name: app
           # Tag AND digest, bumped together by a homelab PR (rollback = git revert of that PR).
-          image: ghcr.io/steficzko/elwanycomp:sha-e562a9400058-20261123@sha256:8bb11077d55437d5caed560ce408b03882508364833002ea55679ffc7df5f250
+          image: ghcr.io/steficzko/elwanycomp:sha-4cf007204b00-20261123@sha256:e5170a4e92927ede2ad5fa514f69e507ccaabc7fd8cd1ac9ece868b9b2d9ac14
           imagePullPolicy: IfNotPresent
           ports: [{containerPort: 8000, name: http}]
           env:
@@ -52,8 +52,8 @@ spec:
             - {name: ELWANYCOMP_PUBLIC_ORIGIN, value: "https://competitions.teamelwany.com"}
             - {name: ELWANYCOMP_STAFF_ORIGIN, value: "https://comp-staff.teamelwany.com"}
             # Set by Cloudflare at the edge. uvicorn runs with --no-proxy-headers, and the
-            # NetworkPolicy admits only Traefik, and the router is on the `web` entrypoint only,
-            # which only the tunnel reaches (ingress.yaml).
+            # NetworkPolicy admits only Traefik, and the router is on the dedicated `comp` entrypoint only,
+            # which from outside the cluster only the tunnel reaches (ingress.yaml).
             - {name: ELWANYCOMP_CLIENT_IP_HEADER, value: "CF-Connecting-IP"}
             - {name: ELWANYCOMP_DB, value: "/data/elwanycomp.db"}
             - name: ELWANYCOMP_PIN_PEPPER
