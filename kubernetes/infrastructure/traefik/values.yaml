@@ -171,6 +171,21 @@ ports:
         enabled: true
       middlewares:
         - traefik-hsts@kubernetescrd
+  # ElwanyComp only (team-elwany tunnel -> traefik:8081). Its uploads go through Buffering
+  # middlewares, so a slow client must be cut: readTimeout here, not on `web`, where a cap
+  # would break long Immich/Nextcloud uploads (see web above). Owner decision 2026-11-23.
+  # ClusterIP Service only, never `lan`: a LAN client reaching it directly could forge
+  # CF-Connecting-IP. No forwardedHeaders, same as web (Traefik defaults).
+  comp:
+    port: 8447
+    exposedPort: 8081
+    expose:
+      default: true
+      lan: false
+    transport:
+      respondingTimeouts:
+        readTimeout: 120s
+        idleTimeout: 180s
 
 # Not ported on purpose: ssl-redirect (all 49 annotations say "false"), body-size 0 and
 # proxy-buffering off (Traefik's defaults already). Per-app body LIMITS (1m, 25m, 64k…)
