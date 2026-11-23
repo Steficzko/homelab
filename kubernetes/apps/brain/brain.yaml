@@ -29,7 +29,7 @@ spec:
                   - { key: kubernetes.io/hostname, operator: In, values: [k3s-prg-w1] }
       containers:
         - name: capture
-          image: ghcr.io/jauderho/yt-dlp:latest@sha256:d00ecde550bf01627be203d3ab7cf66380ec1da83384b3872540c817df9e2bfd   # Alpine + python3.14 + ffmpeg 8 + yt-dlp; nothing installed at start
+          image: ghcr.io/jauderho/yt-dlp:latest@sha256:ab62377d868ebc01e68714d0eaa2f8a078b74ad589bc9ac92f1c066cede92e92   # Alpine + python3.14 + ffmpeg 8 + yt-dlp; nothing installed at start
           command: ["python3", "/app/capture.py"]
           securityContext:
             runAsUser: 99
