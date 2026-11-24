@@ -1,0 +1,46 @@
+# BullMQ queue + rate limiter. Password-protected, no persistence needed beyond AOF on emptyDir.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redis
+  namespace: openreply
+  labels: {app: redis}
+spec:
+  replicas: 1
+  selector: {matchLabels: {app: redis}}
+  template:
+    metadata: {labels: {app: redis}}
+    spec:
+      automountServiceAccountToken: false
+      enableServiceLinks: false
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 999
+        runAsGroup: 999
+        seccompProfile: {type: RuntimeDefault}
+      containers:
+        - name: redis
+          image: redis:7-alpine@sha256:8da19c7399dca900c6822a1cf30f9d2285585e2c4b457ff4095b0f4500054d3f
+          command: [sh, -c, 'exec redis-server --requirepass "$REDIS_PASSWORD" --maxmemory-policy noeviction --appendonly yes --dir /data']
+          env:
+            - name: REDIS_PASSWORD
+              valueFrom: {secretKeyRef: {name: openreply-env, key: REDIS_PASSWORD}}
+          ports: [{containerPort: 6379, name: redis}]
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities: {drop: [ALL]}
+          resources:
+            requests: {cpu: 20m, memory: 32Mi}
+            limits: {memory: 256Mi}
+          volumeMounts: [{name: data, mountPath: /data}]
+      volumes:
+        - name: data
+          emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata: {name: redis, namespace: openreply}
+spec:
+  selector: {app: redis}
+  ports: [{name: redis, port: 6379, targetPort: redis}]
