@@ -27,7 +27,7 @@ spec:
         seccompProfile: {type: RuntimeDefault}
       initContainers:
         - name: migrate
-          image: ghcr.io/steficzko/openreply:sha-9675cd76e8d7-202611241011@sha256:5572bb07d95474f7368ba292555a29382c5e6fd1638cea5ee0da6d9affd89bf9
+          image: ghcr.io/steficzko/openreply:sha-ea8aa077e340-202611241020@sha256:d8c0c25b485ee5614827a5cd5a86eaf0fb20b8c9659216c26756d5d90f05b810
           command: [node_modules/.bin/prisma, migrate, deploy]
           envFrom: [{secretRef: {name: openreply-env}}]
           env: [{name: HOME, value: /tmp}]
@@ -35,7 +35,7 @@ spec:
           volumeMounts: [{name: tmp, mountPath: /tmp}]
       containers:
         - name: web
-          image: ghcr.io/steficzko/openreply:sha-9675cd76e8d7-202611241011@sha256:5572bb07d95474f7368ba292555a29382c5e6fd1638cea5ee0da6d9affd89bf9
+          image: ghcr.io/steficzko/openreply:sha-ea8aa077e340-202611241020@sha256:d8c0c25b485ee5614827a5cd5a86eaf0fb20b8c9659216c26756d5d90f05b810
           command: [node_modules/.bin/next, start, -p, "3000"]
           envFrom: [{secretRef: {name: openreply-env}}]
           env:
@@ -91,7 +91,7 @@ spec:
         seccompProfile: {type: RuntimeDefault}
       containers:
         - name: worker
-          image: ghcr.io/steficzko/openreply:sha-9675cd76e8d7-202611241011@sha256:5572bb07d95474f7368ba292555a29382c5e6fd1638cea5ee0da6d9affd89bf9
+          image: ghcr.io/steficzko/openreply:sha-ea8aa077e340-202611241020@sha256:d8c0c25b485ee5614827a5cd5a86eaf0fb20b8c9659216c26756d5d90f05b810
           command: [node_modules/.bin/tsx, worker/dm-worker.ts]
           envFrom: [{secretRef: {name: openreply-env}}]
           env:
@@ -139,7 +139,7 @@ spec:
         seccompProfile: {type: RuntimeDefault}
       containers:
         - name: cron
-          image: ghcr.io/steficzko/openreply:sha-9675cd76e8d7-202611241011@sha256:5572bb07d95474f7368ba292555a29382c5e6fd1638cea5ee0da6d9affd89bf9
+          image: ghcr.io/steficzko/openreply:sha-ea8aa077e340-202611241020@sha256:d8c0c25b485ee5614827a5cd5a86eaf0fb20b8c9659216c26756d5d90f05b810
           command: [sh, scripts/cron.sh]
           envFrom: [{secretRef: {name: openreply-env}}]
           env:
@@ -152,7 +152,7 @@ spec:
             runAsNonRoot: true
             capabilities: {drop: [ALL]}
           resources:
-            requests: {cpu: 10m, memory: 256Mi}
+            requests: {cpu: 10m, memory: 32Mi}
             limits: {memory: 64Mi}
           volumeMounts:
             - {name: tmp, mountPath: /tmp}
