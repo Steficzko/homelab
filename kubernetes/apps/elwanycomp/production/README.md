@@ -4,7 +4,7 @@ Hosts (owner, 2026-11-23): public `competitions.teamelwany.com` (live page, resu
 staff `comp-staff.teamelwany.com` (sign-in and every signed-in screen). Namespace `elwanycomp`.
 ArgoCD Application `kubernetes/bootstrap/apps/elwanycomp.yaml` (excludes `*.sops.yaml`, so Argo
 never applies secrets; `prune: false`; Namespace and PVC also carry `Prune=false,Delete=false`).
-Image: the one the test site runs (app commit 68d3a16, photos stage 1, schema 5). Routes on Traefik's
+Image: the one the test site runs (app commit 9ceab3a: photos stage 1 with the picture fairness fix, the public list of competitions, the grouped rules view; schema 5). Routes on Traefik's
 dedicated `comp` entrypoint, as staging, including the upload routes (`upload-routes.yaml`, see
 "Photos stage 1" below). This folder is the staging folder with only these changes:
 namespace, the two hostnames (Ingress, upload routes and the two `ORIGIN` variables), CPU 500m and memory 768Mi
@@ -365,7 +365,7 @@ Not part of this sitting, still open: the uptime check from outside the cluster 
 `https://comp-staff.teamelwany.com/healthz` plus the public home page (DEPLOY-NOTES), and the
 pre-release list in the app repo's `docs/CHECKS.md`.
 
-## Photos stage 1: upload routes (upload-routes.yaml) and image 68d3a16
+## Photos stage 1: upload routes (upload-routes.yaml) and image 9ceab3a
 
 App repo `docs/specs/teams.md` 5.4 and `docs/DEPLOY-NOTES.md` D16 to D24 are the source; the manifests
 are the test site's (`../staging/upload-routes.yaml`), which passed the manifest review, the
@@ -469,12 +469,12 @@ is exposed). The image can also be rolled back alone (revert only the `image:` l
 harmless in front of the older image, which caps every body at 64 KiB itself.
 
 Rolling the image back while pictures exist is safe. Both images are schema 5 (no migration between
-dac2d1f and 68d3a16), so the older image starts on the same database. Pictures are rows in the `image`
+dac2d1f and 9ceab3a), so the older image starts on the same database. Pictures are rows in the `image`
 table (created empty by migration 005); dac2d1f never reads or writes it, so its pages show no pictures
 and it has no picture routes. One difference while it runs: foreign keys are on and `image.entry_id` and
 `image.club_id` are `ON DELETE CASCADE`, so deleting an entry or a club, merging clubs or rejecting a
-pending sending still removes that picture, exactly as 68d3a16 does, but dac2d1f's audit row does not
-record it (68d3a16 writes `had_photo` / `logos_deleted`). Nothing else is lost; rolling forward again
+pending sending still removes that picture, exactly as 9ceab3a does, but dac2d1f's audit row does not
+record it (9ceab3a writes `had_photo` / `logos_deleted`). Nothing else is lost; rolling forward again
 shows every picture that is still there.
 
 ## Rollback
