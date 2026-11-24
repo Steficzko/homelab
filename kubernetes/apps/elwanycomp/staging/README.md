@@ -489,16 +489,25 @@ makes it possible.
 ```bash
 kubectl -n elwanycomp-staging get deploy elwanycomp -o jsonpath='{.spec.template.spec.containers[0].image}{"\n"}'
 kubectl -n elwanycomp-staging rollout status deploy/elwanycomp --timeout=120s
-kubectl -n elwanycomp-staging exec deploy/elwanycomp -- python -c \
-  "print([l for l in open('/proc/self/mountinfo') if ' /tmp ' in l])"
+kubectl -n elwanycomp-staging get deploy elwanycomp \
+  -o jsonpath='{.spec.template.spec.volumes[?(@.name=="tmp")]}{"\n"}'
 curl -s https://comp-test-staff.teamelwany.com/healthz; echo
 ```
-Expected: the `b904d5b` image; the rollout completes; the `/tmp` mount line shows `ext4` (not `tmpfs`);
-`/healthz` answers with schema 5.
+Expected: the `b904d5b` image; the rollout completes; the `tmp` volume is
+`{"emptyDir":{"sizeLimit":"1536Mi"},"name":"tmp"}` (no `medium`); `/healthz` answers with schema 5.
+
+**Owner step (agents never run `kubectl exec` here, snapshot.md 8):** confirm the mount inside the pod
+is the node's disk, `ext4`, not `tmpfs`:
+```bash
+kubectl -n elwanycomp-staging exec deploy/elwanycomp -- python -c \
+  "print([l for l in open('/proc/self/mountinfo') if ' /tmp ' in l])"
+```
 
 **Rollback:** `git revert` of this change (or its merge); Argo restarts the pod on the old image and the
 RAM-disk `/tmp`. The image line can also go back alone, the scratch volume is harmless with the old
-image. Nothing to delete by hand.
+image. Nothing to delete by hand. Never roll the image back while a restore is running or half
+finished: `f70d641` does not know the `.restore-in-progress` marker and would start on a half-restored
+database.
 
 ## Cloudflare Access: the owner's decision, not part of these steps yet
 
