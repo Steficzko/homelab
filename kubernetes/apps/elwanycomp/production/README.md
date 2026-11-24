@@ -369,7 +369,8 @@ pre-release list in the app repo's `docs/CHECKS.md`.
 
 App repo `docs/specs/teams.md` 5.4 and `docs/DEPLOY-NOTES.md` D16 to D24 are the source; the manifests
 are the test site's (`../staging/upload-routes.yaml`), which passed the manifest review, the
-pentester's review and the release checks there. Only the namespace and the two hosts differ. Memory
+pentester's review and, with the earlier image 68d3a16, the release checks there. Only the namespace
+and the two hosts differ. Memory
 is already request = limit = 768Mi here (D19), so `app.yaml` changes only the image. No migration:
 the schema stays 5 (D20), so no pre-release snapshot is needed.
 
@@ -451,9 +452,12 @@ Expected:
 Any other pattern in A: roll back (below).
 
 **Not on production:** the release checks (D18 trickle check, D19 parallel cap-sized bodies and the
-`{},` body, D21 picture checks, D24 load test with photos) ran on the test site against this same image
-and these same manifests. They send real or cap-sized data, hold connections and fill the send bucket:
-do not run them against production.
+`{},` body, D21 picture checks) ran on the test site on 2026-11-23 against these same manifests and the
+earlier image 68d3a16. They were not rerun in full on 9ceab3a, which has had only the outside probes
+since its rollout there on 2026-11-24. The D24 load test with photos ran on a local copy of the app, not
+on the test site and not on the image; its result is a conditional pass that waits for the owner, and its
+hammer variant has not been run. All of these send real or cap-sized data, hold connections and fill the
+send bucket: do not run them against production.
 
 **Rollback.** Revert this pull request (a new pull request, merged by the owner like P5). The
 Application has `prune: false` (`kubernetes/bootstrap/apps/elwanycomp.yaml`), so the revert puts the old
