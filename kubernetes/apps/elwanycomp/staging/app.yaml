@@ -40,7 +40,7 @@ spec:
       containers:
         - name: app
           # Tag AND digest, bumped together by a homelab PR (rollback = git revert of that PR).
-          image: ghcr.io/steficzko/elwanycomp:sha-f70d6418968c-20261124@sha256:0f326e51dbc2cbdfd13e91a94392b27e9b9f63e0717c2b98e40fecf2e2410ad9
+          image: ghcr.io/steficzko/elwanycomp:sha-b904d5b2d39d-20261124@sha256:8ae736455038d31358054424eb45969a93ccfd44217a84646bf73aa3ac238665
           imagePullPolicy: IfNotPresent
           ports: [{containerPort: 8000, name: http}]
           env:
@@ -94,7 +94,13 @@ spec:
         - name: data
           persistentVolumeClaim: {claimName: elwanycomp-data}
         - name: tmp
-          emptyDir: {medium: Memory, sizeLimit: 64Mi}   # TMPDIR, SQLite temp files; counts against the memory limit
+          # TMPDIR, SQLite temp files and the snapshot/restore scratch (app repo docs/specs/snapshot.md 4.2).
+          # Disk-backed on purpose: the snapshot command refuses tmpfs, ramfs or overlay scratch. Lands on
+          # the node's ext4 NVMe, which Longhorn's default disk shares, so the cap matters; 1536Mi = the
+          # app's SCRATCH_LIMIT, and going over evicts the pod. No container ephemeral-storage
+          # request/limit: this sizeLimit already caps the scratch, the root filesystem is read-only, and
+          # no workload in this repo sets one.
+          emptyDir: {sizeLimit: 1536Mi}
 ---
 apiVersion: v1
 kind: Service
