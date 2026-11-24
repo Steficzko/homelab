@@ -1,0 +1,171 @@
+# Deployed via ArgoCD (bootstrap/apps/openreply.yaml). Source: github.com/Steficzko/openreply (private;
+# upstream diwenne/openreply + patched deps, Node 22, non-root). One image, three workloads:
+# web (Next.js, runs `prisma migrate deploy` first), worker (BullMQ DM sender), cron (/api/cron scheduler).
+# Secret openreply-env (SOPS, applied out of band): see secret.example.yaml. ALLOWED_EMAILS MUST be set
+# (security audit 2026-11-24: without it anyone can sign up and use our Meta app).
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web
+  namespace: openreply
+  labels: {app: openreply, component: web}
+spec:
+  replicas: 1
+  strategy: {type: Recreate}
+  revisionHistoryLimit: 3
+  selector: {matchLabels: {app: openreply, component: web}}
+  template:
+    metadata: {labels: {app: openreply, component: web}}
+    spec:
+      automountServiceAccountToken: false
+      enableServiceLinks: false
+      imagePullSecrets: [{name: ghcr-pull}]
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        seccompProfile: {type: RuntimeDefault}
+      initContainers:
+        - name: migrate
+          image: ghcr.io/steficzko/openreply:sha-9675cd76e8d7-202611241011@sha256:5572bb07d95474f7368ba292555a29382c5e6fd1638cea5ee0da6d9affd89bf9
+          command: [node_modules/.bin/prisma, migrate, deploy]
+          envFrom: [{secretRef: {name: openreply-env}}]
+          env: [{name: HOME, value: /tmp}]
+          securityContext: {allowPrivilegeEscalation: false, readOnlyRootFilesystem: true, runAsNonRoot: true, capabilities: {drop: [ALL]}}
+          volumeMounts: [{name: tmp, mountPath: /tmp}]
+      containers:
+        - name: web
+          image: ghcr.io/steficzko/openreply:sha-9675cd76e8d7-202611241011@sha256:5572bb07d95474f7368ba292555a29382c5e6fd1638cea5ee0da6d9affd89bf9
+          command: [node_modules/.bin/next, start, -p, "3000"]
+          envFrom: [{secretRef: {name: openreply-env}}]
+          env:
+            - {name: HOME, value: /tmp}
+            - {name: NODE_ENV, value: production}
+            - {name: CRON_BASE_URL, value: "http://web:3000"}
+          ports: [{containerPort: 3000, name: http}]
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+            capabilities: {drop: [ALL]}
+          startupProbe:
+            tcpSocket: {port: http}
+            periodSeconds: 3
+            failureThreshold: 40
+          readinessProbe:
+            tcpSocket: {port: http}
+            periodSeconds: 10
+          resources:
+            requests: {cpu: 100m, memory: 256Mi}
+            limits: {memory: 768Mi}
+          volumeMounts:
+            - {name: tmp, mountPath: /tmp}
+            - {name: cache, mountPath: /app/.next/cache}
+      volumes:
+        - name: tmp
+          emptyDir: {sizeLimit: 256Mi}
+        - name: cache
+          emptyDir: {sizeLimit: 512Mi}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: worker
+  namespace: openreply
+  labels: {app: openreply, component: worker}
+spec:
+  replicas: 1
+  strategy: {type: Recreate}
+  revisionHistoryLimit: 3
+  selector: {matchLabels: {app: openreply, component: worker}}
+  template:
+    metadata: {labels: {app: openreply, component: worker}}
+    spec:
+      automountServiceAccountToken: false
+      enableServiceLinks: false
+      imagePullSecrets: [{name: ghcr-pull}]
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        seccompProfile: {type: RuntimeDefault}
+      containers:
+        - name: worker
+          image: ghcr.io/steficzko/openreply:sha-9675cd76e8d7-202611241011@sha256:5572bb07d95474f7368ba292555a29382c5e6fd1638cea5ee0da6d9affd89bf9
+          command: [node_modules/.bin/tsx, worker/dm-worker.ts]
+          envFrom: [{secretRef: {name: openreply-env}}]
+          env:
+            - {name: HOME, value: /tmp}
+            - {name: NODE_ENV, value: production}
+            - {name: CRON_BASE_URL, value: "http://web:3000"}
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+            capabilities: {drop: [ALL]}
+          resources:
+            requests: {cpu: 50m, memory: 256Mi}
+            limits: {memory: 512Mi}
+          volumeMounts:
+            - {name: tmp, mountPath: /tmp}
+            - {name: cache, mountPath: /app/.next/cache}
+      volumes:
+        - name: tmp
+          emptyDir: {sizeLimit: 256Mi}
+        - name: cache
+          emptyDir: {sizeLimit: 512Mi}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cron
+  namespace: openreply
+  labels: {app: openreply, component: cron}
+spec:
+  replicas: 1
+  strategy: {type: Recreate}
+  revisionHistoryLimit: 3
+  selector: {matchLabels: {app: openreply, component: cron}}
+  template:
+    metadata: {labels: {app: openreply, component: cron}}
+    spec:
+      automountServiceAccountToken: false
+      enableServiceLinks: false
+      imagePullSecrets: [{name: ghcr-pull}]
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        seccompProfile: {type: RuntimeDefault}
+      containers:
+        - name: cron
+          image: ghcr.io/steficzko/openreply:sha-9675cd76e8d7-202611241011@sha256:5572bb07d95474f7368ba292555a29382c5e6fd1638cea5ee0da6d9affd89bf9
+          command: [sh, scripts/cron.sh]
+          envFrom: [{secretRef: {name: openreply-env}}]
+          env:
+            - {name: HOME, value: /tmp}
+            - {name: NODE_ENV, value: production}
+            - {name: CRON_BASE_URL, value: "http://web:3000"}
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+            capabilities: {drop: [ALL]}
+          resources:
+            requests: {cpu: 10m, memory: 256Mi}
+            limits: {memory: 64Mi}
+          volumeMounts:
+            - {name: tmp, mountPath: /tmp}
+            - {name: cache, mountPath: /app/.next/cache}
+      volumes:
+        - name: tmp
+          emptyDir: {sizeLimit: 256Mi}
+        - name: cache
+          emptyDir: {sizeLimit: 512Mi}
+---
+apiVersion: v1
+kind: Service
+metadata: {name: web, namespace: openreply}
+spec:
+  selector: {app: openreply, component: web}
+  ports: [{name: http, port: 3000, targetPort: http}]

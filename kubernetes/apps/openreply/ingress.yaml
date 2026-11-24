@@ -1,0 +1,21 @@
+# Public only through the team-elwany tunnel (k3sTeamELwany -> traefik:80). /api/cron/* and /api/health
+# are answered 404 by a tunnel rule ahead of this host (cron calls web:3000 in-cluster).
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: openreply
+  namespace: openreply
+  annotations:
+    traefik.ingress.kubernetes.io/router.entrypoints: web
+spec:
+  ingressClassName: traefik
+  rules:
+    - host: reply.teamelwany.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: web
+                port: {number: 3000}
