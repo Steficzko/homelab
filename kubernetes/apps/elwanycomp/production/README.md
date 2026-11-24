@@ -400,7 +400,7 @@ every body is a run of `a` characters (not JSON), there is no session cookie and
 the app refuses each one before any write; only the size decides who answers. `traefik` means Traefik's
 own answer (the body never reached the app), `app` means the body passed Traefik and the app answered
 with an `ERR-REF` (413 `ERR-REF-006` above its cap; below it some other refusal, 400, 401, 403, 404 or
-429, which is fine). The sign-up probes debit the prober's own address in the app's send bucket (3 a
+429, which is fine). The sign-up probes debit the prober's own address in the app's send bucket (6 a
 minute per address, 30 a minute overall) and count against the Cloudflare rate rule (10 per 10 s),
 hence the pauses; run it when sign-ups are quiet, never on the event day.
 ```bash
@@ -453,7 +453,7 @@ Any other pattern in A: roll back (below).
 
 **Not on production:** the release checks (D18 trickle check, D19 parallel cap-sized bodies and the
 `{},` body, D21 picture checks) ran on the test site on 2026-11-23 against these same manifests and the
-earlier image 68d3a16. They were not rerun in full on 9ceab3a, which has had only the outside probes
+earlier image 68d3a16. They were not rerun in full on 9ceab3a nor on f70d641; 9ceab3a has had only the outside probes
 since its rollout there on 2026-11-24. The D24 load test with photos ran on a local copy of the app, not
 on the test site and not on the image; its result is a conditional pass that waits for the owner, and its
 hammer variant has not been run. All of these send real or cap-sized data, hold connections and fill the
