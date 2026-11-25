@@ -18,7 +18,7 @@ spec:
       # fix upload-dir ownership on the PVC (uses the image's own www-data uid)
       initContainers:
         - name: fix-upload-perms
-          image: fireflyiii/core:version-6.7.9@sha256:1cb7e7bc050323e7b97a2cae2de1f48ac492d2b048fb092cdcc6f020417aea56
+          image: fireflyiii/core:version-6.7.9@sha256:10bbe21fbdc68b8fa955d85827aeed197ab46d62c8c745e949d322b9f4b73ff5
           command: ["sh", "-c", "chown -R www-data:www-data /var/www/html/storage/upload && chmod -R u+rwX /var/www/html/storage/upload"]
           securityContext:
             runAsUser: 0
@@ -28,7 +28,7 @@ spec:
       containers:
         - name: firefly
           # Tag+digest pin: PHP2Shell (CVE-2026-109618/109619) needs PHP 8.5.12; 6.6.x got no rebuild.
-          image: fireflyiii/core:version-6.7.9@sha256:1cb7e7bc050323e7b97a2cae2de1f48ac492d2b048fb092cdcc6f020417aea56
+          image: fireflyiii/core:version-6.7.9@sha256:10bbe21fbdc68b8fa955d85827aeed197ab46d62c8c745e949d322b9f4b73ff5
           envFrom:
             - secretRef:
                 name: firefly-secret        # APP_KEY, DB_PASSWORD, MAIL_PASSWORD
