@@ -4,7 +4,7 @@ Hosts (owner, 2026-11-23): public `competitions.teamelwany.com` (live page, resu
 staff `comp-staff.teamelwany.com` (sign-in and every signed-in screen). Namespace `elwanycomp`.
 ArgoCD Application `kubernetes/bootstrap/apps/elwanycomp.yaml` (excludes `*.sops.yaml`, so Argo
 never applies secrets; `prune: false`; Namespace and PVC also carry `Prune=false,Delete=false`).
-Image: the one the test site runs (app commit f70d641: 9ceab3a plus the rules at a glance on the sign-up form, team page and live page, and the walkthrough fixes: phone required on the public form, send limit 6 a minute per address, `/staff` and the `/signup` and `/live` redirects; schema 5, no migration; rolling back to 9ceab3a needs only the image line). Routes on Traefik's
+Image: the one the test site runs (app commit a486627: f70d641 plus the snapshot and restore commands (not usable here until /tmp is on disk, as on staging), the rules card as one row with an All the rules button, the home page sentence, clearer phone messages, and the seven screen fixes of app pull request 26; schema 5, no migration; rolling back to f70d641 needs only the image line). Routes on Traefik's
 dedicated `comp` entrypoint, as staging, including the upload routes (`upload-routes.yaml`, see
 "Photos stage 1" below). This folder is the staging folder with only these changes:
 namespace, the two hostnames (Ingress, upload routes and the two `ORIGIN` variables), CPU 500m and memory 768Mi
