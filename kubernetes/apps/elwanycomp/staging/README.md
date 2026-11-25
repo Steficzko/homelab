@@ -471,6 +471,44 @@ kubectl -n elwanycomp-staging delete middleware signup-inflight-addr signup-infl
 Without the routes every path is back on the Ingress at 64 KiB (uploads fail cleanly with Traefik's 413,
 nothing is exposed). The memory change reverts with the same commit and restarts the pod.
 
+## Snapshot scratch (M1): disk-backed /tmp and the snapshot image (app.yaml)
+
+App repo `docs/specs/snapshot.md` 4.2 and 8 are the source. Two changes in `app.yaml`, nothing else:
+- The `tmp` volume goes from a RAM disk (`medium: Memory`, 64Mi) to a disk-backed emptyDir with
+  `sizeLimit: 1536Mi` (the app's `SCRATCH_LIMIT`). `python -m app.cli snapshot` and `restore` refuse a
+  scratch folder on tmpfs, ramfs or overlay. On every node the emptyDir lands on ext4 on the NVMe that
+  Longhorn's default disk also uses (91G to 136G free on 2026-11-24), so the cap is what protects the
+  node; going over it evicts the pod.
+- The image goes to `sha-b904d5b2d39d-20261124` (adds the snapshot and restore commands; schema 5, no
+  migration).
+
+The restore rehearsal (snapshot.md 8.2) is a separate step that needs the owner's yes; this change only
+makes it possible.
+
+**Check after Argo syncs (read-only):**
+```bash
+kubectl -n elwanycomp-staging get deploy elwanycomp -o jsonpath='{.spec.template.spec.containers[0].image}{"\n"}'
+kubectl -n elwanycomp-staging rollout status deploy/elwanycomp --timeout=120s
+kubectl -n elwanycomp-staging get deploy elwanycomp \
+  -o jsonpath='{.spec.template.spec.volumes[?(@.name=="tmp")]}{"\n"}'
+curl -s https://comp-test-staff.teamelwany.com/healthz; echo
+```
+Expected: the `b904d5b` image; the rollout completes; the `tmp` volume is
+`{"emptyDir":{"sizeLimit":"1536Mi"},"name":"tmp"}` (no `medium`); `/healthz` answers with schema 5.
+
+**Owner step (agents never run `kubectl exec` here, snapshot.md 8):** confirm the mount inside the pod
+is the node's disk, `ext4`, not `tmpfs`:
+```bash
+kubectl -n elwanycomp-staging exec deploy/elwanycomp -- python -c \
+  "print([l for l in open('/proc/self/mountinfo') if ' /tmp ' in l])"
+```
+
+**Rollback:** `git revert` of this change (or its merge); Argo restarts the pod on the old image and the
+RAM-disk `/tmp`. The image line can also go back alone, the scratch volume is harmless with the old
+image. Nothing to delete by hand. Never roll the image back while a restore is running or half
+finished: `f70d641` does not know the `.restore-in-progress` marker and would start on a half-restored
+database.
+
 ## Cloudflare Access: the owner's decision, not part of these steps yet
 
 Pick one later; none is configured by the steps above.
