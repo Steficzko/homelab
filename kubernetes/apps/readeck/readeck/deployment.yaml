@@ -25,7 +25,7 @@ spec:
         - name: readeck
           # Replaces wallabag (PHP 8.1 EOL, never used) — owner decision 2026-10-23.
           # Secret key is generated into /readeck/config.toml on first start (on the PVC).
-          image: codeberg.org/readeck/readeck:0.23.5@sha256:17dea468f4f713930338062f58a3a5e0d04e37d2961ddb827792e223f3db91b4
+          image: codeberg.org/readeck/readeck:0.23.6@sha256:1bc8b0ad2c43fff8bababce4b586e5eaa1a0ad835abdbfadeeaef3330956d90d
           ports:
             - containerPort: 8000
           env:
