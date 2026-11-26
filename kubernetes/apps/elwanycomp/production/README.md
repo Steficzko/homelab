@@ -293,7 +293,7 @@ folder. Check (read-only):
   kubectl -n elwanycomp get pvc,pdb,prometheusrule
 )
 ```
-Expected: rolled out; `"status":"ok"` with `"schema":5`; `Synced Healthy`; the PVC `Bound` at 5Gi,
+Expected: rolled out; `"status":"ok"` with `"schema":8`; `Synced Healthy`; the PVC `Bound` at 5Gi,
 the PDB with `ALLOWED DISRUPTIONS 0`, the rule `elwanycomp-alerts`. If the pod is not Ready within
 5 minutes (`ImagePullBackOff`: P1c; `CreateContainerConfigError`: P1b), stop.
 
@@ -326,7 +326,7 @@ for H in competitions.teamelwany.com comp-staff.teamelwany.com; do
 done
 ```
 Expected, in order:
-1. `{"status":"ok","schema":5}` on the staff host.
+1. `{"status":"ok","schema":8}` on the staff host.
 2. `404` for every staff path on the public host.
 3. `/ 200` (public home page).
 4. A `content-security-policy` line.
