@@ -21,8 +21,8 @@ spec:
                 name: web
                 port: {number: 3000}
 ---
-# Hide OpenReply's bundled marketing pages (owner 2026-11-26: "NUKE the sales page").
-# Only these exact pages redirect; /login, /dashboard, /api/*, /_next/*, /privacy etc. are untouched.
+# Hide every OpenReply public page (owner 2026-11-26: "NUKE the sales page", "nuke everything on the reply").
+# Left reachable: /login, /verify-request, the logged-in dashboard pages, /api/*, /_next/*.
 # /dashboard itself bounces logged-out visitors to /login.
 apiVersion: traefik.io/v1alpha1
 kind: Middleware
@@ -31,5 +31,5 @@ metadata:
   namespace: openreply
 spec:
   redirectRegex:
-    regex: '^https?://[^/]+/(brand|comment-link-automation|contributors|instagram-comment-to-dm-templates|instagram-dm-automation-agencies|manychat-alternative|meta-review|sponsors|templates)?(/[^?]*)?(\?.*)?$'
+    regex: '^https?://[^/]+/(brand|comment-link-automation|contributors|instagram-comment-to-dm-templates|instagram-dm-automation-agencies|manychat-alternative|meta-review|sponsors|templates|privacy|terms|data-deletion|reports|invite)?(/[^?]*)?(\?.*)?$'
     replacement: 'https://reply.teamelwany.com/dashboard'
