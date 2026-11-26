@@ -481,6 +481,32 @@ pending sending still removes that picture, exactly as 9ceab3a does, but dac2d1f
 record it (9ceab3a writes `had_photo` / `logos_deleted`). Nothing else is lost; rolling forward again
 shows every picture that is still there.
 
+## Snapshot scratch (M1): disk-backed /tmp (app.yaml)
+
+Owner's yes 2026-11-26 in the homelab session. Same change as staging (homelab PR 236): the `tmp`
+volume goes from a RAM disk (`medium: Memory`, 64Mi) to a disk-backed emptyDir with
+`sizeLimit: 1536Mi` (the app's `SCRATCH_LIMIT`), so `python -m app.cli snapshot` stops refusing with
+ERR-REF-062. No image change. One restart (Recreate).
+
+**Check after Argo syncs (read-only, agent-safe):**
+```bash
+kubectl -n elwanycomp get deploy elwanycomp \
+  -o jsonpath='{.spec.template.spec.volumes[?(@.name=="tmp")]}{"\n"}'
+kubectl -n elwanycomp rollout status deploy/elwanycomp --timeout=120s
+curl -s https://comp-staff.teamelwany.com/healthz; echo
+```
+Expected: `{"emptyDir":{"sizeLimit":"1536Mi"},"name":"tmp"}` (no `medium`); the rollout completes;
+`/healthz` ok with the current schema.
+
+**Owner step (agents never run `kubectl exec` here):** the mount inside the pod is `ext4`, not `tmpfs`:
+```bash
+kubectl -n elwanycomp exec deploy/elwanycomp -- python -c \
+  "print([l for l in open('/proc/self/mountinfo') if ' /tmp ' in l])"
+```
+
+**Rollback:** `git revert` of this change; Argo restarts the pod with the RAM-disk `/tmp`. Never while a
+restore is running or half finished.
+
 ## Rollback
 
 - **Manifests:** revert the production pull request (a new pull request, merged like P5). Argo has
