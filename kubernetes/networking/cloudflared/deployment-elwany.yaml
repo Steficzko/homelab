@@ -39,7 +39,7 @@ spec:
             - name: TUNNEL_TOKEN
               valueFrom:
                 secretKeyRef:
-                  name: cloudflare-tunnel-token-elwany   # team-elwany tunnel 9bb353e8; see secret-elwany.example.yaml
+                  name: cloudflare-tunnel-token-elwany   # team-elwany tunnel 98ea5620; see secret-elwany.example.yaml
                   key: token
           resources:
             requests:

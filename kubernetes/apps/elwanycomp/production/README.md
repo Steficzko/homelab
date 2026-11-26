@@ -4,7 +4,7 @@ Hosts (owner, 2026-11-23): public `competitions.teamelwany.com` (live page, resu
 staff `comp-staff.teamelwany.com` (sign-in and every signed-in screen). Namespace `elwanycomp`.
 ArgoCD Application `kubernetes/bootstrap/apps/elwanycomp.yaml` (excludes `*.sops.yaml`, so Argo
 never applies secrets; `prune: false`; Namespace and PVC also carry `Prune=false,Delete=false`).
-Image: the one the test site runs (app commit e17546b: the live page rework of app pull request 32, the age note of pull request 25 (migration 006), named public addresses of pull request 33 (migration 007) and the coach rules of pull request 33 (migration 008); schema 8. The app runs 006 to 008 at start. Rolling back is not an image line any more: a schema-8 database does not start on 72e561a, so a rollback restores the Longhorn backup taken before the release together with image 72e561a (homelab steps, on the owner's word). Before: 72e561a, schema 5.) Routes on Traefik's
+Image: app commit b2668ba (2026-11-26, PR 258: live scoring, team logos on the live page, public `/img` with CORP same-site for the gym site); schema 8, no migration since e17546b (2026-11-26, migrations 006 to 008). Rolling back is not an image line below e17546b: a schema-8 database does not start on 72e561a, so that rollback restores the Longhorn backup taken before the schema-8 release together with image 72e561a (homelab steps, on the owner's word). Going back to e17546b is an image line only. Routes on Traefik's
 dedicated `comp` entrypoint, as staging, including the upload routes (`upload-routes.yaml`, see
 "Photos stage 1" below). This folder is the staging folder with only these changes:
 namespace, the two hostnames (Ingress, upload routes and the two `ORIGIN` variables), CPU 500m and memory 768Mi
@@ -453,7 +453,7 @@ Any other pattern in A: roll back (below).
 
 **Not on production:** the release checks (D18 trickle check, D19 parallel cap-sized bodies and the
 `{},` body, D21 picture checks) ran on the test site on 2026-11-23 against these same manifests and the
-earlier image 68d3a16. They were not rerun in full on 9ceab3a, f70d641, a486627 or 72e561a; 9ceab3a has had only the outside probes
+earlier image 68d3a16. They were not rerun in full on 9ceab3a, f70d641, a486627, 72e561a, e17546b or b2668ba; 9ceab3a has had only the outside probes
 since its rollout there on 2026-11-24. The D24 load test with photos ran on a local copy of the app, not
 on the test site and not on the image; its result is a conditional pass that waits for the owner, and its
 hammer variant has not been run. All of these send real or cap-sized data, hold connections and fill the
