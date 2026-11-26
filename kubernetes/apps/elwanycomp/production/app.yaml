@@ -97,7 +97,13 @@ spec:
         - name: data
           persistentVolumeClaim: {claimName: elwanycomp-data}
         - name: tmp
-          emptyDir: {medium: Memory, sizeLimit: 64Mi}   # TMPDIR, SQLite temp files; counts against the memory limit
+          # TMPDIR, SQLite temp files and the snapshot/restore scratch (app repo docs/specs/snapshot.md 4.2).
+          # Disk-backed on purpose: the snapshot command refuses tmpfs, ramfs or overlay scratch
+          # (ERR-REF-062). Lands on the node's ext4 NVMe, which Longhorn's default disk shares, so the
+          # cap matters; 1536Mi = the app's SCRATCH_LIMIT, and going over evicts the pod. No container
+          # ephemeral-storage request/limit: this sizeLimit already caps the scratch, the root filesystem
+          # is read-only, and no workload in this repo sets one. Same as staging (homelab PR 236).
+          emptyDir: {sizeLimit: 1536Mi}
 ---
 apiVersion: v1
 kind: Service
