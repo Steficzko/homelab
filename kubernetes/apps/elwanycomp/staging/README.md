@@ -509,12 +509,16 @@ image. Nothing to delete by hand. Never roll the image back while a restore is r
 finished: `f70d641` does not know the `.restore-in-progress` marker and would start on a half-restored
 database.
 
-## Cloudflare Access: the owner's decision, not part of these steps yet
+## Cloudflare Access: decided (owner, 2026-11-24)
 
-Pick one later; none is configured by the steps above.
+The three options were:
 - **A.** The whole host behind Access (email one-time code), with bypass apps for `/login`, `/api/login`, `/api/me`, `/static/*` and `/healthz`.
 - **B.** Access only on `/admin*` and `/api/admin/*`.
-- **C.** No Access on the test version.
+- **C.** No Access.
+
+Decision: **C until the first event (11 Dec), then B.** B means the owner's email only, built on
+`comp-test-staff` first, then `comp-staff`; check what `/api/admin/*` needs before adding it.
+Tracked in Plane EDGE-16. Until B is built, no Access app matches these hosts (production P3).
 
 Whatever is chosen, `/login` is never behind Access and never redirects to another origin
 (DEPLOY-NOTES D2).

@@ -453,7 +453,7 @@ Any other pattern in A: roll back (below).
 
 **Not on production:** the release checks (D18 trickle check, D19 parallel cap-sized bodies and the
 `{},` body, D21 picture checks) ran on the test site on 2026-11-23 against these same manifests and the
-earlier image 68d3a16. They were not rerun in full on 9ceab3a, f70d641, a486627 or 72e561a; 9ceab3a has had only the outside probes
+earlier image 68d3a16. They were not rerun in full on 9ceab3a, f70d641, a486627, 72e561a, e17546b, b2668ba or 3d23cdd; 9ceab3a has had only the outside probes
 since its rollout there on 2026-11-24. The D24 load test with photos ran on a local copy of the app, not
 on the test site and not on the image; its result is a conditional pass that waits for the owner, and its
 hammer variant has not been run. All of these send real or cap-sized data, hold connections and fill the
