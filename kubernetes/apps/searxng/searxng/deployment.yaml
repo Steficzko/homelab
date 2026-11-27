@@ -22,7 +22,7 @@ spec:
       # copy; seed the (read-only) ConfigMap into an emptyDir first.
       initContainers:
         - name: seed-settings
-          image: searxng/searxng:2026.11.14-a7128d5d1@sha256:eb8b09ffa83aebbe8b8d3ded23cfd224b2d3b01db4f3af9eb03876ef6def6dda
+          image: searxng/searxng:2026.11.26-b5605b8f2@sha256:462d8dbeadd7c7c304be08d47084f5caba70f47a9145a01fd25990a7944e61b7
           command: ["sh", "-c", "cp /src/settings.yml /work/settings.yml && sed -i \"s|ultrasecretkey|$SEARXNG_SECRET|\" /work/settings.yml"]
           env:
             - name: SEARXNG_SECRET
@@ -37,7 +37,7 @@ spec:
               mountPath: /src
       containers:
         - name: searxng
-          image: searxng/searxng:2026.11.14-a7128d5d1@sha256:eb8b09ffa83aebbe8b8d3ded23cfd224b2d3b01db4f3af9eb03876ef6def6dda
+          image: searxng/searxng:2026.11.26-b5605b8f2@sha256:462d8dbeadd7c7c304be08d47084f5caba70f47a9145a01fd25990a7944e61b7
           env:
             - name: TZ
               value: Europe/Prague
