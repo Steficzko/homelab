@@ -40,7 +40,7 @@ spec:
       containers:
         - name: app
           # Tag AND digest, bumped together by a homelab PR (rollback = git revert of that PR).
-          image: ghcr.io/steficzko/elwanycomp:sha-136d5e001252-20261127@sha256:6201e06ed0295b1f4610f2351783225d8a02a14e451a048a2288c32d801f6d21
+          image: ghcr.io/steficzko/elwanycomp:sha-3c1a48568706-20261128@sha256:cff7d81aea9b3d086dcd28fd8b6926e7481ac40955746e5311b81fb6f18a065d
           imagePullPolicy: IfNotPresent
           ports: [{containerPort: 8000, name: http}]
           env:
