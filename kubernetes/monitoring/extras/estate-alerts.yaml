@@ -143,6 +143,11 @@ spec:
               backup target; Greece holds the offsite copy. Check the box itself
               before assuming this is a monitoring fault.
 
+        # 2026-11-28: the flat 60 C fired on repy's CPU package at 71 C (crit 105) under
+        # ordinary VM load, a false alarm. Now 75% of each sensor's own rated crit, the
+        # same idea as the critical tier below: CPU about 79 C, NVMe about 71 C. Sensors
+        # without a crit value (thermal_zone, i2c) drop out; they read 28-49 C.
+        # Original note, still true for the aggregation:
         # 60 C as specified. Recorded honestly: this is a soft threshold on a
         # sensor set that is all CPU package and NVMe — Unraid does not export
         # spinning-disk temperatures over hwmon, those come from SMART. repy's
@@ -160,14 +165,18 @@ spec:
         # as a result — that is the trade, and the critical rule below still
         # names the exact sensor.
         - alert: NASTemperatureHigh
-          expr: max by (instance, job) (node_hwmon_temp_celsius{job="unraid-node-exporter"}) > 60
+          expr: >-
+            max by (instance, job) (
+              node_hwmon_temp_celsius{job="unraid-node-exporter"}
+              / node_hwmon_temp_crit_celsius{job="unraid-node-exporter"}
+            ) >= 0.75
           for: 30m
           labels:
             severity: warning
           annotations:
             summary: >-
               {{ $labels.instance }} hottest sensor at
-              {{ $value | printf "%.0f" }} C for 30m
+              {{ $value | humanizePercentage }} of its rated critical for 30m
             description: >-
               Sustained, not a spike. A parity check will do this legitimately; a
               failed fan will do it permanently. Check which.
