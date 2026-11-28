@@ -31,7 +31,7 @@ spec:
         - name: n8n
           # Tag+digest pin, stable channel only (2.45.x was pre-release). Greece DR
           # pins (disaster-recovery/greece) must move in step.
-          image: n8nio/n8n:2.47.7@sha256:b4b90747b81fcda7e76550c0d3aa7f0f64917a1e9573cff40d6834eaf2e0f8ea
+          image: n8nio/n8n:2.49.8@sha256:9a83f64039070a846723cdf7d95b85db9ad1e6fadb38cad1ca12eceb04e04f33
           envFrom:
             - secretRef:
                 name: n8n-secret
