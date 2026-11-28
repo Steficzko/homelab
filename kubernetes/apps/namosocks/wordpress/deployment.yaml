@@ -29,7 +29,7 @@ spec:
         - name: wordpress
           # Pinned tag+digest: floating tags + IfNotPresent never pulled security
           # rebuilds (PHP2Shell, CVE-2026-109618/109619 -> PHP 8.3.36).
-          image: wordpress:7.1.4-php8.3-apache@sha256:074f9ef5429025dab76a4242f5b796f64ae76a49dd19b6708ad29e1893a8d383
+          image: wordpress:7.1.5-php8.3-apache@sha256:9b46af6a41fd0dcb2e5cf85033a6350d05010356847ede1cfcac5cf94292eb26
           env:
             - name: WORDPRESS_DB_HOST
               value: mariadb
